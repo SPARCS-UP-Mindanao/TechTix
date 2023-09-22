@@ -1,0 +1,54 @@
+service: PWA-Serverless-Demo
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  region: ap-southeast-2
+  stage: ${opt:stage, "dev"}
+  runtime: python3.8
+  memorySize: 3008
+  versionFunctions: false
+  timeout: 30
+  logs:
+    restApi: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    layer:
+      name: pwa-sls-${self:provider.stage}-python-requirements
+      path: .
+      compatibleRuntimes:
+        - python3.8
+
+functions:
+  app:
+    package:
+      patterns:
+        - 'src/**'
+        - '!requirements.txt'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!.serverless/**'
+        - '!venv/**'
+        - '!node_modules/**'
+    handler: main.handler
+    environment:
+      STAGE: ${self:provider.stage}
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+    events:
+      - http:
+          method: get
+          path: /
+      - http:
+          method: any
+          path: /{proxy+}
+    iamRoleStatementsName:
+
+
+plugins:
+  - serverless-python-requirements
+  - serverless-iam-roles-per-function
