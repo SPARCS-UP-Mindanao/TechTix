@@ -32,11 +32,13 @@ jobs:
         run: |
           python3 -m pip install pipenv==2023.5.19
           pipenv install
+        working-directory: backend
 
       - name: Install Serverless Framework
         run: |
           npm install
           npm install -g serverless
+        working-directory: backend
 
       - name: Deploy with Serverless
         run: |
@@ -45,3 +47,4 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
           sls deploy --stage dev --verbose
           fi
+        working-directory: backend
