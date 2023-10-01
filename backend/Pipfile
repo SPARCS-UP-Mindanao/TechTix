@@ -19,6 +19,7 @@ boto3 = "==1.22.7"
 ulid = "==1.1"
 fastapi-cloudauth = "==0.4.3"
 lambda-warmer-py = "==0.6.0"
+python-dotenv = "==1.0.0"
 
 [dev-packages]
 pre-commit = "==3.3.3"

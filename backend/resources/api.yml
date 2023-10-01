@@ -1,0 +1,27 @@
+app:
+  handler: main.handler
+  environment:
+    STAGE: ${self:provider.stage}
+  layers:
+    - { Ref: PythonRequirementsLambdaLayer }
+  events:
+    - http:
+        path: /
+        method: get
+        cors: true
+    - http:
+        path: /{proxy+}
+        method: any
+        cors: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminCreateUser
+        - cognito-idp:AdminSetUserPassword
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}

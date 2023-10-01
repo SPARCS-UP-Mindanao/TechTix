@@ -1,20 +1,9 @@
-service: PWA-Serverless-Demo
-
-package:
-  individually: true
-
-provider:
-  name: aws
-  region: ap-southeast-2
-  stage: ${opt:stage, "dev"}
-  runtime: python3.8
-  memorySize: 3008
-  versionFunctions: false
-  timeout: 30
-  logs:
-    restApi: true
+service: sparcs-events-api
 
 custom:
+  projectName: sparcs-events
+  serviceName: api
+  stage: ${opt:stage, self:provider.stage}
   pythonRequirements:
     dockerizePip: true
     layer:
@@ -23,31 +12,33 @@ custom:
       compatibleRuntimes:
         - python3.8
 
-functions:
-  app:
-    package:
-      patterns:
-        - 'src/**'
-        - '!requirements.txt'
-        - '!package.json'
-        - '!package-lock.json'
-        - '!.serverless/**'
-        - '!venv/**'
-        - '!node_modules/**'
-    handler: main.handler
-    environment:
-      STAGE: ${self:provider.stage}
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-    events:
-      - http:
-          method: get
-          path: /
-      - http:
-          method: any
-          path: /{proxy+}
-    iamRoleStatementsName:
+package: ${file(resources/package.yml)}
 
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-southeast-1
+  memorySize: 3008
+  versionFunctions: false
+  timeout: 30
+  apiGateway:
+    resourcePolicy:
+      - Effect: Allow
+        Action: execute-api:Invoke
+        Principal: "*"
+        Resource: execute-api:/*/*/*
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:custom.stage}
+  logs:
+    restApi: true
+
+# resources:
+#   - ${file(resources/cognito.yml)}
+
+functions:
+  - ${file(resources/api.yml)}
 
 plugins:
   - serverless-python-requirements
