@@ -1,4 +1,4 @@
-# SPARCS Certificate Generation App
+# SPARCS Events Platform
 
 ## Tech Stack
 - Serverless Framework
