@@ -16,12 +16,6 @@ app:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - cognito-idp:AdminInitiateAuth
-        - cognito-idp:AdminCreateUser
-        - cognito-idp:AdminSetUserPassword
-      Resource: "*"
-    - Effect: Allow
-      Action:
         - ssm:GetParameter
       Resource:
         - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
