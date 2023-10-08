@@ -33,4 +33,3 @@ httpx = "==0.23.3"
 
 [requires]
 python_version = "3.8"
-
