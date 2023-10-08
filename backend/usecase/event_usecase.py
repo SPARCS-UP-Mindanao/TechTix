@@ -46,6 +46,17 @@ class EventUsecase:
         events_data = [self.__convert_data_entry_to_dict(event) for event in events]
         return [EventOut(**event_data) for event_data in events_data]
 
+    def delete_event(self, event_id: str) -> Union[JSONResponse, EventOut]:
+        status, event, message = self.__events_repository.query_events(event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        status = self.__events_repository.delete_event(event_entry=event)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        return None
+
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
         return json.loads(data_entry.to_json())

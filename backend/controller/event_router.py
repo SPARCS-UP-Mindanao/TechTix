@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from usecase.event_usecase import EventUsecase
+from http import HTTPStatus
 
 event_router = APIRouter()
 
@@ -108,3 +109,25 @@ def update_event(
     _ = current_user
     events_uc = EventUsecase()
     return events_uc.update_event(event_id, event)
+
+
+@event_router.delete(
+    '/{event_id}',
+    status_code=HTTPStatus.NO_CONTENT,
+    responses={
+        204: {'description': 'Joint entry deletion success', 'content': None},
+    },
+    summary="Delete event",
+)
+@event_router.delete(
+    '/{event_id}/',
+    status_code=HTTPStatus.NO_CONTENT,
+    include_in_schema=False,
+)
+def delete_event(
+    event_id: str,
+    current_user: AccessUser = Depends(get_current_user),
+):
+    _ = current_user
+    events_uc = EventUsecase()
+    return events_uc.delete_event(event_id)

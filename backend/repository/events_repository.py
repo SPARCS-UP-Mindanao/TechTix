@@ -143,3 +143,15 @@ class EventsRepository:
             logging.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    
+    def delete_event(self, event_entry: Event) -> HTTPStatus:
+        try:
+            event_entry.entryStatus = EntryStatus.DELETED.value
+            event_entry.save()
+            logging.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
+            return HTTPStatus.OK
+        except PutError as e:
+            message = f'Failed to delete event data: {str(e)}'
+            logging.error(f'[{event_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR
