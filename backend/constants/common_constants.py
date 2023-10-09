@@ -25,6 +25,7 @@ class CommonConstants:
     UPDATED_BY = 'updatedBy'
 
     ENTRY_ID = 'entryId'
+    EVENT_ID = 'eventId'
 
     # Exclude to Comparison Keys
     EXCLUDE_COMPARISON_KEYS = [

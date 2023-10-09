@@ -1,11 +1,12 @@
 from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from usecase.event_usecase import EventUsecase
 from http import HTTPStatus
+from constants.common_constants import CommonConstants
 
 event_router = APIRouter()
 
@@ -51,7 +52,9 @@ def get_events(
     include_in_schema=False,
 )
 def get_event(
-    event_id: str,
+    event_id: str = Query(
+        ..., title='Event Id', alias=CommonConstants.EVENT_ID
+    ),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
@@ -102,8 +105,10 @@ def create_event(
     include_in_schema=False,
 )
 def update_event(
-    event_id: str,
     event: EventIn,
+    event_id: str = Query(
+        ..., title='Event Id', alias=CommonConstants.EVENT_ID
+    ),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
@@ -125,7 +130,9 @@ def update_event(
     include_in_schema=False,
 )
 def delete_event(
-    event_id: str,
+    event_id: str = Query(
+        ..., title='Event Id', alias=CommonConstants.EVENT_ID
+    ),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
