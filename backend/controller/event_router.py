@@ -3,7 +3,7 @@ from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Path
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from usecase.event_usecase import EventUsecase
@@ -36,7 +36,7 @@ def get_events(
 
 
 @event_router.get(
-    '/{event_id}',
+    '/{entryId}',
     response_model=EventOut,
     responses={
         404: {"model": Message, "description": "Event not found"},
@@ -45,19 +45,19 @@ def get_events(
     summary="Get event",
 )
 @event_router.get(
-    '/{event_id}/',
+    '/{entryId}/',
     response_model=EventOut,
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
     include_in_schema=False,
 )
 def get_event(
-    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     events_uc = EventUsecase()
-    return events_uc.get_event(event_id)
+    return events_uc.get_event(entry_id)
 
 
 @event_router.post(
@@ -86,7 +86,7 @@ def create_event(
 
 
 @event_router.put(
-    '/{event_id}',
+    '/{entryId}',
     response_model=EventOut,
     responses={
         400: {"model": Message, "description": "Bad request"},
@@ -96,7 +96,7 @@ def create_event(
     summary="Update event",
 )
 @event_router.put(
-    '/{event_id}/',
+    '/{entryId}/',
     response_model=EventOut,
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
@@ -104,31 +104,31 @@ def create_event(
 )
 def update_event(
     event: EventIn,
-    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     events_uc = EventUsecase()
-    return events_uc.update_event(event_id, event)
+    return events_uc.update_event(entry_id, event)
 
 
 @event_router.delete(
-    '/{event_id}',
+    '/{entryId}',
     status_code=HTTPStatus.NO_CONTENT,
     responses={
-        204: {'description': 'Joint entry deletion success', 'content': None},
+        204: {'description': 'Event entry deletion success', 'content': None},
     },
     summary="Delete event",
 )
 @event_router.delete(
-    '/{event_id}/',
+    '/{entryId}/',
     status_code=HTTPStatus.NO_CONTENT,
     include_in_schema=False,
 )
 def delete_event(
-    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     events_uc = EventUsecase()
-    return events_uc.delete_event(event_id)
+    return events_uc.delete_event(entry_id)
