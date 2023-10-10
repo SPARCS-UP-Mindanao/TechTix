@@ -66,7 +66,13 @@ class EventsRepository:
 
     def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
         try:
-            range_key_condition = Event.rangeKey.__eq__(f'v{self.latest_version}#{event_id}') if event_id else None
+            if event_id:
+                range_key_prefix = f'v{self.latest_version}#{event_id}'
+                range_key_condition = Event.rangeKey.__eq__(range_key_prefix)
+            else:
+                range_key_prefix = f'v{self.latest_version}#'
+                range_key_condition = Event.rangeKey.startswith(range_key_prefix)
+
             event_entries = list(
                 Event.query(
                     hash_key=self.core_obj,
@@ -128,11 +134,11 @@ class EventsRepository:
                 transaction.update(event_entry, actions=actions)
 
                 # Store Old Entry --------------------------------------------------------------------------
-                old_client_info_entry = deepcopy(event_entry)
-                old_client_info_entry.rangeKey = event_entry.rangeKey.replace('v0#', f'v{new_version}#')
-                old_client_info_entry.latestVersion = current_version
-                old_client_info_entry.updatedBy = old_client_info_entry.updatedBy or os.getenv('CURRENT_USER')
-                transaction.save(old_client_info_entry)
+                old_event_entry = deepcopy(event_entry)
+                old_event_entry.rangeKey = event_entry.rangeKey.replace('v0#', f'v{new_version}#')
+                old_event_entry.latestVersion = current_version
+                old_event_entry.updatedBy = old_event_entry.updatedBy or os.getenv('CURRENT_USER')
+                transaction.save(old_event_entry)
 
             event_entry.refresh()
             logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
@@ -144,14 +150,26 @@ class EventsRepository:
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
-    
-    def delete_event(self, event_entry: Event) -> HTTPStatus:
+    def delete_event(self, event_entry: Event) -> Tuple[HTTPStatus, str]:
         try:
+            # create new entry with old data
+            current_version = event_entry.latestVersion
+            new_version = current_version + 1
+            old_event_entry = deepcopy(event_entry)
+            old_event_entry.rangeKey = event_entry.rangeKey.replace('v0#', f'v{new_version}#')
+            old_event_entry.updatedBy = old_event_entry.updatedBy or os.getenv('CURRENT_USER')
+            old_event_entry.save()
+
+            # set entry status to deleted
+            event_entry.updateDate = self.current_date
+            event_entry.updatedBy = os.getenv('CURRENT_USER')
+            event_entry.latestVersion = new_version
             event_entry.entryStatus = EntryStatus.DELETED.value
             event_entry.save()
+
             logging.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
-            return HTTPStatus.OK
+            return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{event_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message

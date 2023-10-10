@@ -51,7 +51,7 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status = self.__events_repository.delete_event(event_entry=event)
+        status, message = self.__events_repository.delete_event(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
