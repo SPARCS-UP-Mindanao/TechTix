@@ -6,7 +6,7 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: non-linux
     layer:
       name: sparcs-events-${self:provider.stage}-python-requirements
       path: .
