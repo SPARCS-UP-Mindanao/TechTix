@@ -51,20 +51,20 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
 
 ## Setup AWS CLI
 
-- **Download and Install AWS CLI:**
-  - [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+1. **Download and Install AWS CLI:**
+   - [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-- **Create AWS Profile:**
-  ```shell
-  aws configure --profile sparcs
-  ```
+2. **Create AWS Profile:**
+   ```shell
+   aws configure --profile sparcs
+   ```
 
-- **Input your AWS Access Key ID and AWS Secret Access Key provided to you.**
-- **Input `ap-southeast-1` for the default region name.**
-- **Leave blank for the default output format.**
+   - **Input your AWS Access Key ID and AWS Secret Access Key provided to you.**
+   - **Input `ap-southeast-1` for the default region name.**
+   - **Leave blank for the default output format.**
 
 
-## Deploy to AWS
+## Setup Serverless Framework
 
 1. **Pre-requisites:**
    - Ensure `Node 14` or later is installed
@@ -79,7 +79,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    npm install
    ```
 
-4. **Deploy it:**
+## Deploy to AWS
    ```shell
    serverless deploy --stage 'dev' --aws-profile 'sparcs' --verbose
    ```
