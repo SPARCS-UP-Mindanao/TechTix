@@ -60,7 +60,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
   ```
 
 - **Input your AWS Access Key ID and AWS Secret Access Key provided to you.**
-- **Input `ap-souteast-1` for the default region name.**
+- **Input `ap-southeast-1` for the default region name.**
 - **Leave blank for the default output format.**
 
 
