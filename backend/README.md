@@ -80,6 +80,14 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```
 
 ## Deploy to AWS
+1. Setup Docker (Only for Non-Linux Users)
+   - [Docker Installation Guide](https://docs.docker.com/engine/install)
+   - Make sure Docker is Running on your Machine
+2.
+   ```shell
+   pipenv shell
+   ```
+3. 
    ```shell
    serverless deploy --stage 'dev' --aws-profile 'sparcs' --verbose
    ```
