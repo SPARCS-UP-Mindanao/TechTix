@@ -5,16 +5,24 @@ from typing import List, Union
 from model.events.event import EventIn, EventOut
 from repository.events_repository import EventsRepository
 from starlette.responses import JSONResponse
+from usecase.email_usecase import EmailUsecase
 
 
 class EventUsecase:
     def __init__(self):
         self.__events_repository = EventsRepository()
+        self.__email_usecase = EmailUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        # Queue Event Creation Email
+        email_status, message = self.__email_usecase.send_event_creation_email(event)
+        if email_status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
         event_data = self.__convert_data_entry_to_dict(event)
         return EventOut(**event_data)
 
