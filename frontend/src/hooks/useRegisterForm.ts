@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useNotifyToast } from "./useNotifyToast";
 
 const RegisterFormSchema = z.object({
   email: z.string().email({
@@ -12,6 +13,8 @@ const RegisterFormSchema = z.object({
 });
 
 export const useRegisterForm = () => {
+  const { infoToast } = useNotifyToast();
+
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
@@ -21,7 +24,11 @@ export const useRegisterForm = () => {
   });
 
   const handleSubmit = form.handleSubmit((values) => {
-    console.log(values.email, values.password);
+    infoToast({
+      title: "Register Info",
+      description: `Registering user with email: ${values.email}`,
+      icon: "Success",
+    });
   });
 
   return {

@@ -1,7 +1,9 @@
-import React from "react";
-
 const AdminEventPage = () => {
-  return <div>AdminEventPage</div>;
+  return (
+    <div>
+      <h1>AdminEventPage</h1>
+    </div>
+  );
 };
 
 export default AdminEventPage;

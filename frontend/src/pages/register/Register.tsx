@@ -1,5 +1,4 @@
 import { useRegisterForm } from "@/hooks/useRegisterForm";
-import React from "react";
 import { FormProvider } from "react-hook-form";
 
 const Register = () => {
