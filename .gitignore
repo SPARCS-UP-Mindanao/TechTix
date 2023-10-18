@@ -1,3 +1,5 @@
 .vscode
 .idea
 my.secrets
+.env
+.env.local

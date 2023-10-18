@@ -10,7 +10,12 @@
     "cssVariables": true
   },
   "aliases": {
+    "api": "@/api",
+    "assets": "@/assets",
     "components": "@/components",
-    "utils": "@/lib/utils"
+    "hooks": "@/hooks",
+    "styles": "@/styles",
+    "utils": "@/utils",
+    "views": "@/views"
   }
 }
