@@ -14,3 +14,18 @@ Resources:
         - AttributeName: rangeKey
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
+Admins:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.admins}
+      AttributeDefinitions:
+        - AttributeName: hashKey
+          AttributeType: S
+        - AttributeName: rangeKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: hashKey
+          KeyType: HASH
+        - AttributeName: rangeKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST

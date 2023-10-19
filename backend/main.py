@@ -41,3 +41,4 @@ mangum_handler = Mangum(app, lifespan='off')
 @lambdawarmer.warmer
 def handler(event, context):
     return mangum_handler(event, context)
+
