@@ -5,8 +5,9 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
+  registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   pythonRequirements:
-    dockerizePip: non-linux
+    # dockerizePip: true
     layer:
       name: sparcs-events-${self:provider.stage}-python-requirements
       path: .
@@ -33,6 +34,7 @@ provider:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.stage}
     ENTITIES_TABLE: ${self:custom.entities}
+    REGISTRATIONS_TABLE: ${self:custom.registrations}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:provider.stage}
     USER_POOL_CLIENT_ID:
