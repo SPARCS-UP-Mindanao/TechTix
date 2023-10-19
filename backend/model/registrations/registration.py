@@ -1,40 +1,56 @@
 import os
 from datetime import datetime
 
+from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 from model.registrations.registrations_constants import RegistrationStatus
 from pydantic import BaseModel, Extra, Field
 from pynamodb.models import Model
 from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
 
-"""
-This code defines a Python module that includes two Pydantic models and a PynamoDB model for handling registration data.
-It primarily focuses on defining the data structure for registration records and their attributes.
+class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
+    class Meta:
+        index_name = 'registrationId-index'
+        projection = AllProjection()
 
-1. `Registration` Model:
-    - `Registration` is a PynamoDB model representing a registration record. It is used to interact with the database table
-      and store registration-related data.
-    - The model includes attributes for various registration fields such as event ID, payment ID, certificate link, email,
-      certificate sent status, user ID, personal information (first name, last name, contact number), career status, years of
-      experience, organization, and title.
-    - Additionally, it includes attributes for management purposes such as creation and update timestamps, creators, and
-      status fields.
-    - The `Meta` class specifies the table name, region, and billing mode for the PynamoDB table where registration data is stored.
+    registrationId = UnicodeAttribute(hash_key=True)
 
-2. `RegistrationIn` Model:
-    - `RegistrationIn` is a Pydantic model used for incoming registration data when creating or updating registration records.
-    - It enforces data validation for the input fields and includes attributes for event ID, payment ID, certificate link, email,
-      certificate sent status, user ID, personal information (first name, last name, contact number), career status, years of
-      experience, organization, and title.
-
-3. `RegistrationOut` Model:
-    - `RegistrationOut` is a Pydantic model that represents the outgoing data structure for registration records.
-    - It inherits the attributes of `RegistrationIn` and adds attributes for status, entry ID, creation timestamp, update
-      timestamp, creators, and updaters. It also enforces that extra fields are ignored.
-
-This code provides a structured data model for registration records, ensuring data consistency and validation when handling
-incoming and outgoing registration data. It also defines the PynamoDB model for interaction with the database table.
-"""
 class Registration(Model):
+    """
+    Represents a registration entry in the database.
+
+    This class defines the structure of a registration record and maps it to the DynamoDB table.
+
+    Attributes:
+        table_name (str): The name of the DynamoDB table for registrations.
+        region (str): The AWS region where the table is located.
+        billing_mode (str): The billing mode for the table (e.g., 'PAY_PER_REQUEST').
+
+        hashKey (UnicodeAttribute): The hash key attribute for registration records.
+        rangeKey (UnicodeAttribute): The range key attribute for registration records.
+        registrationId (UnicodeAttribute): The unique registration identifier.
+        entryStatus (UnicodeAttribute): The status of the registration entry.
+
+        createDate (UnicodeAttribute): The date when the registration was created.
+        updateDate (UnicodeAttribute): The date when the registration was last updated.
+        createdBy (UnicodeAttribute): The user who created the registration.
+        updatedBy (UnicodeAttribute): The user who last updated the registration.
+
+        eventId (UnicodeAttribute): The associated event ID.
+        paymentId (UnicodeAttribute): The payment ID for the registration.
+        status (UnicodeAttribute): The status of the registration.
+        certificateLink (UnicodeAttribute): The link to the certificate.
+        email (UnicodeAttribute): The email associated with the registration.
+        certificateSent (BooleanAttribute): Indicates if the certificate was sent.
+        evaluated (UnicodeAttribute): The evaluation status.
+        userId (UnicodeAttribute): The user's ID.
+        firstName (UnicodeAttribute): The first name of the user.
+        lastName (UnicodeAttribute): The last name of the user.
+        contactNumber (UnicodeAttribute): The contact number of the user.
+        careerStatus (UnicodeAttribute): The career status of the user.
+        yearsOfExperience (UnicodeAttribute): The years of experience of the user.
+        organization (UnicodeAttribute): The organization of the user.
+        title (UnicodeAttribute): The title of the user.
+    """
     class Meta: 
         table_name = os.getenv('REGISTRATIONS_TABLE')
         region = os.getenv('REGION')
@@ -42,8 +58,10 @@ class Registration(Model):
     
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
-    entryId = UnicodeAttribute(null=False)
+    registrationId = UnicodeAttribute(null=False)
     entryStatus = UnicodeAttribute(null=False)
+
+    registrationIdGSI = RegistrationGlobalSecondaryIndex()
 
     createDate = UnicodeAttribute(null=False)
     updateDate = UnicodeAttribute(null=False)
@@ -67,6 +85,27 @@ class Registration(Model):
     title = UnicodeAttribute(null=True)
 
 class RegistrationIn(BaseModel):
+    """
+    Represents the input model for creating or updating a registration.
+
+    This Pydantic model defines the structure of the data required to create or update a registration entry.
+
+    Attributes:
+        eventId (str): The associated event ID.
+        paymentId (str): The payment ID for the registration.
+        certificateLink (str): The link to the certificate.
+        email (str): The email associated with the registration.
+        certificateSent (bool): Indicates if the certificate was sent.
+        evaluated (str): The evaluation status.
+        userId (str): The user's ID.
+        firstName (str): The first name of the user.
+        lastName (str): The last name of the user.
+        contactNumber (str): The contact number of the user.
+        careerStatus (str): The career status of the user.
+        yearsOfExperience (str): The years of experience of the user.
+        organization (str): The organization of the user.
+        title (str): The title of the user.
+    """
     class Config:
         extra = Extra.forbid
 
@@ -86,11 +125,24 @@ class RegistrationIn(BaseModel):
     title: str = Field(None, title="Title")
 
 class RegistrationOut(RegistrationIn):
+    """
+    Represents the output model for a registration entry.
+
+    This Pydantic model extends the RegistrationIn model with additional attributes.
+
+    Attributes:
+        status (RegistrationStatus): The status of the registration.
+        registrationId (str): The unique identifier for a registration entry.
+        createDate (datetime): The date when the registration was created.
+        updateDate (datetime): The date when the registration was last updated.
+        createdBy (str): The user who created the registration.
+        updatedBy (str): The user who last updated the registration.
+    """
     class Config:
         extra = Extra.ignore
 
     status: RegistrationStatus = Field(..., title="Status")
-    entryId: str = Field(..., title="ID")
+    registrationId: str = Field(..., title="ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
     createdBy: str = Field(..., title="Created By")

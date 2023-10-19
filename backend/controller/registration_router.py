@@ -1,21 +1,3 @@
-"""
-This code defines a FastAPI router for managing registration data, including operations to get, create, update, and delete registrations. It is part of a web service that allows users to interact with registration records.
-
-The router includes the following endpoints:
-
-1. `GET /registrations`: Retrieves a list of registration records.
-2. `GET /registrations/{entryId}`: Retrieves a specific registration record by its unique ID.
-3. `POST /registrations`: Creates a new registration record.
-4. `PUT /registrations/{entryId}`: Updates an existing registration record.
-5. `DELETE /registrations/{entryId}`: Deletes a registration record.
-
-Each endpoint is associated with specific response models and possible HTTP status codes for error handling. The router utilizes a `RegistrationUsecase` class to perform the underlying business logic and data management.
-
-Additionally, it uses AWS Cognito for user access control, with the `get_current_user` function to authenticate users, making sure they have the necessary access rights.
-
-This code provides an interface for interacting with registration data via a RESTful API, making it possible to perform CRUD (Create, Read, Update, Delete) operations on registration records with appropriate error handling and access control.
-"""
-
 from http import HTTPStatus
 from typing import List
 
@@ -47,6 +29,15 @@ registration_router = APIRouter()
 def get_registrations(
     current_user: AccessUser = Depends(get_current_user),
 ): 
+    """
+    Get a list of registration entries.
+
+    Args:
+        current_user (AccessUser): The current user's authentication details.
+
+    Returns:
+        List[RegistrationOut]: A list of registration entries.
+    """
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registrations()
@@ -72,6 +63,16 @@ def get_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
+    """
+    Get a specific registration entry by its ID.
+
+    Args:
+        entry_id (str): The unique identifier of the registration entry to be retrieved.
+        current_user (AccessUser): The current user's authentication details.
+
+    Returns:
+        RegistrationOut: The requested registration entry.
+    """
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registration(entry_id)
@@ -97,6 +98,16 @@ def create_registration(
     registration_in: RegistrationIn,
     current_user: AccessUser = Depends(get_current_user),
 ):
+    """
+    Create a new registration entry.
+
+    Args:
+        registration_in (RegistrationIn): The data for creating the new registration entry.
+        current_user (AccessUser): The current user's authentication details.
+
+    Returns:
+        RegistrationOut: The created registration entry.
+    """
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.create_registration(registration_in)
@@ -124,6 +135,17 @@ def update_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
+    """
+    Update an existing registration entry.
+
+    Args:
+        registration (RegistrationIn): The updated data for the registration entry.
+        entry_id (str): The unique identifier of the registration entry to be updated.
+        current_user (AccessUser): The current user's authentication details.
+
+    Returns:
+        RegistrationOut: The updated registration entry.
+    """
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.update_registration(entry_id, registration)
@@ -146,6 +168,16 @@ def delete_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
+    """
+    Delete a specific registration entry by its ID.
+
+    Args:
+        entry_id (str): The unique identifier of the registration entry to be deleted.
+        current_user (AccessUser): The current user's authentication details.
+
+    Returns:
+        None: No return value; the registration entry is deleted.
+    """
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.delete_registration(entry_id)

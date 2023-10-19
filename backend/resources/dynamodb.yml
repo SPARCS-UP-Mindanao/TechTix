@@ -24,9 +24,18 @@ Resources:
           AttributeType: S
         - AttributeName: rangeKey
           AttributeType: S
+        - AttributeName: registrationId
+          AttributeType: S
       KeySchema:
         - AttributeName: hashKey
           KeyType: HASH
         - AttributeName: rangeKey
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndex:
+        - IndexName: RegistrationIdIndex
+          KeySchema: 
+            - AttributeName: registrationId
+            KeyType: HASH
+          Projection:
+            ProjectionType: ALL

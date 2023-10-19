@@ -9,7 +9,7 @@ custom:
   emailQueue: 
     !ImportValue EmailQueue-${self:provider.stage}
   pythonRequirements:
-    # dockerizePip: true
+    dockerizePip: non-linux
     layer:
       name: sparcs-events-${self:provider.stage}-python-requirements
       path: .

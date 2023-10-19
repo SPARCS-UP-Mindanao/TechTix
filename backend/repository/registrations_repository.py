@@ -15,45 +15,43 @@ from pynamodb.exceptions import (
     QueryError,
     TableDoesNotExist,
     TransactWriteError,
+    DeleteError,
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 
-"""
-    The `RegistrationsRepository` class is responsible for interacting with a PynamoDB table to manage and maintain
-    registration data for a system. It provides methods for storing, querying, updating, and deleting registration records.
+class RegistrationsRepository:
+    """
+    A repository class for managing registration records in a DynamoDB table.
+
+    This class provides methods for storing, querying, updating, and deleting registration records.
 
     Attributes:
-        - core_obj: A string representing the core object type for this repository (in this case, "Registration").
-        - current_date: A string containing the current UTC timestamp in ISO format.
-        - conn: A PynamoDB connection to interact with the database table.
-
-    Methods:
-        - store_registration(registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
-            Stores a new registration record in the database.
-
-        - query_registrations(registration_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
-            Queries registration records based on a provided registration ID or retrieves all active registrations if no ID is provided.
-
-        - update_registration(registration_entry: Registration, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
-            Updates an existing registration record with new data.
-
-        - delete_registration(registration_entry: Registration) -> HTTPStatus:
-            Deletes a registration record from the database.
-
-    This class serves as an intermediary between the application logic and the database, providing error handling and
-    encapsulating database interactions to manage registration data effectively.
+        core_obj (str): The core object name for registration records.
+        current_date (str): The current date and time in ISO format.
+        conn (Connection): The PynamoDB connection for database operations.
     """
-class RegistrationsRepository:
+
     def __init__(self) -> None:
         self.core_obj = 'Registration'
         self.current_date = datetime.utcnow().isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_registration(self, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
+        """
+        Store a registration record in the database.
+
+        Args:
+            registration_in (RegistrationIn): The registration data to be stored.
+
+        Returns:
+            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the stored registration record,
+            and an optional error message.
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in) # load data from pydantic schema
         registration_id = ulid.ulid()
         range_key = f'{registration_id}'
+
         try:
             registration_entry = Registration(
                 hashKey=self.core_obj,
@@ -86,6 +84,16 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entry, None
 
     def query_registrations(self, registration_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+        """
+        Query registration records from the database.
+
+        Args:
+            registration_id (str, optional): The registration ID to query (default is None to query all records).
+
+        Returns:
+            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
+            and an optional error message.
+        """
         try:
             if registration_id:
                 registration_entries = list(
@@ -135,7 +143,17 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(self, registration_entry: Registration, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
-        
+        """
+        Update a registration record in the database.
+
+        Args:
+            registration_entry (Registration): The existing registration record to be updated.
+            registration_in (RegistrationIn): The new registration data.
+
+        Returns:
+            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the updated registration record,
+            and an optional error message.
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
             old_data = RepositoryUtils.db_model_to_dict(registration_entry), new_data=data
@@ -163,12 +181,21 @@ class RegistrationsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
+        """
+        Delete a registration record from the database.
+
+        Args:
+            registration_entry (Registration): The registration record to be deleted.
+
+        Returns:
+            HTTPStatus: The HTTP status of the operation.
+        """
         try: 
             registration_entry.delete()    
-            logging.info(f'Delete event data successful')
+            logging.info(f'[{registration_entry.rangeKey}] ' f'Delete event data successful')
             return HTTPStatus.OK, None
         
-        except PutError as e:
+        except DeleteError as e:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{registration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR
