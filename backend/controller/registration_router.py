@@ -1,3 +1,21 @@
+"""
+This code defines a FastAPI router for managing registration data, including operations to get, create, update, and delete registrations. It is part of a web service that allows users to interact with registration records.
+
+The router includes the following endpoints:
+
+1. `GET /registrations`: Retrieves a list of registration records.
+2. `GET /registrations/{entryId}`: Retrieves a specific registration record by its unique ID.
+3. `POST /registrations`: Creates a new registration record.
+4. `PUT /registrations/{entryId}`: Updates an existing registration record.
+5. `DELETE /registrations/{entryId}`: Deletes a registration record.
+
+Each endpoint is associated with specific response models and possible HTTP status codes for error handling. The router utilizes a `RegistrationUsecase` class to perform the underlying business logic and data management.
+
+Additionally, it uses AWS Cognito for user access control, with the `get_current_user` function to authenticate users, making sure they have the necessary access rights.
+
+This code provides an interface for interacting with registration data via a RESTful API, making it possible to perform CRUD (Create, Read, Update, Delete) operations on registration records with appropriate error handling and access control.
+"""
+
 from http import HTTPStatus
 from typing import List
 
@@ -9,7 +27,6 @@ from model.registrations.registration import RegistrationIn, RegistrationOut
 from usecase.registration_usecase import RegistrationUsecase
 
 registration_router = APIRouter()
-
 
 @registration_router.get(
     '',

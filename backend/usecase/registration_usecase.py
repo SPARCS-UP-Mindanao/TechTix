@@ -6,7 +6,33 @@ from model.registrations.registration import RegistrationIn, RegistrationOut
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 
+"""
+The `RegistrationUsecase` class serves as the intermediary layer between the API endpoints and the underlying data
+repository for registration management. It encapsulates business logic related to registration operations and
+interacts with the `RegistrationsRepository` to perform data storage, retrieval, updating, and deletion.
 
+Methods:
+    - create_registration(registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
+        Creates a new registration record based on the provided data.
+
+    - update_registration(registration_id: str, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
+        Updates an existing registration record identified by its unique ID with new data.
+
+    - get_registration(registration_id: str) -> Union[JSONResponse, RegistrationOut]:
+        Retrieves a specific registration record by its unique ID.
+
+    - get_registrations() -> Union[JSONResponse, List[RegistrationOut]]:
+        Retrieves a list of all registration records.
+
+    - delete_registration(registration_id: str) -> Union[None, JSONResponse]:
+        Deletes a registration record identified by its unique ID.
+
+Private Methods:
+    - __convert_data_entry_to_dict(data_entry): Converts a data entry object into a dictionary representation.
+
+This class ensures proper error handling and returns HTTP responses or data models as needed. It acts as an
+abstraction layer for the registration-related business logic, making it easier to manage and maintain the codebase.
+"""
 class RegistrationUsecase:
     def __init__(self):
         self.__registrations_repository = RegistrationsRepository()

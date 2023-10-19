@@ -19,7 +19,31 @@ from pynamodb.exceptions import (
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 
+"""
+    The `RegistrationsRepository` class is responsible for interacting with a PynamoDB table to manage and maintain
+    registration data for a system. It provides methods for storing, querying, updating, and deleting registration records.
 
+    Attributes:
+        - core_obj: A string representing the core object type for this repository (in this case, "Registration").
+        - current_date: A string containing the current UTC timestamp in ISO format.
+        - conn: A PynamoDB connection to interact with the database table.
+
+    Methods:
+        - store_registration(registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
+            Stores a new registration record in the database.
+
+        - query_registrations(registration_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+            Queries registration records based on a provided registration ID or retrieves all active registrations if no ID is provided.
+
+        - update_registration(registration_entry: Registration, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
+            Updates an existing registration record with new data.
+
+        - delete_registration(registration_entry: Registration) -> HTTPStatus:
+            Deletes a registration record from the database.
+
+    This class serves as an intermediary between the application logic and the database, providing error handling and
+    encapsulating database interactions to manage registration data effectively.
+    """
 class RegistrationsRepository:
     def __init__(self) -> None:
         self.core_obj = 'Registration'
@@ -63,13 +87,21 @@ class RegistrationsRepository:
 
     def query_registrations(self, registration_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
         try:
-            registration_entries = list(
-                Registration.query(
-                    hash_key=self.core_obj,
-                    # range_key=registration_id,
-                    filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+            if registration_id:
+                registration_entries = list(
+                    Registration.query(
+                        hash_key=self.core_obj,
+                        range_key_condition=Registration.rangeKey.__eq__(registration_id),
+                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                    )
                 )
-            )
+            else:
+                registration_entries = list(
+                    Registration.query(
+                        hash_key=self.core_obj,
+                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                    )
+                )
             
             if not registration_entries:
                 if registration_id:
@@ -132,10 +164,10 @@ class RegistrationsRepository:
         
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
         try: 
-            registration_entry.delete()
-            
-            #logging.info(f'[{registration_entry.rangeKey}] ' f'Delete event data successful')
-            return HTTPStatus.OK
+            registration_entry.delete()    
+            logging.info(f'Delete event data successful')
+            return HTTPStatus.OK, None
+        
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{registration_entry.rangeKey}] {message}')
