@@ -87,7 +87,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```shell
    pipenv shell
    ```
-3. 
+3.
    ```shell
    serverless deploy --stage 'dev' --aws-profile 'sparcs' --verbose
    ```

@@ -5,7 +5,8 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
-  emailQueue: 
+  registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
+  emailQueue:
     !ImportValue EmailQueue-${self:provider.stage}
   pythonRequirements:
     dockerizePip: non-linux
@@ -35,6 +36,7 @@ provider:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.stage}
     ENTITIES_TABLE: ${self:custom.entities}
+    REGISTRATIONS_TABLE: ${self:custom.registrations}
     EMAIL_QUEUE: ${self:custom.emailQueue}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:provider.stage}
