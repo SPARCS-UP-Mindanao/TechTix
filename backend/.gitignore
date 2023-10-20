@@ -6,5 +6,4 @@
 venv
 node_modules
 .env
-Pipfile
-Pipfile.lock
+

@@ -8,7 +8,6 @@ from typing import List, Tuple
 import ulid
 from constants.common_constants import EntryStatus
 from model.admins.admin import Admin, AdminIn
-#from model.admin.admins_constants import AdminStatus      --dont think this is needed?--
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
    PutError,
@@ -23,12 +22,34 @@ from repository.repository_utils import RepositoryUtils
 
 class AdminsRepository:
    def __init__(self) -> None:
+      """
+      Initialize the AdminsRepository.
+
+      This class is responsible for managing the interaction with the Admin entities in the database.
+
+      Attributes:
+      - self.core_obj (str): The core object representing Admin entities.
+      - self.current_date (str): The current date in ISO format.
+      - self.latest_version (int): The latest version number.
+      - self.conn (Connection): The connection to the DynamoDB database.
+
+      """
       self.core_obj = 'Admin'
       self.current_date = datetime.utcnow().isoformat()
       self.latest_version = 0
       self.conn = Connection(region=os.getenv('REGION'))
 
    def store_admin(self, admin_in: AdminIn) -> Tuple[HTTPStatus, Admin, str]:
+      """
+      Store an Admin entity in the database.
+
+      Parameter:
+      - admin_in (AdminIn): The data for the Admin entity.
+
+      Returns:
+      - Tuple[HTTPStatus, Admin, str]: A tuple containing HTTP status, the stored Admin entity, and an error message if any.
+
+      """
       data = RepositoryUtils.load_data(pydantic_schema_in=admin_in)
       admin_id = ulid.ulid()
       range_key = f'v{self.latest_version}#{admin_id}'
@@ -62,8 +83,18 @@ class AdminsRepository:
       else:
             logging.info(f'[{self.core_obj} = {admin_id}]: Save Admins strategy data successful')
             return HTTPStatus.OK, admin_entry, None
-      
+
    def query_admins(self, admin_id: str = None) -> Tuple[HTTPStatus, List[Admin], str]:
+      """
+      Query Admin entities from the database.
+
+      Parameter:
+      - admin_id (str, optional): The ID of the Admin entity to query.
+
+      Returns:
+      - Tuple[HTTPStatus, List[Admin], str]: A tuple containing HTTP status, a list of queried Admin entities, and an error message if any.
+
+      """
       try:
          if admin_id:
                range_key_prefix = f'v{self.latest_version}#{admin_id}'
@@ -110,6 +141,17 @@ class AdminsRepository:
          return HTTPStatus.OK, admin_entries, None
 
    def update_admin(self, admin_entry: Admin, admin_in: AdminIn) -> Tuple[HTTPStatus, Admin, str]:
+      """
+      Update an Admin entity in the database.
+
+      Parameters:
+      - admin_entry (Admin): The existing Admin entity to update.
+      - admin_in (AdminIn): The new data for the Admin entity.
+
+      Returns:
+      - Tuple[HTTPStatus, Admin, str]: A tuple containing HTTP status, the updated Admin entity, and an error message if any.
+
+      """
       current_version = admin_entry.latestVersion
       new_version = current_version + 1
 
@@ -149,6 +191,16 @@ class AdminsRepository:
          return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
    def delete_admin(self, admin_entry: Admin) -> Tuple[HTTPStatus, str]:
+      """
+      Delete an Admin entity in the database.
+
+      Parameter:
+      - admin_entry (Admin): The Admin entity to delete.
+
+      Returns:
+      - Tuple[HTTPStatus, str]: A tuple containing HTTP status and an error message if any.
+
+      """
       try:
          # create new entry with old data
          current_version = admin_entry.latestVersion
