@@ -1,10 +1,11 @@
-import json 
+import json
 from http import HTTPStatus
 from typing import List, Union
 
 from model.registrations.registration import RegistrationIn, RegistrationOut
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
+
 
 class RegistrationUsecase:
     """
@@ -33,11 +34,13 @@ class RegistrationUsecase:
         status, registration, message = self.__registrations_repository.store_registration(registration_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
-        
+
         registration_data = self.__convert_data_entry_to_dict(registration)
         return RegistrationOut(**registration_data)
 
-    def update_registration(self, registration_id: str, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
+    def update_registration(
+        self, event_id: str, registration_id: str, registration_in: RegistrationIn
+    ) -> Union[JSONResponse, RegistrationOut]:
         """
         Updates an existing registration entry.
 
@@ -49,62 +52,75 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If successful, returns the updated registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, registration, message = self.__registrations_repository.query_registrations(registration_id)
+        status, registration, message = self.__registrations_repository.query_registrations(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, update_registration, message = self.__registrations_repository.update_registration(registration_entry=registration, registration_in=registration_in)
+        status, update_registration, message = self.__registrations_repository.update_registration(
+            registration_entry=registration, registration_in=registration_in
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(update_registration)
         return RegistrationOut(**registration_data)
 
-    def get_registration(self, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
+    def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
         """
         Retrieves a specific registration entry by its ID.
 
         Args:
+            event_id (str): ID of the event
             registration_id (str): The unique identifier of the registration to be retrieved.
 
         Returns:
             Union[JSONResponse, RegistrationOut]: If found, returns the requested registration entry.
                 If not found, returns a JSONResponse with an error message.
         """
-        status, registration, message = self.__registrations_repository.query_registrations(registration_id)
+        status, registration, message = self.__registrations_repository.query_registrations(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
         return RegistrationOut(**registration_data)
 
-    def get_registrations(self) -> Union[JSONResponse, List[RegistrationOut]]:
+    def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
         """
-        Retrieves a list of registration entries.
+        Retrieves a list of registration eregistration_idntries.
+
+        Args:
+            event_id (str, optional): If provided, only retrieves registration entries for the specified event.
+                If not provided, retrieves all registration entries.
 
         Returns:
             Union[JSONResponse, List[RegistrationOut]]: If successful, returns a list of registration entries.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, registrations, message = self.__registrations_repository.query_registrations()
+        status, registrations, message = self.__registrations_repository.query_registrations(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        registrations_data = [RegistrationOut(**self.__convert_data_entry_to_dict(registration)) for registration in registrations]
-        return registrations_data
+        return [RegistrationOut(**self.__convert_data_entry_to_dict(registration)) for registration in registrations]
 
-    def delete_registration(self, registration_id: str) -> Union[None, JSONResponse]:
+    def delete_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
         """
         Deletes a specific registration entry by its ID.
 
         Args:
+            event_id: The ID of the event
             registration_id (str): The unique identifier of the registration to be deleted.
 
         Returns:
             Union[None, JSONResponse]: If deleted successfully, returns None.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, registration, message = self.__registrations_repository.query_registrations(registration_id)
+        status, registration, message = self.__registrations_repository.query_registrations(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

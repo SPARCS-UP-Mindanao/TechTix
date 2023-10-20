@@ -10,15 +10,16 @@ from model.registrations.registration import Registration, RegistrationIn
 from model.registrations.registrations_constants import RegistrationStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
+    DeleteError,
     PutError,
     PynamoDBConnectionError,
     QueryError,
     TableDoesNotExist,
     TransactWriteError,
-    DeleteError,
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+
 
 class RegistrationsRepository:
     """
@@ -48,14 +49,13 @@ class RegistrationsRepository:
             Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the stored registration record,
             and an optional error message.
         """
-        data = RepositoryUtils.load_data(pydantic_schema_in=registration_in) # load data from pydantic schema
+        data = RepositoryUtils.load_data(pydantic_schema_in=registration_in)  # load data from pydantic schema
         registration_id = ulid.ulid()
-        range_key = f'{registration_id}'
 
         try:
             registration_entry = Registration(
-                hashKey=self.core_obj,
-                rangeKey=range_key,
+                hashKey=registration_in.eventId,
+                rangeKey=registration_id,
                 createDate=self.current_date,
                 updateDate=self.current_date,
                 createdBy=os.getenv('CURRENT_USER'),
@@ -83,11 +83,14 @@ class RegistrationsRepository:
             logging.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None
 
-    def query_registrations(self, registration_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+    def query_registrations(
+        self, event_id: str = None, registration_id: str = None
+    ) -> Tuple[HTTPStatus, List[Registration], str]:
         """
         Query registration records from the database.
 
         Args:
+            event_id (str, optional): The event ID to query (default is None to query all records).
             registration_id (str, optional): The registration ID to query (default is None to query all records).
 
         Returns:
@@ -95,10 +98,16 @@ class RegistrationsRepository:
             and an optional error message.
         """
         try:
-            if registration_id:
+            if event_id is None:
+                registration_entries = list(
+                    Registration.scan(
+                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                    )
+                )
+            elif registration_id:
                 registration_entries = list(
                     Registration.query(
-                        hash_key=self.core_obj,
+                        hash_key=event_id,
                         range_key_condition=Registration.rangeKey.__eq__(registration_id),
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
@@ -106,11 +115,11 @@ class RegistrationsRepository:
             else:
                 registration_entries = list(
                     Registration.query(
-                        hash_key=self.core_obj,
+                        hash_key=event_id,
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
-            
+
             if not registration_entries:
                 if registration_id:
                     message = f'Registration with id {registration_id} not found'
@@ -129,7 +138,7 @@ class RegistrationsRepository:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
-        
+
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
             logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
@@ -142,7 +151,9 @@ class RegistrationsRepository:
             logging.info(f'[{self.core_obj}]: Fetch Event data successful')
             return HTTPStatus.OK, registration_entries, None
 
-    def update_registration(self, registration_entry: Registration, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
+    def update_registration(
+        self, registration_entry: Registration, registration_in: RegistrationIn
+    ) -> Tuple[HTTPStatus, Registration, str]:
         """
         Update a registration record in the database.
 
@@ -156,11 +167,11 @@ class RegistrationsRepository:
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
-            old_data = RepositoryUtils.db_model_to_dict(registration_entry), new_data=data
+            old_data=RepositoryUtils.db_model_to_dict(registration_entry), new_data=data
         )
         if not has_update:
             return HTTPStatus.OK, registration_entry, 'No update'
-        
+
         try:
             with TransactWrite(conneciton=self.conn) as transaction:
                 # Update Entry
@@ -170,16 +181,16 @@ class RegistrationsRepository:
                 )
                 actions = [getattr(Registration, k).set(v) for k, v in updated_data.items()]
                 transaction.update(registration_entry, actions=actions)
-            
+
             registration_entry.refresh()
             logging.info(f'[{registration_entry.rangeKey}] ' f'Update event data succesful')
             return HTTPStatus.OK, registration_entry, ''
-        
+
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
             logging.error(f'[{registration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
-        
+
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
         """
         Delete a registration record from the database.
@@ -190,11 +201,11 @@ class RegistrationsRepository:
         Returns:
             HTTPStatus: The HTTP status of the operation.
         """
-        try: 
-            registration_entry.delete()    
+        try:
+            registration_entry.delete()
             logging.info(f'[{registration_entry.rangeKey}] ' f'Delete event data successful')
             return HTTPStatus.OK, None
-        
+
         except DeleteError as e:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{registration_entry.rangeKey}] {message}')
