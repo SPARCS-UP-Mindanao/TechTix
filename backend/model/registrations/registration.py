@@ -9,48 +9,14 @@ from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
 
 class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
     class Meta:
-        index_name = 'registrationId-index'
+        index_name = 'RegistrationIdIndex'
         projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
 
     registrationId = UnicodeAttribute(hash_key=True)
 
 class Registration(Model):
-    """
-    Represents a registration entry in the database.
-
-    This class defines the structure of a registration record and maps it to the DynamoDB table.
-
-    Attributes:
-        table_name (str): The name of the DynamoDB table for registrations.
-        region (str): The AWS region where the table is located.
-        billing_mode (str): The billing mode for the table (e.g., 'PAY_PER_REQUEST').
-
-        hashKey (UnicodeAttribute): The hash key attribute for registration records.
-        rangeKey (UnicodeAttribute): The range key attribute for registration records.
-        registrationId (UnicodeAttribute): The unique registration identifier.
-        entryStatus (UnicodeAttribute): The status of the registration entry.
-
-        createDate (UnicodeAttribute): The date when the registration was created.
-        updateDate (UnicodeAttribute): The date when the registration was last updated.
-        createdBy (UnicodeAttribute): The user who created the registration.
-        updatedBy (UnicodeAttribute): The user who last updated the registration.
-
-        eventId (UnicodeAttribute): The associated event ID.
-        paymentId (UnicodeAttribute): The payment ID for the registration.
-        status (UnicodeAttribute): The status of the registration.
-        certificateLink (UnicodeAttribute): The link to the certificate.
-        email (UnicodeAttribute): The email associated with the registration.
-        certificateSent (BooleanAttribute): Indicates if the certificate was sent.
-        evaluated (UnicodeAttribute): The evaluation status.
-        userId (UnicodeAttribute): The user's ID.
-        firstName (UnicodeAttribute): The first name of the user.
-        lastName (UnicodeAttribute): The last name of the user.
-        contactNumber (UnicodeAttribute): The contact number of the user.
-        careerStatus (UnicodeAttribute): The career status of the user.
-        yearsOfExperience (UnicodeAttribute): The years of experience of the user.
-        organization (UnicodeAttribute): The organization of the user.
-        title (UnicodeAttribute): The title of the user.
-    """
     class Meta: 
         table_name = os.getenv('REGISTRATIONS_TABLE')
         region = os.getenv('REGION')
@@ -85,27 +51,6 @@ class Registration(Model):
     title = UnicodeAttribute(null=True)
 
 class RegistrationIn(BaseModel):
-    """
-    Represents the input model for creating or updating a registration.
-
-    This Pydantic model defines the structure of the data required to create or update a registration entry.
-
-    Attributes:
-        eventId (str): The associated event ID.
-        paymentId (str): The payment ID for the registration.
-        certificateLink (str): The link to the certificate.
-        email (str): The email associated with the registration.
-        certificateSent (bool): Indicates if the certificate was sent.
-        evaluated (str): The evaluation status.
-        userId (str): The user's ID.
-        firstName (str): The first name of the user.
-        lastName (str): The last name of the user.
-        contactNumber (str): The contact number of the user.
-        careerStatus (str): The career status of the user.
-        yearsOfExperience (str): The years of experience of the user.
-        organization (str): The organization of the user.
-        title (str): The title of the user.
-    """
     class Config:
         extra = Extra.forbid
 
@@ -125,19 +70,6 @@ class RegistrationIn(BaseModel):
     title: str = Field(None, title="Title")
 
 class RegistrationOut(RegistrationIn):
-    """
-    Represents the output model for a registration entry.
-
-    This Pydantic model extends the RegistrationIn model with additional attributes.
-
-    Attributes:
-        status (RegistrationStatus): The status of the registration.
-        registrationId (str): The unique identifier for a registration entry.
-        createDate (datetime): The date when the registration was created.
-        updateDate (datetime): The date when the registration was last updated.
-        createdBy (str): The user who created the registration.
-        updatedBy (str): The user who last updated the registration.
-    """
     class Config:
         extra = Extra.ignore
 

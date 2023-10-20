@@ -62,7 +62,7 @@ class RegistrationsRepository:
                 updatedBy=os.getenv('CURRENT_USER'),
                 entryStatus=EntryStatus.ACTIVE.value,
                 status=RegistrationStatus.DRAFT.value,
-                entryId=registration_id,
+                registrationId=registration_id,
                 **data,
             )
             registration_entry.save()
