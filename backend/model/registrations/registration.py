@@ -1,11 +1,12 @@
 import os
 from datetime import datetime
 
-from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 from model.registrations.registrations_constants import RegistrationStatus
 from pydantic import BaseModel, Extra, Field
-from pynamodb.models import Model
 from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
+from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
+from pynamodb.models import Model
+
 
 class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
     class Meta:
@@ -16,12 +17,13 @@ class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
 
     registrationId = UnicodeAttribute(hash_key=True)
 
+
 class Registration(Model):
-    class Meta: 
+    class Meta:
         table_name = os.getenv('REGISTRATIONS_TABLE')
         region = os.getenv('REGION')
         billing_mode = 'PAY_PER_REQUEST'
-    
+
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
     registrationId = UnicodeAttribute(null=False)
@@ -50,6 +52,7 @@ class Registration(Model):
     organization = UnicodeAttribute(null=True)
     title = UnicodeAttribute(null=True)
 
+
 class RegistrationIn(BaseModel):
     class Config:
         extra = Extra.forbid
@@ -68,6 +71,7 @@ class RegistrationIn(BaseModel):
     yearsOfExperience: str = Field(None, title="Years of Experience")
     organization: str = Field(None, title="Organization")
     title: str = Field(None, title="Title")
+
 
 class RegistrationOut(RegistrationIn):
     class Config:

@@ -28,4 +28,4 @@ app:
       Action:
         - "sqs:*"
       Resource:
-        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo 
+        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo

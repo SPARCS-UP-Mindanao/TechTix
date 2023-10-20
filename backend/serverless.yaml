@@ -6,7 +6,7 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
-  emailQueue: 
+  emailQueue:
     !ImportValue EmailQueue-${self:provider.stage}
   pythonRequirements:
     dockerizePip: non-linux
