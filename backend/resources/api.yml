@@ -16,12 +16,16 @@ app:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - cognito-idp:AdminInitiateAuth
-        - cognito-idp:AdminCreateUser
-        - cognito-idp:AdminSetUserPassword
-      Resource: "*"
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Entities, Arn] }
     - Effect: Allow
       Action:
         - ssm:GetParameter
       Resource:
         - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource:
+        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
