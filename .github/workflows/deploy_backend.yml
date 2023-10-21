@@ -1,4 +1,4 @@
-name: Deploy SPARCS Auth Service
+name: Deploy SPARCS Events Service
 on:
   push:
     paths:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install pipenv==2023.5.19
+          python3 -m pip install pipenv==2023.4.29
           pipenv install
         working-directory: backend
 

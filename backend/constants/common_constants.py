@@ -26,6 +26,7 @@ class CommonConstants:
 
     ENTRY_ID = 'entryId'
     EVENT_ID = 'eventId'
+    REGISTRATION_ID = 'registrationId'
 
     # Exclude to Comparison Keys
     EXCLUDE_COMPARISON_KEYS = [

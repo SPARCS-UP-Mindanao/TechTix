@@ -10,7 +10,6 @@ click = "==8.0.1"
 fastapi = "==0.66.0"
 h11 = "==0.12.0"
 mangum = "==0.11.0"
-pydantic = "==1.8.2"
 starlette = "==0.14.2"
 typing-extensions = "==3.10.0.0"
 uvicorn = "==0.14.0"
@@ -20,6 +19,7 @@ ulid = "==1.1"
 fastapi-cloudauth = "==0.4.3"
 lambda-warmer-py = "==0.6.0"
 python-dotenv = "==1.0.0"
+pydantic = {version = "<2", extras = ["email"]}
 
 [dev-packages]
 pre-commit = "==3.3.3"
