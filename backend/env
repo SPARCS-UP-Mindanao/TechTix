@@ -1,4 +1,0 @@
-REGION=ap-southeast-1
-USER_POOL_ID=ap-southeast-1_Q53CJ5RIz
-USER_POOL_CLIENT_ID=58hijha2ki9ms7a20nosfsgt5h
-ENTITIES_TABLE=dev-sparcs-events-entities
