@@ -1,4 +1,3 @@
-import { Toast } from "@/components/Toast/Toast";
 import { ReactQueryProvider } from "@/context/QueryClientContext";
 import { RouteProvider } from "@/context/RouteContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -19,7 +18,7 @@ export const Compose = ({ components = [], children }: Props) => {
 
 export const withProviders = (children: React.ReactNode) => {
   const providers = Compose({
-    components: [ReactQueryProvider, ThemeProvider, RouteProvider, Toast],
+    components: [ReactQueryProvider, ThemeProvider, RouteProvider],
     children,
   });
 

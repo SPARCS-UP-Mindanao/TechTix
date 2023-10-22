@@ -4,6 +4,8 @@ interface ToastProps {
   title?: string;
   description?: string;
   icon?: string;
+  iconClassname?: string;
+  duration?: number;
 }
 
 export const useNotifyToast = () => {
@@ -13,33 +15,45 @@ export const useNotifyToast = () => {
     title = "Info",
     description,
     icon = "Info",
+    iconClassname,
+    duration = 5000,
   }: ToastProps) =>
     toast({
       title,
       description,
       icon,
+      iconClassname,
+      duration,
     });
 
   const successToast = ({
     title = "Success",
     description,
-    icon = "Success",
+    icon = "CheckCircle",
+    iconClassname = "text-green-400",
+    duration = 5000,
   }: ToastProps) =>
     toast({
       title,
       description,
       icon,
+      iconClassname,
+      duration,
     });
 
   const errorToast = ({
     title = "Error",
     description,
-    icon = "Error",
+    icon = "XCircle",
+    iconClassname = "text-destructive",
+    duration = 5000,
   }: ToastProps) =>
     toast({
       title,
       description,
       icon,
+      iconClassname,
+      duration,
     });
 
   return {
