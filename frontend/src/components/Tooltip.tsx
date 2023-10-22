@@ -62,10 +62,10 @@ const Tooltip = ({
 
 export default Tooltip;
 
-export const InfoToolTip = ({ toolTipContent }: TooltipProps) => {
+export const InfoToolTip = ({ toolTipContent, ...props }: TooltipProps) => {
   return (
-    <Tooltip toolTipContent={toolTipContent}>
-      <Icon name="Info" />
+    <Tooltip toolTipContent={toolTipContent} {...props}>
+      <Icon name="Info" className="text-primary" />
     </Tooltip>
   );
 };

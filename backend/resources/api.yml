@@ -13,6 +13,12 @@ app:
         path: /{proxy+}
         method: any
         cors: true
+    - http:
+        path: /docs
+        method: get
+        authorizer:
+          arn: arn:aws:lambda:${self:provider.region}:192218445313:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
+          resultTtlInSeconds: 0
   iamRoleStatements:
     - Effect: Allow
       Action:
