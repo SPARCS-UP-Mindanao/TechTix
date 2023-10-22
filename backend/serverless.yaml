@@ -8,6 +8,8 @@ custom:
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   emailQueue:
     !ImportValue EmailQueue-${self:provider.stage}
+  basicAuthorizerARN:
+    !ImportValue BasicAuthAuthorizerARN-${self:provider.stage}
   pythonRequirements:
     dockerizePip: non-linux
     layer:
@@ -48,6 +50,7 @@ provider:
 
 resources:
   - ${file(resources/dynamodb.yml)}
+  - ${file(resources/api_gateway.yml)}
 
 functions:
   - ${file(resources/api.yml)}
