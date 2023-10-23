@@ -9,6 +9,29 @@ const TooltipContainer = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
+const TooltipArrow = () => {
+  return (
+    <span
+      style={{
+        position: "absolute",
+        bottom: 1,
+        transform: "translateY(100%)",
+        left: 78.5,
+      }}
+    >
+      <svg
+        width="10"
+        height="5"
+        viewBox="0 0 30 10"
+        preserveAspectRatio="none"
+        style={{ display: "block" }}
+      >
+        <polygon points="0,0 30,0 15,10" />
+      </svg>
+    </span>
+  );
+};
+
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
@@ -54,7 +77,10 @@ const Tooltip = ({
         <TooltipTrigger asChild>
           <div>{children}</div>
         </TooltipTrigger>
-        <TooltipContent {...props}>{toolTipContent}</TooltipContent>
+        <TooltipContent {...props} sideOffset={8}>
+          <TooltipArrow />
+          {toolTipContent}
+        </TooltipContent>
       </TooltipContainer>
     </TooltipProvider>
   );
