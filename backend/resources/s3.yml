@@ -17,3 +17,14 @@ Resources:
           IgnorePublicAcls: false
           BlockPublicPolicy: false
           RestrictPublicBuckets: false
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: ${self:custom.bucket}
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: arn:aws:s3:::${self:custom.bucket}/*
