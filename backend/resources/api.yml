@@ -35,3 +35,10 @@ app:
         - "sqs:*"
       Resource:
         - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - 'arn:aws:s3:::${self:custom.bucket}'
+        - 'arn:aws:s3:::${self:custom.bucket}/*'

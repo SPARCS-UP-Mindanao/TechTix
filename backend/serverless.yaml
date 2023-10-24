@@ -5,6 +5,7 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
+  bucket: ${self:custom.projectName}-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   emailQueue:
     !ImportValue EmailQueue-${self:provider.stage}
@@ -51,6 +52,7 @@ provider:
 resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
+  - ${file(resources/s3.yml)}
 
 functions:
   - ${file(resources/api.yml)}
