@@ -1,4 +1,16 @@
 import { routes } from "@/routes/routes";
+import AuthProvider from "react-auth-kit";
 import { RouterProvider } from "react-router-dom";
 
-export const RouteProvider = () => <RouterProvider router={routes} />;
+export const RouteProvider = () => {
+  return (
+    <AuthProvider
+      authType="cookie"
+      authName="_auth"
+      cookieDomain={window.localStorage.hostname}
+      cookieSecure={window.location.protocol === "https:"}
+    >
+      <RouterProvider router={routes} />
+    </AuthProvider>
+  );
+};

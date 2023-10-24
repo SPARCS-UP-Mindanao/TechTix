@@ -35,6 +35,7 @@
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "react": "^18.2.0",
+    "react-auth-kit": "^3.0.0-alpha.22",
     "react-day-picker": "^8.9.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",

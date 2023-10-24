@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryKey } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -41,7 +40,12 @@ export function createApi<D, T = D>({
       url,
       data: params,
       timeout,
-      headers: {},
+      headers: {
+        // "Access-Control-Allow-Origin": import.meta.env.VITE_API_BASE_URL,
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      withCredentials: false,
     });
 
     if (output) {
