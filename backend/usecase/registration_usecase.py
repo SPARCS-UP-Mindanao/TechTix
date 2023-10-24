@@ -4,6 +4,7 @@ from typing import List, Union
 
 from model.registrations.registration import RegistrationIn, RegistrationOut
 from repository.registrations_repository import RegistrationsRepository
+from repository.events_repository import EventsRepository
 from starlette.responses import JSONResponse
 
 
@@ -52,6 +53,10 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If successful, returns the updated registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
+        status, event, message = EventsRepository().query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+        
         status, registration, message = self.__registrations_repository.query_registrations(
             event_id=event_id, registration_id=registration_id
         )
@@ -79,6 +84,11 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If found, returns the requested registration entry.
                 If not found, returns a JSONResponse with an error message.
         """
+        
+        status, event, message = EventsRepository().query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
         status, registration, message = self.__registrations_repository.query_registrations(
             event_id=event_id, registration_id=registration_id
         )
@@ -100,6 +110,10 @@ class RegistrationUsecase:
             Union[JSONResponse, List[RegistrationOut]]: If successful, returns a list of registration entries.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
+        status, event, message = EventsRepository().query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+        
         status, registrations, message = self.__registrations_repository.query_registrations(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -118,6 +132,10 @@ class RegistrationUsecase:
             Union[None, JSONResponse]: If deleted successfully, returns None.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
+        status, event, message = EventsRepository().query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+        
         status, registration, message = self.__registrations_repository.query_registrations(
             event_id=event_id, registration_id=registration_id
         )
