@@ -1,4 +1,4 @@
-import os # from the computer, it finds a .env file
+import os  # from the computer, it finds a .env file
 
 from constants.common_constants import UserRoles
 from fastapi import Depends, HTTPException

@@ -71,14 +71,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (size === "icon") {
         return (
           <>
-            <Icon name={loading ? "Loader2" : icon} className={iconClassName} />
+            <Icon
+              name={loading ? "CircleNotch" : icon}
+              className={iconClassName}
+            />
             {children}
           </>
         );
       }
       return (
         <>
-          {loading && <Icon name="Loader2" className={iconClassName} />}
+          {loading && <Icon name="CircleNotch" className={iconClassName} />}
           {children}
         </>
       );
@@ -101,4 +104,4 @@ Button.displayName = "Button";
 export default Button;
 export { buttonVariants };
 
-// Check Icon List here: https://lucide.dev/icons/
+// Check Icon List here: https://phosphoricons.com/
