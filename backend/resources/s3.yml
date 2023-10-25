@@ -17,7 +17,7 @@ Resources:
           IgnorePublicAcls: false
           BlockPublicPolicy: false
           RestrictPublicBuckets: false
-  BucketPolicy:
+  GetObjectPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: ${self:custom.bucket}
@@ -26,5 +26,7 @@ Resources:
           - Sid: PublicReadGetObject
             Effect: Allow
             Principal: "*"
-            Action: s3:GetObject
-            Resource: arn:aws:s3:::${self:custom.bucket}/*
+            Action: 
+              - s3:GetObject
+            Resource: 
+              - arn:aws:s3:::${self:custom.bucket}/*
