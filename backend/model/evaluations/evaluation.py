@@ -4,38 +4,47 @@ from datetime import datetime
 from model.evaluations.evaluations_constants import EvaluationStatus
 from pydantic import BaseModel, Extra, Field
 from pynamodb.models import Model
-from pynamodb.indexes import LocalSecondaryIndex
+from pynamodb.indexes import LocalSecondaryIndex, AllProjection
 from pynamodb.attributes import NumberAttribute, UnicodeAttribute
 
+"""
+    hash key = eventId
+    range key = registration + question
+"""
+
+class QuestionLSI(LocalSecondaryIndex):
+    class Meta:
+        index_name = 'QuestionLSI'
+        projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
+
+    eventId = UnicodeAttribute(hash_key=True)
+    questionType = UnicodeAttribute(range_key=True)
 
 class Evaluation(Model):
     class Meta:
         table_name = os.getenv('EVALUATIONS_TABLE')
         region = os.getenv('REGION')
         billing_mode = 'PAY_PER_REQUEST'
-
     # hk : <eventId>
     # rk : <registrationId>#<question>
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
-    entryId = UnicodeAttribute(null=True)
-    status = UnicodeAttribute(null=True)
+    questionLSI = QuestionLSI()
 
-    createdDate = UnicodeAttribute(null=True)
-    updatedDate = UnicodeAttribute(null=True)
-    createdBy = UnicodeAttribute(null=True)
-    updatedBy = UnicodeAttribute(null=True)
-
-    eventId = UnicodeAttribute(null=True)
-    registrationId = UnicodeAttribute(null=True)
+    eventId = UnicodeAttribute(null=False)
+    registrationId = UnicodeAttribute(null=False)
+    question = UnicodeAttribute(null=False)
     answer = UnicodeAttribute(null=True)
     answerScale = NumberAttribute(null=True)
 
-    question_lsi = LocalSecondaryIndex(
-        read_capacity_units=1,
-        write_capacity_units=1
-    )
-    question = UnicodeAttribute(local_secondary_index=question_lsi)
+    status = UnicodeAttribute(null=True)
+    entryId = UnicodeAttribute(null=False)
+    createdDate = UnicodeAttribute(null=False)
+    updatedDate = UnicodeAttribute(null=False)
+    createdBy = UnicodeAttribute(null=False)
+    updatedBy = UnicodeAttribute(null=False)
 
 class EvaluationIn(BaseModel):
     class Config: 

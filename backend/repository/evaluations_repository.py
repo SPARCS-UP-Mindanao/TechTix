@@ -20,7 +20,7 @@ from repository.repository_utils import RepositoryUtils
 
 class EvaluationRepository:
     def __init__(self) -> None:
-        self.core_obj = 'Evaluation' # NOTE: should i have this?
+        self.core_obj = 'Evaluation'
         self.current_date = datetime.utcnow().isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
@@ -29,10 +29,11 @@ class EvaluationRepository:
         entry_id = ulid.ulid()
         registration_id = evaluation_in.registrationId
         range_key = f'{registration_id}#{evaluation_in.question}'
+        hash_key = evaluation_in.eventId
 
         try:
             evaluation_entry = Evaluation(
-                hashKey= evaluation_in.eventId,
+                hashKey= hash_key,
                 rangeKey=range_key,
                 createDate=self.current_date,
                 updateDate=self.current_date,
@@ -44,29 +45,29 @@ class EvaluationRepository:
             )
             evaluation_entry.save()
 
-        # NOTE: should i be using just range key here or both rk and hk
         except PutError as e:
             message = f'Failed to save evaluation strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {range_key}]: {message}')
+            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {range_key}]: {message}')
+            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {range_key}]: {message}')
+            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {range_key}]: Save Evaluations strategy data successful')
+            logging.info(f'[{self.core_obj} = {hash_key}, {range_key}]: Save Evaluations strategy data successful')
             return HTTPStatus.OK, evaluation_entry, None
 
     def query_evaluations(self, event_id: str = None, registration_id: str = None, question: str = None) -> Tuple[HTTPStatus, List[Evaluation], str]:
+        range_key = f'{registration_id}#{question}'
         try:
             # "not"s to avoid nesting. order: only hash key, incomplete range key, complete
             if event_id:
                 if not registration_id:
-                    range_key_condition = Evaluation.rangeKey.startswith('')
+                    range_key_condition = None
                 elif not question:
                     range_key_condition = Evaluation.rangeKey.startswith(f'{registration_id}#')
                 else: 
@@ -93,18 +94,17 @@ class EvaluationRepository:
 
                 return HTTPStatus.NOT_FOUND, None, message
         
-        # NOTE: should i be using hk here or rk
         except QueryError as e:
             message = f'Failed to query evaluation: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id:
@@ -115,7 +115,7 @@ class EvaluationRepository:
             
     def query_evaluations_by_question(self, event_id: str, question: str) -> Tuple[HTTPStatus, List[Evaluation], str]:
         try:
-            evaluation_entries = list(Evaluation.question_lsi.query(event_id, question))
+            evaluation_entries = list(Evaluation.questionLSI.query(event_id, question))
 
             if not evaluation_entries:
                 message = f'No evaluations found for event {event_id} and question {question}'
@@ -160,7 +160,7 @@ class EvaluationRepository:
 
             evaluation_entry.refresh()
             logging.info(f'[{evaluation_entry.rangeKey}] ' f'Update evaluation data successful')
-            return HTTPStatus.OK, evaluation_entry, ''
+            return HTTPStatus.OK, evaluation_entry, None
 
         except TransactWriteError as e:
             message = f'Failed to update evaluation data: {str(e)}'
