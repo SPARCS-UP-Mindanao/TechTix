@@ -35,6 +35,23 @@ provider:
         Action: execute-api:Invoke
         Principal: "*"
         Resource: execute-api:/*/*/*
+  s3:
+    sparcsBucket:
+      name: ${self:custom.bucket}
+      versioningConfiguration:
+        Status: Enabled
+      corsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT]
+            AllowedOrigins: ['*']
+            Id: CORSRuleId1
+            MaxAge: '3600'
+      publicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          IgnorePublicAcls: false
+          BlockPublicPolicy: false
+          RestrictPublicBuckets: false
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.stage}
@@ -52,10 +69,10 @@ provider:
 resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
-  - ${file(resources/s3.yml)}
 
 functions:
   - ${file(resources/api.yml)}
+  - ${file(resources/s3.yml)}
 
 plugins:
   - serverless-python-requirements
