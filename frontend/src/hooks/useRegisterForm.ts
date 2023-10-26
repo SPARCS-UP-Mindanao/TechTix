@@ -13,7 +13,7 @@ const RegisterFormSchema = z.object({
 });
 
 export const useRegisterForm = () => {
-  const { infoToast } = useNotifyToast();
+  const { successToast, errorToast } = useNotifyToast();
 
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
@@ -23,16 +23,22 @@ export const useRegisterForm = () => {
     },
   });
 
-  const handleSubmit = form.handleSubmit((values) => {
-    infoToast({
-      title: "Register Info",
-      description: `Registering user with email: ${values.email}`,
-      icon: "Success",
-    });
+  const submit = form.handleSubmit(async (values) => {
+    try {
+      successToast({
+        title: "Register Info",
+        description: `Registering user with email: ${values.email}`,
+      });
+    } catch (error) {
+      errorToast({
+        title: "Error in Registering",
+        description: JSON.stringify(form.formState.errors),
+      });
+    }
   });
 
   return {
     form,
-    handleSubmit,
+    submit,
   };
 };

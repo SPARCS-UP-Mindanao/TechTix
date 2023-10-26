@@ -4,6 +4,7 @@ import lambdawarmer
 from controller.app_controller import api_controller
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from lambda_decorators import cors_headers
 from mangum import Mangum
 
 STAGE = os.environ.get('STAGE')
@@ -38,7 +39,7 @@ api_controller(app)
 mangum_handler = Mangum(app, lifespan='off')
 
 
+@cors_headers
 @lambdawarmer.warmer
 def handler(event, context):
     return mangum_handler(event, context)
-

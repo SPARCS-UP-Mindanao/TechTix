@@ -20,6 +20,7 @@ export function Toaster() {
         description,
         action,
         icon,
+        iconClassname,
         ...props
       }) {
         return (
@@ -27,7 +28,7 @@ export function Toaster() {
             <div className="flex flex-row">
               {icon && (
                 <div className="flex mr-5 pt-0.5">
-                  <Icon name={icon} />
+                  <Icon name={icon} className={iconClassname} />
                 </div>
               )}
               <div className="grid gap-1">

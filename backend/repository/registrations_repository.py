@@ -183,7 +183,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entry, 'No update'
 
         try:
-            with TransactWrite(conneciton=self.conn) as transaction:
+            with TransactWrite(connection=self.conn) as transaction:
                 # Update Entry
                 updated_data.update(
                     updateDate=self.current_date,

@@ -60,7 +60,7 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "destructive";
   title?: string;
   description?: string;
-  icon?: React.ReactNode | string;
+  icon?: React.ReactNode;
   closable?: boolean;
 }
 

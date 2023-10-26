@@ -2,8 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "@/styles/index.css";
-import { withProviders } from "./utils/providers.ts";
+import { withProviders } from "@/utils/providers.ts";
+import { Toaster } from "@/components/Toast/Toaster.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>{withProviders(<App />)}</React.StrictMode>
+  <React.StrictMode>
+    {withProviders(<App />)}
+    <Toaster />
+  </React.StrictMode>
 );
