@@ -20,6 +20,7 @@ class RegistrationUsecase:
 
     def __init__(self):
         self.__registrations_repository = RegistrationsRepository()
+        self.__events_repository = EventsRepository()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """
@@ -53,7 +54,7 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If successful, returns the updated registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, event, message = EventsRepository().query_events(event_id=event_id)
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
         
@@ -85,7 +86,7 @@ class RegistrationUsecase:
                 If not found, returns a JSONResponse with an error message.
         """
         
-        status, event, message = EventsRepository().query_events(event_id=event_id)
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -110,7 +111,7 @@ class RegistrationUsecase:
             Union[JSONResponse, List[RegistrationOut]]: If successful, returns a list of registration entries.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, event, message = EventsRepository().query_events(event_id=event_id)
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
         
@@ -132,7 +133,7 @@ class RegistrationUsecase:
             Union[None, JSONResponse]: If deleted successfully, returns None.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, event, message = EventsRepository().query_events(event_id=event_id)
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
         
