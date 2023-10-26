@@ -41,7 +41,7 @@ Resources:
             ProjectionType: ALL
       LocalSecondaryIndexes:
         - IndexName: EmailIndex
-          Keyschema:
+          KeySchema:
             - AttributeName: hashKey
               KeyType: HASH
             - AttributeName: email
