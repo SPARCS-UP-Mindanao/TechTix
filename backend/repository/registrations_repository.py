@@ -84,7 +84,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entry, None
 
     def query_registrations(
-        self, event_id: str = None, registration_id: str = None
+        self, event_id: str = None, registration_id: str = None, email: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
         """
         Query registration records from the database.
@@ -92,6 +92,7 @@ class RegistrationsRepository:
         Args:
             event_id (str, optional): The event ID to query (default is None to query all records).
             registration_id (str, optional): The registration ID to query (default is None to query all records).
+            email (str, optional): The email to query (default is None to query all records).
 
         Returns:
             Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
@@ -112,6 +113,12 @@ class RegistrationsRepository:
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
+            elif email:
+                registration_entries = list(
+                    Registration.emailLSI.query(
+                        hash_key=event_id
+                    )
+                )
             else:
                 registration_entries = list(
                     Registration.query(
@@ -124,6 +131,9 @@ class RegistrationsRepository:
                 if registration_id:
                     message = f'Registration with id {registration_id} not found'
                     logging.error(f'[{self.core_obj}={registration_id}] {message}')
+                elif email:
+                    message = f'Registration with email {email} not found'
+                    logging.error(f'[{self.core_obj}={email}] {message}')
                 else:
                     message = 'No registration found'
                     logging.error(f'[{self.core_obj}] {message}')

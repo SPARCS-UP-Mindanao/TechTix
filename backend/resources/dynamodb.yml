@@ -39,3 +39,12 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+      LocalSecondaryIndexes:
+        - IndexName: EmailIndex
+          Keyschema:
+            - AttributeName: hashKey
+              KeyType: HASH
+            - AttributeName: email
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
