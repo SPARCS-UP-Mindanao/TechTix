@@ -15,31 +15,6 @@ Resources:
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
 
-  Registrations:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ${self:custom.registrations}
-      AttributeDefinitions:
-        - AttributeName: hashKey
-          AttributeType: S
-        - AttributeName: rangeKey
-          AttributeType: S
-        - AttributeName: registrationId
-          AttributeType: S
-      KeySchema:
-        - AttributeName: hashKey
-          KeyType: HASH
-        - AttributeName: rangeKey
-          KeyType: RANGE
-      BillingMode: PAY_PER_REQUEST
-      GlobalSecondaryIndexes:
-        - IndexName: RegistrationIdIndex
-          KeySchema:
-            - AttributeName: registrationId
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-  
   Evaluations:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -70,3 +45,29 @@ Resources:
             KeyType: RANGE
           Projection:
             ProjectionType: ALL
+            
+  Registrations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.registrations}
+      AttributeDefinitions:
+        - AttributeName: hashKey
+          AttributeType: S
+        - AttributeName: rangeKey
+          AttributeType: S
+        - AttributeName: registrationId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: hashKey
+          KeyType: HASH
+        - AttributeName: rangeKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: RegistrationIdIndex
+          KeySchema:
+            - AttributeName: registrationId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+  
