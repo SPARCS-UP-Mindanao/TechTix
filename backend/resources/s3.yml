@@ -1,5 +1,5 @@
 s3_upload_object:
-  handler: functions/event_s3_uploads.handler
+  handler: functions/events_upload_handler.handler
   environment:
     STAGE: ${self:provider.stage}
   layers:

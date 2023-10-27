@@ -173,3 +173,28 @@ class EventsRepository:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
+    
+    def update_event_exclude_metadata(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
+        """
+        This method is almost the same as the update_event() method,
+        but excludes the metadata e.g updatedBy, updateDate etc.
+        """
+        data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
+        _, updated_data = RepositoryUtils.get_update(
+            old_data=RepositoryUtils.db_model_to_dict(event_entry), new_data=data
+        )
+
+        try:
+            with TransactWrite(connection=self.conn) as transaction:
+                actions = [getattr(Event, k).set(v) for k, v in updated_data.items()]
+                transaction.update(event_entry, actions=actions)
+
+            event_entry.refresh()
+            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
+
+        except TransactWriteError as e:
+            message = f'Failed to update event data: {str(e)}'
+            logging.error(f'[{event_entry.rangeKey}] {message}')
+
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
