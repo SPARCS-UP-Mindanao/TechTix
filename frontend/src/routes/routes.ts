@@ -10,47 +10,52 @@ import App from "@/App";
 import AdminPage from "@/pages/admin/AdminPage";
 import Error404 from "@/pages/Error404";
 
-export const routes = createBrowserRouter([
+export const routes = createBrowserRouter(
+  [
+    {
+        path: "/",
+        element: App(),
+    },
+    {
+        path: "/register",
+        element: RegisterPage(),
+    },
+    {
+        path: "/evaluate",
+        element: EvaluatePage(),
+    },
+    {
+        path: "/admin/login",
+        element: AdminLoginPage(),
+    },
+    {
+        path: "admin/events/:eventId",
+        element: AdminPage(),
+        children: [
+            {
+                index: true,
+                element: AdminEventPage(),
+            },
+            {
+                path: "registrations",
+                element: AdminEventRegistrationsPage(),
+            },
+            {
+                path: "evaluations",
+                element: AdminEventEvaluationsPage(),
+            },
+        ],
+    },
+    {
+        path: "admin/authority",
+        element: AdminAuthorityPage(),
+    },
+    {
+        path: "*",
+        element: Error404(),
+    },
+  ],
   {
-    path: "/",
-    element: App(),
-  },
-  {
-    path: "/register",
-    element: RegisterPage(),
-  },
-  {
-    path: "/evaluate",
-    element: EvaluatePage(),
-  },
-  {
-    path: "/admin/login",
-    element: AdminLoginPage(),
-  },
-  {
-    path: "admin/events/:eventId",
-    element: AdminPage(),
-    children: [
-      {
-        index: true,
-        element: AdminEventPage(),
-      },
-      {
-        path: "registrations",
-        element: AdminEventRegistrationsPage(),
-      },
-      {
-        path: "evaluations",
-        element: AdminEventEvaluationsPage(),
-      },
-    ],
-  },
-  {
-    path: "admin/authority",
-    element: AdminAuthorityPage(),
-  },
-  {
-    path: "*",
-    element: Error404(),
-  },
-]);
+      basename: import.meta.env.VITE_STAGE === "prod"? "/events" : "/",
+  }
+);

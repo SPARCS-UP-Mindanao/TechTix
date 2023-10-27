@@ -79,6 +79,11 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    npm install
    ```
 
+3. **Install Python Requirements Plugin:**
+   ```shell
+   sls plugin install -n serverless-python-requirements
+   ```
+
 ## Deploy to AWS
 1. Setup Docker (Only for Non-Linux Users)
    - [Docker Installation Guide](https://docs.docker.com/engine/install)
