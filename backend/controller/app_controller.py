@@ -7,4 +7,4 @@ def api_controller(app):
     app.include_router(event_router, prefix='/events', tags=['Events'])
     app.include_router(registration_router, prefix='/registrations', tags=['Registrations'])
     app.include_router(admin_router, prefix='/admins', tags=['Admins'])
-    app.include_router(file_upload_router, prefix='/events/{entryId}/upload', tags=['File upload'])
+    app.include_router(file_upload_router, prefix='/{route}/{entryId}/upload', tags=['File upload'])

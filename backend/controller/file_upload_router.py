@@ -7,7 +7,7 @@ from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path
 from model.common import Message
 from model.file_uploads.file_upload import FileUploadOut
-from model.file_uploads.file_upload_constants import UploadTypes, FileUploadConstants
+from model.file_uploads.file_upload_constants import UploadRoutes, UploadTypes, FileUploadConstants
 from usecase.file_upload_usecase import FileUploadUsecase
 
 file_upload_router = APIRouter()
@@ -30,11 +30,11 @@ file_upload_router = APIRouter()
     include_in_schema=False,
 )
 def get_presigned_url(
+    route: UploadRoutes = Path(..., title='The route', alias=FileUploadConstants.ROUTE),
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     upload_type: UploadTypes = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE)
 ):
     file_upload_uc = FileUploadUsecase()
-    return file_upload_uc.generate_presigned_url(
-        entry_id=entry_id,
-        upload_type=upload_type.value
+    return file_upload_uc.create_presigned_url(
+        object_key=f'{route}/{entry_id}/{upload_type.value}'
     )

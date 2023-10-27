@@ -20,9 +20,7 @@ class FileUploadUsecase:
         self.bucket = os.getenv('S3_BUCKET', 'sparcs-events-bucket')
         self.presigned_url_expiration_time = 30
 
-    def generate_presigned_url(self, entry_id, upload_type) -> Union[JSONResponse, FileUploadOut]:
-        object_key = f'events/{entry_id}/{upload_type}'
-
+    def create_presigned_url(self, object_key) -> Union[JSONResponse, FileUploadOut]:
         presigned_url = self.s3_client.generate_presigned_url(
             ClientMethod=ClientMethods.PUT_OBJECT,
             Params={
@@ -35,6 +33,9 @@ class FileUploadUsecase:
         response = { 'uploadLink': presigned_url, 'objectKey': object_key }
 
         return FileUploadOut(**response)
+
+    def update_event_field(self):
+        pass
 
 
 
