@@ -1,5 +1,5 @@
 s3_upload_object:
-  handler: event_s3_uploads.handler
+  handler: functions/event_s3_uploads.handler
   environment:
     STAGE: ${self:provider.stage}
   layers:
@@ -10,3 +10,9 @@ s3_upload_object:
         event: s3:ObjectCreated:*
         rules:
           - prefix: events/
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Entities, Arn] }
