@@ -37,25 +37,3 @@ class FileUploadUsecase:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             return HTTPStatus.OK, url_data, None
-
-    def update_event_fields(self, object_key):
-        object_key_split = object_key.split('/')
-        entry_id = object_key_split[1]
-        attribute = object_key_split[2]
-
-        if attribute == 'banner':
-            attribute = 'bannerLink'
-        elif attribute == 'logo':
-            attribute = 'logoLink'
-
-        updated_attribute = {
-            attribute: object_key
-        }
-
-        # I imported "EventUsecase" here to avoid circular imports
-        from usecase.event_usecase import EventUsecase
-        event_uc = EventUsecase()
-        return event_uc.update_event_exclude_metadata(
-            event_id=entry_id,
-            event_in=EventIn(**updated_attribute)
-        )
