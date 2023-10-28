@@ -38,10 +38,21 @@ export default {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
           pink: {
-            DEFAULT: '#fb6591'
+            DEFAULT: 'hsl(var(--secondary-orange-400))'
           },
           orange: {
-            DEFAULT: '#f87c58'
+            DEFAULT: '#f87c58',
+            50: 'hsl(var(--secondary-orange-50))',
+            100: 'hsl(var(--secondary-orange-100))',
+            200: 'hsl(var(--secondary-orange-200))',
+            300: 'hsl(var(--secondary-orange-300))',
+            400: 'hsl(var(--secondary-orange-400))',
+            500: 'hsl(var(--secondary-orange-500))',
+            600: 'hsl(var(--secondary-orange-600))',
+            700: 'hsl(var(--secondary-orange-700))',
+            800: 'hsl(var(--secondary-orange-800))',
+            900: 'hsl(var(--secondary-orange-900))',
+            950: 'hsl(var(--secondary-orange-950))'
           }
         },
         destructive: {

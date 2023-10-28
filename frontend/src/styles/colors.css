@@ -27,6 +27,18 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
+    --secondary-orange-50: 15, 86%, 97%;
+    --secondary-orange-100: 13, 93%, 94%;
+    --secondary-orange-200: 14, 96%, 89%;
+    --secondary-orange-300: 13, 96%, 82%;
+    --secondary-orange-400: 13, 92%, 66%;
+    --secondary-orange-500: 14, 85%, 60%;
+    --secondary-orange-600: 13, 73%, 51%;
+    --secondary-orange-700: 14, 75%, 42%;
+    --secondary-orange-800: 14, 71%, 35%;
+    --secondary-orange-900: 14, 64%, 31%;
+    --secondary-orange-950: 13, 75%, 15%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
