@@ -4,7 +4,7 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
-from model.evaluations.evaluation import Evaluation, EvaluationIn
+from model.evaluations.evaluation import Evaluation, EvaluationIn, EvaluationPatch
 from model.evaluations.evaluations_constants import EvaluationStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
@@ -36,8 +36,6 @@ class EvaluationRepository:
                 rangeKey=range_key,
                 createDate=self.current_date,
                 updateDate=self.current_date,
-                createdBy=os.getenv('CURRENT_USER'),
-                updatedBy=os.getenv('CURRENT_USER'),
                 status=EvaluationStatus.DRAFT.value,
                 **data,
             )
@@ -138,7 +136,7 @@ class EvaluationRepository:
             return HTTPStatus.OK, evaluation_entries, None
 
     def update_evaluation(
-        self, evaluation_entry: Evaluation, evaluation_in: EvaluationIn
+        self, evaluation_entry: Evaluation, evaluation_in: EvaluationPatch
     ) -> Tuple[HTTPStatus, Evaluation, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(

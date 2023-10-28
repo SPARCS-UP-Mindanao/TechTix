@@ -41,7 +41,7 @@ class EvaluationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         status, __, message = self.__registrations_repository.query_registrations(
-            event_id=evaluation_in.eventId, registration_id=evaluation_in.registrationId
+            event_id=event_id, registration_id=registration_id
         )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
