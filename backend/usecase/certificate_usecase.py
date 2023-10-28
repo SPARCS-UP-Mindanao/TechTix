@@ -1,8 +1,8 @@
-import json
 from http import HTTPStatus
 
 from typing import Union
 from repository.registrations_repository import RegistrationsRepository
+from repository.events_repository import EventsRepository
 from model.certificates.certificate import CertificateIn, CertificateOut
 from starlette.responses import JSONResponse
 
@@ -10,6 +10,7 @@ class CertificateUsecase:
     
     def __init__(self):
         self.__registrations_repository = RegistrationsRepository()
+        self.__events_repository = EventsRepository()
     
     def claim_certificate(
         self, event_id: str, certificate_in: CertificateIn
@@ -27,4 +28,4 @@ class CertificateUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        return CertificateOut()
+        return CertificateOut(certificateTemplate=event.certificateTemplate)

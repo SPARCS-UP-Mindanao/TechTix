@@ -114,7 +114,8 @@ class RegistrationsRepository:
             elif email:
                 registration_entries = list(
                     Registration.emailLSI.query(
-                        hash_key=event_id
+                        hash_key=event_id,
+                        range_key_condition=Registration.email.__eq__(email),
                     )
                 )
             else:

@@ -18,10 +18,12 @@ class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
     registrationId = UnicodeAttribute(hash_key=True)
 
 
-class RegistrationLocalSecondaryIndex(LocalSecondaryIndex):
+class EmailLSI(LocalSecondaryIndex):
     class Meta:
         index_name = 'EmailIndex'
         projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
     
     hashKey = UnicodeAttribute(hash_key=True)
     email = UnicodeAttribute(range_key=True)
@@ -48,7 +50,7 @@ class Registration(Model):
     status = UnicodeAttribute(null=True)
     email = UnicodeAttribute(null=True)
 
-    emailLSI = RegistrationLocalSecondaryIndex()
+    emailLSI = EmailLSI()
 
     certificateClaimed = BooleanAttribute(null=True)
     evaluated = UnicodeAttribute(null=True)

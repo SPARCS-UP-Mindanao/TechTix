@@ -29,11 +29,9 @@ certificate_router = APIRouter()
 def update_certificate(
     certificate_in: CertificateIn,
     event_id: str = Path(..., title="Event Id", alias=CommonConstants.EVENT_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Handle event certificate claiming.
     """
-    _ = current_user
     certificate_uc = CertificateUsecase()
     return certificate_uc.claim_certificate(event_id=event_id, certificate_in=certificate_in)
