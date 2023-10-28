@@ -94,6 +94,21 @@ class EventUsecase:
         return EventOut(**event_data)
 
     def update_fields_after_s3_upload(self, object_key):
+        entry_id, fields = self.__get_values_from_object_key(object_key)
+
+        return self.update_event_exclude_metadata(
+            event_id=entry_id,
+            event_in=EventIn(**fields)
+        )
+
+
+    @staticmethod
+    def __convert_data_entry_to_dict(data_entry):
+        return json.loads(data_entry.to_json())
+
+    # Not sure if I should put this here or on a separate util.py file
+    @staticmethod
+    def __get_values_from_object_key(object_key):
         object_key_split = object_key.split('/')
         entry_id = object_key_split[1]
         attribute = object_key_split[2]
@@ -103,17 +118,4 @@ class EventUsecase:
         elif attribute == 'logo':
             attribute = 'logoLink'
 
-        updated_attribute = {
-            attribute: object_key
-        }
-
-        return self.update_event_exclude_metadata(
-            event_id=entry_id,
-            event_in=EventIn(**updated_attribute)
-        )
-
-
-
-    @staticmethod
-    def __convert_data_entry_to_dict(data_entry):
-        return json.loads(data_entry.to_json())
+        return entry_id, { attribute: object_key }
