@@ -64,7 +64,7 @@ class EvaluationIn(EvaluationPatch):
     registrationId: str = Field(None, title="Registration ID")
 
 
-class EvaluationOut(EvaluationPatch):
+class EvaluationOut(EvaluationIn):
     class Config:
         extra = Extra.ignore
 
