@@ -6,6 +6,7 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
+  evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   emailQueue:
     !ImportValue EmailQueue-${self:provider.stage}
   basicAuthorizerARN:
@@ -39,6 +40,7 @@ provider:
     STAGE: ${self:custom.stage}
     ENTITIES_TABLE: ${self:custom.entities}
     REGISTRATIONS_TABLE: ${self:custom.registrations}
+    EVALUATIONS_TABLE: ${self:custom.evaluations}
     EMAIL_QUEUE: ${self:custom.emailQueue}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:provider.stage}
