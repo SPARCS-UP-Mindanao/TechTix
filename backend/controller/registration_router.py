@@ -1,11 +1,14 @@
 from http import HTTPStatus
 from typing import List
 
-from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Path, Query
 from model.common import Message
-from model.registrations.registration import RegistrationIn, RegistrationOut
+from model.registrations.registration import (
+    RegistrationIn,
+    RegistrationOut,
+    RegistrationPatch,
+)
 from usecase.registration_usecase import RegistrationUsecase
 
 registration_router = APIRouter()
@@ -29,12 +32,10 @@ registration_router = APIRouter()
 )
 def get_registrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Get a list of registration entries.
     """
-    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registrations(event_id=event_id)
 
@@ -58,12 +59,10 @@ def get_registrations(
 def get_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Get a specific registration entry by its ID.
     """
-    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registration(event_id=event_id, registration_id=entry_id)
 
@@ -86,12 +85,10 @@ def get_registration(
 )
 def create_registration(
     registration_in: RegistrationIn,
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Create a new registration entry.
     """
-    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.create_registration(registration_in)
 
@@ -114,15 +111,13 @@ def create_registration(
     include_in_schema=False,
 )
 def update_registration(
-    registration: RegistrationIn,
+    registration: RegistrationPatch,
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Update an existing registration entry.
     """
-    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.update_registration(
         event_id=event_id, registration_id=entry_id, registration_in=registration
@@ -145,11 +140,9 @@ def update_registration(
 def delete_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Delete a specific registration entry by its ID.
     """
-    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.delete_registration(registration_id=entry_id, event_id=event_id)

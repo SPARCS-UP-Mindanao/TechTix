@@ -42,8 +42,6 @@ class Registration(Model):
 
     createDate = UnicodeAttribute(null=False)
     updateDate = UnicodeAttribute(null=False)
-    createdBy = UnicodeAttribute(null=False)
-    updatedBy = UnicodeAttribute(null=False)
 
     eventId = UnicodeAttribute(null=True)
     paymentId = UnicodeAttribute(null=True)
@@ -54,7 +52,6 @@ class Registration(Model):
 
     certificateClaimed = BooleanAttribute(null=True)
     evaluated = UnicodeAttribute(null=True)
-    userId = UnicodeAttribute(null=True)
     firstName = UnicodeAttribute(null=True)
     lastName = UnicodeAttribute(null=True)
     contactNumber = UnicodeAttribute(null=True)
@@ -64,16 +61,11 @@ class Registration(Model):
     title = UnicodeAttribute(null=True)
 
 
-class RegistrationIn(BaseModel):
+class RegistrationPatch(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    eventId: str = Field(None, title="Event ID")
-    paymentId: str = Field(None, title="Payment ID")
     email: str = Field(None, title="Email")
-    certificateClaimed: bool = Field(None, title="Certificate Claimed")
-    evaluated: str = Field(None, title="Evaluated")
-    userId: str = Field(None, title="User ID")
     firstName: str = Field(None, title="First Name")
     lastName: str = Field(None, title="Last Name")
     contactNumber: str = Field(None, title="Contact Number")
@@ -83,13 +75,21 @@ class RegistrationIn(BaseModel):
     title: str = Field(None, title="Title")
 
 
+class RegistrationIn(RegistrationPatch):
+    class Config:
+        extra = Extra.forbid
+
+    eventId: str = Field(None, title="Event ID")
+
+
 class RegistrationOut(RegistrationIn):
     class Config:
         extra = Extra.ignore
 
+    paymentId: str = Field(None, title="Payment ID")
+    certificateClaimed: bool = Field(None, title="Certificate Claimed")
+    evaluated: str = Field(None, title="Evaluated")
     status: RegistrationStatus = Field(..., title="Status")
     registrationId: str = Field(..., title="ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
-    createdBy: str = Field(..., title="Created By")
-    updatedBy: str = Field(..., title="Updated By")
