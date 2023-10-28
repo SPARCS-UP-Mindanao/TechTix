@@ -58,8 +58,6 @@ class RegistrationsRepository:
                 rangeKey=registration_id,
                 createDate=self.current_date,
                 updateDate=self.current_date,
-                createdBy=os.getenv('CURRENT_USER'),
-                updatedBy=os.getenv('CURRENT_USER'),
                 entryStatus=EntryStatus.ACTIVE.value,
                 status=RegistrationStatus.DRAFT.value,
                 registrationId=registration_id,
@@ -173,11 +171,10 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entry, 'No update'
 
         try:
-            with TransactWrite(conneciton=self.conn) as transaction:
+            with TransactWrite(connection=self.conn) as transaction:
                 # Update Entry
                 updated_data.update(
                     updateDate=self.current_date,
-                    updatedBy=os.getenv('CURRENT_USER'),
                 )
                 actions = [getattr(Registration, k).set(v) for k, v in updated_data.items()]
                 transaction.update(registration_entry, actions=actions)

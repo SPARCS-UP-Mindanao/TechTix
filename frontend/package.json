@@ -1,5 +1,6 @@
 {
   "name": "sparcs-certificate",
+  "homepage": "http://sparcsup.com/events",
   "private": true,
   "version": "0.0.0",
   "type": "module",
