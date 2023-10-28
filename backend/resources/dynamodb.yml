@@ -21,15 +21,11 @@ Resources:
       TableName: ${self:custom.evaluations}
       AttributeDefinitions:
         - AttributeName: hashKey
-        - AttributeType: S
+          AttributeType: S
         - AttributeName: rangeKey
-        - AttributeType: S
-        - AttributeName: eventId
-        - AttributeType: S
-        - AttributeName: registrationId
-        - AttributeType: S
+          AttributeType: S
         - AttributeName: question
-        - AttributeType: S
+          AttributeType: S
       KeySchema:
         - AttributeName: hashKey
           KeyType: HASH
@@ -39,13 +35,13 @@ Resources:
       LocalSecondaryIndexes:
         - IndexName: QuestionLSI
           KeySchema:
-          - AttributeName: eventId
+          - AttributeName: hashKey
             KeyType: HASH
           - AttributeName: question
             KeyType: RANGE
           Projection:
             ProjectionType: ALL
-            
+
   Registrations:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -70,4 +66,3 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-  

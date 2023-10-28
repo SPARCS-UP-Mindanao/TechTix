@@ -1,10 +1,9 @@
 import logging
-import os 
+import os
 from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
-import ulid
 from model.evaluations.evaluation import Evaluation, EvaluationIn
 from model.evaluations.evaluations_constants import EvaluationStatus
 from pynamodb.connection import Connection
@@ -18,6 +17,7 @@ from pynamodb.exceptions import (
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 
+
 class EvaluationRepository:
     def __init__(self) -> None:
         self.core_obj = 'Evaluation'
@@ -26,20 +26,18 @@ class EvaluationRepository:
 
     def store_evaluation(self, evaluation_in: EvaluationIn) -> Tuple[HTTPStatus, Evaluation, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in)
-        entry_id = ulid.ulid()
         registration_id = evaluation_in.registrationId
         range_key = f'{registration_id}#{evaluation_in.question}'
         hash_key = evaluation_in.eventId
 
         try:
             evaluation_entry = Evaluation(
-                hashKey= hash_key,
+                hashKey=hash_key,
                 rangeKey=range_key,
                 createDate=self.current_date,
                 updateDate=self.current_date,
                 createdBy=os.getenv('CURRENT_USER'),
                 updatedBy=os.getenv('CURRENT_USER'),
-                entryId=entry_id,
                 status=EvaluationStatus.DRAFT.value,
                 **data,
             )
@@ -61,7 +59,9 @@ class EvaluationRepository:
             logging.info(f'[{self.core_obj} = {hash_key}, {range_key}]: Save Evaluations strategy data successful')
             return HTTPStatus.OK, evaluation_entry, None
 
-    def query_evaluations(self, event_id: str = None, registration_id: str = None, question: str = None) -> Tuple[HTTPStatus, List[Evaluation], str]:
+    def query_evaluations(
+        self, event_id: str = None, registration_id: str = None, question: str = None
+    ) -> Tuple[HTTPStatus, List[Evaluation], str]:
         range_key = f'{registration_id}#{question}'
         try:
             # "not"s to avoid nesting. order: only hash key, incomplete range key, complete
@@ -70,17 +70,12 @@ class EvaluationRepository:
                     range_key_condition = None
                 elif not question:
                     range_key_condition = Evaluation.rangeKey.startswith(f'{registration_id}#')
-                else: 
+                else:
                     range_key = f'{registration_id}#{question}'
                     range_key_condition = Evaluation.rangeKey.__eq__(range_key)
 
-                evaluation_entries = list(
-                    Evaluation.query(
-                        hash_key=event_id,
-                        range_key_condition=range_key_condition
-                    )
-                )
-            
+                evaluation_entries = list(Evaluation.query(hash_key=event_id, range_key_condition=range_key_condition))
+
             else:
                 evaluation_entries = list(Evaluation.scan())
 
@@ -93,7 +88,7 @@ class EvaluationRepository:
                     logging.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
-        
+
         except QueryError as e:
             message = f'Failed to query evaluation: {str(e)}'
             logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
@@ -107,21 +102,25 @@ class EvaluationRepository:
             logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if event_id:
-                logging.info(f'[{self.core_obj}={event_id}] Fetch Evaluation data successful')
+            if event_id and registration_id and question:
+                evaluation_entry = evaluation_entries[0]
+                logging.info(f'[{self.core_obj}={evaluation_entry.rangeKey}] Fetch Evaluation data successful')
+                return HTTPStatus.OK, evaluation_entry, None
             else:
                 logging.info(f'[{self.core_obj}] Fetch Evaluation data successful')
-            return HTTPStatus.OK, evaluation_entries, None
-            
+                return HTTPStatus.OK, evaluation_entries, None
+
     def query_evaluations_by_question(self, event_id: str, question: str) -> Tuple[HTTPStatus, List[Evaluation], str]:
         try:
-            evaluation_entries = list(Evaluation.questionLSI.query(event_id, question))
+            evaluation_entries = list(
+                Evaluation.questionLSI.query(hash_key=event_id, range_key_condition=Evaluation.question == question)
+            )
 
             if not evaluation_entries:
                 message = f'No evaluations found for event {event_id} and question {question}'
                 logging.error(f'[{self.core_obj}={question}] {message}')
                 return HTTPStatus.NOT_FOUND, None, message
-        
+
         except QueryError as e:
             message = f'Failed to query evaluation: {str(e)}'
             logging.error(f'[{self.core_obj}={question}] {message}')
@@ -137,13 +136,13 @@ class EvaluationRepository:
         else:
             logging.info(f'[{self.core_obj}={question}] Fetch Evaluation data successful')
             return HTTPStatus.OK, evaluation_entries, None
-          
-            
-    def update_evaluation(self, evaluation_entry: Evaluation, evaluation_in: EvaluationIn) -> Tuple[HTTPStatus, Evaluation, str]:
+
+    def update_evaluation(
+        self, evaluation_entry: Evaluation, evaluation_in: EvaluationIn
+    ) -> Tuple[HTTPStatus, Evaluation, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
-            old_data=RepositoryUtils.db_model_to_dict(evaluation_entry), 
-            new_data=data
+            old_data=RepositoryUtils.db_model_to_dict(evaluation_entry), new_data=data
         )
 
         if not has_update:

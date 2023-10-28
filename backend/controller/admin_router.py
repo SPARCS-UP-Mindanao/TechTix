@@ -21,7 +21,7 @@ admin_router = APIRouter()
     summary="Get Admins",
 )
 @admin_router.get(
-    '/{entryId}',
+    '/',
     response_model=List[AdminOut],
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
