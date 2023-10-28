@@ -26,6 +26,8 @@ Resources:
           AttributeType: S
         - AttributeName: registrationId
           AttributeType: S
+        - AttributeName: email
+          AttributeType: S
       KeySchema:
         - AttributeName: hashKey
           KeyType: HASH
