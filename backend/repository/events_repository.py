@@ -178,6 +178,8 @@ class EventsRepository:
         """
         This method is almost the same as the update_event() method,
         but excludes the metadata e.g updatedBy, updateDate etc.
+        This is needed so that the lambda handler that triggers when a file
+        is uploaded on S3 works properly.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
         _, updated_data = RepositoryUtils.get_update(
