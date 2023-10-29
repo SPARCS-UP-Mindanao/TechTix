@@ -10,5 +10,5 @@ class EmailIn(BaseModel):
     subject: str = Field(..., title="Subject of the email")
     salutation: str = Field(...,title="Salutation of the email")
     content: str = Field(...,title="Content of the email")
-    body: str = Field(...,title="Body of the email")
-    regards: str = Field(..., title="Regards of the email")
+    body: List[str] = Field(...,title="Body of the email")
+    regards: List[str]= Field(..., title="Regards of the email")
