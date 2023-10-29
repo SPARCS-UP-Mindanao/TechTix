@@ -30,7 +30,7 @@ export const routes = createBrowserRouter(
       element: AdminLoginPage(),
     },
     {
-      path: "admin/events",
+      path: "/admin/events",
       element: AdminPage(),
       children: [
         {
