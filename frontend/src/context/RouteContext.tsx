@@ -1,5 +1,6 @@
 import { routes } from "@/routes/routes";
-import AuthProvider from "react-auth-kit";
+import refreshApi from "@/utils/refreshToken";
+import { AuthProvider } from "react-auth-kit";
 import { RouterProvider } from "react-router-dom";
 
 export const RouteProvider = () => {
@@ -9,6 +10,7 @@ export const RouteProvider = () => {
       authName="_auth"
       cookieDomain={window.localStorage.hostname}
       cookieSecure={window.location.protocol === "https:"}
+      refresh={refreshApi}
     >
       <RouterProvider router={routes} />
     </AuthProvider>

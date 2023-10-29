@@ -2,8 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useNotifyToast } from "./useNotifyToast";
-import { useApi } from "@/hooks/useApi";
+import { useFetchQuery } from "@/hooks/useApi";
 import { loginUser } from "@/api/auth";
+import { useSignIn } from "react-auth-kit";
+import { signInFunctionParams } from "react-auth-kit/dist/types";
+import { setCookie } from "typescript-cookie";
 
 const LoginFormSchema = z.object({
   email: z.string().email({
@@ -15,7 +18,9 @@ const LoginFormSchema = z.object({
 });
 
 export const useAdminLoginForm = () => {
-  const { successToast, errorToast } = useNotifyToast();
+  const { errorToast } = useNotifyToast();
+  const { fetchQuery } = useFetchQuery<signInFunctionParams>();
+  const signIn = useSignIn();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -25,23 +30,18 @@ export const useAdminLoginForm = () => {
     },
   });
 
-  const { email, password } = form.getValues();
-  const { data: loginResponse } = useApi(loginUser(email, password), {
-    active: form.formState.isSubmitting,
-  });
-
-  const submit = form.handleSubmit(async (values) => {
+  const submit = form.handleSubmit(async ({ email, password }) => {
     try {
-      if (loginResponse) {
-        successToast({
-          title: "Login Info",
-          description: `Logged in user with email: ${values.email}`,
-        });
-      }
+      const response = await fetchQuery(loginUser(email, password));
+      setCookie("_auth_user", response.authState?.userId, { expires: 30 });
+      console.log(response);
+
+      signIn(response);
     } catch (error) {
+      console.error(error);
       errorToast({
         title: "Error in logging in",
-        description: JSON.stringify(form.formState.errors),
+        description: Object.toString(),
       });
     }
   });
