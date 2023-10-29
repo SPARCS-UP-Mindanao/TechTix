@@ -4,7 +4,7 @@ from datetime import datetime
 from model.registrations.registrations_constants import RegistrationStatus
 from pydantic import BaseModel, Extra, Field
 from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
-from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
+from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
 from pynamodb.models import Model
 
 
@@ -16,6 +16,17 @@ class RegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
         write_capacity_units = 1
 
     registrationId = UnicodeAttribute(hash_key=True)
+
+
+class EmailLSI(LocalSecondaryIndex):
+    class Meta:
+        index_name = 'EmailIndex'
+        projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
+    
+    hashKey = UnicodeAttribute(hash_key=True)
+    email = UnicodeAttribute(range_key=True)
 
 
 class Registration(Model):
@@ -37,9 +48,11 @@ class Registration(Model):
     eventId = UnicodeAttribute(null=True)
     paymentId = UnicodeAttribute(null=True)
     status = UnicodeAttribute(null=True)
-    certificateLink = UnicodeAttribute(null=True)
     email = UnicodeAttribute(null=True)
-    certificateSent = BooleanAttribute(null=True)
+
+    emailLSI = EmailLSI()
+
+    certificateClaimed = BooleanAttribute(null=True)
     evaluated = UnicodeAttribute(null=True)
     firstName = UnicodeAttribute(null=True)
     lastName = UnicodeAttribute(null=True)
@@ -76,8 +89,7 @@ class RegistrationOut(RegistrationIn):
         extra = Extra.ignore
 
     paymentId: str = Field(None, title="Payment ID")
-    certificateLink: str = Field(None, title="Certificate Link")
-    certificateSent: bool = Field(None, title="Certificate Sent")
+    certificateClaimed: bool = Field(None, title="Certificate Claimed")
     evaluated: str = Field(None, title="Evaluated")
     status: RegistrationStatus = Field(..., title="Status")
     registrationId: str = Field(..., title="ID")

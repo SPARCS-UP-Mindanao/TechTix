@@ -53,6 +53,8 @@ Resources:
           AttributeType: S
         - AttributeName: registrationId
           AttributeType: S
+        - AttributeName: email
+          AttributeType: S
       KeySchema:
         - AttributeName: hashKey
           KeyType: HASH
@@ -64,5 +66,14 @@ Resources:
           KeySchema:
             - AttributeName: registrationId
               KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      LocalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: hashKey
+              KeyType: HASH
+            - AttributeName: email
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
