@@ -43,7 +43,6 @@ class EventsRepository:
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
                 entryId=entry_id,
-                status=EventStatus.DRAFT.value,
                 **data,
             )
             event_entry.save()

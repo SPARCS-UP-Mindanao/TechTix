@@ -1,21 +1,18 @@
-from http import HTTPStatus
-from typing import List
-
-from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path, Query
-from model.common import Message
+from fastapi import APIRouter, Path
 from model.certificates.certificate import CertificateIn, CertificateOut
+from model.common import Message
 from usecase.certificate_usecase import CertificateUsecase
 
 certificate_router = APIRouter()
+
 
 @certificate_router.put(
     '/{eventId}/claim',
     response_model=CertificateOut,
     responses={
         404: {"model": Message, "description": "Email not found"},
-        400: {"model": Message, "description": "Certificate template unavailable"}
+        400: {"model": Message, "description": "Certificate template unavailable"},
     },
     summary="Claim certificate",
 )
