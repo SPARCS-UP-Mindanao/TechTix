@@ -1,5 +1,6 @@
 import { QueryKey } from "@tanstack/react-query";
 import axios from "axios";
+import { getCookie } from "typescript-cookie";
 
 type SearchParamType =
   | string
@@ -17,9 +18,10 @@ type SearchParams = Record<string, SearchParamType>;
 const createQueryKey = (url: string, params?: SearchParams) => [url, params];
 
 interface createApiProps<D, T = D> {
-  method?: "get" | "post" | "delete" | "patch";
+  method?: "get" | "post" | "delete" | "patch" | "put";
+  authorize?: boolean;
+  apiService?: "auth" | "events";
   url: string;
-  baseURL?: string;
   params?: SearchParams;
   timeout?: number;
   output?: (dto: D) => T;
@@ -28,12 +30,18 @@ interface createApiProps<D, T = D> {
 export function createApi<D, T = D>({
   method = "get",
   url,
-  baseURL = import.meta.env.VITE_API_BASE_URL,
+  authorize = true,
+  apiService = "events",
   params,
   timeout = 1000 * 60,
   output,
 }: createApiProps<D, T>) {
+  const baseURL =
+    apiService === "events"
+      ? import.meta.env.VITE_API_EVENTS_BASE_URL
+      : import.meta.env.VITE_API_AUTH_BASE_URL;
   const queryFn = async () => {
+    const accessToken = getCookie("_auth")!;
     const response = await axios({
       baseURL,
       method,
@@ -41,11 +49,11 @@ export function createApi<D, T = D>({
       data: params,
       timeout,
       headers: {
-        // "Access-Control-Allow-Origin": import.meta.env.VITE_API_BASE_URL,
-        "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
+        ...(authorize && {
+          Authorization: `Bearer ${accessToken}`,
+        }),
       },
-      withCredentials: false,
     });
 
     if (output) {
