@@ -4,9 +4,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import React from "react";
 
 interface Props {
-  components: Array<
-    React.JSXElementConstructor<React.PropsWithChildren<unknown>>
-  >;
+  components: Array<React.JSXElementConstructor<React.PropsWithChildren<any>>>;
   children: React.ReactNode;
 }
 

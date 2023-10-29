@@ -45,7 +45,7 @@ const Register = () => {
               <FormLabel toolTipContent={"Enter atleast 8 characters"}>
                 Password
               </FormLabel>
-              <Input type="password" {...field} />
+              <Input type="text" {...field} />
               <FormError />
             </div>
           )}
