@@ -1,7 +1,13 @@
 import React from "react";
+import ClaimCertificate from "./CertificateClaim";
 
 const EvaluatePage = () => {
-  return <div>EvaluatePage</div>;
+  return (
+    <>
+      {/* <h1>EvaluatePage</h1> */}
+      <ClaimCertificate />
+    </>
+  );
 };
 
 export default EvaluatePage;

@@ -13,49 +13,49 @@ import Error404 from "@/pages/Error404";
 export const routes = createBrowserRouter(
   [
     {
-        path: "/",
-        element: App(),
+      path: "/",
+      element: App(),
     },
     {
-        path: "/register",
-        element: RegisterPage(),
+      path: "/register",
+      element: RegisterPage(),
     },
     {
-        path: "/evaluate",
-        element: EvaluatePage(),
+      path: "/evaluate",
+      element: EvaluatePage(),
     },
     {
-        path: "/admin/login",
-        element: AdminLoginPage(),
+      path: "/admin/login",
+      element: AdminLoginPage(),
     },
     {
-        path: "admin/events/:eventId",
-        element: AdminPage(),
-        children: [
-            {
-                index: true,
-                element: AdminEventPage(),
-            },
-            {
-                path: "registrations",
-                element: AdminEventRegistrationsPage(),
-            },
-            {
-                path: "evaluations",
-                element: AdminEventEvaluationsPage(),
-            },
-        ],
+      path: "admin/events/:eventId",
+      element: AdminPage(),
+      children: [
+        {
+          index: true,
+          element: AdminEventPage(),
+        },
+        {
+          path: "registrations",
+          element: AdminEventRegistrationsPage(),
+        },
+        {
+          path: "evaluations",
+          element: AdminEventEvaluationsPage(),
+        },
+      ],
     },
     {
-        path: "admin/authority",
-        element: AdminAuthorityPage(),
+      path: "admin/authority",
+      element: AdminAuthorityPage(),
     },
     {
-        path: "*",
-        element: Error404(),
+      path: "*",
+      element: Error404(),
     },
   ],
   {
-      basename: import.meta.env.VITE_STAGE === "prod"? "/events" : "/",
+    basename: import.meta.env.VITE_STAGE === "prod" ? "/events" : "/",
   }
 );
