@@ -7,7 +7,6 @@ from typing import List, Tuple
 import ulid
 from constants.common_constants import EntryStatus
 from model.registrations.registration import Registration, RegistrationIn
-from model.registrations.registrations_constants import RegistrationStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     DeleteError,
@@ -59,7 +58,6 @@ class RegistrationsRepository:
                 createDate=self.current_date,
                 updateDate=self.current_date,
                 entryStatus=EntryStatus.ACTIVE.value,
-                status=RegistrationStatus.DRAFT.value,
                 registrationId=registration_id,
                 **data,
             )
@@ -82,7 +80,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entry, None
 
     def query_registrations(
-        self, event_id: str = None, registration_id: str = None, email: str = None
+        self, event_id: str = None, registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
         """
         Query registration records from the database.
@@ -90,7 +88,6 @@ class RegistrationsRepository:
         Args:
             event_id (str, optional): The event ID to query (default is None to query all records).
             registration_id (str, optional): The registration ID to query (default is None to query all records).
-            email (str, optional): The email to query (default is None to query all records).
 
         Returns:
             Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
@@ -111,13 +108,6 @@ class RegistrationsRepository:
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
-            elif email:
-                registration_entries = list(
-                    Registration.emailLSI.query(
-                        hash_key=event_id,
-                        range_key_condition=Registration.email.__eq__(email),
-                    )
-                )
             else:
                 registration_entries = list(
                     Registration.query(
@@ -130,9 +120,6 @@ class RegistrationsRepository:
                 if registration_id:
                     message = f'Registration with id {registration_id} not found'
                     logging.error(f'[{self.core_obj}={registration_id}] {message}')
-                elif email:
-                    message = f'Registration with email {email} not found'
-                    logging.error(f'[{self.core_obj}={email}] {message}')
                 else:
                     message = 'No registration found'
                     logging.error(f'[{self.core_obj}] {message}')
@@ -157,7 +144,59 @@ class RegistrationsRepository:
                 logging.info(f'[{self.core_obj} = {registration_id}]: Fetch Registration data successful')
                 return HTTPStatus.OK, registration_entries[0], None
 
-            logging.info(f'[{self.core_obj}]: Fetch Event data successful')
+            logging.info(f'[{self.core_obj}]: Fetch Registration data successful')
+            return HTTPStatus.OK, registration_entries, None
+
+    def query_registrations_with_email(
+        self, event_id: str, email: str, exclude_registration_id: str = None
+    ) -> Tuple[HTTPStatus, List[Registration], str]:
+        """
+        Query registrations with email
+
+        Args:
+            event_id (str, optional): The event ID to query (default is None to query all records).
+            email (str, optional): The email to query (default is None to query all records).
+            exclude_registration (str, optional): The registration ID to exclude (default is None to query all records).
+
+        Returns:
+            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
+            and an optional error message.
+        """
+        try:
+            filter_condition = Registration.entryStatus.__eq__(EntryStatus.ACTIVE.value)
+            if exclude_registration_id:
+                filter_condition &= Registration.registrationId != exclude_registration_id
+
+            registration_entries = list(
+                Registration.emailLSI.query(
+                    hash_key=event_id,
+                    range_key_condition=Registration.email.__eq__(email),
+                    filter_condition=filter_condition,
+                )
+            )
+
+            if not registration_entries:
+                message = f'Registration with email {email} not found'
+                logging.error(f'[{self.core_obj}={email}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query registrations: {str(e)}'
+            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logging.info(f'[{self.core_obj}]: Fetch Registration data successful')
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(

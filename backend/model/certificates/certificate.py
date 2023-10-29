@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+
 
 class CertificateIn(BaseModel):
-    email: str = Field(None, title="Email")
+    email: EmailStr = Field(None, title="Email")
+
 
 class CertificateOut(BaseModel):
     certificateTemplate: str = Field(None, title="Certificate Template")
