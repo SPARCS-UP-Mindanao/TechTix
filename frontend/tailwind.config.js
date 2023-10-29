@@ -35,13 +35,24 @@ export default {
           foreground: 'hsl(var(--primary-foreground))'
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
+          DEFAULT: 'hsl(var(--secondary-pink-500))',
           foreground: 'hsl(var(--secondary-foreground))',
           pink: {
-            DEFAULT: 'hsl(var(--secondary-orange-400))'
+            DEFAULT: 'hsl(var(--secondary-pink-500))',
+            50: 'hsl(var(--secondary-pink-50))',
+            100: 'hsl(var(--secondary-pink-100))',
+            200: 'hsl(var(--secondary-pink-200))',
+            300: 'hsl(var(--secondary-pink-300))',
+            400: 'hsl(var(--secondary-pink-400))',
+            500: 'hsl(var(--secondary-pink-500))',
+            600: 'hsl(var(--secondary-pink-600))',
+            700: 'hsl(var(--secondary-pink-700))',
+            800: 'hsl(var(--secondary-pink-800))',
+            900: 'hsl(var(--secondary-pink-900))',
+            950: 'hsl(var(--secondary-pink-950))'
           },
           orange: {
-            DEFAULT: '#f87c58',
+            DEFAULT: 'hsl(var(--secondary-orange-500))',
             50: 'hsl(var(--secondary-orange-50))',
             100: 'hsl(var(--secondary-orange-100))',
             200: 'hsl(var(--secondary-orange-200))',

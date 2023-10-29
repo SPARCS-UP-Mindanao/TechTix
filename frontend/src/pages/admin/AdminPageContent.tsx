@@ -21,7 +21,7 @@ const AdminPageContent = () => {
         <p>{event.name}</p>
       ))}
 
-      <h1>{event?.name}</h1>
+      <h1 className="text-secondary">{event?.name}</h1>
       <AdminPageRoute />
     </div>
   );

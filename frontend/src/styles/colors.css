@@ -9,7 +9,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 231, 75%, 48%;
     --primary-foreground: 210 40% 98%;
 
     --primary-50: 235, 87%, 97%;
@@ -38,6 +38,18 @@
     --secondary-orange-800: 14, 71%, 35%;
     --secondary-orange-900: 14, 64%, 31%;
     --secondary-orange-950: 13, 75%, 15%;
+
+    --secondary-pink-50: 347, 100%, 97%;
+    --secondary-pink-100: 347, 100%, 95%;
+    --secondary-pink-200: 344, 96%, 90%;
+    --secondary-pink-300: 344, 96%, 82%;
+    --secondary-pink-400: 342, 95%, 69%;
+    --secondary-pink-500: 341, 89%, 60%;
+    --secondary-pink-600: 338, 77%, 50%;
+    --secondary-pink-700: 336, 83%, 41%;
+    --secondary-pink-800: 334, 80%, 35%;
+    --secondary-pink-900: 333, 75%, 30%;
+    --secondary-pink-950: 334, 88%, 16%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
