@@ -37,3 +37,15 @@ class FileUploadUsecase:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             return HTTPStatus.OK, url_data, None
+
+    def get_values_from_object_key(self, object_key) -> Tuple[str, dict]:
+        object_key_split = object_key.split('/')
+        entry_id = object_key_split[1]
+        attribute = object_key_split[2]
+
+        if attribute == 'banner':
+            attribute = 'bannerLink'
+        elif attribute == 'logo':
+            attribute = 'logoLink'
+
+        return entry_id, { attribute: object_key }
