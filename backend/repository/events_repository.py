@@ -43,7 +43,6 @@ class EventsRepository:
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
                 entryId=entry_id,
-                status=EventStatus.DRAFT.value,
                 **data,
             )
             event_entry.save()
@@ -82,7 +81,7 @@ class EventsRepository:
             )
             if not event_entries:
                 if event_id:
-                    message = f'Event with id {event_id} not found'
+                    message = f'Event with ID={event_id} not found'
                     logging.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No events found'

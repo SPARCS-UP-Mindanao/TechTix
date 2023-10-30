@@ -15,6 +15,33 @@ Resources:
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
 
+  Evaluations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.evaluations}
+      AttributeDefinitions:
+        - AttributeName: hashKey
+          AttributeType: S
+        - AttributeName: rangeKey
+          AttributeType: S
+        - AttributeName: question
+          AttributeType: S
+      KeySchema:
+        - AttributeName: hashKey
+          KeyType: HASH
+        - AttributeName: rangeKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      LocalSecondaryIndexes:
+        - IndexName: QuestionLSI
+          KeySchema:
+          - AttributeName: hashKey
+            KeyType: HASH
+          - AttributeName: question
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
   Registrations:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -25,6 +52,8 @@ Resources:
         - AttributeName: rangeKey
           AttributeType: S
         - AttributeName: registrationId
+          AttributeType: S
+        - AttributeName: email
           AttributeType: S
       KeySchema:
         - AttributeName: hashKey
@@ -37,5 +66,14 @@ Resources:
           KeySchema:
             - AttributeName: registrationId
               KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      LocalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: hashKey
+              KeyType: HASH
+            - AttributeName: email
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL

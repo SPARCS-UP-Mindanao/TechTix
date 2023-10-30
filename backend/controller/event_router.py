@@ -55,9 +55,7 @@ def get_events(
 )
 def get_event(
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
-    current_user: AccessUser = Depends(get_current_user),
 ):
-    _ = current_user
     events_uc = EventUsecase()
     return events_uc.get_event(entry_id)
 

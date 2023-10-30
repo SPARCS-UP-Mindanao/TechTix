@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class RegistrationStatus(Enum):
+class EvaluationStatus(Enum):
     DRAFT = 'draft'
     OPEN = 'open'
     CANCELLED = 'cancelled'

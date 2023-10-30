@@ -40,10 +40,14 @@ class EmailUsecase:
 
     def send_event_creation_email(self, event: Event):
         subject = f'Event {event.name} has been created'
-        content = f'Event {event.name} has been created. Please check the event page for more details.'
+        body = [f'Event {event.name} has been created. Please check the event page for more details.']
+        salutation = 'Dear Sparcs ,'
+        regards = ['Best,', 'Sparcs Team']
         email_in = EmailIn(
             to=os.getenv('SPARCS_GMAIL'),
             subject=subject,
-            content=content,
+            body=body,
+            salutation=salutation,
+            regards=regards,
         )
         return self.send_email(email_in=email_in, event_id=event.entryId)
