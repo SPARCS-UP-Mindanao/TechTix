@@ -3,7 +3,13 @@ from typing import List
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Path, Query
 from model.common import Message
-from model.evaluations.evaluation import EvaluationIn, EvaluationOut, EvaluationPatch
+from model.evaluations.evaluation import (
+    EvaluationIn,
+    EvaluationListIn,
+    EvaluationOut,
+    EvaluationPatch,
+)
+from model.evaluations.evaluations_constants import EvaluationQuestionType
 from usecase.evaluation_usecase import EvaluationUsecase
 
 evaluation_router = APIRouter()
@@ -52,7 +58,7 @@ def get_evaluations(
 )
 def get_evaluations_by_question(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    question: str = Path(..., title="Question"),
+    question: EvaluationQuestionType = Path(..., title="Question"),
 ):
     """Get Evaluation Entries by Question"""
     evaluations_uc = EvaluationUsecase()
@@ -78,7 +84,7 @@ def get_evaluations_by_question(
 def get_evaluation(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
     registration_id: str = Path(..., title="Registration Id", alias=CommonConstants.REGISTRATION_ID),
-    question: str = Query(..., title="Question"),
+    question: EvaluationQuestionType = Query(..., title="Question"),
 ):
     """Get Evaluation Entry"""
     evaluations_uc = EvaluationUsecase()
@@ -87,7 +93,7 @@ def get_evaluation(
 
 @evaluation_router.post(
     '',
-    response_model=EvaluationOut,
+    response_model=List[EvaluationOut],
     responses={
         400: {"model": Message, "description": "Bad request"},
         500: {"model": Message, "description": "Internal server error"},
@@ -96,13 +102,13 @@ def get_evaluation(
 )
 @evaluation_router.post(
     '/',
-    response_model=EvaluationOut,
+    response_model=List[EvaluationOut],
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
     include_in_schema=False,
 )
 def create_evaluation(
-    evaluation: EvaluationIn,
+    evaluation: EvaluationListIn,
 ):
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.create_evaluation(evaluation)
@@ -129,7 +135,7 @@ def update_evaluation(
     evaluation: EvaluationPatch,
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
     registration_id: str = Query(..., title="Registration Id"),
-    question: str = Query(..., title="Question"),
+    question: EvaluationQuestionType = Query(..., title="Question"),
 ):
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.update_evaluation(event_id, registration_id, question, evaluation)
