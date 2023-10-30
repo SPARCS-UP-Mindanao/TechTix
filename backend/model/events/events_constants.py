@@ -13,3 +13,8 @@ class EventUploadTypes(Enum):
     LOGO = 'logo'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
 
+class EventUploadFields(Enum):
+    BANNER = 'bannerLink'
+    LOGO = 'logoLink'
+    CERTIFICATE_TEMPLATE = 'certificateTemplate'
+

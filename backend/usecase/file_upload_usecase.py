@@ -1,9 +1,5 @@
 import os
-import logging
-from http import HTTPStatus
-from typing import Tuple
-from model.events.event import EventIn
-
+from model.events.events_constants import EventUploadFields, EventUploadTypes
 from model.file_uploads.file_upload_constants import ClientMethods
 
 from boto3 import client as boto3_client
@@ -39,10 +35,10 @@ class FileUploadUsecase:
         entry_id = object_key_split[1]
         upload_type = object_key_split[2]
 
-        if upload_type == 'banner':
-            upload_type = 'bannerLink'
-        elif upload_type == 'logo':
-            upload_type = 'logoLink'
+        if upload_type == EventUploadTypes.BANNER:
+            upload_type = EventUploadFields.BANNER
+        elif upload_type ==EventUploadTypes.LOGO:
+            upload_type = EventUploadFields.LOGO
 
         return { 
             'entry_id': entry_id,
