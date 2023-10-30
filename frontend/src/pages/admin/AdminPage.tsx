@@ -1,14 +1,7 @@
-import { Outlet } from "react-router-dom";
+import AdminPageContent from "./AdminPageContent";
 
 const AdminPage = () => {
-  return (
-    <div>
-      <h1>AdminPage</h1>{" "}
-      <div>
-        <Outlet />
-      </div>
-    </div>
-  );
+  return <AdminPageContent />;
 };
 
 export default AdminPage;
