@@ -9,6 +9,7 @@
     "^react$",
     "^react-router-dom$",
     "^react-dom$",
+    "^[a-z]",
     "^@/assets",
     "^@/components",
     "^@/api",
@@ -16,7 +17,6 @@
     "^@/hooks",
     "^@/styles",
     "^@/pages",
-    "^[a-z]",
     "^[./]|[.](css|scss)$",
     ".*"
   ],
