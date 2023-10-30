@@ -1,5 +1,6 @@
 import os
 from model.events.events_constants import EventUploadFields, EventUploadTypes
+
 from model.file_uploads.file_upload_constants import ClientMethods
 
 from boto3 import client as boto3_client
@@ -35,10 +36,10 @@ class FileUploadUsecase:
         entry_id = object_key_split[1]
         upload_type = object_key_split[2]
 
-        if upload_type == EventUploadTypes.BANNER:
-            upload_type = EventUploadFields.BANNER
-        elif upload_type ==EventUploadTypes.LOGO:
-            upload_type = EventUploadFields.LOGO
+        if upload_type == EventUploadTypes.BANNER.value:
+            upload_type = EventUploadFields.BANNER.value
+        elif upload_type ==EventUploadTypes.LOGO.value:
+            upload_type = EventUploadFields.LOGO.value
 
         return { 
             'entry_id': entry_id,
