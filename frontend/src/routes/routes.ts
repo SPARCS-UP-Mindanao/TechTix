@@ -2,13 +2,14 @@ import { createBrowserRouter } from "react-router-dom";
 import RegisterPage from "@/pages/register/RegisterPage";
 import EvaluatePage from "@/pages/evaluate/EvaluatePage";
 import AdminLoginPage from "@/pages/admin/login/AdminLoginPage";
-import AdminEventPage from "@/pages/admin/event/AdminEventPage";
-import AdminEventRegistrationsPage from "@/pages/admin/event/AdminEventRegistrationsPage";
-import AdminEventEvaluationsPage from "@/pages/admin/event/AdminEventEvaluationsPage";
+import AdminAllEventsPage from "@/pages/admin/event/allEvents/AdminAllEventsPage";
+import AdminEventRegistrationsPage from "@/pages/admin/event/registrations/AdminEventRegistrationsPage";
+import AdminEventEvaluationsPage from "@/pages/admin/event/evaluations/AdminEventEvaluationsPage";
 import AdminAuthorityPage from "@/pages/admin/authority/AdminAuthorityPage";
 import App from "@/App";
 import AdminPage from "@/pages/admin/AdminPage";
 import Error404 from "@/pages/Error404";
+import AdminEventPage from "@/pages/admin/event/event/AdminEventPage";
 
 export const routes = createBrowserRouter(
   [
@@ -29,20 +30,26 @@ export const routes = createBrowserRouter(
       element: AdminLoginPage(),
     },
     {
-      path: "admin/events/:eventId",
+      path: "admin/events",
       element: AdminPage(),
       children: [
         {
           index: true,
+          element: AdminAllEventsPage(),
+        },
+        {
+          path: ":eventId",
           element: AdminEventPage(),
-        },
-        {
-          path: "registrations",
-          element: AdminEventRegistrationsPage(),
-        },
-        {
-          path: "evaluations",
-          element: AdminEventEvaluationsPage(),
+          children: [
+            {
+              path: "registrations",
+              element: AdminEventRegistrationsPage(),
+            },
+            {
+              path: "evaluations",
+              element: AdminEventEvaluationsPage(),
+            },
+          ],
         },
       ],
     },

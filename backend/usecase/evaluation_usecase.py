@@ -2,7 +2,11 @@ import json
 from http import HTTPStatus
 from typing import List, Union
 
-from model.evaluations.evaluation import EvaluationIn, EvaluationOut, EvaluationPatch
+from model.evaluations.evaluation import (
+    EvaluationListIn,
+    EvaluationOut,
+    EvaluationPatch,
+)
 from repository.evaluations_repository import EvaluationRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
@@ -15,23 +19,26 @@ class EvaluationUsecase:
         self.__registrations_repository = RegistrationsRepository()
         self.__events_repository = EventsRepository()
 
-    def create_evaluation(self, evaluation_in: EvaluationIn) -> Union[JSONResponse, EvaluationOut]:
-        status, _, message = self.__events_repository.query_events(event_id=evaluation_in.eventId)
+    def create_evaluation(self, evaluation_list_in: EvaluationListIn) -> Union[JSONResponse, List[EvaluationOut]]:
+        event_id = evaluation_list_in.eventId
+        registration_id = evaluation_list_in.registrationId
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         status, __, message = self.__registrations_repository.query_registrations(
-            event_id=evaluation_in.eventId, registration_id=evaluation_in.registrationId
+            event_id=event_id, registration_id=registration_id
         )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, evaluation, message = self.__evaluations_repository.store_evaluation(evaluation_in)
+        status, evaluation_list, message = self.__evaluations_repository.store_evaluation(
+            evaluation_list_in=evaluation_list_in
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        evaluation_data = self.__convert_data_entry_to_dict(evaluation)
-        return EvaluationOut(**evaluation_data)
+        return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluation_list]
 
     def update_evaluation(
         self, event_id: str, registration_id: str, question: str, evaluation_in: EvaluationPatch

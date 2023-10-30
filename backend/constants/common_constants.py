@@ -1,12 +1,12 @@
 from enum import Enum
 
 
-class UserRoles(Enum):
+class UserRoles(str, Enum):
     ADMIN = 'admin'
     SUPER_ADMIN = 'super_admin'
 
 
-class EntryStatus(Enum):
+class EntryStatus(str, Enum):
     ACTIVE = 'ACTIVE'
     DELETED = 'DELETED'
 
