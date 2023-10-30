@@ -1,11 +1,13 @@
 import React from "react";
-import ClaimCertificate from "./CertificateClaim";
+// import ClaimCertificate from "./CertificateClaim";
+import EventInformation from "./EventInformation";
 
 const EvaluatePage = () => {
   return (
     <>
       {/* <h1>EvaluatePage</h1> */}
-      <ClaimCertificate />
+      {/* <ClaimCertificate /> */}
+      <EventInformation />
     </>
   );
 };
