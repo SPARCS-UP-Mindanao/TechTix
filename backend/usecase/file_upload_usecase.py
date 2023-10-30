@@ -1,5 +1,6 @@
 import os
 from model.events.events_constants import EventUploadFields, EventUploadTypes
+from model.file_uploads.file_upload import FileUploadOut
 
 from model.file_uploads.file_upload_constants import ClientMethods
 
@@ -16,7 +17,7 @@ class FileUploadUsecase:
         self.__bucket = os.getenv('S3_BUCKET', 'sparcs-events-bucket')
         self.__presigned_url_expiration_time = 30
 
-    def create_presigned_url(self, object_key) -> dict:
+    def create_presigned_url(self, object_key) -> FileUploadOut:
         presigned_url = self.__s3_client.generate_presigned_url(
             ClientMethod=ClientMethods.PUT_OBJECT,
             Params={
@@ -26,10 +27,12 @@ class FileUploadUsecase:
             ExpiresIn= self.__presigned_url_expiration_time
         )
 
-        return { 
+        url_data = {
             'uploadLink': presigned_url,
             'objectKey': object_key 
         }
+
+        return FileUploadOut(**url_data)
 
     def get_values_from_object_key(self, object_key) -> dict:
         object_key_split = object_key.split('/')

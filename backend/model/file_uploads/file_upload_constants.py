@@ -6,4 +6,3 @@ class FileUploadConstants:
 class ClientMethods:
     PUT_OBJECT = 'put_object'
     GET_OBJECT = 'get_object'
-    
