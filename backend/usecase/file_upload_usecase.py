@@ -38,14 +38,17 @@ class FileUploadUsecase:
         else:
             return HTTPStatus.OK, url_data, None
 
-    def get_values_from_object_key(self, object_key) -> Tuple[str, dict]:
+    def get_values_from_object_key(self, object_key) -> dict:
         object_key_split = object_key.split('/')
         entry_id = object_key_split[1]
-        attribute = object_key_split[2]
+        upload_type = object_key_split[2]
 
-        if attribute == 'banner':
-            attribute = 'bannerLink'
-        elif attribute == 'logo':
-            attribute = 'logoLink'
+        if upload_type == 'banner':
+            upload_type = 'bannerLink'
+        elif upload_type == 'logo':
+            upload_type = 'logoLink'
 
-        return entry_id, { attribute: object_key }
+        return { 
+            'entry_id': entry_id,
+            'upload_type': upload_type
+        }

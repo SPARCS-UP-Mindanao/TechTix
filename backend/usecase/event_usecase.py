@@ -81,25 +81,22 @@ class EventUsecase:
 
         return FileUploadOut(**url_data)
 
-    def update_event_exclude_metadata(self, event_id: str, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+    def update_fields_after_s3_upload(self, object_key, event_id, upload_type):
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, update_event, message = self.__events_repository.update_event_exclude_metadata(event_entry=event, event_in=event_in)
+        fields = {
+            upload_type: object_key,
+            "status": event.status, # required
+        }
+
+        status, update_event, message = self.__events_repository.update_event_exclude_metadata(event_entry=event, event_in=EventIn(**fields))
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         event_data = self.__convert_data_entry_to_dict(update_event)
         return EventOut(**event_data)
-
-    def update_fields_after_s3_upload(self, object_key):
-        entry_id, fields = self.__file_upload_usecase.get_values_from_object_key(object_key)
-
-        return self.update_event_exclude_metadata(
-            event_id=entry_id,
-            event_in=EventIn(**fields)
-        )
 
 
     @staticmethod

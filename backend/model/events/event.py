@@ -52,3 +52,9 @@ class EventOut(EventIn):
     updateDate: datetime = Field(..., title="Updated At")
     createdBy: str = Field(..., title="Created By")
     updatedBy: str = Field(..., title="Updated By")
+
+class EventUploadTypes(BaseModel):
+    bannerLink: str = Field(None, title="Banner Link")
+    logoLink: str = Field(None, title="Logo Link")
+    certificateTemplate: str = Field(None, title="Certificate Template")
+
