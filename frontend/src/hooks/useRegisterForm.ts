@@ -8,7 +8,7 @@ const isValidContactNumber = (value: string) => {
   return phoneNumberPattern.test(value);
 };
 
-const RegisterFormSchema = z.object({
+export const RegisterFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address",
   }),
