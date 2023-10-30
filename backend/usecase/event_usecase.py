@@ -81,7 +81,7 @@ class EventUsecase:
 
         return FileUploadOut(**url_data)
 
-    def update_fields_after_s3_upload(self, object_key, event_id, upload_type):
+    def update_fields_after_s3_upload(self, object_key, event_id, upload_type) -> Union[JSONResponse, EventOut]:
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
