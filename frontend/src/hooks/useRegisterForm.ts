@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useNotifyToast } from "./useNotifyToast";
+import { useNotifyToast } from "@/hooks/useNotifyToast";
+import { useApi } from "./useApi";
+import { registerUser } from "@/api/auth";
 
 const isValidContactNumber = (value: string) => {
   const phoneNumberPattern = /^\d{11}$/;
@@ -55,7 +57,6 @@ export const RegisterFormSchema = z.object({
 
 export const useRegisterForm = () => {
   const { successToast, errorToast } = useNotifyToast();
-
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
@@ -70,16 +71,23 @@ export const useRegisterForm = () => {
     },
   });
 
+  const { email, password } = form.getValues();
+  const { data: response } = useApi(registerUser(email, password), {
+    active: form.formState.isSubmitting,
+  });
+
   const submit = form.handleSubmit(async (values) => {
     try {
-      successToast({
-        title: "Register Info",
-        description: `Registering user with email: ${values.email}`,
-      });
-    } catch (error) {
+      if (response) {
+        successToast({
+          title: "Register Info",
+          description: `Registering user with email: ${values.email}`,
+        });
+      }
+    } catch {
       errorToast({
         title: "Error in Registering",
-        description: JSON.stringify(form.formState.errors),
+        description: JSON.stringify(response || form.formState.errors),
       });
     }
   });

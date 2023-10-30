@@ -2,6 +2,7 @@ import json
 from http import HTTPStatus
 from typing import List, Union
 
+from model.events.events_constants import EventStatus
 from model.registrations.registration import (
     RegistrationIn,
     RegistrationOut,
@@ -37,9 +38,26 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If successful, returns the created registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, _, message = self.__events_repository.query_events(event_id=registration_in.eventId)
+        status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        # Check if the event is still open
+        if event.status != EventStatus.OPEN.value:
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Event is not open for registration'}
+            )
+
+        # Check if the registration with the same email already exists
+        event_id = registration_in.eventId
+        email = registration_in.email
+        status, registrations, message = self.__registrations_repository.query_registrations_with_email(
+            event_id=event_id, email=email
+        )
+        if status == HTTPStatus.OK and registrations:
+            return JSONResponse(
+                status_code=status, content={'message': f'Registration with email {email} already exists'}
+            )
 
         status, registration, message = self.__registrations_repository.store_registration(registration_in)
         if status != HTTPStatus.OK:
