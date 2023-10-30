@@ -5,7 +5,7 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
-  bucket: ${self:custom.projectName}-bucket
+  bucket: ${self:custom.stage}-${self:custom.projectName}-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   emailQueue:
@@ -36,23 +36,6 @@ provider:
         Action: execute-api:Invoke
         Principal: "*"
         Resource: execute-api:/*/*/*
-  s3:
-    sparcsBucket:
-      name: ${self:custom.bucket}
-      versioningConfiguration:
-        Status: Enabled
-      corsConfiguration:
-        CorsRules:
-          - AllowedHeaders: ['*']
-            AllowedMethods: [GET, PUT]
-            AllowedOrigins: ['*']
-            Id: CORSRuleId1
-            MaxAge: '3600'
-      publicAccessBlockConfiguration:
-          BlockPublicAcls: false
-          IgnorePublicAcls: false
-          BlockPublicPolicy: false
-          RestrictPublicBuckets: false
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.stage}
@@ -60,6 +43,7 @@ provider:
     REGISTRATIONS_TABLE: ${self:custom.registrations}
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EMAIL_QUEUE: ${self:custom.emailQueue}
+    S3_BUCKET: ${self:custom.bucket}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:provider.stage}
     USER_POOL_CLIENT_ID:
@@ -71,10 +55,11 @@ provider:
 resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
+  - ${file(resources/s3.yml)}
 
 functions:
   - ${file(resources/api.yml)}
-  - ${file(resources/s3.yml)}
+  - ${file(resources/functions.yml)}
 
 plugins:
   - serverless-python-requirements

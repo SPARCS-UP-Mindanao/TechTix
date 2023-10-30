@@ -1,7 +1,6 @@
-from enum import Enum
-
 class FileUploadConstants:
     UPLOAD_TYPE = 'uploadType'
+    FILE_NAME = 'fileName'
 
 class ClientMethods:
     PUT_OBJECT = 'put_object'

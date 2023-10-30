@@ -1,18 +1,20 @@
-s3_upload_object:
-  handler: functions/events_upload_handler.handler
-  environment:
-    STAGE: ${self:provider.stage}
-  layers:
-    - { Ref: PythonRequirementsLambdaLayer }
-  events:
-    - s3: 
-        bucket: sparcsBucket
-        event: s3:ObjectCreated:*
-        rules:
-          - prefix: events/
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - "dynamodb:*"
-      Resource:
-        - { "Fn::GetAtt": [Entities, Arn] }
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.bucket}
+      VersioningConfiguration:
+        Status: Enabled
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT]
+            AllowedOrigins: ['*']
+            Id: CORSRuleId1
+            MaxAge: '3600'
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          IgnorePublicAcls: false
+          BlockPublicPolicy: false
+          RestrictPublicBuckets: false
+
