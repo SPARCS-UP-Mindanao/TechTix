@@ -4,10 +4,9 @@ import Input from "@/components/Input";
 const RegisterForm1 = () => {
     return (
         <>
-            <h1 className="text-xl">Register</h1>
             <FormItem name="firstName">
                 {({ field }) => (
-                <div className="flex flex-col items-start mb-5 space-y-2">
+                <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                     <FormLabel>First Name</FormLabel>
                     <Input type="text" className="bg-white text-black" {...field} />
                     <FormError />
@@ -17,7 +16,7 @@ const RegisterForm1 = () => {
 
             <FormItem name="lastName">
                 {({ field }) => (
-                <div className="flex flex-col items-start mb-5 space-y-2">
+                <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                     <FormLabel>Last Name</FormLabel>
                     <Input type="text" className="bg-white text-black" {...field} />
                     <FormError />
@@ -27,7 +26,7 @@ const RegisterForm1 = () => {
 
             <FormItem name="email">
                 {({ field }) => (
-                <div className="flex flex-col items-start mb-5 space-y-2">
+                <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                     <FormLabel>Email</FormLabel>
                     <Input type="email" className="bg-white text-black"{...field} />
                     <FormError />
@@ -37,7 +36,7 @@ const RegisterForm1 = () => {
 
             <FormItem name="contactNumber">
                 {({ field }) => (
-                <div className="flex flex-col items-start mb-5 space-y-2">
+                <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                     <FormLabel>Contact #</FormLabel>
                     <Input type="text" placeholder="09XXXXXXXXX" className="bg-white text-black" {...field} />
                     <FormError />

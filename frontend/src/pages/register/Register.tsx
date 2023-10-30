@@ -13,41 +13,52 @@ import EventDetails from "./EventDetails";
 const steps = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'];
 
 const Register = () => {
-  const { form, submit } = useRegisterForm();
+  const { form, submit } = useRegisterForm('0');
 
-  const [currentStep, setCurrentStep] = useState(steps[0]);
+  const [currentStep, setCurrentStep] = useState(steps[1]); // Start with 'UserBio' step
+
   const nextStep = () => {
-    setCurrentStep((prevStep) => steps[steps.indexOf(prevStep) + 1]);
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
+    }
   };
 
   const prevStep = () => {
-    setCurrentStep((prevStep) => steps[steps.indexOf(prevStep) - 1]);
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1]);
+    }
   };
 
   return (
     <>
       <div className="flex flex-col items-center justify-center w-full">
-        <div className="w-12 h-12 rounded-full bg-pure-midnight mb-4"></div>
+        <div className="w-12 h-12 rounded-full bg-primary-100 mb-4"></div>
         <img src={sparcsApplicationimage} />
+
         <FormProvider {...form}>
-          <Stepper />
+          {currentStep !== 'EventDetails' && <Stepper currentStep={currentStep} />}
+          {currentStep !== 'EventDetails' && <h1 className="text-xl">Register</h1>}
           {currentStep === 'EventDetails' && <EventDetails />}
           {currentStep === 'UserBio' && <RegisterForm1 />}
           {currentStep === 'PersonalInfo' && <RegisterForm2 />}
           {currentStep === 'Summary' && <Summary />}
 
-          {currentStep === 'EventDetails' && <Button onClick={nextStep} className="text-white bg-gradient-to-r from-blue-700 to-pink-500">Register</Button>}
-          {currentStep === 'UserBio' &&
-            <div className="flex flex-row gap-40">
-              <Button onClick={prevStep} className="text-palatinate-blue"><Icon name="CaretLeft" />Back</Button>
-              <Button onClick={nextStep} className="bg-palatinate-blue">Next<Icon name="CaretRight" /></Button>
-            </div>}
-          {currentStep === 'PersonalInfo' &&
-            <div className="flex flex-row gap-40">
-              <Button onClick={prevStep} className="text-palatinate-blue"><Icon name="CaretLeft" />Back</Button>
-              <Button onClick={nextStep} className="bg-palatinate-blue">Next<Icon name="CaretRight" /></Button>
-            </div>}
-          {currentStep === 'Summary' && <Button onClick={submit} className="bg-palatinate-blue">Submit</Button>}
+          <div className="flex w-full justify-around">
+            {currentStep === 'EventDetails' && (
+              <Button onClick={nextStep} className="text-white bg-gradient-to-r from-blue-700 to-pink-500">Register</Button>
+            )}
+            {currentStep !== 'EventDetails' && (
+              <Button onClick={prevStep} className="bg-primary text-primary-500 border border-primary-500">Back<Icon name="CaretLeft" /></Button>
+            )}
+            {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
+              <Button onClick={nextStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
+            )}
+            {currentStep === 'Summary' && (
+              <Button onClick={submit} className="bg-primary-500 text-primary">Submit<Icon name="Check" /></Button>
+            )}
+          </div>
         </FormProvider>
       </div>
     </>

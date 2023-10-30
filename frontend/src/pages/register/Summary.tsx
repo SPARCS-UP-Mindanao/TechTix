@@ -12,6 +12,7 @@ const Summary = () => {
             <p>{summary.lastName}</p>
             <p>{summary.email}</p>
             <p>{summary.contactNumber}</p>
+            
             <h3>Personal Information</h3>
             <p>{summary.status}</p>
             <p>{summary.yearsOfExperience}</p>

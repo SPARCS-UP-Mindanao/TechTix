@@ -68,6 +68,7 @@ export const getEvent = (entryId: string) =>
     url: `/events/${entryId}`,
     output: mapEventDtoToEvent,
   });
+  
 export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
     method: "put",

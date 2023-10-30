@@ -11,13 +11,12 @@ import {
 
 const RegisterForm1 = () => {
     const form  = useFormContext(); 
-    const status = form.watch('status');
+    const careerStatus = form.watch('careerStatus');
     return (
         <>
-            <h1 className="text-xl">Register</h1>
             <FormItem name="status">
                 {({ field }) => (
-                    <div className="flex flex-col items-start mb-5 space-y-2">
+                    <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                         <FormLabel>Status</FormLabel>
                         <Select
                             onValueChange={field.onChange}
@@ -36,7 +35,7 @@ const RegisterForm1 = () => {
                 )}
             </FormItem>
 
-            {status === "Professional" && (
+            {careerStatus === "Professional" && (
                 <FormItem name="yearsOfExperience">
                     {({ field }) => (
                         <div className="flex flex-col items-start mb-5 space-y-2">
@@ -63,7 +62,7 @@ const RegisterForm1 = () => {
 
             <FormItem name="organization">
                 {({ field }) => (
-                    <div className="flex flex-col items-start mb-5 space-y-2">
+                    <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                         <FormLabel optional>Organization</FormLabel>
                         <Input
                             type="text"
@@ -78,7 +77,7 @@ const RegisterForm1 = () => {
 
             <FormItem name="title">
                 {({ field }) => (
-                    <div className="flex flex-col items-start mb-5 space-y-2">
+                    <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                         <FormLabel optional>Title</FormLabel>
                         <Input
                             type="text"

@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useNotifyToast } from "@/hooks/useNotifyToast";
-import { useApi } from "./useApi";
-import { registerUser } from "@/api/auth";
+import { useFetchQuery } from "./useApi";
+import { registerUserInEvent } from "@/api/registrations";
 
 const isValidContactNumber = (value: string) => {
   const phoneNumberPattern = /^\d{11}$/;
@@ -26,7 +26,7 @@ export const RegisterFormSchema = z.object({
     {
     message: "Please enter your contact number",
   }),
-  status: z.string().min(1, {
+  careerStatus: z.string().min(1, {
     message: "Please enter your current status"
   }),
   yearsOfExperience: z.string().min(1, {
@@ -34,29 +34,11 @@ export const RegisterFormSchema = z.object({
   }),
   organization: z.string().optional(),
   title: z.string().optional(),
-  })
-  // description: z.string().min(4, {
-  //   message: "Please enter description",
-  // }),
-  // date: z.date().min(new Date(2023, 0, 1), {
-  //   message: "Select Date",
-  // }),
-  // venue: z.string().min(4, {
-  //   message: "Please enter venue",
-  // }),
-  // eventBanner: z.string().refine((value) => {
-  //   return /\.(jpg|jpeg|png|gif|bmp)$/i.test(value);
-  // }, {
-  //   message: "Please enter a valid image file (jpg, jpeg, png, gif, bmp)",
-  // }),
-  // eventLogo: z.string().refine((value) => {
-  //   return /\.(jpg|jpeg|png|gif|bmp)$/i.test(value);
-  // }, {
-  //   message: "Please enter a valid image file (jpg, jpeg, png, gif, bmp)",
-  // }),
+  });
 
-export const useRegisterForm = () => {
+export const useRegisterForm = (entryId: string) => {
   const { successToast, errorToast } = useNotifyToast();
+  const { fetchQuery } = useFetchQuery();
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
@@ -64,30 +46,28 @@ export const useRegisterForm = () => {
       firstName: "",
       lastName: "",
       contactNumber: "",
-      status: "",
+      careerStatus: "",
       yearsOfExperience: "",
       organization: "",
       title: "",
     },
   });
 
-  const { email, password } = form.getValues();
-  const { data: response } = useApi(registerUser(email, password), {
-    active: form.formState.isSubmitting,
-  });
-
   const submit = form.handleSubmit(async (values) => {
     try {
+      const response = await fetchQuery(registerUserInEvent({
+        eventId: entryId, certificateClaimed: false, ...values,
+      }));
       if (response) {
         successToast({
           title: "Register Info",
           description: `Registering user with email: ${values.email}`,
         });
       }
-    } catch {
+    } catch(error) {
       errorToast({
         title: "Error in Registering",
-        description: JSON.stringify(response || form.formState.errors),
+        description: JSON.stringify(error || form.formState.errors),
       });
     }
   });

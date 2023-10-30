@@ -13,7 +13,7 @@ const LoginFormSchema = z.object({
     message: "Please enter a valid email address",
   }),
   password: z.string().min(8, {
-    message: "Please enter atleast 8 characters",
+    message: "Please enter at least 8 characters",
   }),
 });
 
