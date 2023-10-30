@@ -6,8 +6,9 @@ from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path
 from model.common import Message
 from model.events.event import EventIn, EventOut
+from model.events.events_constants import EventUploadTypes
 from model.file_uploads.file_upload import FileUploadOut
-from model.file_uploads.file_upload_constants import FileUploadConstants, EventUploadTypes
+from model.file_uploads.file_upload_constants import FileUploadConstants
 from usecase.event_usecase import EventUsecase
 
 event_router = APIRouter()
