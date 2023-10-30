@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class EventStatus(Enum):
+class EventStatus(str, Enum):
     DRAFT = 'draft'
     OPEN = 'open'
     CANCELLED = 'cancelled'

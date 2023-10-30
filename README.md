@@ -5,4 +5,6 @@
 - AWS Lambda
 - Python
 - FastAPI
-- React + Vite + TypeScript
+- Vite
+- React + Typescript
+- Shadcn/ui

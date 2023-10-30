@@ -1,5 +1,5 @@
 import { createApiReturn } from "@/api/utils/createApi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface QueryOptions {
   active?: boolean;
@@ -20,4 +20,11 @@ export function useApi<T>(
     suspense,
     keepPreviousData,
   });
+}
+
+export function useFetchQuery<T>() {
+  const queryClient = useQueryClient();
+  const fetchQuery = async (api: createApiReturn<T>) =>
+    await queryClient.fetchQuery(api.queryKey, api.queryFn);
+  return { fetchQuery };
 }
