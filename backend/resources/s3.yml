@@ -8,7 +8,7 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ['*']
-            AllowedMethods: [GET, PUT]
+            AllowedMethods: [GET, PUT, HEAD]
             AllowedOrigins: ['*']
             Id: CORSRuleId1
             MaxAge: '3600'
