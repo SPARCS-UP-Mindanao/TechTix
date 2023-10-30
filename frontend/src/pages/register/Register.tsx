@@ -15,7 +15,7 @@ const steps = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'];
 const Register = () => {
   const { form, submit } = useRegisterForm('0');
 
-  const [currentStep, setCurrentStep] = useState(steps[1]); // Start with 'UserBio' step
+  const [currentStep, setCurrentStep] = useState(steps[0]); // Start with 'EventDetails' step
 
   const nextStep = () => {
     const currentIndex = steps.indexOf(currentStep);
