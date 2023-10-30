@@ -10,6 +10,7 @@ from model.events.events_constants import EventUploadTypes
 from model.file_uploads.file_upload import FileUploadOut
 from model.file_uploads.file_upload_constants import FileUploadConstants
 from usecase.event_usecase import EventUsecase
+from usecase.file_upload_usecase import FileUploadUsecase
 
 event_router = APIRouter()
 
@@ -151,7 +152,9 @@ def delete_event(
 )
 def get_presigned_url(
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
-    upload_type: EventUploadTypes = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE)
+    upload_type: EventUploadTypes = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE),
+    current_user: AccessUser = Depends(get_current_user),
 ):
-    events_uc = EventUsecase()
-    return events_uc.generate_presigned_url(entry_id, upload_type.value)
+    _ = current_user
+    file_upload_uc = FileUploadUsecase()
+    return file_upload_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}')
