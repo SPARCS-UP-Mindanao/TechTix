@@ -13,8 +13,8 @@ export interface Event {
   certificateTemplate: string;
   status: string;
   entryId: string;
-  createDate: Date;
-  updateDate: Date;
-  createdBy: string;
-  updatedBy: string;
+  createDate?: Date;
+  updateDate?: Date;
+  createdBy?: string;
+  updatedBy?: string;
 }
