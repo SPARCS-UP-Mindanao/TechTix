@@ -7,14 +7,14 @@ from model.file_uploads.file_upload import FileUploadOut
 from repository.events_repository import EventsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
-from usecase import file_upload_usecase
+from usecase.file_upload_usecase import FileUploadUsecase
 
 
 class EventUsecase:
     def __init__(self):
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
-        self.__file_upload_usecase = file_upload_usecase.FileUploadUsecase()
+        self.__file_upload_usecase = FileUploadUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         status, event, message = self.__events_repository.store_event(event_in)
