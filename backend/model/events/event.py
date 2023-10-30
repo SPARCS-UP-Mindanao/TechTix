@@ -2,7 +2,7 @@ from datetime import datetime
 
 from model.entities import Entities
 from model.events.events_constants import EventStatus
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, EmailStr, Extra, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 
 
@@ -30,7 +30,7 @@ class EventIn(BaseModel):
 
     name: str = Field(None, title="Name")
     description: str = Field(None, title="Description")
-    email: str = Field(None, title="Email")
+    email: EmailStr = Field(None, title="Email")
     startDate: datetime = Field(None, title="Date")
     endDate: datetime = Field(None, title="Date")
     venue: str = Field(None, title="Venue")
@@ -40,13 +40,13 @@ class EventIn(BaseModel):
     payedEvent: bool = Field(None, title="Payed Event")
     price: float = Field(None, title="Price")
     certificateTemplate: str = Field(None, title="Certificate Template")
+    status: EventStatus = Field(..., title="Event Status")
 
 
 class EventOut(EventIn):
     class Config:
         extra = Extra.ignore
 
-    status: EventStatus = Field(..., title="Status")
     entryId: str = Field(..., title="ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")

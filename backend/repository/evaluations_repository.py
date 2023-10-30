@@ -4,8 +4,7 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
-from model.evaluations.evaluation import Evaluation, EvaluationIn
-from model.evaluations.evaluations_constants import EvaluationStatus
+from model.evaluations.evaluation import Evaluation, EvaluationListIn, EvaluationPatch
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -24,24 +23,29 @@ class EvaluationRepository:
         self.current_date = datetime.utcnow().isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
-    def store_evaluation(self, evaluation_in: EvaluationIn) -> Tuple[HTTPStatus, Evaluation, str]:
-        data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in)
-        registration_id = evaluation_in.registrationId
-        range_key = f'{registration_id}#{evaluation_in.question}'
-        hash_key = evaluation_in.eventId
+    def store_evaluation(self, evaluation_list_in: EvaluationListIn) -> Tuple[HTTPStatus, List[Evaluation], str]:
+        hash_key = event_id = evaluation_list_in.eventId
+        registration_id = evaluation_list_in.registrationId
 
         try:
-            evaluation_entry = Evaluation(
-                hashKey=hash_key,
-                rangeKey=range_key,
-                createDate=self.current_date,
-                updateDate=self.current_date,
-                createdBy=os.getenv('CURRENT_USER'),
-                updatedBy=os.getenv('CURRENT_USER'),
-                status=EvaluationStatus.DRAFT.value,
-                **data,
-            )
-            evaluation_entry.save()
+            evaluation_items = []
+            for evaluation_in in evaluation_list_in.evaluationList:
+                data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in)
+                range_key = f'{registration_id}#{evaluation_in.question}'
+                evaluation_entry = Evaluation(
+                    hashKey=hash_key,
+                    rangeKey=range_key,
+                    createDate=self.current_date,
+                    updateDate=self.current_date,
+                    registrationId=registration_id,
+                    eventId=event_id,
+                    **data,
+                )
+                evaluation_items.append(evaluation_entry)
+
+            with Evaluation.batch_write() as batch:
+                for item in evaluation_items:
+                    batch.save(item)
 
         except PutError as e:
             message = f'Failed to save evaluation strategy form: {str(e)}'
@@ -57,7 +61,7 @@ class EvaluationRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             logging.info(f'[{self.core_obj} = {hash_key}, {range_key}]: Save Evaluations strategy data successful')
-            return HTTPStatus.OK, evaluation_entry, None
+            return HTTPStatus.OK, evaluation_items, None
 
     def query_evaluations(
         self, event_id: str = None, registration_id: str = None, question: str = None
@@ -138,7 +142,7 @@ class EvaluationRepository:
             return HTTPStatus.OK, evaluation_entries, None
 
     def update_evaluation(
-        self, evaluation_entry: Evaluation, evaluation_in: EvaluationIn
+        self, evaluation_entry: Evaluation, evaluation_in: EvaluationPatch
     ) -> Tuple[HTTPStatus, Evaluation, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
@@ -152,7 +156,6 @@ class EvaluationRepository:
                 # update entry
                 updated_data.update(
                     updateDate=self.current_date,
-                    updatedBy=os.getenv('CURRENT_USER'),
                 )
                 actions = [getattr(Evaluation, k).set(v) for k, v in updated_data.items()]
                 transaction.update(evaluation_entry, actions=actions)

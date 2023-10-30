@@ -1,9 +1,15 @@
 import os
 from datetime import datetime
+from typing import List
 
-from model.evaluations.evaluations_constants import EvaluationStatus
+from model.evaluations.evaluations_constants import EvaluationQuestionType, QuestionType
 from pydantic import BaseModel, Extra, Field
-from pynamodb.attributes import NumberAttribute, UnicodeAttribute
+from pynamodb.attributes import (
+    BooleanAttribute,
+    ListAttribute,
+    NumberAttribute,
+    UnicodeAttribute,
+)
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
 from pynamodb.models import Model
 
@@ -39,10 +45,12 @@ class Evaluation(Model):
     eventId = UnicodeAttribute(null=False)
     registrationId = UnicodeAttribute(null=False)
     question = UnicodeAttribute(null=False)
+    questionType = UnicodeAttribute(null=False)
     answer = UnicodeAttribute(null=True)
     answerScale = NumberAttribute(null=True)
+    multipleAnswers = ListAttribute(null=True)
+    booleanAnswer = BooleanAttribute(null=True)
 
-    status = UnicodeAttribute(null=True)
     createDate = UnicodeAttribute(null=False)
     updateDate = UnicodeAttribute(null=False)
 
@@ -51,23 +59,34 @@ class EvaluationPatch(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    question: str = Field(None, title="Question")
     answer: str = Field(None, title="Answer")
     answerScale: int = Field(None, title="Answer Scale")
+    multipleAnswers: List[str] = Field(None, title="Multiple Answers")
+    booleanAnswer: bool = Field(None, title="Boolean Answer")
+    questionType: QuestionType = Field(None, title="Question Type")
 
 
 class EvaluationIn(EvaluationPatch):
     class Config:
         extra = Extra.forbid
 
+    question: EvaluationQuestionType = Field(None, title="Question")
+
+
+class EvaluationListIn(BaseModel):
+    class Config:
+        extra = Extra.forbid
+
+    evaluationList: List[EvaluationIn] = Field(None, title="List of Evaluations")
     eventId: str = Field(None, title="Event ID")
     registrationId: str = Field(None, title="Registration ID")
 
 
-class EvaluationOut(EvaluationPatch):
+class EvaluationOut(EvaluationIn):
     class Config:
         extra = Extra.ignore
 
-    status: EvaluationStatus = Field(..., title="Status")
+    eventId: str = Field(None, title="Event ID")
+    registrationId: str = Field(None, title="Registration ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
