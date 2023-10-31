@@ -12,10 +12,10 @@ const Stepper = ({ currentStep }: StepperProps) => {
       {steps.map((step, index) => (
         <div key={step} className="flex items-center">
           <div
-            className={`w-9 h-9 rounded-full ${
+            className={`w-9 h-9 rounded-full text-center ${
               step === currentStep
-                ? 'bg-primary-500 text-white'
-                : 'bg-primary-100 text-primary-500'
+                ? 'bg-primary-500 text-white pt-1'
+                : 'bg-primary-100 text-primary-500 pt-1'
             }`}
           >
             {index + 1}
