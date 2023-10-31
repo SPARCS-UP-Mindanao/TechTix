@@ -75,18 +75,16 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        fields = {
-            upload_type: object_key,
-            "status": event.status # required
-        }
+        fields = {upload_type: object_key, "status": event.status}  # required
 
-        status, update_event, message = self.__events_repository.update_event_after_s3_upload(event_entry=event, event_in=EventIn(**fields))
+        status, update_event, message = self.__events_repository.update_event_after_s3_upload(
+            event_entry=event, event_in=EventIn(**fields)
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         event_data = self.__convert_data_entry_to_dict(update_event)
         return EventOut(**event_data)
-
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):

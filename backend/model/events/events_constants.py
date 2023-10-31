@@ -8,13 +8,14 @@ class EventStatus(str, Enum):
     CLOSED = 'closed'
     COMPLETED = 'completed'
 
+
 class EventUploadType(str, Enum):
     BANNER = 'banner'
     LOGO = 'logo'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
 
+
 class EventUploadField(str, Enum):
     BANNER = 'bannerLink'
     LOGO = 'logoLink'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
-

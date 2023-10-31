@@ -120,7 +120,7 @@ export default {
             800: "hsl(var(--negative-800))",
             900: "hsl(var(--negative-900))",
             950: "hsl(var(--negative-950))"
-          },  
+          },
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
