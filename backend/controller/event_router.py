@@ -6,7 +6,11 @@ from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path
 from model.common import Message
 from model.events.event import EventIn, EventOut
+from model.events.events_constants import EventUploadType
+from model.file_uploads.file_upload import FileUploadOut
+from model.file_uploads.file_upload_constants import FileUploadConstants
 from usecase.event_usecase import EventUsecase
+from usecase.file_upload_usecase import FileUploadUsecase
 
 event_router = APIRouter()
 
@@ -130,3 +134,28 @@ def delete_event(
     _ = current_user
     events_uc = EventUsecase()
     return events_uc.delete_event(entry_id)
+
+@event_router.get(
+    '/{entryId}/upload/{uploadType}/{fileName}',
+    response_model=FileUploadOut,
+    responses={
+        500: {"model": Message, "description": "Interal server error" }
+    },
+    summary="Get presigned URL",
+)
+@event_router.get(
+    '/{entryId}/upload/{uploadType}/{fileName}',
+    response_model=FileUploadOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_presigned_url(
+    entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
+    upload_type: EventUploadType = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE),
+    file_name: str = Path(..., title='Filename', alias=FileUploadConstants.FILE_NAME),
+    current_user: AccessUser = Depends(get_current_user)
+):
+    _ = current_user
+    file_upload_uc = FileUploadUsecase()
+    return file_upload_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}/{file_name}')
