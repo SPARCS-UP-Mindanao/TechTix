@@ -10,27 +10,39 @@ import App from "@/App";
 import AdminPage from "@/pages/admin/AdminPage";
 import Error404 from "@/pages/Error404";
 import AdminEventPage from "@/pages/admin/event/event/AdminEventPage";
+import EventsHomePage from "@/pages/event/EventsHomePage";
 
 export const routes = createBrowserRouter(
   [
     {
       path: "/",
       element: App(),
-    },
-    {
-      path: "/register",
-      element: RegisterPage(),
-    },
-    {
-      path: "/evaluate",
-      element: EvaluatePage(),
+      children: [
+        {
+          path: ":eventId",
+          children:[
+            {
+              index: true,
+              element: EventsHomePage(),
+            },
+            {
+              path: "register",
+              element: RegisterPage(),
+            },
+            {
+              path: "evaluate",
+              element: EvaluatePage(),
+            },
+          ]
+        },
+      ]
     },
     {
       path: "/admin/login",
       element: AdminLoginPage(),
     },
     {
-      path: "admin/events",
+      path: "/admin/events",
       element: AdminPage(),
       children: [
         {
