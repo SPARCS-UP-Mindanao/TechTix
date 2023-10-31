@@ -1,5 +1,6 @@
 import os
-from model.events.events_constants import EventUploadFields, EventUploadTypes
+from typing import Tuple
+from model.events.events_constants import EventUploadField, EventUploadType
 from model.file_uploads.file_upload import FileUploadOut
 
 from model.file_uploads.file_upload_constants import ClientMethods
@@ -14,7 +15,7 @@ class FileUploadUsecase:
                              region_name=os.getenv('REGION', 'ap-southeast-1'),
                              config=Config(signature_version="s3v4"),
                          )
-        self.__bucket = os.getenv('S3_BUCKET', 'sparcs-events-bucket')
+        self.__bucket = os.getenv('S3_BUCKET')
         self.__presigned_url_expiration_time = 30
 
     def create_presigned_url(self, object_key) -> FileUploadOut:
@@ -34,17 +35,17 @@ class FileUploadUsecase:
 
         return FileUploadOut(**url_data)
 
-    def get_values_from_object_key(self, object_key) -> dict:
+    def get_values_from_object_key(self, object_key) -> Tuple[str, str]:
         object_key_split = object_key.split('/')
         entry_id = object_key_split[1]
         upload_type = object_key_split[2]
 
-        if upload_type == EventUploadTypes.BANNER.value:
-            upload_type = EventUploadFields.BANNER.value
-        elif upload_type ==EventUploadTypes.LOGO.value:
-            upload_type = EventUploadFields.LOGO.value
-
-        return { 
-            'entry_id': entry_id,
-            'upload_type': upload_type
+        type_to_field_map = {
+            EventUploadType.BANNER.value: EventUploadField.BANNER,
+            EventUploadType.LOGO.value: EventUploadField.LOGO,
+            EventUploadField.CERTIFICATE_TEMPLATE.value: EventUploadField.CERTIFICATE_TEMPLATE
         }
+
+        upload_type = type_to_field_map[upload_type]
+
+        return entry_id, upload_type.value

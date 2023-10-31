@@ -69,9 +69,7 @@ class EventUsecase:
         return None
 
     def update_event_after_s3_upload(self, object_key) -> Union[JSONResponse, EventOut]:
-        upload_data = self.__file_upload_usecase.get_values_from_object_key(object_key)
-        event_id = upload_data["entry_id"]
-        upload_type = upload_data["upload_type"]
+        event_id, upload_type = self.__file_upload_usecase.get_values_from_object_key(object_key)
 
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
