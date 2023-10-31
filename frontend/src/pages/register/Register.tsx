@@ -50,7 +50,7 @@ const Register = () => {
               <Button onClick={nextStep} className="text-white bg-gradient-to-r from-blue-700 to-pink-500">Register</Button>
             )}
             {currentStep !== 'EventDetails' && (
-              <Button onClick={prevStep} className="bg-primary text-primary-500 border border-primary-500">Back<Icon name="CaretLeft" /></Button>
+              <Button onClick={prevStep} className="bg-primary text-primary-500 border border-primary-500"><Icon name="CaretLeft" />Back</Button>
             )}
             {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
               <Button onClick={nextStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
