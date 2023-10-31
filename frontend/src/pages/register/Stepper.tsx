@@ -2,7 +2,11 @@ import React from 'react';
 
 const steps = ['UserBio', 'PersonalInfo', 'Summary'];
 
-const Stepper = ({ currentStep }) => {
+interface StepperProps {
+  currentStep: string;
+}
+
+const Stepper = ({ currentStep }: StepperProps) => {
   return (
     <div className="flex items-center">
       {steps.map((step, index) => (
