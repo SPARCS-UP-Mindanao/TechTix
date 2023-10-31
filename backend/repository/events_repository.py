@@ -172,7 +172,7 @@ class EventsRepository:
             message = f'Failed to delete event data: {str(e)}'
             logging.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
-    
+
     def update_event_after_s3_upload(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
         """
         This method is almost the same as the update_event() method,

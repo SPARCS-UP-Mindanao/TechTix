@@ -17,4 +17,3 @@ Resources:
           IgnorePublicAcls: false
           BlockPublicPolicy: false
           RestrictPublicBuckets: false
-

@@ -3,7 +3,7 @@ from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventUploadType
@@ -135,16 +135,15 @@ def delete_event(
     events_uc = EventUsecase()
     return events_uc.delete_event(entry_id)
 
+
 @event_router.get(
-    '/{entryId}/upload/{uploadType}/{fileName}',
+    '/{entryId}/upload/{uploadType}',
     response_model=FileUploadOut,
-    responses={
-        500: {"model": Message, "description": "Interal server error" }
-    },
+    responses={500: {"model": Message, "description": "Interal server error"}},
     summary="Get presigned URL",
 )
 @event_router.get(
-    '/{entryId}/upload/{uploadType}/{fileName}',
+    '/{entryId}/upload/{uploadType}/',
     response_model=FileUploadOut,
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
@@ -153,8 +152,8 @@ def delete_event(
 def get_presigned_url(
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     upload_type: EventUploadType = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE),
-    file_name: str = Path(..., title='Filename', alias=FileUploadConstants.FILE_NAME),
-    current_user: AccessUser = Depends(get_current_user)
+    file_name: str = Query(..., title='Filename', alias=FileUploadConstants.FILE_NAME),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     file_upload_uc = FileUploadUsecase()

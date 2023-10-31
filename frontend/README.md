@@ -44,7 +44,7 @@ Our project has a design system. You can view it [here](https://www.figma.com/fi
 Fortunately, the colors and fonts are now integrated tailwind, which makes it easy for us to style.
 ![image](https://github.com/SPARCS-UP-Mindanao/SPARCS-Event-Platform/assets/85269524/801c200c-22b1-4762-afd2-65dbd3d547a9)
 
-colors and fonts can simply be accessed in these ways: 
+colors and fonts can simply be accessed in these ways:
 - `className="text-primary-500"`
 - `className="bg-secondary-pink-300"`
 - `className="font-raleway"`
@@ -100,7 +100,7 @@ return (
               <div>
                 <FormLabel>{Label}</FormLabel>
                 <Input type={inputType} {...field} />
-                <FormDescription>{description}<FormDescription/> 
+                <FormDescription>{description}<FormDescription/>
                 <FormError />
               </div>
             )}
@@ -119,14 +119,14 @@ With this implementation, we can easily add custom components. We just need to p
 for anything about `field`, `fieldState`, and `formState`, please read up on [`react-hook-form`](https://react-hook-form.com/) and about [Controllers](https://react-hook-form.com/docs/usecontroller/controller).
 
 ## Hooks
-These contain the logic for most pages like handling forms. We can use this to separate the design from its logic. 
+These contain the logic for most pages like handling forms. We can use this to separate the design from its logic.
 Usually, these hooks return functions or variables needed to apply the logic to our design.
 You can read more about it [here](https://react.dev/learn/reusing-logic-with-custom-hooks).
 
 For naming hooks, we will use Camel case with the starting word `use`. Example: `useCamelCase`
 
 ## Code formatting
-Please use `prettier` for formatting code to make it look cleaner. 
+Please use `prettier` for formatting code to make it look cleaner.
 
 You can find it as an extension in `VSCode`
 
