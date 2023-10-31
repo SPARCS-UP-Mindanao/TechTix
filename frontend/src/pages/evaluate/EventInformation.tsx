@@ -11,7 +11,9 @@ import {
 import Input from "@/components/Input";
 import { FormProvider } from "react-hook-form";
 import Button from "@/components/Button";
+import Icon from "@/components/Icon";
 import image_placeholder from "./image_placeholder/sparcs-image-placeholder.png";
+import sparcs_logo_white from "../../assets/logos/sparcs_logo_white.png"
 
 const ClaimCertificateSchema = z.object({
   email: z.string().email({
@@ -43,7 +45,7 @@ const EventInformation = () => {
     <>
       <div className="flex flex-col items-center pt-4">
         <div className="h-12 w-12">
-          <Avatar src="https://github.com/shadcn.png" fallback="CN" />
+          <Avatar src={sparcs_logo_white} fallback="CN" />
         </div>
         <div className="mt-6 sm:h-72 w-[91vw] drop-shadow-xl">
           <img
@@ -52,7 +54,51 @@ const EventInformation = () => {
             className="rounded-2xl object-center object-cover w-full h-full"
           />
         </div>
-        <p className="mt-7 text-xl font-bold">
+        <div className="mt-6 w-[91vw]">
+          <p className="text-xl font-subjectivity font-bold text-left leading-6">UP Mindanao SPARCS Application A.Y 2023 - 2024</p>
+          <div className="w-full mt-3.5 space-y-1.5 items-start">
+            <div className="flex">
+              <Icon name="Clock" weight="light" className="w-6 h-6" />
+              <span className="text-sm font-raleway font-medium text-left leading-5 ml-1">November 11, 2023  |  12:30 – 5:00 PM GMT+8</span>
+            </div>
+            <div className="flex">
+              <Icon name="MapPin" weight="light" className="w-6 h-6" />
+              <p className="text-sm font-raleway font-medium text-left leading-5 ml-1">UP Mindanao, Tugbok, Davao City, 8000 Davao del Sur</p>
+            </div>
+          </div>
+          <hr className="bg-neutral-200 my-9" />
+          <div>
+            <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
+            <FormProvider {...form}>
+                <FormItem name="email">
+                  {({ field }) => (
+                    <div className="flex flex-col items-start space-y-2">
+                      <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">
+                        Enter your e-mail
+                      </FormLabel>
+                      <Input
+                        type="email"
+                        {...field}
+                        className="text-neutral-300 rounded-2xl py-3 px-6 my-3 bg-neutral-900 tracking-tighter leading-5"
+                        placeholder="Email"
+                      />
+                      <FormDescription className="text-left font-raleway font-medium text-sm leading-4 tracking-tighter text-neutral-300">
+                        *Please enter the email address you used when registering for the event 
+                      </FormDescription>
+                      <FormError />
+                    </div>
+                  )}
+                </FormItem>
+                <Button
+                  onClick={submit}
+                  className="py-3 px-12 rounded-2xl font-bold font-raleway leading text-white bg-gradient-to-r from-[#4F65E3] to-[#F43F79]"
+                >
+                  Evaluate
+                </Button>
+              </FormProvider>
+          </div>
+        </div>
+        {/* <p className="mt-7 text-xl font-bold">
           UP Mindanao SPARCS Application A.Y 2023 - 2024
         </p>
         <div className="flex flex-col items-center h-64 w-[91vw] mt-8 rounded-2xl border-2 border-[#B0B0B0] bg-[#F6F6F6] p-4">
@@ -98,7 +144,7 @@ const EventInformation = () => {
               className="rounded-2xl object-center object-cover h-10"
             />
           ))}
-        </div>
+        </div> */}
       </div>
     </>
   );
