@@ -10,8 +10,13 @@ const isValidContactNumber = (value: string) => {
   return phoneNumberPattern.test(value);
 };
 
+const isValidEmail = (value: string) => {
+  const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  return emailPattern.test(value);
+};
+
 export const RegisterFormSchema = z.object({
-  email: z.string().email({
+  email: z.string().refine(isValidEmail, {
     message: "Please enter a valid email address",
   }),
 
@@ -21,20 +26,18 @@ export const RegisterFormSchema = z.object({
   lastName: z.string().min(1, {
     message: "Please enter your last name",
   }),
-  contactNumber: z.string().refine(
-    isValidContactNumber, 
-    {
-    message: "Please enter your contact number",
+  contactNumber: z.string().refine(isValidContactNumber, {
+    message: "Please enter a valid contact number",
   }),
   careerStatus: z.string().min(1, {
-    message: "Please enter your current status"
+    message: "Please enter your current status",
   }),
   yearsOfExperience: z.string().min(1, {
-    message: "Please enter years of experience"
+    message: "Please enter years of experience",
   }),
   organization: z.string().optional(),
   title: z.string().optional(),
-  });
+});
 
 export const useRegisterForm = (entryId: string) => {
   const { successToast, errorToast } = useNotifyToast();
@@ -56,7 +59,9 @@ export const useRegisterForm = (entryId: string) => {
   const submit = form.handleSubmit(async (values) => {
     try {
       const response = await fetchQuery(registerUserInEvent({
-        eventId: entryId, certificateClaimed: false, ...values,
+        eventId: entryId,
+        certificateClaimed: false,
+        ...values,
       }));
       if (response) {
         successToast({
@@ -64,7 +69,7 @@ export const useRegisterForm = (entryId: string) => {
           description: `Registering user with email: ${values.email}`,
         });
       }
-    } catch(error) {
+    } catch (error) {
       errorToast({
         title: "Error in Registering",
         description: JSON.stringify(error || form.formState.errors),
