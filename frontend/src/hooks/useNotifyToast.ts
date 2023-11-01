@@ -45,7 +45,7 @@ export const useNotifyToast = () => {
     title = "Error",
     description,
     icon = "XCircle",
-    iconClassname = "text-destructive",
+    iconClassname = "text-negative",
     duration = 5000,
   }: ToastProps) =>
     toast({

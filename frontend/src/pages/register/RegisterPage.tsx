@@ -4,8 +4,7 @@ import Register from "./Register";
 const RegisterPage = () => {
   return (
     <div>
-      RegisterPage
-      <Register />
+      <Register/>
     </div>
   );
 };

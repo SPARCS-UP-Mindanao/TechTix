@@ -24,18 +24,18 @@
   }
 
   h1 {
-    @apply scroll-m-20 text-4xl font-subjectivity font-extrabold tracking-tight lg:text-5xl;
+    @apply scroll-m-20 text-4xl font-subjectivity font-extrabold tracking-tight lg:text-5xl text-black dark:text-neutrals-50;
   }
 
   h2 {
-    @apply scroll-m-20 text-3xl font-subjectivity font-semibold tracking-tight transition-colors first:mt-0;
+    @apply scroll-m-20 text-3xl font-subjectivity font-semibold tracking-tight transition-colors first:mt-0 text-black dark:text-neutrals-50;
   }
 
   h3 {
-    @apply scroll-m-20 text-2xl font-subjectivity font-semibold tracking-tight;
+    @apply scroll-m-20 text-2xl font-subjectivity font-semibold tracking-tight text-black dark:text-neutrals-50;
   }
 
   h4 {
-    @apply scroll-m-20 text-xl font-subjectivity font-semibold tracking-tight;
+    @apply scroll-m-20 text-xl font-subjectivity font-semibold tracking-tight text-black dark:text-neutrals-50;
   }
 }

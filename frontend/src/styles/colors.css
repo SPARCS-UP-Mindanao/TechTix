@@ -1,7 +1,7 @@
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: var(--primary-50);
+    --foreground: var(--neutrals-950);
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -9,9 +9,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 231, 75%, 48%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: var(--primary-50);
 
+    --primary-0: 233, 100%, 98%;
     --primary-50: 235, 87%, 97%;
     --primary-100: 235, 81%, 94%;
     --primary-200: 234, 80%, 86%;
@@ -98,6 +98,7 @@
     --negative-800: 0, 82%, 35%;
     --negative-900: 0, 74%, 31%;
     --negative-950: 0, 87%, 15%;
+    --negative-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -105,19 +106,18 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --negative: 0 84.2% 60.2%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: var(--neutrals-300);
+    --input: var(--primary-0);
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 236, 68%, 5%;
+    --foreground: var(--neutrals-50);
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -125,8 +125,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: --primary-50;
 
     --primary-50: 230, 75%, 97%;
     --primary-100: 227, 73%, 93%;
@@ -221,11 +220,11 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --negative: 0 62.8% 30.6%;
+    --negative-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: var(--neutrals-700);
+    --input: var(--neutrals-900);
     --ring: 212.7 26.8% 83.9%;
   }
 }
