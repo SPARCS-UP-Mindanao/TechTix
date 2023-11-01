@@ -1,30 +1,36 @@
-import React from 'react';
-
-const steps = ['UserBio', 'PersonalInfo', 'Summary'];
+import { cn } from '@/utils/classes';
+import * as Slider from '@radix-ui/react-slider';
 
 interface StepperProps {
+  steps: string[];
   currentStep: string;
 }
-
-const Stepper = ({ currentStep }: StepperProps) => {
+const Stepper = ({ steps, currentStep }: StepperProps) => {
+  const interval = 100 / (steps.length - 1);
+  const arrayOfValues = steps.map((_, index) => index * interval);
   return (
-    <div className="flex items-center">
-      {steps.map((step, index) => (
-        <div key={step} className="flex items-center">
-          <div
-            className={`w-9 h-9 rounded-full text-center ${
-              step === currentStep
-                ? 'bg-primary-500 text-white pt-1'
-                : 'bg-primary-100 text-primary-500 pt-1'
-            }`}
+    <div className="my-8">
+      <Slider.Root
+        className="relative flex w-full touch-none select-none items-center cursor-pointer data-[disabled]:pointer-events-none"
+        value={arrayOfValues}
+        max={100}
+        step={interval}
+      >
+        <Slider.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary">
+          <Slider.Range className="absolute h-full bg-primary px-1" />
+        </Slider.Track>
+        {steps.map((step, index) => (
+          <Slider.Thumb
+            className={cn(
+              'flex items-center justify-center h-8 w-8 rounded-full font-subjectivity bg-neutrals-200 text-primary transition-colors disabled:pointer-events-none',
+              step === currentStep && 'bg-primary text-neutral-200'
+            )}
+            key={step}
           >
             {index + 1}
-          </div>
-          {index < steps.length - 1 && (
-            <div className="w-9 h-1 bg-primary-500"></div>
-          )}
-        </div>
-      ))}
+          </Slider.Thumb>
+        ))}
+      </Slider.Root>
     </div>
   );
 };

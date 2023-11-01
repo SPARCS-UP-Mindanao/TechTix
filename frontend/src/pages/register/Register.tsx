@@ -1,71 +1,132 @@
-import { useRegisterForm } from "@/hooks/useRegisterForm";
-import { FormProvider } from "react-hook-form";
-import sparcsApplicationimage from "@/assets/applicationSpracs.svg";
-import { useState } from "react";
-import RegisterForm1 from "./RegisterForm1";
-import RegisterForm2 from "./RegisterForm2";
-import Summary from "./Summary";
-import Stepper from "./Stepper";
-import Button from "@/components/Button";
-import Icon from "@/components/Icon";
-import EventDetails from "./EventDetails";
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { FormProvider } from 'react-hook-form';
+import sparcsApplicationimage from '@/assets/applicationSpracs.svg';
+import Button from '@/components/Button';
+import Icon from '@/components/Icon';
+import { getEvent } from '@/api/events';
+import { isEmpty } from '@/utils/functions';
+import { useApi } from '@/hooks/useApi';
+import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
+import EventDetails from './EventDetails';
+import RegisterForm1 from './RegisterForm1';
+import RegisterForm2 from './RegisterForm2';
+import Stepper from './Stepper';
+import Summary from './Summary';
 
-const steps = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'];
+// TODO: Add success page
+const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'] as const;
+type RegisterSteps = (typeof REGISTER_STEPS)[number];
+const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Summary'];
+
+const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
+  UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
+  PersonalInfo: ['careerStatus', 'organization', 'title']
+};
+
+type RegisterField = keyof RegisterFormValues;
 
 const Register = () => {
-  const { form, submit } = useRegisterForm('0');
-  const isValidFirstStep = form.watch('firstName') && form.watch('lastName') && form.watch('email') && form.watch('contactNumber');
-  const isValidSecondStep = form.watch('careerStatus') && form.watch('organization') && form.watch('title');
-  const [currentStep, setCurrentStep] = useState(steps[0]); // Start with 'EventDetails' step
+  const eventId = useParams().eventId;
+  const { data: response, isFetching } = useApi(getEvent(eventId!));
+  const { form, submit } = useRegisterForm(eventId!);
+  const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
 
-  const nextStep = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    } 
+  if (isFetching) {
+    return (
+      // TODO: Add skeleton page
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+
+  if (!response || (response && !response.data)) {
+    return (
+      // TODO: Add event not found page
+      <div>
+        <h1>Event not found</h1>
+      </div>
+    );
+  }
+
+  const eventInfo = response.data;
+
+  const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
+
+  const nextStep = async () => {
+    const moveToNextStep = () => {
+      const currentIndex = REGISTER_STEPS.indexOf(currentStep);
+      if (currentIndex < REGISTER_STEPS.length - 1) {
+        setCurrentStep(REGISTER_STEPS[currentIndex + 1]);
+      }
+    };
+
+    if (isEmpty(fieldsToCheck)) {
+      moveToNextStep();
+    } else {
+      await form.trigger(fieldsToCheck).then((isValid) => {
+        if (isValid) {
+          moveToNextStep();
+        }
+      });
+    }
   };
 
   const prevStep = () => {
-    const currentIndex = steps.indexOf(currentStep);
+    const currentIndex = REGISTER_STEPS.indexOf(currentStep);
     if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
+      setCurrentStep(REGISTER_STEPS[currentIndex - 1]);
     }
   };
 
   return (
-    <>
+    <section>
       <div className="flex flex-col items-center justify-center w-full">
-        <div className="w-12 h-12 rounded-full bg-primary-100 mb-4"></div>
-        <img src={sparcsApplicationimage} />
+        <div className="w-12 h-12 rounded-full bg-primary-900 dark:bg-primary-100 mb-4" />
+        <img style={{ aspectRatio: 4 / 3 }} src={sparcsApplicationimage} />
 
         <FormProvider {...form}>
-          {currentStep !== 'EventDetails' && <Stepper currentStep={currentStep} />}
-          {currentStep !== 'EventDetails' && <h1 className="text-xl">Register</h1>}
-          {currentStep === 'EventDetails' && <EventDetails />}
-          {currentStep === 'UserBio' && <RegisterForm1 />}
-          {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-          {currentStep === 'Summary' && <Summary />}
+          <main className="w-full">
+            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">Register</h1>}
+            {currentStep !== 'EventDetails' && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
+            {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
 
-          <div className="flex w-full justify-around">
-            {currentStep === 'EventDetails' && (
-              <Button onClick={nextStep} className="text-white bg-gradient-to-r from-blue-700 to-pink-500">Register</Button>
-            )}
-            {currentStep !== 'EventDetails' && (
-              <Button onClick={prevStep}  className="bg-primary text-primary-500 border border-primary-500"><Icon name="CaretLeft" />Back</Button>
-            )}
-            {currentStep !== 'EventDetails' && currentStep !== 'PersonalInfo' && currentStep != 'Summary' && (
-              <Button onClick={nextStep} disabled={!isValidFirstStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
-            )}
-            {currentStep !== 'EventDetails' && currentStep !== 'UserBio' && currentStep != 'Summary' && (
-              <Button onClick={nextStep} disabled={!isValidSecondStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
-            )}
-            {currentStep === 'Summary' && (
-              <Button onClick={submit} className="bg-primary-500 text-primary">Submit<Icon name="Check" /></Button>
-            )}
-          </div>
+            <div className="space-y-4">
+              {currentStep === 'UserBio' && <RegisterForm1 />}
+              {currentStep === 'PersonalInfo' && <RegisterForm2 />}
+            </div>
+
+            {currentStep === 'Summary' && <Summary />}
+
+            <div className="flex w-full justify-around my-4">
+              {currentStep === 'EventDetails' && (
+                <Button onClick={nextStep} variant={'gradient'}>
+                  Register
+                </Button>
+              )}
+              {currentStep !== 'EventDetails' && (
+                <Button onClick={prevStep} variant={'outline'}>
+                  <Icon name="CaretLeft" />
+                  Back
+                </Button>
+              )}
+              {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
+                <Button onClick={nextStep}>
+                  Next
+                  <Icon name="CaretRight" />
+                </Button>
+              )}
+              {currentStep === 'Summary' && (
+                <Button onClick={submit} type="submit">
+                  Submit
+                </Button>
+              )}
+            </div>
+          </main>
         </FormProvider>
       </div>
-    </>
+    </section>
   );
 };
 
