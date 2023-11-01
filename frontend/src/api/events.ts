@@ -1,5 +1,5 @@
-import { createApi } from "@/api/utils/createApi";
-import { Event } from "@/model/events";
+import { createApi } from '@/api/utils/createApi';
+import { Event } from '@/model/events';
 
 export interface EventDto {
   name: string;
@@ -42,45 +42,44 @@ const mapEventDtoToEvent = (event: EventDto): Event => ({
   createDate: event.createDate,
   updateDate: event.updateDate,
   createdBy: event.createdBy,
-  updatedBy: event.updatedBy,
+  updatedBy: event.updatedBy
 });
 
-const mapEventsDtoToEvent = (events: EventDto[]): Event[] =>
-  events.map((event) => mapEventDtoToEvent(event));
+const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
 
 export const getAllEvents = () =>
   createApi<EventDto[], Event[]>({
-    method: "get",
-    url: "/events",
-    output: mapEventsDtoToEvent,
+    method: 'get',
+    url: '/events',
+    output: mapEventsDtoToEvent
   });
 
 export const createEvent = (event: Event) =>
   createApi({
-    method: "post",
-    url: "/events",
-    params: { event },
+    method: 'post',
+    url: '/events',
+    params: { event }
   });
 
 export const getEvent = (entryId: string) =>
   createApi<EventDto, Event>({
-    method: "get",
+    method: 'get',
     url: `/events/${entryId}`,
-    output: mapEventDtoToEvent,
+    output: mapEventDtoToEvent
   });
-  
+
 export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
-    method: "put",
+    method: 'put',
     url: `/events/${entryId}`,
     params: { event },
-    output: mapEventDtoToEvent,
+    output: mapEventDtoToEvent
   });
 
 export const deleteEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
-    method: "delete",
+    method: 'delete',
     url: `/events/${entryId}`,
     params: { event },
-    output: mapEventDtoToEvent,
+    output: mapEventDtoToEvent
   });
