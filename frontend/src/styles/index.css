@@ -19,4 +19,41 @@
     -ms-user-select: text; /* IE 10+ */
     user-select: text; /* Standard syntax */
   }
+  input:autofill,
+  input:autofill:focus,
+  input:autofill:hover,
+  input:autofill:active,
+  input:-webkit-autofill,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: hsl(var(--input));
+    -webkit-box-shadow: 0 0 0 30px hsl(var(--input)) inset !important;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  }
+
+  #root {
+    max-width: 1080px;
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
+  }
+
+  @media screen and (max-width: 640px) {
+    #root {
+      padding: 1rem;
+    }
+  }
+
+  @media screen and (max-width: 424px) {
+    #root {
+      margin: 0;
+    }
+  }
 }
