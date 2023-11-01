@@ -27,6 +27,16 @@ app:
         - { "Fn::GetAtt": [Entities, Arn] }
     - Effect: Allow
       Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Evaluations, Arn] }
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Registrations, Arn] }
+    - Effect: Allow
+      Action:
         - ssm:GetParameter
       Resource:
         - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
