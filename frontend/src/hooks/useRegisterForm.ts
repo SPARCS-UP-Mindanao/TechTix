@@ -1,84 +1,105 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useNotifyToast } from "@/hooks/useNotifyToast";
-import { useFetchQuery } from "./useApi";
-import { registerUserInEvent } from "@/api/registrations";
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { registerUserInEvent } from '@/api/registrations';
+import { CustomAxiosError } from '@/api/utils/createApi';
+import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const isValidContactNumber = (value: string) => {
   const phoneNumberPattern = /^\d{11}$/;
   return phoneNumberPattern.test(value);
 };
 
-const isValidEmail = (value: string) => {
-  const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-  return emailPattern.test(value);
-};
-
 export const RegisterFormSchema = z.object({
-  email: z.string().refine(isValidEmail, {
-    message: "Please enter a valid email address",
+  email: z.string().email({
+    message: 'Please enter a valid email address'
   }),
-
   firstName: z.string().min(1, {
-    message: "Please enter your first name",
+    message: 'Please enter your first name'
   }),
   lastName: z.string().min(1, {
-    message: "Please enter your last name",
+    message: 'Please enter your last name'
   }),
-  contactNumber: z.string().refine(isValidContactNumber, {
-    message: "Please enter a valid contact number",
-  }),
+  contactNumber: z
+    .string()
+    .min(1, {
+      message: 'Please enter your contact number'
+    })
+    .refine(isValidContactNumber, {
+      message: 'Please enter a valid PH contact number'
+    }),
   careerStatus: z.string().min(1, {
-    message: "Please enter your current status",
+    message: 'Please select your career status'
   }),
   yearsOfExperience: z.string().min(1, {
-    message: "Please enter years of experience",
+    message: 'Please enter your years of experience'
   }),
-  organization: z.string().optional(),
-  title: z.string().optional(),
+  organization: z.string().min(1, {
+    message: 'Please enter your organization'
+  }),
+  title: z.string().min(1, {
+    message: 'Please enter your title'
+  })
 });
+
+export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
 export const useRegisterForm = (entryId: string) => {
   const { successToast, errorToast } = useNotifyToast();
-  const { fetchQuery } = useFetchQuery();
-  const form = useForm<z.infer<typeof RegisterFormSchema>>({
+  const form = useForm<RegisterFormValues>({
+    mode: 'onChange',
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      email: "",
-      firstName: "",
-      lastName: "",
-      contactNumber: "",
-      careerStatus: "",
-      yearsOfExperience: "",
-      organization: "",
-      title: "",
-    },
+      email: '',
+      firstName: '',
+      lastName: '',
+      contactNumber: '',
+      careerStatus: '',
+      yearsOfExperience: '',
+      organization: '',
+      title: ''
+    }
   });
 
   const submit = form.handleSubmit(async (values) => {
+    const { queryFn: register } = registerUserInEvent({
+      eventId: entryId,
+      certificateClaimed: false,
+      ...values
+    });
     try {
-      const response = await fetchQuery(registerUserInEvent({
-        eventId: entryId,
-        certificateClaimed: false,
-        ...values,
-      }));
-      if (response) {
+      const response = await register();
+      if (response.status === 200) {
         successToast({
-          title: "Register Info",
-          description: `Registering user with email: ${values.email}`,
+          title: 'Register Info',
+          description: `Registering user with email: ${values.email}`
+        });
+      } else if (response.status === 409) {
+        form.setError('email', {
+          type: 'manual',
+          message: 'The email you entered has already been used. Please enter a different email.'
+        });
+        errorToast({
+          title: 'Email already registered',
+          description: 'The email you entered has already been used. Please enter a different email.'
+        });
+      } else {
+        errorToast({
+          title: 'Error in Registering',
+          description: 'An error occurred while registering. Please try again.'
         });
       }
-    } catch (error) {
+    } catch (e) {
+      const { errorData } = e as CustomAxiosError;
       errorToast({
-        title: "Error in Registering",
-        description: JSON.stringify(error || form.formState.errors),
+        title: 'Error in logging in',
+        description: errorData.message || errorData.detail[0].msg
       });
     }
   });
 
   return {
     form,
-    submit,
+    submit
   };
 };
