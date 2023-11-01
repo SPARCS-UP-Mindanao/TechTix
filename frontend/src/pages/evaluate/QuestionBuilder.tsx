@@ -17,7 +17,7 @@ export interface QuestionConfigItem {
 }
 
 interface QuestionBuilderProps {
-  questionConfig: QuestionConfigItem[];
+  questions: QuestionConfigItem[];
 }
 
 const schemaCreator = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
@@ -36,10 +36,10 @@ const schemaCreator = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
   return z.object(schema);
 };
 
-const QuestionBuilder = ({ questionConfig }: QuestionBuilderProps) => {
-  const FormSchema = schemaCreator(questionConfig);
+const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
+  const FormSchema = schemaCreator(questions);
 
-  const getDefaulValues = (questions: QuestionConfigItem[]) => {
+  const getDefaultValues = (questions: QuestionConfigItem[]) => {
     const defaultValues = questions.reduce(
       (acc, question) => {
         if (question.questionType === 'multiple_answers') {
@@ -56,7 +56,7 @@ const QuestionBuilder = ({ questionConfig }: QuestionBuilderProps) => {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     mode: 'onChange',
-    defaultValues: getDefaulValues(questionConfig)
+    defaultValues: getDefaultValues(questions)
   });
 
   console.log(form.watch());
@@ -133,7 +133,7 @@ const QuestionBuilder = ({ questionConfig }: QuestionBuilderProps) => {
 
   return (
     <FormProvider {...form}>
-      {questionConfig.map((question, index) => (
+      {questions.map((question, index) => (
         <FormItem key={index} name={question.name}>
           {({ field }) => BuilderQuestion(question, field)}
         </FormItem>
