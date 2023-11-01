@@ -30,11 +30,21 @@ app:
         - "dynamodb:*"
       Resource:
         - { "Fn::GetAtt": [Evaluations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Evaluations, Arn ]
+            - "index"
+            - "*"
     - Effect: Allow
       Action:
         - "dynamodb:*"
       Resource:
         - { "Fn::GetAtt": [Registrations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Registrations, Arn ]
+            - "index"
+            - "*"
     - Effect: Allow
       Action:
         - ssm:GetParameter
