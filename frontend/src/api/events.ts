@@ -72,14 +72,14 @@ export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
     method: 'put',
     url: `/events/${entryId}`,
-    params: { event },
+    params: { entryId, event },
     output: mapEventDtoToEvent
   });
 
-export const deleteEvent = (entryId: string, event: OptionalEvent) =>
+export const deleteEvent = (entryId: string) =>
   createApi<EventDto, Event>({
     method: 'delete',
     url: `/events/${entryId}`,
-    params: { event },
+    params: { entryId },
     output: mapEventDtoToEvent
   });
