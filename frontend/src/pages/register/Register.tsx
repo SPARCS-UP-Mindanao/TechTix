@@ -1,60 +1,45 @@
-import Button from "@/components/Button";
-import {
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormError,
-} from "@/components/Form";
-import Input from "@/components/Input";
-import { useRegisterForm } from "@/hooks/useRegisterForm";
-import { FormProvider } from "react-hook-form";
+import QuestionBuilder, { QuestionConfigItem } from './QuestionBuilder';
 
-const Register = () => {
-  const { form, submit } = useRegisterForm();
+const QUESTIONS: QuestionConfigItem[] = [
+  {
+    name: 'question1',
+    questionType: 'text_short',
+    question: 'Lorem ipsum dolor sit amet?',
+    options: []
+  },
+  {
+    name: 'question2',
+    questionType: 'text_long',
+    question: 'Lorem ipsum dolor sit amet?',
+    options: []
+  },
+  {
+    name: 'question3',
+    questionType: 'multiple_choice_dropdown',
+    question: 'Multiple choice question - Single Answer',
+    options: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+  },
+  {
+    name: 'question4',
+    questionType: 'multiple_choice',
+    question: 'Multiple choice question - Single Answer',
+    options: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+  },
+  {
+    name: 'question5',
+    questionType: 'multiple_answers',
+    question: 'Multiple choice question - Multiple Answer',
+    options: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4']
+  }
+];
 
+const EvaluationForm = () => {
   return (
     <div>
       <h1>Register</h1>
-      <FormProvider {...form}>
-        <FormItem name="email">
-          {({ field }) => (
-            <div className="flex flex-col items-start mb-5 space-y-2">
-              <FormLabel>Email</FormLabel>
-              <Input type="email" {...field} />
-              <FormDescription className="font-subjectivity">
-                Whereas recognition of the inherent dignity
-              </FormDescription>
-              <FormError />
-            </div>
-          )}
-        </FormItem>
-
-        <FormItem name="age">
-          {({ field }) => (
-            <div className="flex flex-col items-start mb-5 space-y-2">
-              <FormLabel optional>Age</FormLabel>
-              <Input type="text" placeholder="Enter your age" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
-
-        <FormItem name="password">
-          {({ field }) => (
-            <div className="flex flex-col items-start mb-5 space-y-2">
-              <FormLabel toolTipContent={"Enter atleast 8 characters"}>
-                Password
-              </FormLabel>
-              <Input type="text" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
-
-        <Button onClick={submit}>Submit</Button>
-      </FormProvider>
+      <QuestionBuilder questionConfig={QUESTIONS} />
     </div>
   );
 };
 
-export default Register;
+export default EvaluationForm;
