@@ -27,6 +27,26 @@ app:
         - { "Fn::GetAtt": [Entities, Arn] }
     - Effect: Allow
       Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Evaluations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Evaluations, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Registrations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Registrations, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
         - ssm:GetParameter
       Resource:
         - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
@@ -35,3 +55,9 @@ app:
         - "sqs:*"
       Resource:
         - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource:
+        - arn:aws:s3:::${self:custom.bucket}
+        - arn:aws:s3:::${self:custom.bucket}/*

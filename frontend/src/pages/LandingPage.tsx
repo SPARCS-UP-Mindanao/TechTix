@@ -1,10 +1,7 @@
-import React from 'react'
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom';
 
 const LandingPage = () => {
-  return (
-    <Outlet />
-  )
-}
+  return <Outlet />;
+};
 
-export default LandingPage
+export default LandingPage;

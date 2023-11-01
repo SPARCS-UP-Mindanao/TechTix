@@ -1,0 +1,17 @@
+eventsUploadHandler:
+  handler: functions/events_upload_handler.handler
+  layers:
+    - { Ref: PythonRequirementsLambdaLayer }
+  events:
+    - s3:
+        bucket: ${self:custom.bucket}
+        event: s3:ObjectCreated:*
+        rules:
+          - prefix: events/
+        existing: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Entities, Arn] }

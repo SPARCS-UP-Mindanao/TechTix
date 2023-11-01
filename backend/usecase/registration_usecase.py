@@ -56,7 +56,7 @@ class RegistrationUsecase:
         )
         if status == HTTPStatus.OK and registrations:
             return JSONResponse(
-                status_code=status, content={'message': f'Registration with email {email} already exists'}
+                status_code=HTTPStatus.CONFLICT, content={'message': f'Registration with email {email} already exists'}
             )
 
         status, registration, message = self.__registrations_repository.store_registration(registration_in)

@@ -10,7 +10,7 @@ export interface Event {
   autoConfirm: boolean;
   payedEvent: boolean;
   price: number;
-  certificateTemplate: string;
+  certificateTemplate?: string;
   status: string;
   entryId: string;
   createDate?: Date;

@@ -90,7 +90,7 @@ const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>,
     } = useFormField();
 
     return (
-      <Label ref={ref} className={cn(error && 'text-destructive', 'flex flex-row items-center gap-x-2', className)} htmlFor={formItemId} {...props}>
+      <Label ref={ref} className={cn(error && 'text-negative', 'flex flex-row items-center gap-x-2', className)} htmlFor={formItemId} {...props}>
         {children}
         {optional && <p className="text-[0.8rem] text-muted-foreground text-gray-400">{`(Optional)`}</p>}
         {toolTipContent && toolTipContent?.length > 0 && <InfoToolTip toolTipContent={toolTipContent} />}
@@ -119,7 +119,7 @@ const FormError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   }
 
   return (
-    <p ref={ref} id={formMessageId} className={cn('text-[0.8rem] font-medium text-destructive', className)} {...props}>
+    <p ref={ref} id={formMessageId} className={cn('text-[0.8rem] text-left font-medium text-negative', className)} {...props}>
       {body}
     </p>
   );

@@ -72,6 +72,7 @@ def get_registration(
     response_model=RegistrationOut,
     responses={
         400: {"model": Message, "description": "Invalid input"},
+        409: {"model": Message, "description": "Registration with email example@example.com already exists"},
         500: {"model": Message, "description": "Internal server error"},
     },
     summary="Create registration",
