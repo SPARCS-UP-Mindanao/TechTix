@@ -196,7 +196,7 @@ class RegistrationsRepository:
             logging.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj}]: Fetch Registration data successful')
+            logging.info(f'[{self.core_obj}]: Fetch Registration with email successful')
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(
