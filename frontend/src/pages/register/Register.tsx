@@ -14,14 +14,15 @@ const steps = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'];
 
 const Register = () => {
   const { form, submit } = useRegisterForm('0');
-
+  const isValidFirstStep = form.watch('firstName') && form.watch('lastName') && form.watch('email') && form.watch('contactNumber');
+  const isValidSecondStep = form.watch('careerStatus') && form.watch('organization') && form.watch('title');
   const [currentStep, setCurrentStep] = useState(steps[0]); // Start with 'EventDetails' step
 
   const nextStep = () => {
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex < steps.length - 1) {
       setCurrentStep(steps[currentIndex + 1]);
-    }
+    } 
   };
 
   const prevStep = () => {
@@ -50,10 +51,13 @@ const Register = () => {
               <Button onClick={nextStep} className="text-white bg-gradient-to-r from-blue-700 to-pink-500">Register</Button>
             )}
             {currentStep !== 'EventDetails' && (
-              <Button onClick={prevStep} className="bg-primary text-primary-500 border border-primary-500"><Icon name="CaretLeft" />Back</Button>
+              <Button onClick={prevStep}  className="bg-primary text-primary-500 border border-primary-500"><Icon name="CaretLeft" />Back</Button>
             )}
-            {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
-              <Button onClick={nextStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
+            {currentStep !== 'EventDetails' && currentStep !== 'PersonalInfo' && currentStep != 'Summary' && (
+              <Button onClick={nextStep} disabled={!isValidFirstStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
+            )}
+            {currentStep !== 'EventDetails' && currentStep !== 'UserBio' && currentStep != 'Summary' && (
+              <Button onClick={nextStep} disabled={!isValidSecondStep} className="bg-primary-500 text-primary">Next<Icon name="CaretRight" /></Button>
             )}
             {currentStep === 'Summary' && (
               <Button onClick={submit} className="bg-primary-500 text-primary">Submit<Icon name="Check" /></Button>

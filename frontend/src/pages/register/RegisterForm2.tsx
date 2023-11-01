@@ -14,7 +14,7 @@ const RegisterForm1 = () => {
     const careerStatus = form.watch('careerStatus');
     return (
         <>
-            <FormItem name="status">
+            <FormItem name="careerStatus">
                 {({ field }) => (
                     <div className="flex flex-col items-start mb-5 space-y-2 w-full">
                         <FormLabel>Status</FormLabel>
