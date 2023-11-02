@@ -70,3 +70,37 @@ export const isEmpty = (value: any) => {
 
   return false;
 };
+
+export const dateFormatter = (value: any) =>
+  value ? new Date(value).toLocaleDateString(
+    'en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }
+  ) : "";
+
+export const timeFormatter = (value: any) =>
+  value ? new Date(value).toLocaleTimeString(
+    'en-US', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric',
+    }
+  ) : "";
+
+export const fromToDateFormatter = (fromDate: Date, toDate: Date) => {
+  const fromDateString = dateFormatter(fromDate)
+  const toDateString = dateFormatter(toDate)
+  const fromTimeString = timeFormatter(fromDate)
+  const toTimeString = timeFormatter(toDate)
+
+  // if dates are the same show only then show only the first date and their time
+  if (fromDateString === toDateString) {
+    return `${fromDateString} | ${fromTimeString} - ${toTimeString}`
+  }
+
+  // if dates are different show both dates and their time
+  return `${fromDateString} ${fromTimeString} - ${toDateString} ${toTimeString}`
+}
+

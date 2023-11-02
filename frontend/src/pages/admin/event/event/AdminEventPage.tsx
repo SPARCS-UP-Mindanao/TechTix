@@ -4,7 +4,6 @@ import AdminEventPageContent from "./AdminEventPageContent";
 const AdminEventPage = () => {
   return (
     <div>
-      AdminEventPage
       <AdminEventPageContent />
     </div>
   );

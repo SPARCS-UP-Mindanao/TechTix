@@ -84,12 +84,14 @@ export {
 };
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  cardBanner?: string;
   cardTitle?: React.ReactNode;
   cardDescription?: React.ReactNode;
   cardFooter?: React.ReactNode;
 }
 
 const Card = ({
+  cardBanner,
   cardTitle,
   cardDescription,
   cardFooter,
@@ -100,11 +102,12 @@ const Card = ({
   return (
     <CardContainer {...props} className={className}>
       <CardHeader>
+        <img src={cardBanner} />
         <CardTitle>{cardTitle}</CardTitle>
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
-      <CardFooter>{cardFooter}</CardFooter>
+      <CardFooter className="w-full">{cardFooter}</CardFooter>
     </CardContainer>
   );
 };

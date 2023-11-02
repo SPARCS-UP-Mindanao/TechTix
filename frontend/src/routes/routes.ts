@@ -74,7 +74,4 @@ export const routes = createBrowserRouter(
       element: Error404(),
     },
   ],
-  {
-    basename: import.meta.env.VITE_STAGE === "prod" ? "/events" : "/",
-  }
 );
