@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-import animate from 'tailwindcss-animate';
 
-export default {
+module.exports = {
   darkMode: ['class'],
   content: ['./pages/**/*.{ts,tsx,css}', './components/**/*.{ts,tsx,css}', './app/**/*.{ts,tsx,css}', './src/**/*.{ts,tsx,css}'],
   theme: {
@@ -109,18 +108,18 @@ export default {
           },
           negative: {
             DEFAULT: 'hsl(var(--negative-500))',
-            50: "hsl(var(--negative-50))",
-            100: "hsl(var(--negative-100))",
-            200: "hsl(var(--negative-200))",
-            300: "hsl(var(--negative-300))",
-            400: "hsl(var(--negative-400))",
-            500: "hsl(var(--negative-500))",
-            600: "hsl(var(--negative-600))",
-            700: "hsl(var(--negative-700))",
-            800: "hsl(var(--negative-800))",
-            900: "hsl(var(--negative-900))",
-            950: "hsl(var(--negative-950))"
-          },  
+            50: 'hsl(var(--negative-50))',
+            100: 'hsl(var(--negative-100))',
+            200: 'hsl(var(--negative-200))',
+            300: 'hsl(var(--negative-300))',
+            400: 'hsl(var(--negative-400))',
+            500: 'hsl(var(--negative-500))',
+            600: 'hsl(var(--negative-600))',
+            700: 'hsl(var(--negative-700))',
+            800: 'hsl(var(--negative-800))',
+            900: 'hsl(var(--negative-900))',
+            950: 'hsl(var(--negative-950))'
+          }
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -168,5 +167,5 @@ export default {
       }
     }
   },
-  plugins: [animate]
+  plugins: [require('tailwindcss-animate')]
 };
