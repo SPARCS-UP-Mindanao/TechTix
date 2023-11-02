@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const EventsHomePage = () => {
-  return (
-    <div>EventsHomePage</div>
-  )
-}
+  return <div>EventsHomePage</div>;
+};
 
-export default EventsHomePage
+export default EventsHomePage;

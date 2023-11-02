@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from model.entities import Entities
 from model.events.events_constants import EventStatus
@@ -40,7 +41,7 @@ class EventIn(BaseModel):
     payedEvent: bool = Field(None, title="Payed Event")
     price: float = Field(None, title="Price")
     certificateTemplate: str = Field(None, title="Certificate Template")
-    status: EventStatus = Field(..., title="Event Status")
+    status: Optional[EventStatus] = Field(None, title="Event Status")
 
 
 class EventOut(EventIn):

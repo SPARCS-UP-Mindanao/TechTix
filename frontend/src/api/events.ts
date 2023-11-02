@@ -58,7 +58,7 @@ export const createEvent = (event: Event) =>
   createApi({
     method: 'post',
     url: '/events',
-    params: { event }
+    params: { ...event }
   });
 
 export const getEvent = (entryId: string) =>

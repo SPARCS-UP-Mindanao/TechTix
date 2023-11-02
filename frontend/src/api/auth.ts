@@ -1,5 +1,5 @@
-import { createApi } from "./utils/createApi";
-import { signInFunctionParams } from "react-auth-kit/dist/types";
+import { signInFunctionParams } from 'react-auth-kit/dist/types';
+import { createApi } from './utils/createApi';
 
 export interface LoginResponse {
   accessToken: string;
@@ -11,14 +11,12 @@ export interface LoginResponse {
   sub: string;
 }
 
-const auth: { authorize: boolean; apiService: "auth" | "events" } = {
+const auth: { authorize: boolean; apiService: 'auth' | 'events' } = {
   authorize: false,
-  apiService: "auth",
+  apiService: 'auth'
 };
 
-const mapLoginResponseToSignInParameters = (
-  response: LoginResponse
-): signInFunctionParams => {
+const mapLoginResponseToSignInParameters = (response: LoginResponse): signInFunctionParams => {
   return {
     token: response.accessToken,
     expiresIn: response.expiresIn,
@@ -26,41 +24,41 @@ const mapLoginResponseToSignInParameters = (
     refreshToken: response.refreshToken,
     refreshTokenExpireIn: 60 * 24 * 30,
     authState: {
-      userId: response.sub,
-    },
+      userId: response.sub
+    }
   };
 };
 
 export const registerUser = (email: string, password: string) =>
   createApi<number>({
-    method: "post",
+    method: 'post',
     ...auth,
-    url: "/auth/signup",
-    params: { email, password },
+    url: '/auth/signup',
+    params: { email, password }
   });
 
 export const loginUser = (email: string, password: string) =>
   createApi<LoginResponse, signInFunctionParams>({
-    method: "post",
+    method: 'post',
     ...auth,
-    url: "/auth/login",
+    url: '/auth/login',
     params: { email, password },
-    output: mapLoginResponseToSignInParameters,
+    output: mapLoginResponseToSignInParameters
   });
 
 export const logoutUser = (accessToken: string) =>
   createApi({
-    method: "post",
+    method: 'post',
     ...auth,
-    url: "/auth/logout",
-    params: { accessToken },
+    url: '/auth/logout',
+    params: { accessToken }
   });
 
 export const refreshUserToken = (sub: string, refreshToken: string) =>
   createApi({
-    method: "post",
+    method: 'post',
     ...auth,
-    url: "/auth/refresh",
+    url: '/auth/refresh',
     params: { sub, refreshToken },
-    output: mapLoginResponseToSignInParameters,
+    output: mapLoginResponseToSignInParameters
   });

@@ -5,16 +5,11 @@ import { getAllEvents } from '@/api/events';
 import { fromToDateFormatter } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 
-const ViewEventButton = ({ eventId }: { eventId: string } ) => {
+const ViewEventButton = ({ eventId }: { eventId: string }) => {
   const navigate = useNavigate();
 
   return (
-    <Button
-      className="w-full"
-      onClick={() => 
-        navigate(`/admin/events/${eventId}`)
-      }
-    >
+    <Button className="w-full" onClick={() => navigate(`/admin/events/${eventId}`)}>
       View Event
     </Button>
   );
@@ -51,12 +46,10 @@ const AdminAllEvents = () => {
           cardBanner={eventInfo.bannerLink}
           cardTitle={eventInfo.name}
           cardDescription={eventInfo.description}
-          cardFooter={<ViewEventButton eventId={eventInfo.entryId} />}
+          cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
           className="flex flex-col items-center justify-center"
         >
-          <p>
-            {fromToDateFormatter(eventInfo.startDate, eventInfo.endDate)}
-          </p>
+          <p>{fromToDateFormatter(eventInfo.startDate, eventInfo.endDate)}</p>
           <div>Ticket Price: ₱{eventInfo.price}</div>
         </Card>
       ))}

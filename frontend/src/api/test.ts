@@ -1,7 +1,7 @@
-import { createApi } from "./utils/createApi";
+import { createApi } from './utils/createApi';
 
 export const getTest = (name: string) =>
   createApi({
-    url: "/pokemon",
-    params: { name },
+    url: '/pokemon',
+    params: { name }
   });

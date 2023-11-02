@@ -9,7 +9,7 @@ const AdminPageContent = () => {
   }
 
   return (
-    <div className='w-full h-full'>
+    <div className="w-full h-full">
       <AdminPageHeader />
       <AdminPageRoute />
     </div>

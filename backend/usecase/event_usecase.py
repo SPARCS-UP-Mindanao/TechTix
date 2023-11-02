@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import List, Union
 
 from model.events.event import EventIn, EventOut
+from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileUploadOut
 from repository.events_repository import EventsRepository
 from starlette.responses import JSONResponse
@@ -17,6 +18,7 @@ class EventUsecase:
         self.__file_upload_usecase = FileUploadUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        event_in.status = EventStatus.DRAFT.value
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
