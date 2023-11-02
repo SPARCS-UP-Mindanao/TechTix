@@ -86,59 +86,66 @@ export function createApi<D, T = D>({
         statusText: error.response?.statusText
       } as unknown as GenericReturn;
     }
-
   };
 
   api.interceptors.response.use(
-    response => {
+    (response) => {
       return response;
     },
 
-    async error => {
+    async (error) => {
       const originalRequest = error.config;
-  
+
       // Check if the error is due to an expired access token
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true; // mark the request to avoid infinite retry loops
-  
+
         const refreshToken = getCookie('_auth_refresh');
         const userId = getCookie('_auth_user');
-  
+
         // Check if refresh token is available
         if (refreshToken && userId) {
           try {
             // Encapsulate token refresh logic in a function
-            const newAccessToken = await refreshAccessToken(refreshToken, userId);
-  
+            const response = await refreshAccessToken(refreshToken, userId);
+
+            if (response.status !== 200) {
+              resetAuth();
+            }
+
             // Store the new token
+            const newAccessToken = response.data.accessToken;
             setCookie('_auth', newAccessToken);
-  
+
             // Update the header for the original request
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-  
+
             // Retry the original request with the new token
             return api(originalRequest);
-
           } catch (refreshError) {
-            removeCookie('_auth_user');
-            return Promise.reject(refreshError);
+            resetAuth();
           }
         } else {
-          removeCookie('_auth_user');
+          resetAuth();
         }
       }
-  
+
       // For errors not related to token expiration, just return the error
       return Promise.reject(error);
     }
   );
-  
+
   async function refreshAccessToken(refreshToken: string, userId: string) {
-    const response = await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
+    return await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
       refreshToken: refreshToken,
       sub: userId
     });
-    return response.data.accessToken;
+  }
+
+  function resetAuth() {
+    removeCookie('_auth_user');
+    removeCookie('_auth');
+    window.location.reload();
   }
 
   return {

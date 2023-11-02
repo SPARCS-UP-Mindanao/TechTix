@@ -12,7 +12,8 @@ export const useApi = <T>(api: createApiReturn<T>, { active = true, suspense = f
     enabled: active,
     suspense,
     keepPreviousData,
-    staleTime: Infinity
+    staleTime: Infinity,
+    retry: 3
   });
 };
 
