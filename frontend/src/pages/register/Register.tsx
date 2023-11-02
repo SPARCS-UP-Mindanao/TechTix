@@ -34,7 +34,8 @@ const Register = () => {
   const { form, submit } = useRegisterForm(eventId!);
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
 
-  if (isFetching) {
+  const oten = true;
+  if (oten) {
     return (
       <>
         <RegisterFormLoading />
