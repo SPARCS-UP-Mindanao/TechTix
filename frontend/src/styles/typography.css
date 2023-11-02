@@ -1,26 +1,32 @@
 @font-face {
-  font-family: "Subjectivity";
-  src: url("../assets/fonts/subjectivity/Subjectivity-Regular.woff2")
-    format("woff2");
+  font-family: 'Subjectivity';
+  src: url('../assets/fonts/subjectivity/Subjectivity-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url("../assets/fonts/raleway/Raleway-VariableFont_wght.ttf")
-    format("truetype");
+  font-family: 'Subjectivity';
+  src: url('../assets/fonts/subjectivity/Subjectivity-Bold.woff2') format('woff2');
+  font-style: bold;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../assets/fonts/raleway/Raleway-VariableFont_wght.ttf') format('truetype');
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url("../assets/fonts/raleway/Raleway-Italic-VariableFont_wght.ttf")
-    format("truetype");
+  font-family: 'Raleway';
+  src: url('../assets/fonts/raleway/Raleway-Italic-VariableFont_wght.ttf') format('truetype');
   font-style: italic;
 }
 
 @layer base {
   * {
-    font-family: "Raleway", sans-serif;
+    font-family: 'Raleway', sans-serif;
   }
 
   h1 {
