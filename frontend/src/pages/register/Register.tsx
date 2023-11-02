@@ -11,6 +11,8 @@ import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
 import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
+import RegisterFormLoading from './RegisterFormLoading';
+import RegisterFormError from './RegisterFormError';
 import Stepper from './Stepper';
 import Summary from './Summary';
 
@@ -34,19 +36,17 @@ const Register = () => {
 
   if (isFetching) {
     return (
-      // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
-      </div>
+      <>
+        <RegisterFormLoading />
+      </>
     );
   }
 
   if (!response || (response && !response.data)) {
     return (
-      // TODO: Add event not found page
-      <div>
-        <h1>Event not found</h1>
-      </div>
+      <>
+        <RegisterFormError />
+      </>
     );
   }
 
