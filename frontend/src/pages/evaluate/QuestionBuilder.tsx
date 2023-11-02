@@ -1,13 +1,22 @@
 import { ControllerRenderProps, FieldPath, FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Checkbox from '@/components/Checkbox';
-import { FormItem } from '@/components/Form';
+import { FormItem, FormLabel } from '@/components/Form';
 import Input from '@/components/Input';
 import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from '@/components/Select';
+import Slider from '@/components/Slider';
 import { Textarea } from '@/components/TextArea';
 
-const questionTypes = ['text_short', 'text_long', 'multiple_choice_dropdown', 'multiple_choice', 'multiple_choice_dropdown', 'multiple_answers'] as const;
+const questionTypes = [
+  'text_short',
+  'text_long',
+  'multiple_choice_dropdown',
+  'multiple_choice',
+  'multiple_choice_dropdown',
+  'multiple_answers',
+  'slider'
+] as const;
 
 export interface QuestionConfigItem {
   questionType: (typeof questionTypes)[number];
@@ -67,9 +76,9 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
   ) => {
     switch (question.questionType) {
       case 'text_short':
-        return <Input type="text" {...field} />;
+        return <Input className="rounded-xl" type="text" {...field} />;
       case 'text_long':
-        return <Textarea {...field} />;
+        return <Textarea className="rounded-lg bg-neutral-700 text-neutral-300" {...field} />;
       case 'multiple_choice_dropdown':
         return (
           <Select onValueChange={field.onChange}>
@@ -91,14 +100,14 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
         );
       case 'multiple_choice':
         return (
-          <RadioGroup onValueChange={field.onChange} {...field}>
+          <RadioGroup className="space-y-1" onValueChange={field.onChange} {...field}>
             {question.options &&
               Array.isArray(question.options) &&
               question?.options.map((option, index) => {
                 return (
                   <label key={index} htmlFor={option}>
                     <RadioGroupItem value={option} id={option} />
-                    <span>{option}</span>
+                    <span className="ml-1">{option}</span>
                   </label>
                 );
               })}
@@ -106,7 +115,7 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
         );
       case 'multiple_answers':
         return (
-          <>
+          <div className="flex flex-col space-y-2">
             {question.options &&
               Array.isArray(question.options) &&
               question?.options.map((option, index) => {
@@ -122,23 +131,41 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
                         checked ? field.onChange([...fieldValue, option]) : field.onChange(fieldValue.filter((item) => item !== option))
                       }
                     />
-                    <span>{option}</span>
+                    <span className="ml-1">{option}</span>
                   </label>
                 );
               })}
-          </>
+          </div>
+        );
+      case 'slider':
+        return (
+          <div className="w-full">
+            <Slider className="w-full" min={1} max={5} step={1} onValueChange={field.onChange} />
+            <div className="flex justify-between px-1 mt-1">
+              {[...Array(5)].map((_, index) => (
+                <span key={index}>{index + 1}</span>
+              ))}
+            </div>
+          </div>
         );
     }
   };
 
   return (
-    <FormProvider {...form}>
-      {questions.map((question, index) => (
-        <FormItem key={index} name={question.name}>
-          {({ field }) => BuilderQuestion(question, field)}
-        </FormItem>
-      ))}
-    </FormProvider>
+    <div className="flex flex-col space-y-6">
+      <FormProvider {...form}>
+        {questions.map((question, index) => (
+          <FormItem key={index} name={question.name}>
+            {({ field }) => (
+              <div className="">
+                <FormLabel className="mb-3">{question.question}</FormLabel>
+                {BuilderQuestion(question, field)}
+              </div>
+            )}
+          </FormItem>
+        ))}
+      </FormProvider>
+    </div>
   );
 };
 
