@@ -8,11 +8,11 @@ import { getEvent } from '@/api/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
+import ErrorPage from './ErrorPage';
 import EventDetails from './EventDetails';
 import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
 import RegisterFormLoading from './RegisterFormLoading';
-import RegisterFormError from './RegisterFormError';
 import Stepper from './Stepper';
 import Summary from './Summary';
 
@@ -21,12 +21,12 @@ const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'] as
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
 const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Summary'];
 
+type RegisterField = keyof RegisterFormValues;
+
 const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
   UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
   PersonalInfo: ['careerStatus', 'organization', 'title']
 };
-
-type RegisterField = keyof RegisterFormValues;
 
 const Register = () => {
   const eventId = useParams().eventId;
@@ -34,21 +34,13 @@ const Register = () => {
   const { form, submit } = useRegisterForm(eventId!);
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
 
-  const oten = true;
-  if (oten) {
-    return (
-      <>
-        <RegisterFormLoading />
-      </>
-    );
+  const test = true;
+  if (isFetching) {
+    return <RegisterFormLoading />;
   }
 
-  if (!response || (response && !response.data)) {
-    return (
-      <>
-        <RegisterFormError />
-      </>
-    );
+  if (!response || (response && !response.data && response.errorData)) {
+    return <ErrorPage error={response} />;
   }
 
   const eventInfo = response.data;
