@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Error404 from '@/pages/Error404';
+import ErrorPage from '@/components/ErrorPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
 import AdminAllEventsPage from '@/pages/admin/event/allEvents/AdminAllEventsPage';
@@ -71,7 +71,7 @@ export const routes = createBrowserRouter(
     },
     {
       path: '*',
-      element: Error404()
+      element: ErrorPage({})
     }
   ],
   {
