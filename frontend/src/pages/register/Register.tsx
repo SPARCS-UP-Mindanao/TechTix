@@ -8,7 +8,7 @@ import { getEvent } from '@/api/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
-import ErrorPage from './ErrorPage';
+import ErrorPage from '../../components/ErrorPage';
 import EventDetails from './EventDetails';
 import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
