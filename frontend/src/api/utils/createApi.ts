@@ -38,6 +38,8 @@ interface createApiProps<D, T = D> {
   output?: (dto: D) => T;
 }
 
+export type GenericReturn<T> = AxiosResponse<T> & CustomAxiosError;
+
 export function createApi<D, T = D>({
   method = 'get',
   url,
@@ -49,7 +51,6 @@ export function createApi<D, T = D>({
 }: createApiProps<D, T>) {
   const baseURL = apiService === 'events' ? import.meta.env.VITE_API_EVENTS_BASE_URL : import.meta.env.VITE_API_AUTH_BASE_URL;
   const queryFn = async () => {
-    type GenericReturn = AxiosResponse<T> & CustomAxiosError;
     const accessToken = getCookie('_auth')!;
     try {
       const response = await axios({
@@ -70,10 +71,10 @@ export function createApi<D, T = D>({
         return {
           ...response,
           data: output(response.data)
-        } as GenericReturn;
+        } as GenericReturn<T>;
       }
 
-      return response as GenericReturn;
+      return response as GenericReturn<T>;
     } catch (e) {
       const error = e as AxiosError;
       return {
@@ -83,7 +84,7 @@ export function createApi<D, T = D>({
         config: error.config,
         request: error.request,
         statusText: error.response?.statusText
-      } as unknown as GenericReturn;
+      } as unknown as GenericReturn<T>;
     }
   };
   return {
