@@ -16,7 +16,7 @@ const buttonVariants = cva(
         secondaryOrange: 'bg-secondary-orange text-primary-50 shadow-sm hover:bg-secondary-orange-600',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         gradient:
-          'bg-gradient-to-r from-primary-500 to-secondary-pink-400 text-white shadow-sm hover:bg-gradient-to-r hover:from-primary-700 hover:to-secondary-pink-700 dark:bg-gradient-to-r dark:from-primary-500 dark:to-secondary-pink-400 dark:hover:bg-gradient-to-r dark:hover:from-primary-700 dark:hover:to-secondary-pink-700',
+          'bg-gradient-to-r from-primary-500 to-secondary-pink-400 text-white shadow-sm hover:bg-gradient-to-r hover:from-primary-700 hover:to-secondary-pink-700 dark:from-primary-500 dark:to-secondary-pink-400 dark:hover:from-primary-700 dark:hover:to-secondary-pink-700',
         link: 'text-primary underline-offset-4 hover:underline'
       },
       size: {
