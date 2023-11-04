@@ -1,4 +1,4 @@
-import { Outlet as AdminEventRoute } from 'react-router-dom';
+import { Outlet as AdminEventRoute, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
@@ -10,34 +10,19 @@ import { Textarea } from '@/components/TextArea';
 import { getEvent } from '@/api/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi } from '@/hooks/useApi';
+import { EVENT_STATUSES } from '@/model/events';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
+  const navigate = useNavigate();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
   const { form, submit } = useEventForm(eventId!);
 
-  const valueLabel = [
-    {
-      value: 'draft',
-      label: 'Draft'
-    },
-    {
-      value: 'open',
-      label: 'Open'
-    },
-    {
-      value: 'cancelled',
-      label: 'Cancelled'
-    },
-    {
-      value: 'closed',
-      label: 'Closed'
-    },
-    {
-      value: 'completed',
-      label: 'Completed'
-    }
-  ];
+  const handleSubmit = async () => {
+    await submit().then(() => {
+      navigate(`/admin/events/`);
+    });
+  };
 
   if (isFetching) {
     return (
@@ -77,7 +62,7 @@ const AdminEventPageContent = () => {
             <FormItem name="description">
               {({ field }) => (
                 <div className="flex flex-col">
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <Textarea placeholder="Type your message here." {...field} />
                   <FormError />
                 </div>
@@ -121,7 +106,7 @@ const AdminEventPageContent = () => {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Event Status</SelectLabel>
-                        {valueLabel.map((item) => (
+                        {EVENT_STATUSES.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -178,7 +163,7 @@ const AdminEventPageContent = () => {
                 </div>
               )}
             </FormItem>
-            <Button onClick={submit} type="submit">
+            <Button onClick={handleSubmit} type="submit">
               Submit
             </Button>
           </main>

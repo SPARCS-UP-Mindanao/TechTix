@@ -5,7 +5,6 @@ import { getEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { convertToDateTimeLocalString } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
-import { Event } from '@/model/events';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const EventFormSchema = z.object({
@@ -49,7 +48,7 @@ export const useEventForm = (eventId: string) => {
     defaultValues: async () => {
       const { queryFn: event } = getEvent(eventId);
       const response = await event();
-      const eventResponse = response.data as Event;
+      const eventResponse = response.data;
       return {
         name: eventResponse.name,
         description: eventResponse.description,

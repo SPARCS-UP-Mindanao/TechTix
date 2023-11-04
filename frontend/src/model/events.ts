@@ -18,3 +18,26 @@ export interface Event {
   createdBy?: string;
   updatedBy?: string;
 }
+
+export const EVENT_STATUSES = [
+  {
+    value: 'draft',
+    label: 'Draft'
+  },
+  {
+    value: 'open',
+    label: 'Open'
+  },
+  {
+    value: 'cancelled',
+    label: 'Cancelled'
+  },
+  {
+    value: 'closed',
+    label: 'Closed'
+  },
+  {
+    value: 'completed',
+    label: 'Completed'
+  }
+];
