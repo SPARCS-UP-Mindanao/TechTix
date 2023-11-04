@@ -12,7 +12,7 @@ export const useApi = <T>(api: createApiReturn<T>, { active = true, suspense = f
     enabled: active,
     suspense,
     keepPreviousData,
-    staleTime: Infinity,
+    refetchOnWindowFocus: false,
     retry: 3
   });
 };

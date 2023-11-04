@@ -9,3 +9,7 @@ class FileUploadOut(BaseModel):
 class FileDownloadOut(BaseModel):
     downloadLink: str = Field(..., title="Upload Link")
     objectKey: str = Field(..., title="Object Key")
+
+
+class FileUploadIn(BaseModel):
+    fileName: str = Field(..., title="File Name")

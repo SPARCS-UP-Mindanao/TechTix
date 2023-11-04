@@ -40,11 +40,10 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   cardFooter?: React.ReactNode;
 }
 
-const Card = ({ cardBanner, cardTitle, cardDescription, cardFooter, children, className, ...props }: CardProps) => {
+const Card = ({ cardTitle, cardDescription, cardFooter, children, className, ...props }: CardProps) => {
   return (
     <CardContainer {...props} className={className}>
-      <CardHeader>
-        <img src={cardBanner} />
+      <CardHeader className="w-full">
         <CardTitle>{cardTitle}</CardTitle>
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>

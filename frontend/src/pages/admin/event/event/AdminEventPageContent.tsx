@@ -2,7 +2,7 @@ import { Outlet as AdminEventRoute } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
-import Checkbox from '@/components/Checkbox';
+import FileUpload from '@/components/FileUpload';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
@@ -12,10 +12,9 @@ import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi } from '@/hooks/useApi';
 
 const AdminEventPageContent = () => {
-  const eventId = useParams().eventId;
+  const { eventId } = useParams();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
   const { form, submit } = useEventForm(eventId!);
-  console.log(form.formState);
 
   const valueLabel = [
     {
@@ -61,9 +60,9 @@ const AdminEventPageContent = () => {
   const eventInfo = response.data;
 
   return (
-    <section>
-      <h1>Update Event {eventInfo.name}</h1>
-      <div className="flex flex-col items-center justify-center w-full">
+    <section className="p-10">
+      <div className="flex flex-col gap-  3 items-center justify-center w-full">
+        <h1>Update {eventInfo.name}</h1>
         <FormProvider {...form}>
           <main className="w-full">
             <FormItem name="name">
@@ -113,9 +112,9 @@ const AdminEventPageContent = () => {
             </FormItem>
             <FormItem name="status">
               {({ field }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col w-full">
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select {...field} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select an Event Status" />
                     </SelectTrigger>
@@ -138,7 +137,7 @@ const AdminEventPageContent = () => {
               {({ field }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event Start Date</FormLabel>
-                  <input type="datetime-local" {...field} />
+                  <Input type="datetime-local" {...field} />
                   <FormError />
                 </div>
               )}
@@ -147,25 +146,34 @@ const AdminEventPageContent = () => {
               {({ field }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event End Date</FormLabel>
-                  <input type="datetime-local" {...field} />
+                  <Input type="datetime-local" {...field} />
                   <FormError />
                 </div>
               )}
             </FormItem>
-            <FormItem name="autoConfirm">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Auto Confirm Registrations?</FormLabel>
-                  <Checkbox {...field} />
+            <FormItem name="eventBanner">
+              {() => (
+                <div className="flex flex-col gap-3">
+                  <FormLabel>Event Banner</FormLabel>
+                  <FileUpload entryId={eventId!} uploadType="banner" originalImage={eventInfo.bannerLink} />
                   <FormError />
                 </div>
               )}
             </FormItem>
-            <FormItem name="payedEvent">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Is this a Payed Event?</FormLabel>
-                  <Checkbox {...field} />
+            <FormItem name="logoLink">
+              {() => (
+                <div className="flex flex-col gap-3">
+                  <FormLabel>Event Logo</FormLabel>
+                  <FileUpload entryId={eventId!} uploadType="logo" originalImage={eventInfo.logoLink} />
+                  <FormError />
+                </div>
+              )}
+            </FormItem>
+            <FormItem name="certificateTemplate">
+              {() => (
+                <div className="flex flex-col gap-3">
+                  <FormLabel>Event Certificate Template</FormLabel>
+                  <FileUpload entryId={eventId!} uploadType="certificateTemplate" originalImage={eventInfo.certificateTemplate} />
                   <FormError />
                 </div>
               )}

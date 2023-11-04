@@ -33,6 +33,7 @@ interface createApiProps<D, T = D> {
   authorize?: boolean;
   apiService?: 'auth' | 'events';
   url: string;
+  queryParams?: any;
   params?: SearchParams;
   timeout?: number;
   output?: (dto: D) => T;
@@ -43,6 +44,7 @@ export function createApi<D, T = D>({
   url,
   authorize = true,
   apiService = 'events',
+  queryParams = {},
   params,
   timeout = 1000 * 60,
   output
@@ -57,6 +59,7 @@ export function createApi<D, T = D>({
         baseURL,
         method,
         url,
+        params: queryParams,
         data: params,
         timeout,
         headers: {

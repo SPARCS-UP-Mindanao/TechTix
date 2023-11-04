@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { createEvent } from '@/api/events';
+import { updateEvent } from '@/api/events';
 import { getEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { convertToDateTimeLocalString } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { Event } from '@/model/events';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,16 +15,20 @@ export const EventFormSchema = z.object({
   description: z.string().min(1, {
     message: 'Please enter the event description'
   }),
-  email: z.string().email({
-    message: 'Please enter a valid email address'
+  email: z.optional(
+    z.string().email({
+      message: 'Please enter a valid email address'
+    })
+  ),
+  startDate: z.string().min(1, {
+    message: 'Please enter the event date'
   }),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  endDate: z.string().min(1, {
+    message: 'Please enter the event date'
+  }),
   venue: z.string().min(1, {
     message: 'Please enter the event venue'
   }),
-  autoConfirm: z.boolean(),
-  payedEvent: z.boolean(),
   price: z.coerce.number().min(0, {
     message: 'Please enter the event price'
   }),
@@ -49,8 +54,8 @@ export const useEventForm = (eventId: string) => {
         name: eventResponse.name,
         description: eventResponse.description,
         email: eventResponse.email,
-        startDate: eventResponse.startDate,
-        endDate: eventResponse.endDate,
+        startDate: convertToDateTimeLocalString(new Date(eventResponse.startDate)),
+        endDate: convertToDateTimeLocalString(new Date(eventResponse.endDate)),
         venue: eventResponse.venue,
         autoConfirm: eventResponse.autoConfirm,
         payedEvent: eventResponse.payedEvent,
@@ -61,13 +66,13 @@ export const useEventForm = (eventId: string) => {
   });
 
   const submit = form.handleSubmit(async (values) => {
-    const { queryFn: event } = createEvent(values);
+    const { queryFn: event } = updateEvent(eventId, values);
     try {
       const response = await event();
       if (response.status === 200) {
         successToast({
           title: 'Event Info',
-          description: `Event Created Successfully`
+          description: `Event Updated Successfully`
         });
       } else {
         errorToast({

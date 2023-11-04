@@ -1,12 +1,12 @@
+import logging
 import os
 from typing import Tuple
-import logging
 
 from boto3 import client as boto3_client
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from model.events.events_constants import EventUploadField, EventUploadType
-from model.file_uploads.file_upload import FileUploadOut, FileDownloadOut
+from model.file_uploads.file_upload import FileDownloadOut, FileUploadOut
 from model.file_uploads.file_upload_constants import ClientMethods
 from starlette.responses import JSONResponse
 
@@ -23,7 +23,7 @@ class FileS3Usecase:
 
     def create_presigned_url(self, object_key) -> FileUploadOut:
         try:
-            presigned_url = self.__s3_client.   generate_presigned_url(
+            presigned_url = self.__s3_client.generate_presigned_url(
                 ClientMethod=ClientMethods.PUT_OBJECT,
                 Params={'Bucket': self.__bucket, 'Key': object_key},
                 ExpiresIn=self.__presigned_url_expiration_time,
@@ -35,8 +35,7 @@ class FileS3Usecase:
         except ClientError as e:
             logging.error('Error creating presigned url: %s', e)
             return JSONResponse(status_code=500, content={'message': 'Error creating presigned url'})
-        
-    
+
     def create_download_url(self, object_key) -> FileDownloadOut:
         try:
             presigned_url = self.__s3_client.generate_presigned_url(

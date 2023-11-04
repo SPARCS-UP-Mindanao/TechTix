@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
-import { getAllEvents } from '@/api/events';
+import { getAllEvents, deleteEvent } from '@/api/events';
 import { fromToDateFormatter } from '@/utils/functions';
-import { useApi } from '@/hooks/useApi';
+import { useApi, useFetchQuery } from '@/hooks/useApi';
+import { Event } from '@/model/events';
 
 const ViewEventButton = ({ eventId }: { eventId: string }) => {
   const navigate = useNavigate();
@@ -15,8 +18,41 @@ const ViewEventButton = ({ eventId }: { eventId: string }) => {
   );
 };
 
+type CardHeaderProps = {
+  eventInfo: Event;
+  refetch: () => void;
+};
+const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => setIsModalOpen(false);
+  const { fetchQuery } = useFetchQuery<any>();
+  const deleteEventTrigger = async () => {
+    if (eventInfo.entryId === undefined) {
+      return;
+    }
+    await fetchQuery(deleteEvent(eventInfo.entryId));
+    await refetch();
+    closeModal();
+  };
+  return (
+    <div className="flex flex-col gap-5 items-center">
+      <AlertModal
+        alertModalTitle="Delete Event"
+        alertModalDescription="Are you sure you want to delete this event?"
+        trigger={<Button className="self-end bg-red-500 hover:bg-red-700">Delete Event</Button>}
+        visible={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onCancelAction={() => closeModal()}
+        onCompleteAction={deleteEventTrigger}
+      />
+      <img src={eventInfo.bannerLink} /> <span>{eventInfo.name}</span>
+    </div>
+  );
+};
+
 const AdminAllEvents = () => {
-  const { data: response, isFetching } = useApi(getAllEvents());
+  const { data: response, isFetching, refetch } = useApi(getAllEvents());
 
   if (isFetching) {
     return (
@@ -43,11 +79,10 @@ const AdminAllEvents = () => {
       {eventInfos.map((eventInfo) => (
         <Card
           key={eventInfo.entryId}
-          cardBanner={eventInfo.bannerLink}
-          cardTitle={eventInfo.name}
-          cardDescription={eventInfo.description}
+          cardTitle={<CardHeader eventInfo={eventInfo} refetch={refetch} />}
+          cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
           cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
-          className="flex flex-col items-center justify-center"
+          className="flex flex-col items-center justify-between"
         >
           <p>{fromToDateFormatter(eventInfo.startDate, eventInfo.endDate)}</p>
           <div>Ticket Price: ₱{eventInfo.price}</div>

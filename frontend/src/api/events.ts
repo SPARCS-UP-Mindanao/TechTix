@@ -5,8 +5,8 @@ export interface EventDto {
   name: string;
   description: string;
   email: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   venue: string;
   bannerLink: string;
   logoLink: string;
@@ -22,7 +22,7 @@ export interface EventDto {
   updatedBy: string;
 }
 
-type OptionalEvent = Partial<Event>;
+export type OptionalEvent = Partial<Event>;
 
 const mapEventDtoToEvent = (event: EventDto): Event => ({
   name: event.name,
@@ -72,7 +72,7 @@ export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
     method: 'put',
     url: `/events/${entryId}`,
-    params: { entryId, event },
+    params: { ...event },
     output: mapEventDtoToEvent
   });
 
@@ -80,6 +80,12 @@ export const deleteEvent = (entryId: string) =>
   createApi<EventDto, Event>({
     method: 'delete',
     url: `/events/${entryId}`,
-    params: { entryId },
     output: mapEventDtoToEvent
+  });
+
+export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
+  createApi({
+    method: 'put',
+    url: `/events/${entryId}/upload/${uploadType}`,
+    params: { fileName: fileName }
   });
