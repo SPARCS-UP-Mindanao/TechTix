@@ -84,7 +84,7 @@ const AdminAllEvents = () => {
           cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
           className="flex flex-col items-center justify-between"
         >
-          <p>{fromToDateFormatter(eventInfo.startDate, eventInfo.endDate)}</p>
+          <p>{fromToDateFormatter(eventInfo.startDate as string, eventInfo.endDate as string)}</p>
           <div>Ticket Price: ₱{eventInfo.price}</div>
         </Card>
       ))}

@@ -84,7 +84,7 @@ export const timeFormatter = (value: any) =>
       })
     : '';
 
-export const fromToDateFormatter = (fromDate: Date, toDate: Date) => {
+export const fromToDateFormatter = (fromDate: string, toDate: string) => {
   const fromDateString = dateFormatter(fromDate);
   const toDateString = dateFormatter(toDate);
   const fromTimeString = timeFormatter(fromDate);

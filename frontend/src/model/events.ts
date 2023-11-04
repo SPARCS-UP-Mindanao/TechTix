@@ -2,8 +2,8 @@ export interface Event {
   name: string;
   description: string;
   email?: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | Date;
+  endDate: string | Date;
   venue: string;
   bannerLink?: string;
   logoLink?: string;
