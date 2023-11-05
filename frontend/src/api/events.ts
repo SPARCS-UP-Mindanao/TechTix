@@ -41,8 +41,6 @@ const mapEventDtoToEvent = (event: EventDto): Event => ({
   entryId: event.entryId,
   createDate: event.createDate,
   updateDate: event.updateDate,
-  createdBy: event.createdBy,
-  updatedBy: event.updatedBy
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));

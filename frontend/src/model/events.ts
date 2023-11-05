@@ -1,7 +1,7 @@
 export interface Event {
   name: string;
   description: string;
-  email?: string;
+  email: string;
   startDate: string | Date;
   endDate: string | Date;
   venue: string;
@@ -11,12 +11,10 @@ export interface Event {
   payedEvent?: boolean;
   price: number;
   certificateTemplate?: string;
-  status?: string;
+  status: string;
   entryId?: string;
   createDate?: Date;
   updateDate?: Date;
-  createdBy?: string;
-  updatedBy?: string;
 }
 
 export const EVENT_STATUSES = [

@@ -1,4 +1,4 @@
-import { Outlet as AdminEventRoute, useNavigate } from 'react-router-dom';
+import { Outlet as AdminEventRoute } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
@@ -14,14 +14,11 @@ import { EVENT_STATUSES } from '@/model/events';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
-  const navigate = useNavigate();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
-  const { form, submit } = useEventForm(eventId!);
+  const { form, submit } = useEventForm({ eventId });
 
   const handleSubmit = async () => {
-    await submit().then(() => {
-      navigate(`/admin/events/`);
-    });
+    await submit()
   };
 
   if (isFetching) {
@@ -46,7 +43,7 @@ const AdminEventPageContent = () => {
 
   return (
     <section className="p-10">
-      <div className="flex flex-col gap-  3 items-center justify-center w-full">
+      <div className="flex flex-col gap-3 items-center justify-center w-full">
         <h1>Update {eventInfo.name}</h1>
         <FormProvider {...form}>
           <main className="w-full">
