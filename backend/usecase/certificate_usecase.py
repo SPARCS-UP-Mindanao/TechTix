@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import Union
 
 from model.certificates.certificate import CertificateIn, CertificateOut
-from model.registrations.registration import RegistrationPatch
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
@@ -32,14 +31,7 @@ class CertificateUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration = registrations[0]
-        is_first_claim = registration.certificateClaimed
-
-        if not is_first_claim:
-            registration_in = RegistrationPatch(certificateClaimed=True)
-            self.__registrations_repository.update_registration(
-                registration_entry=registration, registration_in=registration_in
-            )
-
+        is_first_claim = not registration.certificateClaimed
         download_url_response = self.__file_s3_usecase.create_download_url(object_key=event.certificateTemplate)
         download_url = download_url_response.downloadLink if download_url_response else None
 
