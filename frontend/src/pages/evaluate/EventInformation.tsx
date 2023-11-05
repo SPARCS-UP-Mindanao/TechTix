@@ -1,20 +1,23 @@
+import { useState } from 'react';
+import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
-import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import { FormDescription, FormItem, FormLabel, FormError } from '@/components/Form';
 import Icon from '@/components/Icon';
 import Input from '@/components/Input';
-import sparcs_logo_white from '../../assets/logos/sparcs_logo_white.png';
-import image_placeholder from './image_placeholder/sparcs-image-placeholder.png';
+import { claimCertificate } from '@/api/evaluations';
+import { useApi } from '@/hooks/useApi';
+import { ClaimCertificateFormSchema } from '@/hooks/useCheckEmailForm';
+import { Event } from '@/model/events';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const ClaimCertificateSchema = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address'
-  })
-});
+// const ClaimCertificateSchema = z.object({
+//   email: z.string().email({
+//     message: 'Please enter a valid email address'
+//   })
+// });
 
 // TO REMOVE
 // const logo_placeholder = [
@@ -24,116 +27,89 @@ const ClaimCertificateSchema = z.object({
 //   "1J1H5NsTH37NjSM768dLZCVjLBMSIfNcv",
 // ];
 
-const EventInformation = () => {
-  const form = useForm<z.infer<typeof ClaimCertificateSchema>>({
-    resolver: zodResolver(ClaimCertificateSchema),
-    defaultValues: {
-      email: ''
-    }
-  });
+const EventInformation = ({
+  event,
+  nextStep,
+  eventId,
+  claimCertificateForm,
+  submit
+}: {
+  event: Event;
+  nextStep: () => void;
+  eventId: string | undefined;
+  claimCertificateForm: any;
+  submit: () => void;
+}) => {
+  // const form = useForm<z.infer<typeof ClaimCertificateSchema>>({
+  //   mode: 'onChange',
+  //   resolver: zodResolver(ClaimCertificateSchema),
+  //   defaultValues: {
+  //     email: ''
+  //   }
+  // });
 
-  const submit = form.handleSubmit((data) => {
-    console.log(data);
-  });
+  // const [loading, setLoading] = useState(false);
+
+  // const submit = form.handleSubmit(async ({ email }) => {
+  //   const { queryFn: checkEmail } = claimCertificate(email, eventId);
+  //   const response = await checkEmail();
+
+  //   if (response.data) {
+  //   }
+  // });
+
+  const isSameDayEvent = moment(event.startDate).isSame(event.endDate, 'day');
+  const getDate = () => {
+    if (isSameDayEvent) {
+      return `${moment(event.startDate).format('MMMM Do YYYY, h:mm A')} - ${moment(event.endDate).format('LT')}`;
+    }
+    return `${moment(event.startDate).format('MMMM Do YYYY')} - ${moment(event.endDate).format('MMMM Do YYYY')}`;
+  };
 
   return (
     <>
-      <div className="flex flex-col items-center pt-4">
-        <div className="h-12 w-12">
-          <Avatar src={sparcs_logo_white} fallback="CN" />
-        </div>
-        <div className="mt-6 sm:h-72 w-[91vw] drop-shadow-xl">
-          <img src={image_placeholder} alt="image_placeholder" className="rounded-2xl object-center object-cover w-full h-full" />
-        </div>
-        <div className="mt-6 w-[91vw]">
-          <p className="text-xl font-subjectivity font-bold text-left leading-6">UP Mindanao SPARCS Application A.Y 2023 - 2024</p>
-          <div className="w-full mt-3.5 space-y-1.5 items-start">
-            <div className="flex">
-              <Icon name="Clock" weight="light" className="w-6 h-6" />
-              <span className="text-sm font-raleway font-medium text-left leading-5 ml-1">November 11, 2023 | 12:30 – 5:00 PM GMT+8</span>
-            </div>
-            <div className="flex">
-              <Icon name="MapPin" weight="light" className="w-6 h-6" />
-              <p className="text-sm font-raleway font-medium text-left leading-5 ml-1">UP Mindanao, Tugbok, Davao City, 8000 Davao del Sur</p>
-            </div>
+      <div className="mt-6 w-full">
+        <p className="text-xl font-subjectivity font-bold text-left leading-6">{event.name}</p>
+        <div className="w-full mt-3.5 space-y-1.5 items-start">
+          <div className="flex">
+            <Icon name="Clock" weight="light" className="w-6 h-6" />
+            <span className="text-sm font-raleway font-medium text-left leading-5 ml-1">{getDate()}</span>
           </div>
-          <hr className="bg-neutral-200 my-9" />
-          <div>
-            <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
-            <FormProvider {...form}>
-              <FormItem name="email">
-                {({ field }) => (
-                  <div className="flex flex-col items-start space-y-2">
-                    <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your e-mail</FormLabel>
-                    <Input
-                      type="email"
-                      {...field}
-                      className="text-neutral-300 rounded-2xl py-3 px-6 my-3 bg-neutral-900 tracking-tighter leading-5"
-                      placeholder="Email"
-                    />
-                    <FormDescription className="text-left font-raleway font-medium text-sm leading-4 tracking-tighter text-neutral-300">
-                      *Please enter the email address you used when registering for the event
-                    </FormDescription>
-                    <FormError />
-                  </div>
-                )}
-              </FormItem>
-              <Button
-                onClick={submit}
-                className="py-3 px-12 rounded-2xl font-bold font-raleway leading text-white bg-gradient-to-r from-[#4F65E3] to-[#F43F79] mt-12"
-              >
-                Evaluate
-              </Button>
-            </FormProvider>
+          <div className="flex">
+            <Icon name="MapPin" weight="light" className="w-6 h-6" />
+            <p className="text-sm font-raleway font-medium text-left leading-5 ml-1">{event.venue}</p>
           </div>
         </div>
-        {/* <p className="mt-7 text-xl font-bold">
-          UP Mindanao SPARCS Application A.Y 2023 - 2024
-        </p>
-        <div className="flex flex-col items-center h-64 w-[91vw] mt-8 rounded-2xl border-2 border-[#B0B0B0] bg-[#F6F6F6] p-4">
-          <p className="text-black text-base font-bold">
-            CLAIM YOUR CERTIFICATE
-          </p>
-          <div className="w-11/12 mt-2.5">
-            <FormProvider {...form}>
-              <FormItem name="email">
-                {({ field }) => (
-                  <div className="flex flex-col items-start mb-5 space-y-2">
-                    <FormLabel className="text-black">
-                      Enter your e-mail
-                    </FormLabel>
-                    <Input
-                      type="email"
-                      {...field}
-                      className="text-black rounded-2xl"
-                      placeholder="email@example.com"
-                    />
-                    <FormDescription className="text-[#4F4F4F] text-left">
-                      Use the e-mail address you used when signing up for the
-                      event
-                    </FormDescription>
-                    <FormError />
-                  </div>
-                )}
-              </FormItem>
-              <Button
-                onClick={submit}
-                className="w-full bg-[#1F3BD8] text-white rounded-2xl focus:bg-[#1F3BD8] hover:bg-[#1F3BD8]"
-              >
-                Claim
-              </Button>
-            </FormProvider>
-          </div>
+        <hr className="bg-neutral-200 my-9" />
+        <div className="flex flex-col items-center">
+          <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
+          <FormProvider {...claimCertificateForm}>
+            <FormItem name="email">
+              {({ field }) => (
+                <div className="flex flex-col items-start space-y-2">
+                  <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your e-mail</FormLabel>
+                  <Input
+                    type="email"
+                    {...field}
+                    className="text-neutral-300 rounded-2xl py-3 px-6 my-3 bg-neutral-900 tracking-tighter leading-5"
+                    placeholder="Email"
+                  />
+                  <FormDescription className="text-left font-raleway font-medium text-sm leading-4 tracking-tighter text-neutral-300">
+                    *Please enter the email address you used when registering for the event
+                  </FormDescription>
+                  <FormError />
+                </div>
+              )}
+            </FormItem>
+            <Button
+              onClick={submit}
+              className="py-3 px-12 rounded-2xl font-bold font-raleway leading text-white bg-gradient-to-r from-[#4F65E3] to-[#F43F79] my-12"
+              variant="default"
+            >
+              Evaluate
+            </Button>
+          </FormProvider>
         </div>
-        <div className="flex flex-row flex-wrap justify-center w-full mt-14">
-          {logo_placeholder.map((id) => (
-            <img
-              src={`https://drive.google.com/uc?export=view&id=${id}`} // TO Modify
-              alt="image_placeholder"
-              className="rounded-2xl object-center object-cover h-10"
-            />
-          ))}
-        </div> */}
       </div>
     </>
   );

@@ -1,5 +1,5 @@
-import { ControllerRenderProps, FieldPath, FieldValues, FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
+// import { z } from 'zod';
 import Checkbox from '@/components/Checkbox';
 import { FormItem, FormLabel } from '@/components/Form';
 import Input from '@/components/Input';
@@ -29,46 +29,46 @@ interface QuestionBuilderProps {
   questions: QuestionConfigItem[];
 }
 
-const schemaCreator = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
-  const schema = questions.reduce(
-    (acc, question) => {
-      if (question.questionType === 'multiple_answers') {
-        acc[question.name] = z.array(z.string());
-      } else {
-        acc[question.name] = z.string();
-      }
-      return acc;
-    },
-    {} as Record<string, z.ZodTypeAny>
-  );
+// const schemaCreator = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
+//   const schema = questions.reduce(
+//     (acc, question) => {
+//       if (question.questionType === 'multiple_answers') {
+//         acc[question.name] = z.array(z.string());
+//       } else {
+//         acc[question.name] = z.string();
+//       }
+//       return acc;
+//     },
+//     {} as Record<string, z.ZodTypeAny>
+//   );
 
-  return z.object(schema);
-};
+//   return z.object(schema);
+// };
 
 const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
-  const FormSchema = schemaCreator(questions);
+  // const FormSchema = schemaCreator(questions);
 
-  const getDefaultValues = (questions: QuestionConfigItem[]) => {
-    const defaultValues = questions.reduce(
-      (acc, question) => {
-        if (question.questionType === 'multiple_answers') {
-          acc[question.name] = [];
-        } else {
-          acc[question.name] = '';
-        }
-        return acc;
-      },
-      {} as Record<string, string | string[]>
-    );
-    return defaultValues;
-  };
+  // const getDefaultValues = (questions: QuestionConfigItem[]) => {
+  //   const defaultValues = questions.reduce(
+  //     (acc, question) => {
+  //       if (question.questionType === 'multiple_answers') {
+  //         acc[question.name] = [];
+  //       } else {
+  //         acc[question.name] = '';
+  //       }
+  //       return acc;
+  //     },
+  //     {} as Record<string, string | string[]>
+  //   );
+  //   return defaultValues;
+  // };
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    mode: 'onChange',
-    defaultValues: getDefaultValues(questions)
-  });
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   mode: 'onChange',
+  //   defaultValues: getDefaultValues(questions)
+  // });
 
-  console.log(form.watch());
+  // console.log(form.watch());
 
   const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
     question: QuestionConfigItem,
@@ -152,19 +152,17 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      <FormProvider {...form}>
-        {questions.map((question, index) => (
-          <FormItem key={index} name={question.name}>
-            {({ field }) => (
-              <div className="">
-                <FormLabel className="mb-3">{question.question}</FormLabel>
-                {BuilderQuestion(question, field)}
-              </div>
-            )}
-          </FormItem>
-        ))}
-      </FormProvider>
+    <div className="flex flex-col space-y-6 w-full">
+      {questions.map((question, index) => (
+        <FormItem key={index} name={question.name}>
+          {({ field }) => (
+            <div className="">
+              <FormLabel className="mb-3">{question.question}</FormLabel>
+              {BuilderQuestion(question, field)}
+            </div>
+          )}
+        </FormItem>
+      ))}
     </div>
   );
 };
