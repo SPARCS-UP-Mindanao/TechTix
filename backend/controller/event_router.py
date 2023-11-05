@@ -10,7 +10,7 @@ from model.events.events_constants import EventUploadType
 from model.file_uploads.file_upload import FileUploadOut
 from model.file_uploads.file_upload_constants import FileUploadConstants
 from usecase.event_usecase import EventUsecase
-from usecase.file_upload_usecase import FileUploadUsecase
+from usecase.file_s3_usecase import FileS3Usecase
 
 event_router = APIRouter()
 
@@ -156,5 +156,5 @@ def get_presigned_url(
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
-    file_upload_uc = FileUploadUsecase()
-    return file_upload_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}/{file_name}')
+    file_s3_uc = FileS3Usecase()
+    return file_s3_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}/{file_name}')
