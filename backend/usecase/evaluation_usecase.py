@@ -7,6 +7,7 @@ from model.evaluations.evaluation import (
     EvaluationOut,
     EvaluationPatch,
 )
+from model.registrations.registration import RegistrationPatch
 from repository.evaluations_repository import EvaluationRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
@@ -26,7 +27,7 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, __, message = self.__registrations_repository.query_registrations(
+        status, registration, message = self.__registrations_repository.query_registrations(
             event_id=event_id, registration_id=registration_id
         )
         if status != HTTPStatus.OK:
@@ -37,6 +38,11 @@ class EvaluationUsecase:
         )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        self.__registrations_repository.update_registration(
+            registration_entry=registration,
+            registration_in=RegistrationPatch(certificateClaimed=True),
+        )
 
         return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluation_list]
 
