@@ -3,8 +3,10 @@ from http import HTTPStatus
 from typing import List, Union
 
 from model.events.event import EventIn, EventOut
+from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileUploadOut
 from repository.events_repository import EventsRepository
+from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
@@ -15,6 +17,7 @@ class EventUsecase:
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
+        self.__registration_repository = RegistrationsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         status, event, message = self.__events_repository.store_event(event_in)
@@ -38,6 +41,13 @@ class EventUsecase:
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if update_event.status == EventStatus.COMPLETED.value:
+            event_id = update_event.entryId
+            status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
+            self.__email_usecase.send_event_completion_email(
+                event_id=event_id, participants=[entry.email for entry in registrations]
+            )
 
         event_data = self.__convert_data_entry_to_dict(update_event)
         event_out = EventOut(**event_data)
