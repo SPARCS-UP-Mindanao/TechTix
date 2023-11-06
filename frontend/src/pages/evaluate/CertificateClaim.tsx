@@ -2,6 +2,7 @@ import sparcs_logo_white from '@/assets/logos/sparcs_logo_white.png';
 import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
+import Skeleton from '@/components/Skeleton';
 import image_placeholder from './image_placeholder/placeholder.png';
 
 const CertificateClaim = ({ certificateLink }) => {
@@ -13,8 +14,16 @@ const CertificateClaim = ({ certificateLink }) => {
         </div>
         <div className="mt-12">
           <p className="text-2xl font-bold font-subjectivity leading-6 text-neutral-50 text-center">Here's your Certificate!</p>
-          <div className="my-5 sm:h-72 w-[91vw]">
-            <img src={certificateLink} alt="image_placeholder" className="rounded-2xl object-center object-cover w-full h-full" />
+          <div className="my-5 sm:h-72 w-[91vw] ">
+            {certificateLink ? (
+              <img
+                src={certificateLink}
+                alt="image_placeholder"
+                className="animate-[fade-in_1s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
+              />
+            ) : (
+              <Skeleton className="rounded-2xl h-[330px] w-full bg-neutral-500" />
+            )}
           </div>
           <div className="flex flex-col pt-3 w-[91vw] space-y-3">
             <Button variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#D95229] to-[#F4805D] text-[#F6F6F6]">
