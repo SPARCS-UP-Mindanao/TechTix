@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { updateEvent, createEvent, getEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { convertToDateTimeLocalString, isEmpty } from '@/utils/functions';
+import { isEmpty } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -15,8 +15,7 @@ export const EventFormSchema = z.object({
   }),
   email: z.string().email({
     message: 'Please enter a valid email address'
-  })
-  ,
+  }),
   startDate: z.string().min(1, {
     message: 'Please enter the event date'
   }),
@@ -41,23 +40,18 @@ interface EventFormProps {
   refetch?: () => void;
 }
 
-export const useEventForm = ({eventId, refetch}: EventFormProps) => {
+export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
   const { successToast, errorToast } = useNotifyToast();
 
   const form = useForm<EventFormValues>({
     mode: 'onChange',
     resolver: zodResolver(EventFormSchema),
     defaultValues: async () => {
-
       if (eventId) {
         const { queryFn: event } = getEvent(eventId);
         const response = await event();
         const eventResponse = response.data;
-        return {
-          ...eventResponse,
-          startDate: convertToDateTimeLocalString(new Date(eventResponse.startDate)),
-          endDate: convertToDateTimeLocalString(new Date(eventResponse.endDate)),
-        };
+        return eventResponse;
       }
 
       return {
@@ -72,15 +66,15 @@ export const useEventForm = ({eventId, refetch}: EventFormProps) => {
         price: 0,
         status: 'draft'
       };
-  }});
+    }
+  });
 
   const submit = form.handleSubmit(async (values) => {
     const { queryFn: event } = eventId ? updateEvent(eventId, values) : createEvent(values);
 
     try {
-      
       if (!isEmpty(form.formState.errors)) {
-        throw new Error('Please fill in all the required fields')
+        throw new Error('Please fill in all the required fields');
       }
 
       const response = await event();
