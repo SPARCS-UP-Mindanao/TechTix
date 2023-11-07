@@ -108,3 +108,8 @@ export const convertToDateTimeLocalString = (date: Date) => {
 
   return `${year}-${month}-${day}T${hours}:${minutes}:00`;
 };
+
+export const isValidDate = (dateString: string): boolean => {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+};
