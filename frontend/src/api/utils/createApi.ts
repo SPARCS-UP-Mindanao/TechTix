@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { setCookie, getCookie, removeCookie } from 'typescript-cookie';
+import { getCookie } from 'typescript-cookie';
+import { refreshOnIntercept } from '@/utils/refreshToken';
 import { QueryKey } from '@tanstack/react-query';
 
 type SearchParamType = string | string[] | number | number[] | boolean | Record<string, any> | Date | null | undefined;
@@ -26,15 +27,15 @@ export interface CustomAxiosError extends Omit<AxiosResponse, 'data'> {
   errorData: ErrorResponse;
 }
 
-const createQueryKey = (url: string, params?: SearchParams) => [url, params];
-
+const createQueryKey = (url: string, body?: SearchParams) => [url, body];
+export type ApiService = 'auth' | 'events';
 interface createApiProps<D, T = D> {
   method?: 'get' | 'post' | 'delete' | 'patch' | 'put';
   authorize?: boolean;
-  apiService?: 'auth' | 'events';
+  apiService?: ApiService;
   url: string;
   queryParams?: any;
-  params?: SearchParams;
+  body?: SearchParams;
   timeout?: number;
   output?: (dto: D) => T;
 }
@@ -42,10 +43,10 @@ interface createApiProps<D, T = D> {
 export function createApi<D, T = D>({
   method = 'get',
   url,
-  authorize = true,
+  authorize = false,
   apiService = 'events',
   queryParams = {},
-  params,
+  body,
   timeout = 1000 * 60,
   output
 }: createApiProps<D, T>) {
@@ -60,7 +61,7 @@ export function createApi<D, T = D>({
         method,
         url,
         params: queryParams,
-        data: params,
+        data: body,
         timeout,
         headers: {
           'Content-Type': 'application/json',
@@ -91,68 +92,10 @@ export function createApi<D, T = D>({
     }
   };
 
-  api.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-
-    async (error) => {
-      const originalRequest = error.config;
-
-      // Check if the error is due to an expired access token
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true; // mark the request to avoid infinite retry loops
-
-        const refreshToken = getCookie('_auth_refresh');
-        const userId = getCookie('_auth_user');
-
-        // Check if refresh token is available
-        if (refreshToken && userId) {
-          try {
-            // Encapsulate token refresh logic in a function
-            const response = await refreshAccessToken(refreshToken, userId);
-
-            if (response.status !== 200) {
-              resetAuth();
-            }
-
-            // Store the new token
-            const newAccessToken = response.data.accessToken;
-            setCookie('_auth', newAccessToken);
-
-            // Update the header for the original request
-            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-
-            // Retry the original request with the new token
-            return api(originalRequest);
-          } catch (refreshError) {
-            resetAuth();
-          }
-        } else {
-          resetAuth();
-        }
-      }
-
-      // For errors not related to token expiration, just return the error
-      return Promise.reject(error);
-    }
-  );
-
-  async function refreshAccessToken(refreshToken: string, userId: string) {
-    return await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
-      refreshToken: refreshToken,
-      sub: userId
-    });
-  }
-
-  function resetAuth() {
-    removeCookie('_auth_user');
-    removeCookie('_auth');
-    window.location.reload();
-  }
+  authorize && refreshOnIntercept(api);
 
   return {
-    queryKey: createQueryKey(url, params) as unknown as QueryKey,
+    queryKey: createQueryKey(url, body) as unknown as QueryKey,
     queryFn
   };
 }
