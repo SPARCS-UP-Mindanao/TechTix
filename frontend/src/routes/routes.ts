@@ -9,7 +9,6 @@ import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/Admin
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
-import SuccessPage from '@/pages/register/Success/SuccessPage';
 import App from '@/App';
 
 export const routes = createBrowserRouter(
@@ -24,10 +23,6 @@ export const routes = createBrowserRouter(
             {
               path: 'register',
               element: RegisterPage()
-            },
-            {
-              path: 'register/success',
-              element: SuccessPage()
             },
             {
               path: 'evaluate',

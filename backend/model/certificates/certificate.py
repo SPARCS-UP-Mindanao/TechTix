@@ -6,4 +6,6 @@ class CertificateIn(BaseModel):
 
 
 class CertificateOut(BaseModel):
+    isFirstClaim: bool = Field(None, title="Already Claimed Flag")
     certificateTemplate: str = Field(None, title="Certificate Template")
+    registrationId: str = Field(None, title="Registration Id")

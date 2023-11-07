@@ -1,7 +1,7 @@
-import { ReactQueryProvider } from "@/context/QueryClientContext";
-import { RouteProvider } from "@/context/RouteContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import React from "react";
+import React from 'react';
+import { ReactQueryProvider } from '@/context/QueryClientContext';
+import { RouteProvider } from '@/context/RouteContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 
 interface Props {
   components: Array<React.JSXElementConstructor<React.PropsWithChildren<any>>>;
@@ -17,7 +17,7 @@ export const Compose = ({ components = [], children }: Props) => {
 export const withProviders = (children: React.ReactNode) => {
   const providers = Compose({
     components: [ReactQueryProvider, ThemeProvider, RouteProvider],
-    children,
+    children
   });
 
   return providers;

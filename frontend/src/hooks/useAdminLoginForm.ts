@@ -34,7 +34,7 @@ export const useAdminLoginForm = () => {
       const response = await login();
 
       if (response.status === 200) {
-        setCookie('_auth_user', response.data.authState?.userId, { expires: 30 });
+        setCookie('_auth_user', response.data.authState?.userId);
         signIn(response.data);
       }
     } catch (e) {

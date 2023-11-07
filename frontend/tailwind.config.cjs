@@ -108,7 +108,7 @@ module.exports = {
           950: 'hsl(var(--warming-950))'
         },
         negative: {
-          DEFAULT: 'hsl(var(--negative-500))',
+          DEFAULT: 'hsl(var(--negative))',
           50: 'hsl(var(--negative-50))',
           100: 'hsl(var(--negative-100))',
           200: 'hsl(var(--negative-200))',

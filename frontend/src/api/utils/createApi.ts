@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { getCookie } from 'typescript-cookie';
+import { refreshOnIntercept } from '@/utils/refreshToken';
 import { QueryKey } from '@tanstack/react-query';
 
 type SearchParamType = string | string[] | number | number[] | boolean | Record<string, any> | Date | null | undefined;
@@ -26,14 +27,15 @@ export interface CustomAxiosError extends Omit<AxiosResponse, 'data'> {
   errorData: ErrorResponse;
 }
 
-const createQueryKey = (url: string, params?: SearchParams) => [url, params];
-
+const createQueryKey = (url: string, body?: SearchParams) => [url, body];
+export type ApiService = 'auth' | 'events';
 interface createApiProps<D, T = D> {
   method?: 'get' | 'post' | 'delete' | 'patch' | 'put';
   authorize?: boolean;
-  apiService?: 'auth' | 'events';
+  apiService?: ApiService;
   url: string;
-  params?: SearchParams;
+  queryParams?: any;
+  body?: SearchParams;
   timeout?: number;
   output?: (dto: D) => T;
 }
@@ -43,21 +45,24 @@ export type GenericReturn<T> = AxiosResponse<T> & CustomAxiosError;
 export function createApi<D, T = D>({
   method = 'get',
   url,
-  authorize = true,
+  authorize = false,
   apiService = 'events',
-  params,
+  queryParams = {},
+  body,
   timeout = 1000 * 60,
   output
 }: createApiProps<D, T>) {
   const baseURL = apiService === 'events' ? import.meta.env.VITE_API_EVENTS_BASE_URL : import.meta.env.VITE_API_AUTH_BASE_URL;
+  const api = axios.create();
   const queryFn = async () => {
     const accessToken = getCookie('_auth')!;
     try {
-      const response = await axios({
+      const response = await api({
         baseURL,
         method,
         url,
-        data: params,
+        params: queryParams,
+        data: body,
         timeout,
         headers: {
           'Content-Type': 'application/json',
@@ -87,8 +92,11 @@ export function createApi<D, T = D>({
       } as unknown as GenericReturn<T>;
     }
   };
+
+  authorize && refreshOnIntercept(api);
+
   return {
-    queryKey: createQueryKey(url, params) as unknown as QueryKey,
+    queryKey: createQueryKey(url, body) as unknown as QueryKey,
     queryFn
   };
 }

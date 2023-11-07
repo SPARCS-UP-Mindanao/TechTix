@@ -1,7 +1,11 @@
 import { Outlet } from 'react-router-dom';
 
 const LandingPage = () => {
-  return <Outlet />;
+  return (
+    <main className="clientPage">
+      <Outlet />
+    </main>
+  );
 };
 
 export default LandingPage;
