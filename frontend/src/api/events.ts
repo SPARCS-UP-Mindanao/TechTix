@@ -5,8 +5,8 @@ export interface EventDto {
   name: string;
   description: string;
   email: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   venue: string;
   bannerLink: string;
   logoLink: string;
@@ -16,33 +16,16 @@ export interface EventDto {
   certificateTemplate: string;
   status: string;
   entryId: string;
-  createDate: Date;
-  updateDate: Date;
+  createDate: string;
+  updateDate: string;
   createdBy: string;
   updatedBy: string;
 }
 
-type OptionalEvent = Partial<Event>;
+export type OptionalEvent = Partial<Event>;
 
 const mapEventDtoToEvent = (event: EventDto): Event => ({
-  name: event.name,
-  description: event.description,
-  email: event.email,
-  startDate: event.startDate,
-  endDate: event.endDate,
-  venue: event.venue,
-  bannerLink: event.bannerLink,
-  logoLink: event.logoLink,
-  autoConfirm: event.autoConfirm,
-  payedEvent: event.payedEvent,
-  price: event.price,
-  certificateTemplate: event.certificateTemplate,
-  status: event.status,
-  entryId: event.entryId,
-  createDate: event.createDate,
-  updateDate: event.updateDate,
-  createdBy: event.createdBy,
-  updatedBy: event.updatedBy
+  ...event
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
@@ -50,6 +33,7 @@ const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) 
 export const getAllEvents = () =>
   createApi<EventDto[], Event[]>({
     method: 'get',
+    authorize: true,
     url: '/events',
     output: mapEventsDtoToEvent
   });
@@ -57,8 +41,9 @@ export const getAllEvents = () =>
 export const createEvent = (event: Event) =>
   createApi({
     method: 'post',
+    authorize: true,
     url: '/events',
-    params: { event }
+    body: { ...event }
   });
 
 export const getEvent = (entryId: string) =>
@@ -71,15 +56,24 @@ export const getEvent = (entryId: string) =>
 export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
     method: 'put',
+    authorize: true,
     url: `/events/${entryId}`,
-    params: { entryId, event },
+    body: { ...event },
     output: mapEventDtoToEvent
   });
 
 export const deleteEvent = (entryId: string) =>
   createApi<EventDto, Event>({
     method: 'delete',
+    authorize: true,
     url: `/events/${entryId}`,
-    params: { entryId },
     output: mapEventDtoToEvent
+  });
+
+export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
+  createApi({
+    method: 'put',
+    authorize: true,
+    url: `/events/${entryId}/upload/${uploadType}`,
+    body: { fileName: fileName }
   });

@@ -1,4 +1,4 @@
-import AdminPageContent from "./AdminPageContent";
+import AdminPageContent from './AdminPageContent';
 
 const AdminPage = () => {
   return <AdminPageContent />;

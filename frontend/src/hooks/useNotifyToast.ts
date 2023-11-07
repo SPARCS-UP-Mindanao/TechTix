@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/useToast";
+import { useToast } from '@/hooks/useToast';
 
 interface ToastProps {
   title?: string;
@@ -11,54 +11,36 @@ interface ToastProps {
 export const useNotifyToast = () => {
   const { toast } = useToast();
 
-  const infoToast = ({
-    title = "Info",
-    description,
-    icon = "Info",
-    iconClassname,
-    duration = 5000,
-  }: ToastProps) =>
+  const infoToast = ({ title = 'Info', description, icon = 'Info', iconClassname, duration = 5000 }: ToastProps) =>
     toast({
       title,
       description,
       icon,
       iconClassname,
-      duration,
+      duration
     });
 
-  const successToast = ({
-    title = "Success",
-    description,
-    icon = "CheckCircle",
-    iconClassname = "text-green-400",
-    duration = 5000,
-  }: ToastProps) =>
+  const successToast = ({ title = 'Success', description, icon = 'CheckCircle', iconClassname = 'text-green-400', duration = 5000 }: ToastProps) =>
     toast({
       title,
       description,
       icon,
       iconClassname,
-      duration,
+      duration
     });
 
-  const errorToast = ({
-    title = "Error",
-    description,
-    icon = "XCircle",
-    iconClassname = "text-negative",
-    duration = 5000,
-  }: ToastProps) =>
+  const errorToast = ({ title = 'Error', description, icon = 'XCircle', iconClassname = 'text-negative', duration = 5000 }: ToastProps) =>
     toast({
       title,
       description,
       icon,
       iconClassname,
-      duration,
+      duration
     });
 
   return {
     infoToast,
     successToast,
-    errorToast,
+    errorToast
   };
 };

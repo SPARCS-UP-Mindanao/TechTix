@@ -1,6 +1,7 @@
 import json
 from http import HTTPStatus
 from typing import List, Union
+from urllib.parse import unquote_plus
 
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventStatus
@@ -20,6 +21,7 @@ class EventUsecase:
         self.__registration_repository = RegistrationsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        event_in.status = EventStatus.DRAFT.value
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -82,13 +84,14 @@ class EventUsecase:
         return None
 
     def update_event_after_s3_upload(self, object_key) -> Union[JSONResponse, EventOut]:
-        event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(object_key)
+        decoded_object_key = unquote_plus(object_key)
+        event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(decoded_object_key)
 
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        fields = {upload_type: object_key, "status": event.status}  # required
+        fields = {upload_type: decoded_object_key, "status": event.status}  # required
 
         status, update_event, message = self.__events_repository.update_event_after_s3_upload(
             event_entry=event, event_in=EventIn(**fields)
