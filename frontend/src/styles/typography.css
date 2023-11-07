@@ -45,3 +45,9 @@
     @apply scroll-m-20 text-xl font-subjectivity font-semibold tracking-tight text-black dark:text-neutrals-50;
   }
 }
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
