@@ -1,12 +1,4 @@
 import * as React from 'react';
-<<<<<<< HEAD
-import { format } from 'date-fns';
-import Button from '@/components/Button';
-import Calendar from '@/components/Calendar';
-import Icon from '@/components/Icon';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/Popover';
-import { cn } from '@/utils/classes';
-=======
 import moment from 'moment';
 import Button from '@/components/Button';
 import Calendar from '@/components/Calendar';
@@ -15,7 +7,6 @@ import Input from '@/components/Input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/Popover';
 import { cn } from '@/utils/classes';
 import { isValidDate } from '@/utils/functions';
->>>>>>> 1d502157206dc02f3078d33262755e21c0b36101
 
 interface DatePickerProps {
   value: string;
@@ -71,15 +62,6 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
   return (
     <Popover>
       <PopoverTrigger asChild>
-<<<<<<< HEAD
-        <Button variant={'outline'} className={cn('w-[280px] justify-start text-left font-normal', !date && 'text-muted-foreground')}>
-          <Icon name="CalendarBlank" className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>Pick a date</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-=======
         <Button
           variant="outline"
           className={cn(
@@ -94,7 +76,6 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
       <PopoverContent className="w-auto py-2">
         <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
         {includeTime && <Input value={time} onChange={onChangeTime} type="time" />}
->>>>>>> 1d502157206dc02f3078d33262755e21c0b36101
       </PopoverContent>
     </Popover>
   );

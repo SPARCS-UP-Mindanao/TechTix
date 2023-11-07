@@ -35,8 +35,8 @@ const Calendar = ({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames
       }}
       components={{
-        IconLeft: ({ ...props }) => <Icon name="CaretLeft" className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <Icon name="CaretRight" className="h-4 w-4" />
+        IconLeft: () => <Icon name="CaretLeft" className="h-4 w-4" />,
+        IconRight: () => <Icon name="CaretRight" className="h-4 w-4" />
       }}
       {...props}
     />
