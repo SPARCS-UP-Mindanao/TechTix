@@ -2,8 +2,8 @@ export interface Event {
   name: string;
   description: string;
   email: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   venue: string;
   bannerLink: string;
   logoLink: string;
@@ -13,8 +13,8 @@ export interface Event {
   certificateTemplate?: string;
   status: string;
   entryId: string;
-  createDate?: Date;
-  updateDate?: Date;
+  createDate?: string;
+  updateDate?: string;
   createdBy?: string;
   updatedBy?: string;
 }
