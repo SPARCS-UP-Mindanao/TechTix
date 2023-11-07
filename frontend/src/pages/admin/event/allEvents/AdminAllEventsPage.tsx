@@ -1,34 +1,37 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import moment from 'moment';
+import { FormProvider } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
-import Modal from '@/components/Modal';
-import Input from '@/components/Input';
+import DatePicker from '@/components/DatePicker';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
-import { FormProvider } from 'react-hook-form';
+import Input from '@/components/Input';
+import Modal from '@/components/Modal';
 import { Textarea } from '@/components/TextArea';
-
-import { getAllEvents, deleteEvent, } from '@/api/events';
-import { fromToDateFormatter } from '@/utils/functions';
-import { useApi, useFetchQuery } from '@/hooks/useApi';
+import { getAllEvents, deleteEvent } from '@/api/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
+import { useApi, useFetchQuery } from '@/hooks/useApi';
 import { Event } from '@/model/events';
 
-const CreateEventModal = ({ refetch } : { refetch: () => void }) => {
+const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { form, submit } = useEventForm({ refetch });
 
   const handleSubmit = async () => await submit();
 
   return (
-    <div className='h-full'>
-      <Modal 
+    <div className="px-4">
+      <Modal
         modalTitle="Create Event"
         modalDescription="Create a new event"
-        trigger={<Button className="w-fit">Create Event</Button>}
-        modalFooter={<Button onClick={handleSubmit} type='submit' className="w-full">Create Event</Button>}
+        trigger={<Button>Create Event</Button>}
+        modalFooter={
+          <Button onClick={handleSubmit} type="submit" className="w-full">
+            Create Event
+          </Button>
+        }
         visible={isModalOpen}
         onOpenChange={setIsModalOpen}
       >
@@ -80,10 +83,10 @@ const CreateEventModal = ({ refetch } : { refetch: () => void }) => {
               )}
             </FormItem>
             <FormItem name="startDate">
-              {({ field: { value, onChange} }) => (
+              {({ field: { value, onChange } }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event Start Date</FormLabel>
-                  <Input type="datetime-local" value={value} onChange={onChange} />
+                  <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
                 </div>
               )}
@@ -92,7 +95,7 @@ const CreateEventModal = ({ refetch } : { refetch: () => void }) => {
               {({ field: { value, onChange } }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event End Date</FormLabel>
-                  <Input type="datetime-local" value={value} onChange={onChange}/>
+                  <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
                 </div>
               )}
@@ -102,7 +105,7 @@ const CreateEventModal = ({ refetch } : { refetch: () => void }) => {
       </Modal>
     </div>
   );
-}
+};
 
 const ViewEventButton = ({ eventId }: { eventId: string }) => {
   const navigate = useNavigate();
@@ -122,13 +125,13 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => setIsModalOpen(false);
-  const { fetchQuery } = useFetchQuery<any>();
+  const { fetchQuery } = useFetchQuery();
   const deleteEventTrigger = async () => {
     if (eventInfo.entryId === undefined) {
       return;
     }
     await fetchQuery(deleteEvent(eventInfo.entryId));
-    await refetch();
+    refetch();
     closeModal();
   };
   return (
@@ -168,6 +171,15 @@ const AdminAllEvents = () => {
     );
   }
 
+  if (response.status === 200 && !response.data.length) {
+    return (
+      // TODO: Add empty event list
+      <div>
+        <h1>There are currently no events</h1>
+      </div>
+    );
+  }
+
   const eventInfos = response.data;
 
   return (
@@ -182,7 +194,9 @@ const AdminAllEvents = () => {
             cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
             className="flex flex-col items-center justify-between"
           >
-            <p>{fromToDateFormatter(eventInfo.startDate as string, eventInfo.endDate as string)}</p>
+            <p>
+              {moment(eventInfo.startDate).format('MMMM D YYYY hh:mm A')} - {moment(eventInfo.endDate).format('MMM D YYYY hh:mm A')}
+            </p>
             <div>Ticket Price: ₱{eventInfo.price}</div>
           </Card>
         ))}
@@ -196,8 +210,7 @@ const AdminAllEventsPage = () => {
     <>
       <AdminAllEvents />
     </>
-  )
-  
+  );
 };
 
 export default AdminAllEventsPage;
