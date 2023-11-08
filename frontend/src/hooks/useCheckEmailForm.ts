@@ -50,6 +50,11 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_
         title: 'Email not found',
         description: 'Please check your email address and try again.'
       });
+    } else if (response.status === 400) {
+      errorToast({
+        title: 'Certificate Template Unavailable',
+        description: 'Please try again later or refresh the page.'
+      });
     }
     console.log(response);
   });

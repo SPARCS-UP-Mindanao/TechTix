@@ -19,7 +19,7 @@ const CertificateClaim = ({ certificateLink }) => {
               <img
                 src={certificateLink}
                 alt="image_placeholder"
-                className="animate-[fade-in_1s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
+                className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
               />
             ) : (
               <Skeleton className="rounded-2xl h-[330px] w-full bg-neutral-500" />

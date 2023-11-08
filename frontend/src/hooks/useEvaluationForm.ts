@@ -41,21 +41,41 @@ export interface QuestionConfigItem {
   name: string;
   question: string;
   options?: string | string[];
+  required: boolean;
 }
 
 export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
   const schema = questions.reduce(
     (acc, question) => {
       if (question.questionType === 'multiple_answers') {
-        acc[question.name] = z.array(z.string());
+        {
+          question.required
+            ? (acc[question.name] = z.array(z.string()).refine((value) => value.length > 0, {
+                message: 'This field is required'
+              }))
+            : (acc[question.name] = z.array(z.string()).optional());
+        }
       } else if (question.questionType === 'slider') {
-        acc[question.name] = z.array(z.number().min(1).max(5));
+        {
+          question.required
+            ? (acc[question.name] = z.array(z.number().min(1).max(5)).refine((value) => value.length > 0, {
+                message: 'This field is required'
+              }))
+            : (acc[question.name] = z.array(z.number().min(1).max(5)).optional());
+        }
       } else if (question.questionType === 'text_short' || question.questionType === 'text_long') {
-        acc[question.name] = z.string().min(1); // Minimum length of 1 for text fields
+        {
+          question.required ? (acc[question.name] = z.string().min(1, { message: 'This field is required' })) : (acc[question.name] = z.string().optional());
+        }
+        // acc[question.name] = z.string().min(1); // Minimum length of 1 for text fields
       } else if (question.questionType === 'multiple_choice_dropdown' || question.questionType === 'multiple_choice') {
-        acc[question.name] = z.string().refine((value) => value !== '', {
-          message: 'This field is required'
-        });
+        {
+          question.required
+            ? (acc[question.name] = z.string().refine((value) => value !== '', {
+                message: 'This field is required'
+              }))
+            : (acc[question.name] = z.string().optional());
+        }
       }
       return acc;
     },
@@ -71,10 +91,14 @@ export const useEvaluationForm = (questions: QuestionConfigItem[]) => {
     resolver: zodResolver(QuestionSchemaBuilder(questions)),
     defaultValues: questions.reduce(
       (acc, question) => {
+        if (question.questionType === 'slider') {
+          acc[question.name] = [] as number[];
+          return acc;
+        }
         acc[question.name] = '';
         return acc;
       },
-      {} as Record<string, string>
+      {} as Record<string, string | number[]>
     )
   });
 

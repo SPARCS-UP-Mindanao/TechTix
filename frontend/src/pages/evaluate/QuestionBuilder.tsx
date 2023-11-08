@@ -1,7 +1,7 @@
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 // import { z } from 'zod';
 import Checkbox from '@/components/Checkbox';
-import { FormItem, FormLabel } from '@/components/Form';
+import { FormError, FormItem, FormLabel } from '@/components/Form';
 import Input from '@/components/Input';
 import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from '@/components/Select';
@@ -23,6 +23,7 @@ export interface QuestionConfigItem {
   name: string;
   question: string;
   options?: string | string[];
+  required?: boolean;
 }
 
 interface QuestionBuilderProps {
@@ -159,6 +160,7 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
             <div className="">
               <FormLabel className="mb-3">{question.question}</FormLabel>
               {BuilderQuestion(question, field)}
+              {question.required && <FormError />}
             </div>
           )}
         </FormItem>
