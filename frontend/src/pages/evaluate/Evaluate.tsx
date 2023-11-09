@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import Button from '@/components/Button';
-// import Calendar from '@/components/Calendar';
 import Icon from '@/components/Icon';
 import { claimCertificate } from '@/api/evaluations';
 import { getEvent } from '@/api/events';
@@ -118,9 +117,6 @@ const Evaluate = () => {
   const eventId = useParams().eventId!;
   console.log('Event1', eventId);
   const { data: response, isFetching } = useApi(getEvent(eventId!));
-  const { form } = useEvaluationForm([...QUESTION1, ...QUESTION2]);
-
-  console.log(form.watch());
 
   const nextStep = async () => {
     const moveToNextStep = () => {
@@ -155,13 +151,15 @@ const Evaluate = () => {
     EVALUATE_STEPS
   });
 
-  let cachedCertificate;
+  let cachedCertificate, registrationId;
   if (data) {
+    registrationId = data.registrationId;
     cachedCertificate = <CertificateClaim certificateLink={data.certificateTemplate as string} />;
   }
 
+  const { form, submitForm } = useEvaluationForm([...QUESTION1, ...QUESTION2], eventId, registrationId);
   const questionSchema = QuestionSchemaBuilder([...QUESTION1, ...QUESTION2]);
-
+  console.log(form.watch());
   // const [date, setDate] = useState(new Date());
 
   // const handleDateSelect = (selectedDate) => {
@@ -231,9 +229,23 @@ const Evaluate = () => {
                 </Button>
               )}
 
-              {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && (
+              {/* {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && (
                 <Button onClick={nextStep} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
                   {currentStep === 'Evaluation_1' ? 'Next' : 'Submit'}
+                  <Icon name="CaretRight" />
+                </Button>
+              )} */}
+
+              {currentStep === 'Evaluation_1' && (
+                <Button onClick={nextStep} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
+                  Next
+                  <Icon name="CaretRight" />
+                </Button>
+              )}
+
+              {currentStep === 'Evaluation_2' && (
+                <Button onClick={submitForm} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
+                  Submit
                   <Icon name="CaretRight" />
                 </Button>
               )}

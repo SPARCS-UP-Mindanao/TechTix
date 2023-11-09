@@ -1,5 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { convertToEvaluationList, postEvaluation } from '@/api/evaluations';
+import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ClaimCertificateFormSchema = z.object({
@@ -85,7 +87,8 @@ export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObj
   return z.object(schema);
 };
 
-export const useEvaluationForm = (questions: QuestionConfigItem[]) => {
+export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string, registrationId: string, nextStep: () => Promise<void>) => {
+  const { errorToast } = useNotifyToast();
   const form = useForm({
     mode: 'onChange',
     resolver: zodResolver(QuestionSchemaBuilder(questions)),
@@ -103,8 +106,22 @@ export const useEvaluationForm = (questions: QuestionConfigItem[]) => {
   });
 
   // To add onSubmit function
+  const submitForm = form.handleSubmit(async (values) => {
+    const { queryFn: postEvaluationData } = postEvaluation(eventId, registrationId, values);
+    const response = await postEvaluationData();
+
+    if (response.status === 200) {
+      await nextStep();
+    } else {
+      errorToast({
+        title: 'An error was encountered in submitting the evaluation.',
+        description: 'Please try again.'
+      });
+    }
+  });
 
   return {
-    form
+    form,
+    submitForm
   };
 };
