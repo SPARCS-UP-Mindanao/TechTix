@@ -157,9 +157,12 @@ const Evaluate = () => {
     cachedCertificate = <CertificateClaim certificateLink={data.certificateTemplate as string} />;
   }
 
-  const { form, submitForm } = useEvaluationForm([...QUESTION1, ...QUESTION2], eventId, registrationId);
+  const { form, submitForm, postEvalSuccess } = useEvaluationForm([...QUESTION1, ...QUESTION2], eventId, registrationId);
   const questionSchema = QuestionSchemaBuilder([...QUESTION1, ...QUESTION2]);
-  console.log(form.watch());
+
+  if (postEvalSuccess) {
+    nextStep();
+  }
   // const [date, setDate] = useState(new Date());
 
   // const handleDateSelect = (selectedDate) => {
