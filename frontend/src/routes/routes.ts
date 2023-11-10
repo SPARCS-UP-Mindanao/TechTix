@@ -10,6 +10,7 @@ import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 import App from '@/App';
+import AdminEvaluationsPage from '@/pages/admin/evaluations/AdminEvaluationsPage';
 
 export const routes = createBrowserRouter(
   [
@@ -59,6 +60,10 @@ export const routes = createBrowserRouter(
           ]
         }
       ]
+    },
+    {
+      path: '/admin/evaluations',
+      element: AdminEvaluationsPage()
     },
     {
       path: 'admin/authority',
