@@ -2,6 +2,7 @@ import { Outlet as AdminEventRoute } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
+import DatePicker from '@/components/DatePicker';
 import FileUpload from '@/components/FileUpload';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
@@ -10,15 +11,16 @@ import { Textarea } from '@/components/TextArea';
 import { getEvent } from '@/api/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi } from '@/hooks/useApi';
-import { EVENT_STATUSES } from '@/model/events';
+import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP } from '@/model/events';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
   const { form, submit } = useEventForm({ eventId });
+  const { setValue } = form;
 
   const handleSubmit = async () => {
-    await submit()
+    await submit();
   };
 
   if (isFetching) {
@@ -116,46 +118,70 @@ const AdminEventPageContent = () => {
               )}
             </FormItem>
             <FormItem name="startDate">
-              {({ field }) => (
+              {({ field: { value, onChange } }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event Start Date</FormLabel>
-                  <Input type="datetime-local" {...field} />
+                  <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
                 </div>
               )}
             </FormItem>
             <FormItem name="endDate">
-              {({ field }) => (
+              {({ field: { value, onChange } }) => (
                 <div className="flex flex-col">
                   <FormLabel>Event End Date</FormLabel>
-                  <Input type="datetime-local" {...field} />
+                  <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
                 </div>
               )}
             </FormItem>
-            <FormItem name="eventBanner">
-              {() => (
+            <FormItem name="bannerLink">
+              {({ field }) => (
                 <div className="flex flex-col gap-3">
                   <FormLabel>Event Banner</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="banner" originalImage={eventInfo.bannerLink} />
+                  <FileUpload
+                    entryId={eventId!}
+                    uploadType={EVENT_UPLOAD_TYPE.LOGO}
+                    originalImage={eventInfo.bannerUrl}
+                    setObjectKeyValue={(value: string) => {
+                      setValue(EVENT_OBJECT_KEY_MAP.BANNER, value);
+                    }}
+                    {...field}
+                  />
                   <FormError />
                 </div>
               )}
             </FormItem>
             <FormItem name="logoLink">
-              {() => (
+              {({ field }) => (
                 <div className="flex flex-col gap-3">
                   <FormLabel>Event Logo</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="logo" originalImage={eventInfo.logoLink} />
+                  <FileUpload
+                    entryId={eventId!}
+                    uploadType={EVENT_UPLOAD_TYPE.LOGO}
+                    originalImage={eventInfo.logoUrl}
+                    setObjectKeyValue={(value: string) => {
+                      setValue(EVENT_OBJECT_KEY_MAP.LOGO, value);
+                    }}
+                    {...field}
+                  />
                   <FormError />
                 </div>
               )}
             </FormItem>
             <FormItem name="certificateTemplate">
-              {() => (
+              {({ field }) => (
                 <div className="flex flex-col gap-3">
                   <FormLabel>Event Certificate Template</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="certificateTemplate" originalImage={eventInfo.certificateTemplate} />
+                  <FileUpload
+                    entryId={eventId!}
+                    uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE}
+                    originalImage={eventInfo.certificateTemplateUrl}
+                    setObjectKeyValue={(value: string) => {
+                      setValue(EVENT_OBJECT_KEY_MAP.CERTIFICATE_TEMPLATE, value);
+                    }}
+                    {...field}
+                  />
                   <FormError />
                 </div>
               )}

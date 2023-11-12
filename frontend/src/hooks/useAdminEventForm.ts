@@ -30,7 +30,10 @@ export const EventFormSchema = z.object({
   }),
   status: z.string().min(1, {
     message: 'Please enter the event status'
-  })
+  }),
+  bannerLink: z.string().nullish(),
+  logoLink: z.string().nullish(),
+  certificateTemplate: z.string().nullish()
 });
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;
@@ -81,7 +84,7 @@ export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
       if (response.status === 200) {
         successToast({
           title: 'Event Info',
-          description: `Event Updated Successfully`
+          description: `Event Updated Successfully  `
         });
         form.reset();
         refetch && refetch();

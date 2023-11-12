@@ -106,15 +106,15 @@ class EventUsecase:
     def collect_pre_signed_url(self, event: EventOut):
         if event.bannerLink:
             banner_link = self.__file_s3_usecase.create_download_url(event.bannerLink)
-            event.bannerLink = banner_link.downloadLink
+            event.bannerUrl = banner_link.downloadLink
 
         if event.logoLink:
             logo_link = self.__file_s3_usecase.create_download_url(event.logoLink)
-            event.logoLink = logo_link.downloadLink
+            event.logoUrl = logo_link.downloadLink
 
         if event.certificateTemplate:
             certificate_template = self.__file_s3_usecase.create_download_url(event.certificateTemplate)
-            event.certificateTemplate = certificate_template.downloadLink
+            event.certificateTemplateUrl = certificate_template.downloadLink
 
         return event
 
