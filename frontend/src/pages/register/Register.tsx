@@ -12,14 +12,15 @@ import ErrorPage from '../../components/ErrorPage';
 import EventDetails from './EventDetails';
 import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
+import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormLoading';
 import Stepper from './Stepper';
 import Summary from './Summary';
 
 // TODO: Add success page
-const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary'] as const;
+const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary'] as const;
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
-const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Summary'];
+const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
 
 type RegisterField = keyof RegisterFormValues;
 
@@ -34,7 +35,6 @@ const Register = () => {
   const { form, submit } = useRegisterForm(eventId!);
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
 
-  const test = true;
   if (isFetching) {
     return <RegisterFormLoading />;
   }
@@ -74,10 +74,13 @@ const Register = () => {
   };
 
   return (
-    <section>
-      <div className="flex flex-col items-center justify-center w-full">
-        <div className="w-12 h-12 rounded-full bg-primary-900 dark:bg-primary-100 mb-4" />
-        <img style={{ aspectRatio: 4 / 3 }} src={sparcsApplicationimage} />
+    <section className="flex flex-col items-center justify-center w-full px-4">
+      <div className="w-full max-w-2xl flex flex-col items-center">
+        <img className="w-fit h-12 rounded-full" src={eventInfo.logoUrl} />
+        <div className="flex w-full justify-center my-8 relative overflow-hidden">
+          <img src={eventInfo.bannerUrl} className="h-fit w-full max-w-md object-cover z-10" />
+          <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
+        </div>
 
         <FormProvider {...form}>
           <main className="w-full">
@@ -88,30 +91,31 @@ const Register = () => {
             <div className="space-y-4">
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
+              {currentStep === 'GCash' && <RegisterForm3 />}
             </div>
 
             {currentStep === 'Summary' && <Summary />}
 
-            <div className="flex w-full justify-around my-4">
+            <div className="flex w-full justify-around my-10">
               {currentStep === 'EventDetails' && (
-                <Button onClick={nextStep} variant={'gradient'}>
+                <Button onClick={nextStep} variant={'gradient'} className="py-4 px-20">
                   Register
                 </Button>
               )}
               {currentStep !== 'EventDetails' && (
-                <Button onClick={prevStep} variant={'outline'}>
+                <Button onClick={prevStep} variant={'outline'} className="sm:py-4 sm:px-16">
                   <Icon name="CaretLeft" />
                   Back
                 </Button>
               )}
               {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
-                <Button onClick={nextStep}>
+                <Button onClick={nextStep} className="sm:py-4 sm:px-16">
                   Next
                   <Icon name="CaretRight" />
                 </Button>
               )}
               {currentStep === 'Summary' && (
-                <Button onClick={submit} type="submit">
+                <Button onClick={submit} type="submit" className="py-4 px-20">
                   Submit
                 </Button>
               )}

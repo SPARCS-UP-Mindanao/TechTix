@@ -6,7 +6,7 @@ const RegisterForm1 = () => {
     <>
       <FormItem name="firstName">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>First Name</FormLabel>
             <Input type="text" className="" {...field} />
             <FormError />
@@ -16,7 +16,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="lastName">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>Last Name</FormLabel>
             <Input type="text" className="" {...field} />
             <FormError />
@@ -26,7 +26,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="email">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>Email</FormLabel>
             <Input type="email" className="" {...field} />
             <FormError />
@@ -36,7 +36,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="contactNumber">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>Phone number</FormLabel>
             <Input type="text" placeholder="09XXXXXXXXX" className="" {...field} />
             <FormError />

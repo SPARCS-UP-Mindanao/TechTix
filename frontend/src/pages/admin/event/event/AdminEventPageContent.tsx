@@ -43,10 +43,15 @@ const AdminEventPageContent = () => {
 
   const eventInfo = response.data;
 
+  const redirectToRegistration = () =>{
+    window.open(`/${eventId}/register`,'_blank');
+  }
+
   return (
     <section className="p-10">
       <div className="flex flex-col gap-3 items-center justify-center w-full">
         <h1>Update {eventInfo.name}</h1>
+        <Button onClick={redirectToRegistration}>Go to Event Registration</Button>
         <FormProvider {...form}>
           <main className="w-full">
             <FormItem name="name">

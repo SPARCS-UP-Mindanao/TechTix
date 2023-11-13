@@ -7,8 +7,8 @@ const RegisterForm1 = () => {
     <>
       <FormItem name="careerStatus">
         {({ field }) => (
-          <div className="flex flex-col">
-            <FormLabel>Status</FormLabel>
+          <div className="flex flex-col gap-1">
+            <FormLabel>Professional Status</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
@@ -25,7 +25,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="yearsOfExperience">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>Years of Experience</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <SelectTrigger>
@@ -46,7 +46,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="organization">
         {({ field }) => (
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col gap-1">
             <FormLabel>Organization</FormLabel>
             <Input type="text" placeholder="Enter organization name" className="" {...field} />
             <FormError />
@@ -56,7 +56,7 @@ const RegisterForm1 = () => {
 
       <FormItem name="title">
         {({ field }) => (
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col gap-1">
             <FormLabel>Title</FormLabel>
             <Input type="text" placeholder="Enter organization title" className="" {...field} />
             <FormError />
