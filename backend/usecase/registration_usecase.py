@@ -11,7 +11,9 @@ from model.registrations.registration import (
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
+from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
+from usecase.file_s3_usecase import FileS3Usecase
 
 
 class RegistrationUsecase:
@@ -28,6 +30,8 @@ class RegistrationUsecase:
         self.__registrations_repository = RegistrationsRepository()
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
+        self.__discount_usecase = DiscountUsecase()
+        self.__file_s3_usecase = FileS3Usecase()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """
@@ -65,6 +69,13 @@ class RegistrationUsecase:
                 content={"message": f"Registration with email {email} already exists"},
             )
 
+        discount_code = registration_in.discountCode
+        claimed_discount = self.__discount_usecase.claim_discount(
+            entry_id=discount_code, registration_id=registration_in.registrationId
+        )
+        if isinstance(claimed_discount, JSONResponse):
+            return claimed_discount
+
         (
             status,
             registration,
@@ -75,7 +86,8 @@ class RegistrationUsecase:
 
         registration_data = self.__convert_data_entry_to_dict(registration)
         self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
-        return RegistrationOut(**registration_data)
+        registration_out = RegistrationOut(**registration_data)
+        return self.collect_pre_signed_url(registration_out)
 
     def update_registration(
         self, event_id: str, registration_id: str, registration_in: RegistrationPatch
@@ -103,6 +115,13 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={"message": message})
 
+        discount_code = registration_in.discountCode
+        claimed_discount = self.__discount_usecase.claim_discount(
+            entry_id=discount_code, registration_id=registration.registrationId
+        )
+        if isinstance(claimed_discount, JSONResponse):
+            return claimed_discount
+
         (
             status,
             update_registration,
@@ -114,7 +133,8 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={"message": message})
 
         registration_data = self.__convert_data_entry_to_dict(update_registration)
-        return RegistrationOut(**registration_data)
+        registration_out = RegistrationOut(**registration_data)
+        return self.collect_pre_signed_url(registration_out)
 
     def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
         """
@@ -142,7 +162,8 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={"message": message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
-        return RegistrationOut(**registration_data)
+        registration_out = RegistrationOut(**registration_data)
+        return self.collect_pre_signed_url(registration_out)
 
     def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
         """
@@ -168,7 +189,10 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={"message": message})
 
-        return [RegistrationOut(**self.__convert_data_entry_to_dict(registration)) for registration in registrations]
+        return [
+            self.collect_pre_signed_url(RegistrationOut(**self.__convert_data_entry_to_dict(registration)))
+            for registration in registrations
+        ]
 
     def delete_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
         """
@@ -199,6 +223,13 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={"message": message})
 
         return None
+
+    def collect_pre_signed_url(self, registration: RegistrationOut):
+        if registration.gcashPayment:
+            gcash_payment = self.__file_s3_usecase.create_download_url(registration.gcashPayment)
+            registration.gcashPaymentUrl = gcash_payment.downloadLink
+
+        return registration
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):

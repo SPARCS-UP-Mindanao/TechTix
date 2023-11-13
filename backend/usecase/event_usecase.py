@@ -5,7 +5,6 @@ from urllib.parse import unquote_plus
 
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventStatus
-from model.file_uploads.file_upload import FileUploadOut
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
