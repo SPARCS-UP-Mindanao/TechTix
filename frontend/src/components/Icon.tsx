@@ -1,8 +1,8 @@
-import { ComponentPropsWithRef } from "react";
-import * as phosphorIcons from "@phosphor-icons/react";
+import { ComponentPropsWithRef } from 'react';
+import * as phosphorIcons from '@phosphor-icons/react';
 
-type IconWeight = "thin" | "light" | "regular" | "bold" | "fill" | "duotone";
-interface IconProps extends ComponentPropsWithRef<"svg"> {
+type IconWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
+interface IconProps extends ComponentPropsWithRef<'svg'> {
   name: string;
   alt?: string;
   color?: string;
@@ -16,15 +16,7 @@ interface IconMap {
   [key: string]: any;
 }
 
-const Icon = ({
-  name,
-  color,
-  size,
-  weight,
-  mirrored,
-  className,
-  ...props
-}: IconProps) => {
+const Icon = ({ name, color, size, weight, mirrored, className, ...props }: IconProps) => {
   const icons: IconMap = phosphorIcons as IconMap;
 
   if (!name || !(name in icons)) {
@@ -33,17 +25,7 @@ const Icon = ({
 
   const PhosphorIcon = icons[name];
 
-  return (
-    <PhosphorIcon
-      name={name}
-      color={color}
-      size={size || 18}
-      weight={weight || "bold"}
-      mirrored={mirrored}
-      className={className}
-      {...props}
-    />
-  );
+  return <PhosphorIcon name={name} color={color} size={size || 18} weight={weight || 'bold'} mirrored={mirrored} className={className} {...props} />;
 };
 
 export default Icon;

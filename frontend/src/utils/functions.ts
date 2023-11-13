@@ -1,10 +1,5 @@
 export const arraysEqual = (arrayA: any[], arrayB: any[]) => {
-  return (
-    Array.isArray(arrayA) &&
-    Array.isArray(arrayB) &&
-    arrayA.length === arrayB.length &&
-    arrayA.every((value, index) => value === arrayB[index])
-  );
+  return Array.isArray(arrayA) && Array.isArray(arrayB) && arrayA.length === arrayB.length && arrayA.every((value, index) => value === arrayB[index]);
 };
 
 export const deepEqual = <T extends { [_: string]: any }>(a: T, b: T) => {
@@ -16,7 +11,7 @@ export const deepEqual = <T extends { [_: string]: any }>(a: T, b: T) => {
     return a.getTime() === b.getTime();
   }
 
-  if (!a || !b || (typeof a !== "object" && typeof b !== "object")) {
+  if (!a || !b || (typeof a !== 'object' && typeof b !== 'object')) {
     return a === b;
   }
 
@@ -52,21 +47,26 @@ export const isEmpty = (value: any) => {
     return true;
   }
 
-  if (typeof value === "string") {
-    return value.trim() === "";
+  if (typeof value === 'string') {
+    return value.trim() === '';
   }
 
   if (Array.isArray(value)) {
     return value.length === 0;
   }
 
-  if (typeof value === "object") {
+  if (typeof value === 'object') {
     return Object.keys(value).length === 0;
   }
 
-  if (typeof value === "function") {
-    return value.toString().trim() === "function() {}";
+  if (typeof value === 'function') {
+    return value.toString().trim() === 'function() {}';
   }
 
   return false;
+};
+
+export const isValidDate = (dateString: string): boolean => {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
 };

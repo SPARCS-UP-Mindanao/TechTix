@@ -1,10 +1,13 @@
 import json
 from http import HTTPStatus
 from typing import List, Union
+from urllib.parse import unquote_plus
 
 from model.events.event import EventIn, EventOut
+from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileUploadOut
 from repository.events_repository import EventsRepository
+from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
@@ -15,8 +18,10 @@ class EventUsecase:
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
+        self.__registration_repository = RegistrationsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        event_in.status = EventStatus.DRAFT.value
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -38,6 +43,13 @@ class EventUsecase:
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if update_event.status == EventStatus.COMPLETED.value:
+            event_id = update_event.entryId
+            status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
+            self.__email_usecase.send_event_completion_email(
+                event_id=event_id, participants=[entry.email for entry in registrations]
+            )
 
         event_data = self.__convert_data_entry_to_dict(update_event)
         event_out = EventOut(**event_data)
@@ -72,13 +84,14 @@ class EventUsecase:
         return None
 
     def update_event_after_s3_upload(self, object_key) -> Union[JSONResponse, EventOut]:
-        event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(object_key)
+        decoded_object_key = unquote_plus(object_key)
+        event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(decoded_object_key)
 
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        fields = {upload_type: object_key, "status": event.status}  # required
+        fields = {upload_type: decoded_object_key, "status": event.status}  # required
 
         status, update_event, message = self.__events_repository.update_event_after_s3_upload(
             event_entry=event, event_in=EventIn(**fields)

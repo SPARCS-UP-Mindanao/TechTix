@@ -3,11 +3,11 @@
     --background: var(--primary-50);
     --foreground: var(--neutrals-950);
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: var(--background);
+    --card-foreground: var(--foreground);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: var(--primary-0);
+    --popover-foreground: var(--foreground);
 
     --primary-foreground: var(--primary-50);
 
@@ -24,8 +24,7 @@
     --primary-900: 234, 69%, 24%;
     --primary-950: 236, 68%, 5%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: var(--primary-50);
 
     --secondary-orange-50: 15, 86%, 97%;
     --secondary-orange-100: 13, 93%, 94%;
@@ -103,10 +102,11 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 227, 73%, 93%;
+    --accent-foreground: var(--neutrals-700);
 
-    --negative: 0 84.2% 60.2%;
+    --negative: var(--negative-800);
+    --negative-foreground: var(--primary-50);
 
     --border: var(--neutrals-300);
     --input: var(--primary-0);
@@ -119,13 +119,13 @@
     --background: 236, 68%, 5%;
     --foreground: var(--neutrals-50);
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: var(--background);
+    --card-foreground: var(--foreground);
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: var(--neutrals-900);
+    --popover-foreground: var(--foreground);
 
-    --primary-foreground: --primary-50;
+    --primary-foreground: var(--primary-50);
 
     --primary-50: 230, 75%, 97%;
     --primary-100: 227, 73%, 93%;
@@ -138,6 +138,8 @@
     --primary-800: 240, 56%, 40%;
     --primary-900: 239, 51%, 33%;
     --primary-950: 240, 46%, 21%;
+
+    --secondary-foreground: var(--primary-50);
 
     --secondary-orange-50: 15, 86%, 97%;
     --secondary-orange-100: 14, 87%, 94%;
@@ -163,65 +165,14 @@
     --secondary-pink-900: 333, 75%, 30%;
     --secondary-pink-950: 334, 88%, 16%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --neutrals-50: 0, 0%, 96%;
-    --neutrals-100: 0, 0%, 91%;
-    --neutrals-200: 0, 0%, 82%;
-    --neutrals-300: 0, 0%, 69%;
-    --neutrals-400: 0, 0%, 53%;
-    --neutrals-500: 0, 0%, 43%;
-    --neutrals-600: 0, 0%, 36%;
-    --neutrals-700: 0, 0%, 31%;
-    --neutrals-800: 0, 0%, 27%;
-    --neutrals-900: 0, 0%, 24%;
-    --neutrals-950: 0, 0%, 7%;
-
-    --positive-50: 95, 68%, 95%;
-    --positive-100: 98, 64%, 89%;
-    --positive-200: 100, 63%, 80%;
-    --positive-300: 101, 61%, 67%;
-    --positive-400: 102, 56%, 55%;
-    --positive-500: 102, 58%, 44%;
-    --positive-600: 104, 61%, 35%;
-    --positive-700: 105, 57%, 27%;
-    --positive-800: 104, 50%, 23%;
-    --positive-900: 107, 44%, 20%;
-    --positive-950: 108, 57%, 10%;
-
-    --warming-50: 26, 78%, 96%;
-    --warming-100: 26, 81%, 92%;
-    --warming-200: 25, 79%, 87%;
-    --warming-300: 24, 79%, 72%;
-    --warming-400: 20, 78%, 61%;
-    --warming-500: 17, 77%, 53%;
-    --warming-600: 13, 73%, 48%;
-    --warming-700: 10, 72%, 40%;
-    --warming-800: 8, 64%, 34%;
-    --warming-900: 8, 61%, 28%;
-    --warming-950: 5, 65%, 15%;
-
-    --negative-50: 0, 100%, 97%;
-    --negative-100: 0, 100%, 94%;
-    --negative-200: 0, 100%, 89%;
-    --negative-300: 0, 100%, 81%;
-    --negative-400: 0, 100%, 70%;
-    --negative-500: 0, 99%, 64%;
-    --negative-600: 0, 85%, 51%;
-    --negative-700: 0, 87%, 42%;
-    --negative-800: 0, 82%, 35%;
-    --negative-900: 0, 74%, 31%;
-    --negative-950: 0, 87%, 15%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: var(--neutrals-600);
+    --accent-foreground: var(--neutrals-300);
 
-    --negative: 0 62.8% 30.6%;
-    --negative-foreground: 210 40% 98%;
+    --negative: var(--negative-500);
+    --negative-foreground: var(--primary-50);
 
     --border: var(--neutrals-700);
     --input: var(--neutrals-900);

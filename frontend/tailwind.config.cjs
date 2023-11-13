@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-import animate from 'tailwindcss-animate';
 
-export default {
+module.exports = {
   darkMode: ['class'],
   content: ['./pages/**/*.{ts,tsx,css}', './components/**/*.{ts,tsx,css}', './app/**/*.{ts,tsx,css}', './src/**/*.{ts,tsx,css}'],
   theme: {
@@ -109,7 +108,7 @@ export default {
           950: 'hsl(var(--warming-950))'
         },
         negative: {
-          DEFAULT: 'hsl(var(--negative-500))',
+          DEFAULT: 'hsl(var(--negative))',
           50: 'hsl(var(--negative-50))',
           100: 'hsl(var(--negative-100))',
           200: 'hsl(var(--negative-200))',
@@ -169,5 +168,5 @@ export default {
       }
     }
   },
-  plugins: [animate]
+  plugins: [require('tailwindcss-animate')]
 };
