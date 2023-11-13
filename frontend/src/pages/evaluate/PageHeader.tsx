@@ -1,11 +1,11 @@
 import Avatar from '@/components/Avatar';
 
-// interface PageHeaderProps {
-//   avatarImg: string;
-//   bannerImg: string;
-// }
+interface PageHeaderProps {
+  avatarImg: string;
+  bannerImg?: string;
+}
 
-const PageHeader = ({ avatarImg, bannerImg }: { avatarImg: any; bannerImg: any }) => {
+const PageHeader = ({ avatarImg, bannerImg }: PageHeaderProps) => {
   return (
     <div className="flex flex-col items-center pt-4">
       <Avatar className="h-12 w-12" src={avatarImg} fallback="sparcs_logo" />

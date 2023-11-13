@@ -109,7 +109,7 @@ const Evaluate = () => {
       <div className="flex flex-col items-center w-full">
         <FormProvider {...form}>
           <main className="full">
-            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={sparcs_logo_white} bannerImg={response.data.bannerLink} />}
+            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={sparcs_logo_white} bannerImg={response.data?.bannerLink} />}
             {currentStep === 'EventInformation' && (
               <EventInformation event={response.data} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
             )}

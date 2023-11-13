@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { claimCertificate } from '@/api/evaluations';
+import { ClaimCertificateResponse } from '@/api/evaluations';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -22,7 +23,7 @@ export type ClaimCertificateFormSchema = z.infer<typeof ClaimCertificateSchema>;
 
 export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_STEPS }: ClaimCertificateFormProps) => {
   const { errorToast } = useNotifyToast();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<ClaimCertificateResponse | null>(null);
 
   console.log('Event ID: ', eventId);
   const claimCertificateForm = useForm<z.infer<typeof ClaimCertificateSchema>>({

@@ -1,4 +1,5 @@
 import { createApi } from './utils/createApi';
+import { GenericReturn } from './utils/createApi';
 
 export interface EvaluationResponseProps {
   answer: string | null;
@@ -9,11 +10,17 @@ export interface EvaluationResponseProps {
   question: string | null;
 }
 
+export interface ClaimCertificateResponse {
+  isFirstClaim: boolean;
+  certificateTemplate: string;
+  registrationId: string;
+}
+
 export const claimCertificate = (email: string, eventId: string) =>
-  createApi({
+  createApi<ClaimCertificateResponse>({
     method: 'put',
     url: `/certificates/${eventId}/claim`,
-    params: {
+    body: {
       email
     }
   });
@@ -84,6 +91,6 @@ export const postEvaluation = (eventId: string, registrationId: string, data: un
   return createApi({
     method: 'post',
     url: `/evaluations`,
-    params: params
+    body: params
   });
 };
