@@ -44,7 +44,7 @@ export interface QuestionConfigItem {
   name: string;
   question: string;
   options?: string | string[];
-  required: boolean;
+  required?: boolean;
 }
 
 export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObject<any> => {

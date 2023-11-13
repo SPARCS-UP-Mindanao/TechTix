@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { boolean, z } from 'zod';
+import { z } from 'zod';
 import { claimCertificate } from '@/api/evaluations';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,7 +21,7 @@ const ClaimCertificateSchema = z.object({
 export type ClaimCertificateFormSchema = z.infer<typeof ClaimCertificateSchema>;
 
 export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_STEPS }: ClaimCertificateFormProps) => {
-  const { successToast, errorToast } = useNotifyToast();
+  const { errorToast } = useNotifyToast();
   const [data, setData] = useState(null);
 
   console.log('Event ID: ', eventId);
@@ -38,13 +38,13 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_
     const response = await checkEmail();
     // TO FIX: Ensure data arrives
     if (response.status === 200) {
-      if (!response.data.isFirstClaim) {
+      if (!response.data?.isFirstClaim) {
         setCurrentStep('ClaimCertificate');
         console.log('Already Claimed');
       } else {
         nextStep();
       }
-      setData(() => response.data);
+      setData(() => response?.data);
     } else if (response.status === 404) {
       errorToast({
         title: 'Email not found',

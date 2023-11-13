@@ -3,9 +3,8 @@ import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
-import image_placeholder from './image_placeholder/placeholder.png';
 
-const CertificateClaim = ({ certificateLink }) => {
+const CertificateClaim = ({ certificateLink }: { certificateLink: string }) => {
   return (
     <>
       <div className="flex flex-col items-center">
