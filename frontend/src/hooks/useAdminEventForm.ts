@@ -28,9 +28,7 @@ export const EventFormSchema = z.object({
   price: z.coerce.number().min(0, {
     message: 'Please enter the event price'
   }),
-  status: z.string().min(1, {
-    message: 'Please enter the event status'
-  }),
+  status: z.enum(['draft', 'open', 'cancelled', 'closed', 'completed']),
   bannerLink: z.string().nullish(),
   logoLink: z.string().nullish(),
   certificateTemplate: z.string().nullish()

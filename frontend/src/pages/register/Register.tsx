@@ -34,6 +34,7 @@ const Register = () => {
   const eventId = useParams().eventId;
   const { data: response, isFetching } = useApi(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!);
+  const { setValue } = form;
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
 
   if (isFetching) {
@@ -96,7 +97,7 @@ const Register = () => {
             <div className="space-y-4">
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && <RegisterForm3 />}
+              {currentStep === 'GCash' && <RegisterForm3 setValue={setValue}/>}
             </div>
 
             {currentStep === 'Summary' && <Summary />}
