@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
-import sparcsApplicationimage from '@/assets/applicationSpracs.svg';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import { getEvent } from '@/api/events';
@@ -16,6 +15,7 @@ import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormLoading';
 import Stepper from './Stepper';
 import Summary from './Summary';
+import { showEvent } from '@/model/events';
 
 // TODO: Add success page
 const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary'] as const;
@@ -26,7 +26,8 @@ type RegisterField = keyof RegisterFormValues;
 
 const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
   UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
-  PersonalInfo: ['careerStatus', 'organization', 'title']
+  PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience'],
+  GCash: ['gcashPayment', 'referenceNumber']
 };
 
 const Register = () => {
@@ -41,6 +42,10 @@ const Register = () => {
 
   if (!response || (response && !response.data && response.errorData)) {
     return <ErrorPage error={response} />;
+  }
+
+  if (!showEvent(response.data.status)) {
+    return <ErrorPage />;
   }
 
   const eventInfo = response.data;
@@ -74,8 +79,8 @@ const Register = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center w-full px-4">
-      <div className="w-full max-w-2xl flex flex-col items-center">
+    <section className="flex flex-col items-center px-4">
+      <div className="max-w-2xl flex flex-col items-center">
         <img className="w-fit h-12 rounded-full" src={eventInfo.logoUrl} />
         <div className="flex w-full justify-center my-8 relative overflow-hidden">
           <img src={eventInfo.bannerUrl} className="h-fit w-full max-w-md object-cover z-10" />
@@ -114,8 +119,8 @@ const Register = () => {
                   <Icon name="CaretRight" />
                 </Button>
               )}
-              {currentStep === 'Summary' && (
-                <Button onClick={submit} type="submit" className="py-4 px-20">
+              {currentStep === REGISTER_STEPS[REGISTER_STEPS.length - 1] && (
+                <Button onClick={submit} type="submit" className="sm:py-4 sm:px-16">
                   Submit
                 </Button>
               )}
