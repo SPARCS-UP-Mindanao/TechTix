@@ -34,8 +34,7 @@ class DiscountUsecase:
 
     def claim_discount(self, event_id: str, entry_id: str, registration_id: str):
         status, discount_entry, message = self.__discounts_repository.query_discounts(
-            discount_id=entry_id,
-            event_id=event_id
+            discount_id=entry_id, event_id=event_id
         )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Discount Does Not Exist'})

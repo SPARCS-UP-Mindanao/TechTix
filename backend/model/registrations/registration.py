@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, NullAttribute
+from pynamodb.attributes import BooleanAttribute, NullAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
 from pynamodb.models import Model
 
