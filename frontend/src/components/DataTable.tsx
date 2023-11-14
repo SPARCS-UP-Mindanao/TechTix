@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 import Button from '@/components/Button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/DropdownMenu';
 import Input from '@/components/Input';
@@ -48,7 +49,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   table.getVisibleFlatColumns;
   return (
     <div>
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="ml-auto">
             Columns
@@ -71,14 +72,15 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               );
             })}
         </DropdownMenuContent>
-      </DropdownMenu>
-      <div className="flex items-center py-4">
+      </DropdownMenu> */}
+      <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => table.getColumn('email')?.setFilterValue(event.target.value)}
           className="max-w-[200px]"
         />
+        {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
       <div className="rounded-md border">
         <Table>
@@ -108,7 +110,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               </TableRow>
             )} */}
             {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+                className={clsx(row.index % 2 === 0 && 'bg-primary-100 dark:bg-neutrals-950')}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                 ))}

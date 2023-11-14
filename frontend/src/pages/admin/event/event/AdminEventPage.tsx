@@ -2,7 +2,7 @@ import AdminEventPageContent from './AdminEventPageContent';
 
 const AdminEventPage = () => {
   return (
-    <div>
+    <div className="flex justify-center">
       <AdminEventPageContent />
     </div>
   );
