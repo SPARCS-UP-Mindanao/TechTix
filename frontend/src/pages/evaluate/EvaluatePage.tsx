@@ -1,7 +1,11 @@
-import React from 'react';
+import Evaluate from './Evaluate';
 
 const EvaluatePage = () => {
-  return <div>EvaluatePage</div>;
+  return (
+    <div>
+      <Evaluate />
+    </div>
+  );
 };
 
 export default EvaluatePage;
