@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { Controller, ControllerFieldState, FieldError, FieldPath, FieldValues, UseFormStateReturn, useFormContext } from 'react-hook-form';
+import {
+  Controller,
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldError,
+  FieldPath,
+  FieldValues,
+  UseFormStateReturn,
+  useFormContext
+} from 'react-hook-form';
 import Label from '@/components/Label';
 import { cn } from '@/utils/classes';
 import { InfoToolTip } from './Tooltip';
@@ -23,8 +32,8 @@ const FormItemContext = React.createContext<FormItemContextProps>({} as FormItem
 
 interface FormItemProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> {
   name: TName;
-  children: (props: {
-    field: { onChange: () => void; onBlur: () => void; value: string };
+  children: (field: {
+    field: ControllerRenderProps<FieldValues, TName>;
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<FieldValues>;
   }) => React.ReactElement;
