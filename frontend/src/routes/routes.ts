@@ -46,17 +46,15 @@ export const routes = createBrowserRouter(
         },
         {
           path: ':eventId',
-          element: AdminEventPage(),
-          children: [
-            {
-              path: 'registrations',
-              element: AdminAllRegistrationsPage()
-            },
-            {
-              path: 'evaluations',
-              element: AdminAllEvaluationsPage()
-            }
-          ]
+          element: AdminEventPage()
+        },
+        {
+          path: 'registrations',
+          element: AdminAllRegistrationsPage()
+        },
+        {
+          path: 'evaluations',
+          element: AdminAllEvaluationsPage()
         }
       ]
     },
