@@ -16,8 +16,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const EventInformation = ({
   event,
-  nextStep,
-  eventId,
+  // nextStep,
+  // eventId,
   claimCertificateForm,
   submit
 }: {

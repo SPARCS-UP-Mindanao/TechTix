@@ -21,7 +21,7 @@ const ClaimCertificateSchema = z.object({
 
 export type ClaimCertificateFormSchema = z.infer<typeof ClaimCertificateSchema>;
 
-export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_STEPS }: ClaimCertificateFormProps) => {
+export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUATE_STEPS */ }: ClaimCertificateFormProps) => {
   const { errorToast } = useNotifyToast();
   const [data, setData] = useState<ClaimCertificateResponse | null>(null);
 
