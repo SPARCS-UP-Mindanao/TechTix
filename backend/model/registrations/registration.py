@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
+from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, NullAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
 from pynamodb.models import Model
 
@@ -61,6 +61,7 @@ class Registration(Model):
     gcashPayment = UnicodeAttribute(null=True)
     referenceNumber = UnicodeAttribute(null=True)
     discountCode = UnicodeAttribute(null=True)
+    amountPaid = NullAttribute(null=True)
 
 
 class RegistrationPatch(BaseModel):
@@ -75,9 +76,10 @@ class RegistrationPatch(BaseModel):
     organization: str = Field(None, title="Organization")
     title: str = Field(None, title="Title")
     certificateClaimed: bool = Field(None, title="Certificate Claimed")
+    discountCode: str = Field(None, title="Discount Code")
     gcashPayment: str = Field(None, title="Gcash Payment")
     referenceNumber: str = Field(None, title="Reference Number")
-    discountCode: str = Field(None, title="Discount Code")
+    amountPaid: float = Field(None, title="Amount Paid")
 
 
 class RegistrationIn(RegistrationPatch):

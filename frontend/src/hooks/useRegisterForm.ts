@@ -89,7 +89,15 @@ export const useRegisterForm = (entryId: string) => {
           title: 'Register Info',
           description: `Registering user with email: ${values.email}`
         });
-      } else if (response.status === 409) {
+      }
+      else if (response.status === 400) {
+        console.log(response)
+        const {message} = response.errorData
+        errorToast({
+          title: message,
+        });
+      }
+      else if (response.status === 409) {
         form.setError('email', {
           type: 'manual',
           message: 'The email you entered has already been used. Please enter a different email.'

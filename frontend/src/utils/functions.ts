@@ -70,3 +70,11 @@ export const isValidDate = (dateString: string): boolean => {
   const date = new Date(dateString);
   return !isNaN(date.getTime());
 };
+
+export const formatMoney = (amount: number, currency: string) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
+}
+
+export const formatPercentage = (float: number) => {
+  return `${(float * 100).toFixed(2)}%`;
+}

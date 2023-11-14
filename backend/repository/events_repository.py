@@ -30,7 +30,7 @@ class EventsRepository:
 
     def store_event(self, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
-        entry_id = ulid.ulid()
+        entry_id = self.convert_to_slug(event_in.name)
         range_key = f'v{self.latest_version}#{entry_id}'
         try:
             event_entry = Event(
@@ -199,3 +199,6 @@ class EventsRepository:
             logging.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    def convert_to_slug(self, name: str):
+        return name.lower().replace(' ', '-')

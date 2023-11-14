@@ -23,6 +23,14 @@ export const getEventRegistrations = (eventId: string) =>
     queryParams: { eventId }
   });
 
+export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
+  createApi<RegisterUserInfo[]>({
+    method: 'get',
+    authorize: true,
+    url: `/registrations/${email}/email`,
+    queryParams: { eventId }
+  });
+
 export const getSpecificRegistration = (eventId: string, registrationId: string) =>
   createApi<RegisterUserInfo[]>({
     method: 'get',
