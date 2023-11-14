@@ -25,7 +25,6 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep, EVALUATE_
   const { errorToast } = useNotifyToast();
   const [data, setData] = useState<ClaimCertificateResponse | null>(null);
 
-  console.log('Event ID: ', eventId);
   const claimCertificateForm = useForm<z.infer<typeof ClaimCertificateSchema>>({
     mode: 'onChange',
     resolver: zodResolver(ClaimCertificateSchema),

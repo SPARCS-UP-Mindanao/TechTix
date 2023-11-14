@@ -4,7 +4,7 @@ import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 
-const CertificateClaim = ({ certificateLink }: { certificateLink: string }) => {
+const CertificateClaim = ({ certificateLink }: { certificateLink?: string }) => {
   return (
     <>
       <div className="flex flex-col items-center">

@@ -160,7 +160,7 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
             <div className="">
               <FormLabel className="mb-3">{question.question}</FormLabel>
               {BuilderQuestion(question, field)}
-              {question.required && <FormError />}
+              <FormError />
             </div>
           )}
         </FormItem>

@@ -1,7 +1,7 @@
 import Avatar from '@/components/Avatar';
 
 interface PageHeaderProps {
-  avatarImg: string;
+  avatarImg?: string;
   bannerImg?: string;
 }
 

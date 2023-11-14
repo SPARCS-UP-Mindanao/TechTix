@@ -60,17 +60,12 @@ export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObj
         }
       } else if (question.questionType === 'slider') {
         {
-          question.required
-            ? (acc[question.name] = z.array(z.number().min(1).max(5)).refine((value) => value.length > 0, {
-                message: 'This field is required'
-              }))
-            : (acc[question.name] = z.array(z.number().min(1).max(5)).optional());
+          question.required ? (acc[question.name] = z.array(z.number().min(1).max(5))) : (acc[question.name] = z.array(z.number().min(1).max(5)).optional());
         }
       } else if (question.questionType === 'text_short' || question.questionType === 'text_long') {
         {
           question.required ? (acc[question.name] = z.string().min(1, { message: 'This field is required' })) : (acc[question.name] = z.string().optional());
         }
-        // acc[question.name] = z.string().min(1); // Minimum length of 1 for text fields
       } else if (question.questionType === 'multiple_choice_dropdown' || question.questionType === 'multiple_choice') {
         {
           question.required
@@ -84,7 +79,6 @@ export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObj
     },
     {} as Record<string, z.ZodTypeAny>
   );
-  // console.log('Schema', schema);
   return z.object(schema);
 };
 

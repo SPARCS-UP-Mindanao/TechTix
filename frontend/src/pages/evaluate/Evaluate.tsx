@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,37 +9,31 @@ import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
 import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationForm';
-import sparcs_logo_white from '../../assets/logos/sparcs_logo_white.png';
-import QuestionBuilder, { QuestionConfigItem } from '../evaluate/QuestionBuilder';
+import QuestionBuilder from '../evaluate/QuestionBuilder';
 import CertificateClaim from './CertificateClaim';
 import EventInformation from './EventInformation';
 import PageHeader from './PageHeader';
 import Stepper from './Stepper';
-import question_config from './questions_config.json';
-
-type QuestionConfig = {
-  _question_part_1: QuestionConfigItem[];
-  _question_part_2: QuestionConfigItem[];
-};
+import { question1, question2 } from './questionsConfig';
 
 const EVALUATE_STEPS = ['EventInformation', 'Evaluation_1', 'Evaluation_2', 'ClaimCertificate'] as const;
 type EvaluateSteps = (typeof EVALUATE_STEPS)[number];
 const EVALUATIONS_FORM_STEPS = ['Evaluation_1', 'Evaluation_2'];
 
 const Evaluate = () => {
-  const { _question_part_1, _question_part_2 } = question_config as QuestionConfig;
-  type QuestionField = keyof z.infer<typeof questionSchema>;
-  const EVALUATION_FORM_STEPS_FIELD: { [key: string]: QuestionField[] } = {
-    Evaluation_1: _question_part_1.map((question) => question.name),
-    Evaluation_2: _question_part_2.map((question) => question.name)
+  const [currentStep, setCurrentStep] = useState<EvaluateSteps>(EVALUATE_STEPS[0]);
+  const eventId = useParams().eventId!;
+  const { data: eventResponse, isFetching } = useApi(getEvent(eventId!));
+
+  const evaluationSchema = QuestionSchemaBuilder([...question1, ...question2]);
+  type EvaluationField = keyof z.infer<typeof evaluationSchema> & string;
+
+  const EVALUATION_FORM_STEPS_FIELD: { [key: string]: EvaluationField[] } = {
+    Evaluation_1: question1.map((question) => question.name),
+    Evaluation_2: question2.map((question) => question.name)
   };
 
-  const [currentStep, setCurrentStep] = useState<EvaluateSteps>(EVALUATE_STEPS[0]);
-  const fieldsToCheck = EVALUATION_FORM_STEPS_FIELD[currentStep as any];
-  const eventId = useParams().eventId!;
-  console.log('Event1', eventId);
-  const { data: response, isFetching } = useApi(getEvent(eventId!));
-
+  const fieldsToCheck: EvaluationField[] = EVALUATION_FORM_STEPS_FIELD[currentStep as keyof typeof EVALUATION_FORM_STEPS_FIELD];
   const nextStep = async () => {
     const moveToNextStep = () => {
       const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
@@ -51,13 +45,26 @@ const Evaluate = () => {
     if (isEmpty(fieldsToCheck)) {
       moveToNextStep();
     } else {
-      await form.trigger(fieldsToCheck as any).then((isValid) => {
+      await form.trigger(fieldsToCheck).then((isValid) => {
         if (isValid) {
           moveToNextStep();
         }
       });
     }
   };
+
+  const {
+    claimCertificateForm,
+    submit,
+    data: certificateResponse
+  } = useCheckEmailForm({
+    eventId,
+    setCurrentStep,
+    nextStep,
+    EVALUATE_STEPS
+  });
+
+  const { form, submitForm, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId!);
 
   const prevStep = () => {
     const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
@@ -66,36 +73,16 @@ const Evaluate = () => {
     }
   };
 
-  const { claimCertificateForm, submit, data } = useCheckEmailForm({
-    eventId,
-    setCurrentStep,
-    nextStep,
-    EVALUATE_STEPS
-  });
-
-  let cachedCertificate: ReactNode,
-    registrationId: string = '';
-  if (data) {
-    registrationId = data['registrationId']!;
-    cachedCertificate = <CertificateClaim certificateLink={data['certificateTemplate']} />;
-  }
-
-  const { form, submitForm, postEvalSuccess } = useEvaluationForm([..._question_part_1, ..._question_part_2], eventId, registrationId);
-  const questionSchema = QuestionSchemaBuilder([..._question_part_1, ..._question_part_2]);
-
-  if (postEvalSuccess) {
-    nextStep();
-  }
-
   if (isFetching) {
     return (
+      // TODO: Add loading page
       <div>
         <h1>Loading...</h1>
       </div>
     );
   }
 
-  if (!response || (response && !response.data)) {
+  if (!eventResponse || (eventResponse && !eventResponse.data)) {
     return (
       // TODO: Add event not found page
       <div>
@@ -104,14 +91,22 @@ const Evaluate = () => {
     );
   }
 
+  const eventInfo = eventResponse.data;
+
+  if (postEvalSuccess) {
+    nextStep();
+  }
+
+  const cachedCertificate = <CertificateClaim certificateLink={certificateResponse?.certificateTemplate} />;
+
   return (
     <section>
       <div className="flex flex-col items-center w-full">
         <FormProvider {...form}>
-          <main className="full">
-            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={sparcs_logo_white} bannerImg={response.data?.bannerLink} />}
+          <section className="full">
+            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={eventInfo.bannerLink} bannerImg={eventInfo.bannerLink} />}
             {currentStep === 'EventInformation' && (
-              <EventInformation event={response.data} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
+              <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
             )}
             {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && (
               <div className="flex flex-col items-center w-full mt-6">
@@ -124,14 +119,14 @@ const Evaluate = () => {
 
             {currentStep === 'Evaluation_1' && (
               <div className="flex flex-col items-center mt-6 w-full">
-                <QuestionBuilder questions={question_config._question_part_1 as QuestionConfigItem[]} {...form} />
+                <QuestionBuilder questions={question1} />
                 <hr className="my-9 bg-neutral-200 w-full" />
               </div>
             )}
 
             {currentStep === 'Evaluation_2' && (
               <div className="flex flex-col items-center mt-6 w-full">
-                <QuestionBuilder questions={question_config._question_part_2 as QuestionConfigItem[]} {...form} />
+                <QuestionBuilder questions={question2} />
                 <hr className="my-9 bg-neutral-200 w-full" />
               </div>
             )}
@@ -160,7 +155,7 @@ const Evaluate = () => {
                 </Button>
               )}
             </div>
-          </main>
+          </section>
         </FormProvider>
       </div>
     </section>
