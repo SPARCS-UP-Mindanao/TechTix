@@ -11,7 +11,7 @@ export interface Event {
   payedEvent?: boolean;
   price: number;
   certificateTemplate?: string | null;
-  status: string;
+  status: EventStatusValue;
   entryId?: string;
   createDate?: string;
   updateDate?: string;
@@ -21,6 +21,8 @@ export interface Event {
   logoUrl?: string;
   certificateTemplateUrl?: string;
 }
+
+export type EventStatusValue = 'draft' | 'open' | 'cancelled' | 'closed' | 'completed';
 
 export const EVENT_STATUSES = [
   {
@@ -44,6 +46,9 @@ export const EVENT_STATUSES = [
     label: 'Completed'
   }
 ];
+
+export const SHOW_EVENT_REGISTRATION_ON_STATUS = ['open', 'cancelled', 'closed', 'completed'];
+export const showEvent = (eventStatus: EventStatusValue) => SHOW_EVENT_REGISTRATION_ON_STATUS.includes(eventStatus);
 
 export const enum EVENT_UPLOAD_TYPE {
   BANNER = 'banner',

@@ -11,6 +11,9 @@ export interface RegisterUserInfo {
   eventId: string;
   paymentId?: string;
   registrationId?: string;
-  createDate?: Date;
-  updateDate?: Date;
+  createDate?: string;
+  updateDate?: string;
+  gcashPayment: string;
+  referenceNumber?: string;
+  discountCode?: string;
 }
