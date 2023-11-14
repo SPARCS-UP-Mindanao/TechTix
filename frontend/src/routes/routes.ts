@@ -3,9 +3,9 @@ import ErrorPage from '@/components/ErrorPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
 import AdminAllEventsPage from '@/pages/admin/event/allEvents/AdminAllEventsPage';
-import AdminEventEvaluationsPage from '@/pages/admin/event/evaluations/AdminEventEvaluationsPage';
+import AdminAllEvaluationsPage from '@/pages/admin/event/evaluations/AdminAllEvaluationsPage';
 import AdminEventPage from '@/pages/admin/event/event/AdminEventPage';
-import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/AdminEventRegistrationsPage';
+import AdminAllRegistrationsPage from '@/pages/admin/event/registrations/AdminAllRegistrationsPage';
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
@@ -50,11 +50,11 @@ export const routes = createBrowserRouter(
           children: [
             {
               path: 'registrations',
-              element: AdminEventRegistrationsPage()
+              element: AdminAllRegistrationsPage()
             },
             {
               path: 'evaluations',
-              element: AdminEventEvaluationsPage()
+              element: AdminAllEvaluationsPage()
             }
           ]
         }
