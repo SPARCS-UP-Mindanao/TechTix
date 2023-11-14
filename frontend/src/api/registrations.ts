@@ -8,7 +8,14 @@ export const registerUserInEvent = (userInfo: RegisterUserInfo) =>
     body: { ...userInfo }
   });
 
-export const getRegistrations = (eventId: string) =>
+export const getAllRegistrations = () =>
+  createApi<RegisterUserInfo[]>({
+    method: 'get',
+    authorize: true,
+    url: '/registrations'
+  });
+
+export const getEventRegistrations = (eventId: string) =>
   createApi<RegisterUserInfo[]>({
     method: 'get',
     authorize: true,

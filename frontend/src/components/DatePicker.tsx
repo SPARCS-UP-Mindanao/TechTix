@@ -16,12 +16,16 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, className, includeTime = false, onChange }: DatePickerProps) => {
-  const initialDate = isValidDate(value) ? new Date(value) : undefined;
-  const initialTime = includeTime && initialDate ? initialDate.getHours() + ':' + initialDate.getMinutes() : '00:00';
-
-  const [date, setDate] = React.useState<Date | undefined>(initialDate);
-  const [time, setTime] = React.useState<string | undefined>(initialTime);
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [time, setTime] = React.useState<string | undefined>(undefined);
   const [newDateValue, setNewDateValue] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    const initialDate = isValidDate(value) ? new Date(value) : undefined;
+    const initialTime = includeTime && initialDate ? initialDate.getHours() + ':' + initialDate.getMinutes() : '00:00';
+    setDate(initialDate);
+    setTime(initialTime);
+  }, [value]);
 
   React.useEffect(() => {
     if (!date) {

@@ -145,7 +145,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
         onCancelAction={() => closeModal()}
         onCompleteAction={deleteEventTrigger}
       />
-      <img src={eventInfo.bannerLink} /> <span>{eventInfo.name}</span>
+      <img src={eventInfo.bannerUrl} /> <span>{eventInfo.name}</span>
     </div>
   );
 };

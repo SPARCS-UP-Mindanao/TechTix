@@ -59,7 +59,7 @@ resources:
 
 functions:
   - ${file(resources/api.yml)}
-  - ${file(resources/functions.yml)}
+  # - ${file(resources/functions.yml)}
 
 plugins:
   - serverless-python-requirements

@@ -58,6 +58,9 @@ class Registration(Model):
     yearsOfExperience = UnicodeAttribute(null=True)
     organization = UnicodeAttribute(null=True)
     title = UnicodeAttribute(null=True)
+    gcashPayment = UnicodeAttribute(null=True)
+    referenceNumber = UnicodeAttribute(null=True)
+    discountCode = UnicodeAttribute(null=True)
 
 
 class RegistrationPatch(BaseModel):
@@ -72,6 +75,9 @@ class RegistrationPatch(BaseModel):
     organization: str = Field(None, title="Organization")
     title: str = Field(None, title="Title")
     certificateClaimed: bool = Field(None, title="Certificate Claimed")
+    gcashPayment: str = Field(None, title="Gcash Payment")
+    referenceNumber: str = Field(None, title="Reference Number")
+    discountCode: str = Field(None, title="Discount Code")
 
 
 class RegistrationIn(RegistrationPatch):
@@ -90,3 +96,4 @@ class RegistrationOut(RegistrationIn):
     registrationId: str = Field(..., title="ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
+    gcashPaymentUrl: str = Field(None, title="Gcash Payment Address")

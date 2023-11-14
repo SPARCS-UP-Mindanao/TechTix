@@ -23,7 +23,7 @@ class Entities(Model):
     entryStatus = UnicodeAttribute(null=False)
     entryId = UnicodeAttribute(null=False)
 
-    createDate = UnicodeAttribute(null=False)
-    updateDate = UnicodeAttribute(null=False)
-    createdBy = UnicodeAttribute(null=False)
-    updatedBy = UnicodeAttribute(null=False)
+    createDate = UnicodeAttribute(null=True)
+    updateDate = UnicodeAttribute(null=True)
+    createdBy = UnicodeAttribute(null=True)
+    updatedBy = UnicodeAttribute(null=True)
