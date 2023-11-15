@@ -31,7 +31,7 @@ const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
         <div className="text-8xl font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500">
           {errorCode}
         </div>
-        <h2 className="text-xl font-raleway font-bold">{getErrorMessage()}</h2>
+        <h2 className="text-xl font-raleway font-bold px-5">{getErrorMessage()}</h2>
       </div>
     </div>
   );
