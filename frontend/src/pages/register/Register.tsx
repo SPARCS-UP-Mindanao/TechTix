@@ -23,6 +23,7 @@ import Summary from './Summary';
 import { Pricing } from '@/model/discount';
 import { showEvent } from '@/model/events';
 import { Event } from '@/model/events';
+import FileViewerComponent from '@/components/S3Image';
 
 // TODO: Add success page
 const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'] as const;
@@ -219,9 +220,11 @@ const Register = () => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center">
-        <img className="w-fit h-12 rounded-full" src={eventInfo.logoUrl} />
+        <div className='w-12 h-12 rounded-full overflow-hidden'>
+            <FileViewerComponent objectKey={eventInfo.logoLink} />
+        </div>
         <div className="flex w-full justify-center my-8 relative overflow-hidden">
-          <img src={eventInfo.bannerUrl} className="h-fit w-full max-w-md object-cover z-10" />
+          <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
         </div>
 
