@@ -251,29 +251,29 @@ const Register = () => {
 
             <div className="flex w-full justify-around my-10">
               {showRegisterButton && (
-                <Button onClick={nextStep} variant={'gradient'} className="py-4 px-20">
+                <Button onClick={nextStep} variant={'gradient'} className="py-6 px-20">
                   Register
                 </Button>
               )}
               {showPrevButton && (
-                <Button onClick={prevStep} variant={'outline'} className="sm:py-4 sm:px-16">
+                <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
                   <Icon name="CaretLeft" />
                   Back
                 </Button>
               )}
               {showNextButton && (
-                <Button onClick={nextStep} className="sm:py-4 sm:px-16">
+                <Button onClick={nextStep} className="py-6 sm:px-16">
                   Next
                   <Icon name="CaretRight" />
                 </Button>
               )}
               {showSubmitButton && (
-                <Button onClick={submit} type="submit" className="sm:py-4 sm:px-16">
+                <Button onClick={submit} type="submit" className="py-6 sm:px-16">
                   Submit
                 </Button>
               )}
               {showReloadButton && (
-                <Button onClick={reloadPage} className="sm:py-4 sm:px-16">
+                <Button onClick={reloadPage} className="py-6 sm:px-16">
                   Sign up another person
                 </Button>
               )}
