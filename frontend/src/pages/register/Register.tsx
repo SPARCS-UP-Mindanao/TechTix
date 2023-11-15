@@ -52,7 +52,7 @@ const Register = () => {
   const [receiptUrl, setReceiptUrl] = useState<string>('');
   const { fetchQuery } = useFetchQuery<any>();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
-  const [eventInfo, setEventInfo] = useState<Event>({} as Event);
+  const [eventInfo, setEventInfo] = useState<Event | undefined>();
   const [sectionTitle, setSectionTitle] = useState<string>('Register');
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const Register = () => {
     return <RegisterFormLoading />;
   }
 
-  if (!response || (response && !response.data && response.errorData)) {
+  if (!response || (response && !response.data && response.errorData) || !eventInfo) {
     return <ErrorPage error={response} />;
   }
 
@@ -85,11 +85,18 @@ const Register = () => {
     return <ErrorPage />;
   }
 
+  document.title = eventInfo.name;
+  const link = document.querySelector('link[rel="icon"]');
+
+  if (link && eventInfo.logoUrl) {
+    link.setAttribute('href', eventInfo.logoUrl);
+  }
+
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
 
   const checkDiscountCode = async () => {
     const currentDiscountCode = getValues('discountCode');
-    if (eventId == null || currentDiscountCode == null || currentDiscountCode == undefined || currentDiscountCode == '') return;
+    if (!eventId || !currentDiscountCode) return;
 
     try {
       const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));

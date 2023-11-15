@@ -18,7 +18,11 @@ const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
       return `Page not found.\nPlease check the URL and try again.`;
     }
 
-    return `Something went wrong. Please try again\nError code: ${errorCode} \n Error message: ${error?.errorData.message || error?.errorData.detail[0].msg}`;
+    if (error?.errorData) {
+      return `Something went wrong. Please try again\nError code: ${errorCode} \n Error message: ${error?.errorData.message || error?.errorData.detail[0].msg}`;
+    }
+
+    return 'Something went wrong. Please try again';
   };
 
   return (
