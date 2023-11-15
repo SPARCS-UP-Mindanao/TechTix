@@ -18,13 +18,14 @@ import RegisterForm2 from './RegisterForm2';
 import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormLoading';
 import Stepper from './Stepper';
+import Success from './Success';
 import Summary from './Summary';
 import { Pricing } from '@/model/discount';
 import { showEvent } from '@/model/events';
 import { Event } from '@/model/events';
 
 // TODO: Add success page
-const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary'] as const;
+const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'] as const;
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
 const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
 const map_steps_to_title = new Map<string, string>();
@@ -33,6 +34,7 @@ map_steps_to_title.set('UserBio', 'Personal Information');
 map_steps_to_title.set('PersonalInfo', 'Professional Information');
 map_steps_to_title.set('GCash', 'GCash Payment');
 map_steps_to_title.set('Summary', 'Summary');
+map_steps_to_title.set('Success', 'Registration Successful!');
 
 type RegisterField = keyof RegisterFormValues;
 
@@ -45,10 +47,11 @@ const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
 const Register = () => {
   const { successToast, errorToast } = useNotifyToast();
   const { eventId } = useParams();
-  const { data: response, isFetching } = useApi(getEvent(eventId!));
-  const { form, submit } = useRegisterForm(eventId!);
-  const { setValue, getValues } = form;
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
+  const navigateOnSuccess = () => setCurrentStep('Success');
+  const { data: response, isFetching } = useApi(getEvent(eventId!));
+  const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
+  const { setValue, getValues } = form;
   const [receiptUrl, setReceiptUrl] = useState<string>('');
   const { fetchQuery } = useFetchQuery<any>();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
@@ -205,6 +208,14 @@ const Register = () => {
     }
   };
 
+  const showStepper = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) !== REGISTER_STEPS.length - 1;
+  const showRegisterButton = REGISTER_STEPS.indexOf(currentStep) === 0;
+  const showNextButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
+  const showPrevButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
+  const showSubmitButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 2;
+  const showReloadButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 1;
+  const reloadPage = () => window.location.reload();
+
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center">
@@ -217,9 +228,8 @@ const Register = () => {
         <FormProvider {...form}>
           <main className="w-full">
             {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">{sectionTitle}</h1>}
-            {currentStep !== 'EventDetails' && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
+            {showStepper && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
             {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
-
             <div className="space-y-4">
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
@@ -233,30 +243,35 @@ const Register = () => {
                 />
               )}
             </div>
-
             {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} />}
+            {currentStep === 'Success' && <Success />}
 
             <div className="flex w-full justify-around my-10">
-              {currentStep === 'EventDetails' && (
+              {showRegisterButton && (
                 <Button onClick={nextStep} variant={'gradient'} className="py-4 px-20">
                   Register
                 </Button>
               )}
-              {currentStep !== 'EventDetails' && (
+              {showPrevButton && (
                 <Button onClick={prevStep} variant={'outline'} className="sm:py-4 sm:px-16">
                   <Icon name="CaretLeft" />
                   Back
                 </Button>
               )}
-              {currentStep !== 'EventDetails' && currentStep !== 'Summary' && (
+              {showNextButton && (
                 <Button onClick={nextStep} className="sm:py-4 sm:px-16">
                   Next
                   <Icon name="CaretRight" />
                 </Button>
               )}
-              {currentStep === REGISTER_STEPS[REGISTER_STEPS.length - 1] && (
+              {showSubmitButton && (
                 <Button onClick={submit} type="submit" className="sm:py-4 sm:px-16">
                   Submit
+                </Button>
+              )}
+              {showReloadButton && (
+                <Button onClick={reloadPage} className="sm:py-4 sm:px-16">
+                  Sign up another person
                 </Button>
               )}
             </div>

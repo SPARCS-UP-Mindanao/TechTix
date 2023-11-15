@@ -59,7 +59,7 @@ const RegisterFormSchema = z.object({
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
-export const useRegisterForm = (entryId: string) => {
+export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
   const form = useForm<RegisterFormValues>({
     mode: 'onChange',
@@ -93,7 +93,7 @@ export const useRegisterForm = (entryId: string) => {
           title: 'Register Info',
           description: `Registering user with email: ${values.email}`
         });
-        window.location.reload();
+        navigateOnSuccess();
       } else if (response.status === 400) {
         console.log(response);
         const { message } = response.errorData;

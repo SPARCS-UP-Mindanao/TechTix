@@ -11,55 +11,57 @@ import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 import App from '@/App';
 
-export const routes = createBrowserRouter(
-  [
-    {
-      path: '/:eventId',
-      element: App(),
-      children: [
-        {
-          path: 'register',
-          element: RegisterPage()
-        },
-        {
-          path: 'evaluate',
-          element: EvaluatePage()
-        }
-      ]
-    },
-    {
-      path: '/admin/login',
-      element: AdminLoginPage()
-    },
-    {
-      path: '/admin/events',
-      element: AdminPage(),
-      children: [
-        {
-          index: true,
-          element: AdminAllEventsPage()
-        },
-        {
-          path: ':eventId',
-          element: AdminEventPage()
-        },
-        {
-          path: 'registrations',
-          element: AdminAllRegistrationsPage()
-        },
-        {
-          path: 'evaluations',
-          element: AdminAllEvaluationsPage()
-        }
-      ]
-    },
-    {
-      path: 'admin/authority',
-      element: AdminAuthorityPage()
-    },
-    {
-      path: '*',
-      element: ErrorPage({})
-    }
-  ]
-);
+export const routes = createBrowserRouter([
+  {
+    path: '/:eventId',
+    element: App(),
+    children: [
+      {
+        path: 'register',
+        element: RegisterPage()
+      },
+      {
+        path: 'evaluate',
+        element: EvaluatePage()
+      },
+      {
+        path: '',
+        element: ErrorPage({})
+      }
+    ]
+  },
+  {
+    path: '/admin/login',
+    element: AdminLoginPage()
+  },
+  {
+    path: '/admin/events',
+    element: AdminPage(),
+    children: [
+      {
+        index: true,
+        element: AdminAllEventsPage()
+      },
+      {
+        path: ':eventId',
+        element: AdminEventPage()
+      },
+      {
+        path: 'registrations',
+        element: AdminAllRegistrationsPage()
+      },
+      {
+        path: 'evaluations',
+        element: AdminAllEvaluationsPage()
+      }
+    ]
+  },
+  {
+    path: 'admin/authority',
+    element: AdminAuthorityPage()
+  },
+  {
+    path: '*',
+    element: ErrorPage({})
+  }
+]);
