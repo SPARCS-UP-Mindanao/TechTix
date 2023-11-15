@@ -37,7 +37,9 @@ class RegistrationsRepository:
         self.current_date = datetime.utcnow().isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
-    def store_registration(self, registration_in: RegistrationIn) -> Tuple[HTTPStatus, Registration, str]:
+    def store_registration(
+        self, registration_in: RegistrationIn, registration_id: str = None
+    ) -> Tuple[HTTPStatus, Registration, str]:
         """
         Store a registration record in the database.
 
@@ -49,7 +51,7 @@ class RegistrationsRepository:
             and an optional error message.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in)  # load data from pydantic schema
-        registration_id = ulid.ulid()
+        registration_id = registration_id or ulid.ulid()
 
         try:
             registration_entry = Registration(

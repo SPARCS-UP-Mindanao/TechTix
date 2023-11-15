@@ -1,12 +1,15 @@
 import { useFormContext } from 'react-hook-form';
 
-const Summary = () => {
+interface SummaryProps {
+  receiptUrl: string;
+}
+const Summary = ({receiptUrl} : SummaryProps) => {
   const { watch } = useFormContext();
   const summary = watch();
   return (
     <div className="space-y-2 mb-4">
-      <h3>Summary</h3>
-      <p>Please review the information below before submitting.</p>
+      <p className='w-full text-center'>Please review the information below before submitting.</p>
+      <hr />
       <div className="space-y-2">
         <div>
           <span className="font-bold">First name: </span>
@@ -25,7 +28,7 @@ const Summary = () => {
           <span>{summary.contactNumber}</span>
         </div>
         <div>
-          <span className="font-bold">Status: </span>
+          <span className="font-bold">Professional Status: </span>
           <span>{summary.careerStatus}</span>
         </div>
         <div>
@@ -39,6 +42,21 @@ const Summary = () => {
         <div>
           <span className="font-bold">Title: </span>
           <span>{summary.title}</span>
+        </div>
+        {
+          summary.discountCode &&
+          <div>
+            <span className="font-bold">Discount Code: </span>
+            <span>{summary.discountCode}</span>
+          </div>
+        }
+        <div>
+          <span className="font-bold">Gcash Payment Reference Number: </span>
+          <span>{summary.referenceNumber}</span>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <div className="font-bold">Gcash Receipt Screenshot: </div>
+          <img src={receiptUrl} className='h-40 w-fit'/>
         </div>
       </div>
     </div>

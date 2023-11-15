@@ -11,11 +11,11 @@ interface FileUploadProps {
   entryId: string;
   uploadType: string;
   setObjectKeyValue: (value: string) => void;
+  setFileUrl?: (value: string) => void;
   originalImage?: string;
-  
 }
 
-const FileUpload = ({ entryId, uploadType, setObjectKeyValue, originalImage }: FileUploadProps) => {
+const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
   const { successToast, errorToast } = useNotifyToast();
   const { fetchQuery } = useFetchQuery<any>();
   const [image, setImage] = useState<string>(originalImage || '');
@@ -30,7 +30,9 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, originalImage }: F
     if (selectedFile) {
       await uploadFile(selectedFile);
     }
-    setImage(URL.createObjectURL(selectedFile));
+    const imageUrl = URL.createObjectURL(selectedFile);
+    setImage(imageUrl);
+    setFileUrl && setFileUrl(imageUrl);
     setIsLoading(false);
     setUploadProgress(0);
   };
@@ -62,18 +64,18 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, originalImage }: F
       if (response.status === 200) {
         successToast({
           title: 'File Upload Success',
-          description: `${file.name} uploaded successfully`
+          description: 'File uploaded successfully'
         });
       } else {
         errorToast({
           title: 'File Upload Failed',
-          description: `${file.name} upload failed`
+          description: `File upload failed`
         });
       }
     } catch (error) {
       errorToast({
         title: 'File Upload Failed',
-        description: `${file.name} upload failed`
+        description: `File upload failed`
       });
     }
   };
@@ -84,17 +86,17 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, originalImage }: F
       {isLoading ? (
         <Progress className="w-full max-w-md" value={uploadProgress} />
       ) : (
-        <div className="flex flex-row items-center">
-          <Input id="upload-custom" onChange={handleFileChange} type="file" accept="image/*" className="hidden" />
+        <div className="flex flex-row items-center w-full">
+          <Input id={`upload-custom-${uploadType}`} onChange={handleFileChange} type="file" accept="image/*" className="hidden" />
           <Label
-            htmlFor="upload-custom"
+            htmlFor={`upload-custom-${uploadType}`}
             className="block text-sm mr-4 py-2 px-4
-              rounded-md border-0 font-semibold 
+              rounded-md border-0 font-semibold
               hover:cursor-pointer bg-input"
           >
             Choose file
           </Label>
-          <Label className="text-sm text-white">{selectedFile}</Label>
+          <Label className="text-sm text-white break-all w-1/2">{selectedFile}</Label>
         </div>
       )}
     </>

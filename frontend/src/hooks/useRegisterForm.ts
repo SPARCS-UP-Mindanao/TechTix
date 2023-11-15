@@ -51,7 +51,10 @@ const RegisterFormSchema = z.object({
     .refine((value) => value.length === 13, {
       message: 'Please enter a valid Gcash reference number'
     }),
-  discountCode: z.string().optional()
+  discountCode: z.string().optional(),
+  amountPaid: z.number().min(0, {
+    message: 'Please enter a valid amount'
+  })
 });
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
@@ -72,7 +75,8 @@ export const useRegisterForm = (entryId: string) => {
       title: '',
       gcashPayment: '',
       referenceNumber: '',
-      discountCode: ''
+      discountCode: '',
+      amountPaid: 0
     }
   });
 
@@ -89,7 +93,16 @@ export const useRegisterForm = (entryId: string) => {
           title: 'Register Info',
           description: `Registering user with email: ${values.email}`
         });
-      } else if (response.status === 409) {
+        window.location.reload();
+      }
+      else if (response.status === 400) {
+        console.log(response)
+        const {message} = response.errorData
+        errorToast({
+          title: message,
+        });
+      }
+      else if (response.status === 409) {
         form.setError('email', {
           type: 'manual',
           message: 'The email you entered has already been used. Please enter a different email.'

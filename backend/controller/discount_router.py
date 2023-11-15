@@ -1,4 +1,3 @@
-
 from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
@@ -9,6 +8,7 @@ from model.discount.discount import DiscountIn, DiscountOut
 from usecase.discount_usecase import DiscountUsecase
 
 discount_router = APIRouter()
+
 
 @discount_router.post(
     '',
@@ -53,6 +53,30 @@ def create_discounts(
 )
 def get_discount(
     entry_id: str = Path(..., title='Entry Id', alias=CommonConstants.ENTRY_ID),
+    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     discount_uc = DiscountUsecase()
-    return discount_uc.get_discount(entry_id=entry_id)
+    return discount_uc.get_discount(entry_id=entry_id, event_id=event_id)
+
+
+@discount_router.get(
+    '',
+    response_model=List[DiscountOut],
+    responses={
+        404: {"model": Message, "description": "Discount not found"},
+        500: {"model": Message, "description": "Internal server error"},
+    },
+    summary="Get discounts",
+)
+@discount_router.get(
+    '/',
+    response_model=List[DiscountOut],
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_discounts(
+    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+):
+    discount_uc = DiscountUsecase()
+    return discount_uc.get_discount_list(event_id=event_id)

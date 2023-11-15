@@ -29,7 +29,8 @@ class DiscountsRepository:
     def store_discount(self, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=discount_in)
         entry_id = discount_in.entryId
-        range_key = f'v{self.latest_version}#{entry_id}'
+        event_id = discount_in.eventId
+        range_key = f'v{self.latest_version}#{event_id}#{entry_id}'
         try:
             discount_entry = Discount(
                 hashKey=self.core_obj,
@@ -60,13 +61,13 @@ class DiscountsRepository:
             logging.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
             return HTTPStatus.OK, discount_entry, None
 
-    def query_discounts(self, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
+    def query_discounts(self, event_id: str, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
         try:
             if discount_id:
-                range_key_prefix = f'v{self.latest_version}#{discount_id}'
+                range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
                 range_key_condition = Discount.rangeKey.__eq__(range_key_prefix)
             else:
-                range_key_prefix = f'v{self.latest_version}#'
+                range_key_prefix = f'v{self.latest_version}#{event_id}'
                 range_key_condition = Discount.rangeKey.startswith(range_key_prefix)
 
             discount_entries = list(
