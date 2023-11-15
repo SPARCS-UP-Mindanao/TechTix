@@ -126,7 +126,7 @@ const AdminEventInfo: FC<Props> = ({ event }) => {
                   <FormLabel>Event Banner</FormLabel>
                   <FileUpload
                     entryId={eventId!}
-                    uploadType={EVENT_UPLOAD_TYPE.LOGO}
+                    uploadType={EVENT_UPLOAD_TYPE.BANNER}
                     originalImage={event.bannerUrl}
                     setObjectKeyValue={(value: string) => {
                       setValue(EVENT_OBJECT_KEY_MAP.BANNER, value);
