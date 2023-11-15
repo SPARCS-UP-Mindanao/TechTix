@@ -16,5 +16,5 @@ export interface RegisterUserInfo {
   amountPaid?: number | null;
   referenceNumber?: string | null;
   gcashPayment?: string | null;
-  gcashPaymentUrl: string | null;
+  gcashPaymentUrl?: string | null;
 }
