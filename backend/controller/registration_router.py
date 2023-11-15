@@ -9,6 +9,7 @@ from model.registrations.registration import (
     RegistrationOut,
     RegistrationPatch,
 )
+from pydantic import EmailStr
 from usecase.registration_usecase import RegistrationUsecase
 
 registration_router = APIRouter()
@@ -65,6 +66,33 @@ def get_registration(
     """
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registration(event_id=event_id, registration_id=entry_id)
+
+
+@registration_router.get(
+    '/{email}/email',
+    response_model=RegistrationOut,
+    responses={
+        404: {"model": Message, "description": "Registration not found"},
+        500: {"model": Message, "description": "Internal server error"},
+    },
+    summary="Get registration",
+)
+@registration_router.get(
+    '/{email}/email/',
+    response_model=RegistrationOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_registration_by_email(
+    email: EmailStr = Path(..., title='Email'),
+    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+):
+    """
+    Get a specific registration email used.
+    """
+    registrations_uc = RegistrationUsecase()
+    return registrations_uc.get_registration_by_email(event_id=event_id, email=email)
 
 
 @registration_router.post(

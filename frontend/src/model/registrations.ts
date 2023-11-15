@@ -16,4 +16,5 @@ export interface RegisterUserInfo {
   gcashPayment: string;
   referenceNumber?: string;
   discountCode?: string;
+  amountPaid: number;
 }

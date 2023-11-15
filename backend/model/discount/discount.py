@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from model.entities import Entities
@@ -9,10 +8,11 @@ from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttrib
 class Discount(Entities, discriminator='Discount'):
     # hk: Discount
     # rk: v<version_number>#<entry_id>
-    eventId=UnicodeAttribute(null=True)
-    claimed=BooleanAttribute(null=True)
-    registrationId=UnicodeAttribute(null=True)
+    eventId = UnicodeAttribute(null=True)
+    claimed = BooleanAttribute(null=True)
+    registrationId = UnicodeAttribute(null=True)
     discountPercentage = NumberAttribute(null=True)
+
 
 class DiscountDBIn(BaseModel):
     class Config:
@@ -24,10 +24,11 @@ class DiscountDBIn(BaseModel):
     discountPercentage: float = Field(..., title="Discount Percentage")
     entryId: str = Field(..., title="Entry ID")
 
+
 class DiscountIn(BaseModel):
     class Config:
         extra = Extra.forbid
-    
+
     eventId: str = Field(..., title="Event ID")
     discountPercentage: float = Field(..., title="Discount Percentage")
     quantity: int = Field(..., title="Quantity")
