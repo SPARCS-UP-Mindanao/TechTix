@@ -48,7 +48,7 @@ const RegisterForm1 = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Organization</FormLabel>
-            <Input type="text" placeholder="Enter organization name" className="" {...field} />
+            <Input type="text" placeholder="Enter organization name (e.g. SPARCS)" className="" {...field} />
             <FormError />
           </div>
         )}
@@ -58,7 +58,7 @@ const RegisterForm1 = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Title</FormLabel>
-            <Input type="text" placeholder="Enter organization title" className="" {...field} />
+            <Input type="text" placeholder="Enter your title (e.g. Student)" className="" {...field} />
             <FormError />
           </div>
         )}

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import axios, { AxiosProgressEvent } from 'axios';
 import { getPresignedUrl } from '@/api/events';
 import { useFetchQuery } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import Input from './Input';
 import Label from './Label';
 import { Progress } from './Progress';
+import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
   entryId: string;
@@ -43,36 +43,34 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
   };
 
   const uploadFile = async (file: any) => {
-    try {
-      const { uploadLink, objectKey } = await getPresignedUrlTrigger(entryId, file.name, uploadType);
-      const response = await axios.put(uploadLink, file, {
-        headers: {
-          'Content-Type': file.type
-        },
-        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-          if (progressEvent.total == undefined) {
-            return;
-          }
-
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
-        }
-      });
-
-      setObjectKeyValue(objectKey);
-
-      if (response.status === 200) {
-        successToast({
-          title: 'File Upload Success',
-          description: 'File uploaded successfully'
-        });
-      } else {
-        errorToast({
-          title: 'File Upload Failed',
-          description: `File upload failed`
-        });
+    const s3Client = new S3Client({
+      region: 'ap-southeast-1',
+      credentials: {
+        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
+        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!
       }
-    } catch (error) {
+    });
+    const { objectKey } = await getPresignedUrlTrigger(entryId, file.name, uploadType);
+
+    // Function to upload a file to S3
+    const uploadParams: PutObjectCommandInput = {
+      Bucket: import.meta.env.VITE_S3_BUCKET!,
+      Key: objectKey,
+      Body: file
+    };
+
+    try {
+      const command = new PutObjectCommand(uploadParams);
+      await s3Client.send(command);
+      setUploadProgress(100);
+
+      successToast({
+        title: 'File Upload Success',
+        description: 'File uploaded successfully'
+      });
+      setObjectKeyValue(objectKey);
+    } catch (err) {
+      console.error('Error', err);
       errorToast({
         title: 'File Upload Failed',
         description: `File upload failed`
