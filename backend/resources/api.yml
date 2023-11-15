@@ -1,7 +1,7 @@
 app:
   handler: main.handler
   environment:
-    STAGE: ${self:provider.stage}
+    STAGE: ${self:custom.stage}
   layers:
     - { Ref: PythonRequirementsLambdaLayer }
   events:
