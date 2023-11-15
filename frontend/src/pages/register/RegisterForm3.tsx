@@ -40,13 +40,13 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
             <h4>Price:</h4>
             <p>{formatMoney(pricing.price, 'PHP')}</p>
             <h4>Discount</h4>
-            <p>{pricing.discount == 0 ? 'None' : formatPercentage(pricing.discount)}</p>
+            <p>{pricing.discount == 0 ? 'None' : <span>-{formatPercentage(pricing.discount)}</span> }</p>
             <h4>Total</h4>
             <p>{formatMoney(pricing.total, 'PHP')}</p>
           </div>
           <hr />
           <div className="flex flex-col gap-1">
-            <h4>Gcash Information</h4>
+            <h4>Gcash Information</h4 >
             <p>Camyl Magdalyn Tanjay</p>
             <p>09772494796</p>
           </div>
@@ -57,7 +57,7 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
       <FormItem name="referenceNumber">
         {({ field }) => (
           <div className="flex flex-col gap-1">
-            <FormLabel>Gcash Reference Number</FormLabel>
+            <FormLabel>Gcash Payment Reference Number</FormLabel>
             <Input type="text" placeholder="Enter Payment Reference Number" className="" {...field} />
             <FormError />
           </div>

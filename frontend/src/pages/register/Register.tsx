@@ -19,14 +19,20 @@ import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormLoading';
 import Stepper from './Stepper';
 import Summary from './Summary';
-import { showEvent } from '@/model/events';
 import { Pricing } from '@/model/discount';
+import { showEvent } from '@/model/events';
 import { Event } from '@/model/events';
 
 // TODO: Add success page
 const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary'] as const;
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
 const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
+const map_steps_to_title = new Map<string, string>();
+map_steps_to_title.set('EventDetails', 'Register');
+map_steps_to_title.set('UserBio', 'Personal Information');
+map_steps_to_title.set('PersonalInfo', 'Professional Information');
+map_steps_to_title.set('GCash', 'GCash Payment');
+map_steps_to_title.set('Summary', 'Summary');
 
 type RegisterField = keyof RegisterFormValues;
 
@@ -38,7 +44,7 @@ const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
 
 const Register = () => {
   const { successToast, errorToast } = useNotifyToast();
-  const {eventId} = useParams();
+  const { eventId } = useParams();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!);
   const { setValue, getValues } = form;
@@ -47,17 +53,24 @@ const Register = () => {
   const { fetchQuery } = useFetchQuery<any>();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event>({} as Event);
+  const [sectionTitle, setSectionTitle] = useState<string>('Register');
 
   useEffect(() => {
-    if (!response || (response && !response.data)) {
+    setSectionTitle(map_steps_to_title.get(currentStep) || 'Register');
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (isFetching || !response || (response && !response.data)) {
       return;
     }
     setEventInfo(response.data);
+    const price = response.data.price;
     setPricing({
-      price: eventInfo.price,
+      price: price,
       discount: 0,
-      total: eventInfo.price
+      total: price
     });
+    setValue('amountPaid', price);
   }, [response]);
 
   if (isFetching) {
@@ -76,7 +89,7 @@ const Register = () => {
 
   const checkDiscountCode = async () => {
     const currentDiscountCode = getValues('discountCode');
-    if (eventId == null || currentDiscountCode == null || currentDiscountCode == undefined || currentDiscountCode=="") return;
+    if (eventId == null || currentDiscountCode == null || currentDiscountCode == undefined || currentDiscountCode == '') return;
 
     try {
       const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));
@@ -89,15 +102,17 @@ const Register = () => {
           });
           return;
         }
+        const price = eventInfo.price * (1 - discountCode.discountPercentage);
         setPricing({
           price: eventInfo.price,
           discount: discountCode.discountPercentage,
-          total: eventInfo.price * discountCode.discountPercentage
+          total: price
         });
+        setValue('amountPaid', price);
         successToast({
           title: 'Valid Discount Code',
           description: 'The discount code you entered is valid. Please proceed to the next step.'
-        })
+        });
       } else if (response.status === 404) {
         errorToast({
           title: 'Invalid Discount Code',
@@ -108,7 +123,7 @@ const Register = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const nextStep = async () => {
     const moveToNextStep = () => {
@@ -194,7 +209,7 @@ const Register = () => {
 
         <FormProvider {...form}>
           <main className="w-full">
-            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">Register</h1>}
+            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">{sectionTitle}</h1>}
             {currentStep !== 'EventDetails' && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
             {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
 
@@ -202,11 +217,17 @@ const Register = () => {
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
               {currentStep === 'GCash' && (
-                <RegisterForm3 setValue={setValue} receiptUrl={receiptUrl} setReceiptUrl={setReceiptUrl} pricing={pricing} checkDiscountCode={checkDiscountCode}/>
+                <RegisterForm3
+                  setValue={setValue}
+                  receiptUrl={receiptUrl}
+                  setReceiptUrl={setReceiptUrl}
+                  pricing={pricing}
+                  checkDiscountCode={checkDiscountCode}
+                />
               )}
             </div>
 
-            {currentStep === 'Summary' && <Summary />}
+            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} />}
 
             <div className="flex w-full justify-around my-10">
               {currentStep === 'EventDetails' && (
