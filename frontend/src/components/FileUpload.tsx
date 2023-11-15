@@ -25,12 +25,12 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
 
   const handleFileChange = async (e: any) => {
     setIsLoading(true);
-    const selectedFile = e.target.files[0];
-    setSelectedFile(selectedFile.name);
-    if (selectedFile) {
-      await uploadFile(selectedFile);
+    const selectedFileObj = e.target.files[0];
+    setSelectedFile(selectedFileObj.name);
+    if (selectedFileObj) {
+      await uploadFile(selectedFileObj);
     }
-    const imageUrl = URL.createObjectURL(selectedFile);
+    const imageUrl = URL.createObjectURL(selectedFileObj);
     setImage(imageUrl);
     setFileUrl && setFileUrl(imageUrl);
     setIsLoading(false);
