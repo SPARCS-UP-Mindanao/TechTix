@@ -1,0 +1,7 @@
+.vscode
+.idea
+my.secrets
+*.code-workspace
+
+.env
+.env.local

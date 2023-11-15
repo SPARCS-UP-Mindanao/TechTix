@@ -1,8 +1,10 @@
-# SPARCS Certificate Generation App
+# SPARCS Events Platform
 
 ## Tech Stack
 - Serverless Framework
 - AWS Lambda
 - Python
 - FastAPI
-- React + Vite + TypeScript
+- Vite
+- React + Typescript
+- Shadcn/ui

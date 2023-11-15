@@ -1,0 +1,64 @@
+app:
+  handler: main.handler
+  environment:
+    STAGE: ${self:provider.stage}
+  layers:
+    - { Ref: PythonRequirementsLambdaLayer }
+  events:
+    - http:
+        path: /
+        method: get
+        cors: true
+    - http:
+        path: /{proxy+}
+        method: any
+        cors: true
+    - http:
+        path: /docs
+        method: get
+        authorizer:
+          arn: arn:aws:lambda:${self:provider.region}:192218445313:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
+          resultTtlInSeconds: 0
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Entities, Arn] }
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Evaluations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Evaluations, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [Registrations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Registrations, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource:
+        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - arn:aws:s3:::${self:custom.bucket}
+        - arn:aws:s3:::${self:custom.bucket}/*
