@@ -14,21 +14,16 @@ import App from '@/App';
 export const routes = createBrowserRouter(
   [
     {
-      path: '/',
+      path: '/:eventId',
       element: App(),
       children: [
         {
-          path: ':eventId',
-          children: [
-            {
-              path: 'register',
-              element: RegisterPage()
-            },
-            {
-              path: 'evaluate',
-              element: EvaluatePage()
-            }
-          ]
+          path: 'register',
+          element: RegisterPage()
+        },
+        {
+          path: 'evaluate',
+          element: EvaluatePage()
         }
       ]
     },

@@ -51,6 +51,13 @@ const Register = () => {
 
   const eventInfo = response.data;
 
+  document.title = eventInfo.name;
+  const link = document.querySelector('link[rel="icon"]');
+
+  if (link && eventInfo.logoUrl) {
+    link.setAttribute('href', eventInfo.logoUrl);
+  }
+
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
 
   const nextStep = async () => {
@@ -97,7 +104,7 @@ const Register = () => {
             <div className="space-y-4">
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && <RegisterForm3 setValue={setValue}/>}
+              {currentStep === 'GCash' && <RegisterForm3 setValue={setValue} />}
             </div>
 
             {currentStep === 'Summary' && <Summary />}
