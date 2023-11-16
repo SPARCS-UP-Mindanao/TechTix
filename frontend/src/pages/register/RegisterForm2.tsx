@@ -47,8 +47,8 @@ const RegisterForm1 = () => {
       <FormItem name="organization">
         {({ field }) => (
           <div className="flex flex-col gap-1">
-            <FormLabel>Organization</FormLabel>
-            <Input type="text" placeholder="Enter organization name (e.g. SPARCS)" className="" {...field} />
+            <FormLabel>Affiliation</FormLabel>
+            <Input type="text" placeholder="Enter affiliation (e.g. SPARCS)" className="" {...field} />
             <FormError />
           </div>
         )}
@@ -57,8 +57,8 @@ const RegisterForm1 = () => {
       <FormItem name="title">
         {({ field }) => (
           <div className="flex flex-col gap-1">
-            <FormLabel>Title</FormLabel>
-            <Input type="text" placeholder="Enter your title (e.g. Student)" className="" {...field} />
+            <FormLabel>Position</FormLabel>
+            <Input type="text" placeholder="Enter your position (e.g. Student)" className="" {...field} />
             <FormError />
           </div>
         )}
