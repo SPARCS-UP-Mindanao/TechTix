@@ -77,7 +77,6 @@ const Register = () => {
   }, [response]);
 
   useEffect(() => {
-    console.log(pricing);
     setValue('amountPaid', pricing.total);
   }, [eventInfo]);
 
