@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, NullAttribute, UnicodeAttribute
+from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
 from pynamodb.models import Model
 
@@ -61,7 +61,7 @@ class Registration(Model):
     gcashPayment = UnicodeAttribute(null=True)
     referenceNumber = UnicodeAttribute(null=True)
     discountCode = UnicodeAttribute(null=True)
-    amountPaid = NullAttribute(null=True)
+    amountPaid = NumberAttribute(null=True)
 
 
 class RegistrationPatch(BaseModel):

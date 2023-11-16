@@ -167,7 +167,6 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
     cell: ({ row }) => {
       const registrationInfo = row.original;
       const [showModal, setShowModal] = useState(false);
-      console.log(registrationInfo.gcashPaymentUrl);
       return (
         <Modal
           modalTitle="User Info"

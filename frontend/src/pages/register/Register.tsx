@@ -74,8 +74,12 @@ const Register = () => {
       discount: 0,
       total: price
     });
-    setValue('amountPaid', price);
   }, [response]);
+
+  useEffect(() => {
+    console.log(pricing);
+    setValue('amountPaid', pricing.total);
+  }, [eventInfo]);
 
   if (isFetching) {
     return <RegisterFormLoading />;
