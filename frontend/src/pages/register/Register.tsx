@@ -100,7 +100,13 @@ const Register = () => {
 
   const checkDiscountCode = async () => {
     const currentDiscountCode = getValues('discountCode');
-    if (!eventId || !currentDiscountCode) return;
+    if (!eventId || !currentDiscountCode) {
+      errorToast({
+        title: 'Discount Code is Empty',
+        description: 'The discount code you entered is empty. Please enter a valid discount code.'
+      });
+      return;
+    }
 
     try {
       const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));

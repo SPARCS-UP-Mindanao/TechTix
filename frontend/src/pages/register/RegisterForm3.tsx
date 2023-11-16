@@ -23,7 +23,7 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Discount Coupon (Optional)</FormLabel>
-            <div className="flex sm:flex-row flex-col w-full items-center">
+            <div className="flex sm:flex-row flex-col gap-2 w-full items-center">
               <Input type="text" placeholder="Enter Discount Coupon Code" className="w-full sm:w-1/2" {...field} />
               <Button className='w-full sm:w-1/2' onClick={checkDiscountCode}>
                 Check Code
