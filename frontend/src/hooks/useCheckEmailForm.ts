@@ -40,7 +40,6 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
     if (response.status === 200) {
       if (!response.data?.isFirstClaim) {
         setCurrentStep('ClaimCertificate');
-        console.log('Already Claimed');
       } else {
         nextStep();
       }
@@ -56,7 +55,6 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
         description: 'Please try again later or refresh the page.'
       });
     }
-    console.log(response);
   });
 
   return {

@@ -30,9 +30,6 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
     if (selectedFileObj) {
       await uploadFile(selectedFileObj);
     }
-    const imageUrl = URL.createObjectURL(selectedFileObj);
-    setImage(imageUrl);
-    setFileUrl && setFileUrl(imageUrl);
     setIsLoading(false);
     setUploadProgress(0);
   };
@@ -69,6 +66,9 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
         description: 'File uploaded successfully'
       });
       setObjectKeyValue(objectKey);
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+      setFileUrl && setFileUrl(imageUrl);
     } catch (err) {
       console.error('Error', err);
       errorToast({
