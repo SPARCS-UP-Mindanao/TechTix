@@ -13,7 +13,7 @@ interface FileUploadProps {
   uploadType: string;
   setObjectKeyValue: (value: string) => void;
   setFileUrl?: (value: string) => void;
-  originalImage?: string;
+  originalImage?: string | null;
 }
 
 const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
