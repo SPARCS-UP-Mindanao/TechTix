@@ -4,6 +4,7 @@ import { getEvent } from '@/api/events';
 import { useApi } from '@/hooks/useApi';
 import AdminEventInfo from './AdminEventInfo';
 import AdminEventRegistrations from './AdminEventRegistrations';
+import AdminEventDiscounts from './AdminEventDiscounts';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
@@ -30,10 +31,11 @@ const AdminEventPageContent = () => {
   const event = response.data;
   return (
     <Tabs defaultValue="dashboard" className="max-w-5xl w-full">
-      <TabsList className="grid px-4 grid-cols-4">
+      <TabsList className="grid px-4 grid-cols-5">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="eventInfo">Info</TabsTrigger>
         <TabsTrigger value="registration">Registrations</TabsTrigger>
+        <TabsTrigger value="discounts">Discounts</TabsTrigger>
         <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
       </TabsList>
 
@@ -47,6 +49,10 @@ const AdminEventPageContent = () => {
 
       <TabsContent value="registration">
         <AdminEventRegistrations eventId={event.entryId} />
+      </TabsContent>
+
+      <TabsContent value="discounts">
+        <AdminEventDiscounts eventId={event.entryId} />
       </TabsContent>
 
       <TabsContent value="evaluations">

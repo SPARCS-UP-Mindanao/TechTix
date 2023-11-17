@@ -5,10 +5,8 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
-import ulid
 from constants.common_constants import EntryStatus
 from model.events.event import Event, EventIn
-from model.events.events_constants import EventStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -19,6 +17,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.utils import Utils
 
 
 class EventsRepository:
@@ -30,7 +29,7 @@ class EventsRepository:
 
     def store_event(self, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
-        entry_id = self.convert_to_slug(event_in.name)
+        entry_id = Utils.convert_to_slug(event_in.name)
         range_key = f'v{self.latest_version}#{entry_id}'
         try:
             event_entry = Event(
@@ -199,6 +198,3 @@ class EventsRepository:
             logging.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
-
-    def convert_to_slug(self, name: str):
-        return name.lower().replace(' ', '-')

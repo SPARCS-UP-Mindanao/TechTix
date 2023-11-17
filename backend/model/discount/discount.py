@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import List
 
 from model.entities import Entities
+from model.registrations.registration import RegistrationOut
 from pydantic import BaseModel, Extra, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 
@@ -12,6 +14,7 @@ class Discount(Entities, discriminator='Discount'):
     claimed = BooleanAttribute(null=True)
     registrationId = UnicodeAttribute(null=True)
     discountPercentage = NumberAttribute(null=True)
+    organizationId = UnicodeAttribute(null=True)
 
 
 class DiscountDBIn(BaseModel):
@@ -23,6 +26,7 @@ class DiscountDBIn(BaseModel):
     registrationId: str = Field(None, title="Registration ID")
     discountPercentage: float = Field(..., title="Discount Percentage")
     entryId: str = Field(..., title="Entry ID")
+    organizationId: str = Field(..., title="Organization ID")
 
 
 class DiscountIn(BaseModel):
@@ -32,6 +36,7 @@ class DiscountIn(BaseModel):
     eventId: str = Field(..., title="Event ID")
     discountPercentage: float = Field(..., title="Discount Percentage")
     quantity: int = Field(..., title="Quantity")
+    organizationName: str = Field(..., title="Organization ID")
 
 
 class DiscountOut(BaseModel):
@@ -44,4 +49,13 @@ class DiscountOut(BaseModel):
     eventId: str = Field(..., title="Event ID")
     claimed: bool = Field(..., title="Claimed")
     discountPercentage: float = Field(..., title="Discount Percentage")
-    registrationId: str = Field(None, title="Registration ID")
+    registration: RegistrationOut = Field(None, title="Registration ID")
+    organizationId: str = Field(..., title="Organization ID")
+
+
+class DiscountOrganization(BaseModel):
+    class Config:
+        extra = Extra.ignore
+
+    organizationId: str = Field(..., title="Organization ID")
+    discounts: List[DiscountOut] = Field(..., title="Discounts")

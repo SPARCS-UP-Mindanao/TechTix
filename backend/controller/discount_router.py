@@ -4,7 +4,7 @@ from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
-from model.discount.discount import DiscountIn, DiscountOut
+from model.discount.discount import DiscountIn, DiscountOrganization, DiscountOut
 from usecase.discount_usecase import DiscountUsecase
 
 discount_router = APIRouter()
@@ -61,7 +61,7 @@ def get_discount(
 
 @discount_router.get(
     '',
-    response_model=List[DiscountOut],
+    response_model=List[DiscountOrganization],
     responses={
         404: {"model": Message, "description": "Discount not found"},
         500: {"model": Message, "description": "Internal server error"},
@@ -70,7 +70,7 @@ def get_discount(
 )
 @discount_router.get(
     '/',
-    response_model=List[DiscountOut],
+    response_model=List[DiscountOrganization],
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
     include_in_schema=False,
