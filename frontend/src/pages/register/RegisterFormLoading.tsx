@@ -3,8 +3,8 @@ import Skeleton from '@/components/Skeleton';
 
 const RegisterFormLoading: React.FC = () => {
   return (
-    <>
-      <div className="flex flex-col items-center justify-center w-full max-2xl">
+    <section className="flex flex-col items-center px-4">
+      <div className="w-full max-w-2xl flex flex-col items-center">
         <Skeleton className="w-12 h-12 rounded-full mb-4"></Skeleton>
         <Skeleton className="w-full h-56 rounded-md mb-4"></Skeleton>
         <Skeleton className="w-full h-8 rounded-sm mb-2"></Skeleton>
@@ -23,7 +23,7 @@ const RegisterFormLoading: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </section>
   );
 };
 

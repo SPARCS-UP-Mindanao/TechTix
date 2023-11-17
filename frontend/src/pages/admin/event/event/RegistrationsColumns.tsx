@@ -148,20 +148,20 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
     header: 'Discount Code',
     enableHiding: getEnableHiding('discountCode')
   },
-  //   {
-  //     accessorKey: 'amount',
-  //     header: () => <div className="text-right">Amount</div>,
-  //     cell: ({ row }) => {
-  //       const amount = parseFloat(row.getValue('amount'));
-  //       const formatted = new Intl.NumberFormat('en-US', {
-  //         style: 'currency',
-  //         currency: 'USD'
-  //       }).format(amount);
+  {
+    accessorKey: 'amountPaid',
+    header: () => <div className="text-right">Amount Paid</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('amountPaid'));
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'PHP'
+      }).format(amount);
 
-  //       return <div className="text-right font-medium">{formatted}</div>;
-  //     },
-  //     enableHiding: getEnableHiding('amount')
-  //   },
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+    enableHiding: getEnableHiding('amountPaid')
+  },
   {
     id: 'actions',
     cell: ({ row }) => {

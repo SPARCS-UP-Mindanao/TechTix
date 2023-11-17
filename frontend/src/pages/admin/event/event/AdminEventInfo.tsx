@@ -127,7 +127,7 @@ const AdminEventInfo: FC<Props> = ({ event }) => {
                   <FileUpload
                     entryId={eventId!}
                     uploadType={EVENT_UPLOAD_TYPE.BANNER}
-                    originalImage={event.bannerUrl}
+                    originalImage={event.bannerLink}
                     setObjectKeyValue={(value: string) => {
                       setValue(EVENT_OBJECT_KEY_MAP.BANNER, value);
                     }}
@@ -144,7 +144,7 @@ const AdminEventInfo: FC<Props> = ({ event }) => {
                   <FileUpload
                     entryId={eventId!}
                     uploadType={EVENT_UPLOAD_TYPE.LOGO}
-                    originalImage={event.logoUrl}
+                    originalImage={event.logoLink}
                     setObjectKeyValue={(value: string) => {
                       setValue(EVENT_OBJECT_KEY_MAP.LOGO, value);
                     }}
@@ -161,7 +161,7 @@ const AdminEventInfo: FC<Props> = ({ event }) => {
                   <FileUpload
                     entryId={eventId!}
                     uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE}
-                    originalImage={event.certificateTemplateUrl}
+                    originalImage={event.certificateTemplate}
                     setObjectKeyValue={(value: string) => {
                       setValue(EVENT_OBJECT_KEY_MAP.CERTIFICATE_TEMPLATE, value);
                     }}
