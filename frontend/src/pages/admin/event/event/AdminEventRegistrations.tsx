@@ -38,7 +38,7 @@ const AdminEventRegistrations: FC<Props> = ({ eventId }) => {
   const eventRegistrations = response.data;
 
   return (
-    <section className="flex flex-col items-center p-10">
+    <section className="flex flex-col items-center py-10">
       <h1>Registrations</h1>
       <DataTable columns={registrationColumns} data={eventRegistrations} />
     </section>

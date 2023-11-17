@@ -1,15 +1,23 @@
+import { RegisterUserInfo } from '@/model/registrations';
+
 export interface Discount {
     entryId: string;
     eventId: string;
     claimed: boolean;
     discountPercentage: number;
-    registrationId?: string;
+    registration?: RegisterUserInfo;
+    organizationId: string;
+}
+
+export interface DiscountOrganization {
+    organizationId: string;
+    discounts: Discount[];
 }
 
 export interface CreateDiscounts {
-    eventId: string;
     discountPercentage: number;
     quantity: number;
+    organizationName: string;
 }
 
 export interface Pricing {

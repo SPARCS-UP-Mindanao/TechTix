@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { S3Client, GetObjectCommand, GetObjectCommandInput } from "@aws-sdk/client-s3";
+import Skeleton from './Skeleton';
 
 // Initialize the S3 Client outside of the component
 const s3Client = new S3Client({
@@ -13,9 +14,10 @@ const s3Client = new S3Client({
 interface FileViewerComponentProps {
   objectKey?: string | null;
   className?: string;
+  alt?: string;
 }
 
-const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, className }) => {
+const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, className, alt }) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const getFile = async (fileName: string): Promise<void> => {
@@ -48,7 +50,7 @@ const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, cl
 
   return (
     <>
-      {fileUrl && <img src={fileUrl} className={className} alt="File from S3" /> }
+      {fileUrl ? <img src={fileUrl} className={className} alt={alt} /> : <Skeleton className={className}/> }
     </>
   );
 };

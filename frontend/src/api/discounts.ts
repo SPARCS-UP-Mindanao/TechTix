@@ -1,15 +1,16 @@
 import { createApi } from '@/api/utils/createApi';
-import { Discount, CreateDiscounts } from '@/model/discount';
+import { Discount, CreateDiscounts, DiscountOrganization } from '@/model/discount';
+import { RegisterUserInfo } from '@/model/registrations';
 
 export interface DiscountDto {
     entryId: string;
     eventId: string;
     createDate: string;
     updateDate: string;
-    discountId: string;
     claimed: boolean;
     discountPercentage: number;
-    registrationId?: string;
+    registration?: RegisterUserInfo;
+    organizationId: string;
 }
 
 export type OptionalDiscount = Partial<Discount>;
@@ -18,25 +19,23 @@ const mapDiscountDtoToDiscount = (discount: DiscountDto): Discount => ({
   ...discount
 });
 
-const mapDiscountsDtoToDiscount = (discounts: DiscountDto[]): Discount[] => discounts.map((discount) => mapDiscountDtoToDiscount(discount));
 
 export const getAllDiscounts = (eventId: string) =>
-  createApi<DiscountDto[], Discount[]>({
+  createApi<DiscountOrganization[]>({
     method: 'get',
     authorize: true,
     url: '/discounts',
     queryParams: {
         eventId: eventId
     },
-    output: mapDiscountsDtoToDiscount
   });
 
-export const createDiscount = (createDiscount: CreateDiscounts) =>
-  createApi({
+export const createDiscount = (createDiscount: CreateDiscounts, eventId: string) =>
+  createApi<DiscountDto[], Discount[]>({
     method: 'post',
     authorize: true,
     url: '/discounts',
-    body: { ...createDiscount }
+    body: { ...createDiscount, eventId: eventId },
   });
 
 export const getDiscount = (entryId: string, eventId: string) =>

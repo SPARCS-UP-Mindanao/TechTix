@@ -14,6 +14,7 @@ import { getAllEvents, deleteEvent } from '@/api/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi, useFetchQuery } from '@/hooks/useApi';
 import { Event } from '@/model/events';
+import FileViewerComponent from '@/components/S3Image';
 
 const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -145,7 +146,8 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
         onCancelAction={() => closeModal()}
         onCompleteAction={deleteEventTrigger}
       />
-      <img src={eventInfo.bannerUrl} /> <span>{eventInfo.name}</span>
+      <FileViewerComponent objectKey={eventInfo.bannerLink} className="h-40 w-fit" alt="No Image Uploaded" />
+      <span>{eventInfo.name}</span>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useNotifyToast } from '@/hooks/useNotifyToast';
 import Input from './Input';
 import Label from './Label';
 import { Progress } from './Progress';
+import FileViewerComponent from './S3Image';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
@@ -12,7 +13,7 @@ interface FileUploadProps {
   uploadType: string;
   setObjectKeyValue: (value: string) => void;
   setFileUrl?: (value: string) => void;
-  originalImage?: string;
+  originalImage?: string | null;
 }
 
 const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
@@ -22,6 +23,7 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState('No file chosen');
+  const [isRawPhoto, setIsRawPhoto] = useState(false);
 
   const handleFileChange = async (e: any) => {
     setIsLoading(true);
@@ -68,6 +70,7 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
       setObjectKeyValue(objectKey);
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
+      setIsRawPhoto(true);
       setFileUrl && setFileUrl(imageUrl);
     } catch (err) {
       console.error('Error', err);
@@ -80,7 +83,11 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
 
   return (
     <>
-      {image && <img src={image} className="h-40 w-fit" alt="No Image Uploaded" />}
+      {isRawPhoto ? (
+        <img src={image} className="h-40 w-fit" alt="No Image Uploaded" />
+      ) : (
+        image && <FileViewerComponent objectKey={image} className="h-40 w-fit" alt="No Image Uploaded" />
+      )}
       {isLoading ? (
         <Progress className="w-full max-w-md" value={uploadProgress} />
       ) : (

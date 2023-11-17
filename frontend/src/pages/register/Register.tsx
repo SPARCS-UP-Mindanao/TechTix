@@ -4,6 +4,7 @@ import { FormProvider, set } from 'react-hook-form';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
 import Icon from '@/components/Icon';
+import FileViewerComponent from '@/components/S3Image';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
@@ -23,7 +24,6 @@ import Summary from './Summary';
 import { Pricing } from '@/model/discount';
 import { showEvent } from '@/model/events';
 import { Event } from '@/model/events';
-import FileViewerComponent from '@/components/S3Image';
 
 // TODO: Add success page
 const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'] as const;
@@ -176,11 +176,14 @@ const Register = () => {
         const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));
         const discountCode = response.data;
         if (response.status === 200) {
+          const price = eventInfo.price * (1 - discountCode.discountPercentage);
           setPricing({
             price: eventInfo.price,
-            discount: discountCode.discount,
-            total: eventInfo.price * discountCode.discount
+            discount: discountCode.discountPercentage,
+            total: price
           });
+          setValue('amountPaid', price);
+
           if (discountCode.claimed) {
             errorToast({
               title: 'Discount Code Already Claimed',
@@ -229,8 +232,8 @@ const Register = () => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center">
-        <div className='w-12 h-12 rounded-full overflow-hidden'>
-            <FileViewerComponent objectKey={eventInfo.logoLink} />
+        <div className="w-12 h-12 rounded-full overflow-hidden">
+          <FileViewerComponent objectKey={eventInfo.logoLink} />
         </div>
         <div className="flex w-full justify-center my-8 relative overflow-hidden">
           <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
