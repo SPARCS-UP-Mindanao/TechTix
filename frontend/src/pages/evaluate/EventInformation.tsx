@@ -50,12 +50,12 @@ const EventInformation = ({
           </div>
         </div>
         <Separator className="my-4" />
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full">
           <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
           <FormProvider {...claimCertificateForm}>
             <FormItem name="email">
               {({ field }) => (
-                <div className="flex flex-col items-start space-y-2">
+                <div className="flex flex-col items-start space-y-2 w-full">
                   <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your e-mail</FormLabel>
                   <Input type="email" placeholder="Email" {...field} />
                   <FormDescription>Please enter the email address you used when registering for the event</FormDescription>
@@ -63,7 +63,7 @@ const EventInformation = ({
                 </div>
               )}
             </FormItem>
-            <Button onClick={submit} variant="gradient">
+            <Button onClick={submit} variant="gradient" className="py-6 px-20 my-10">
               Evaluate
             </Button>
           </FormProvider>

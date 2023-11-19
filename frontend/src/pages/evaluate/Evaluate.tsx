@@ -4,6 +4,7 @@ import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
+import FileViewerComponent from '@/components/S3Image';
 import { getEvent } from '@/api/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
@@ -105,11 +106,13 @@ const Evaluate = () => {
   }
 
   return (
-    <section>
-      <div className="flex flex-col items-center w-full">
+    <section className="flex flex-col items-center px-4">
+      <div className="flex flex-col items-center w-full max-w-2xl">
         <FormProvider {...form}>
-          <section className="full">
-            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={eventInfo.logoUrl} bannerImg={eventInfo.bannerUrl} />}
+          <section className="w-full">
+            {currentStep !== 'ClaimCertificate' && (
+              <PageHeader avatarImg={eventInfo.logoLink} bannerImg={eventInfo.bannerLink} bannerUrl={eventInfo.bannerUrl} />
+            )}
             {currentStep === 'EventInformation' && (
               <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
             )}
