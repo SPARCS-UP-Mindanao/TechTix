@@ -1,102 +1,54 @@
-import { useEffect, useRef } from 'react';
 import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
+import FileViewerComponent from '@/components/S3Image';
 import Skeleton from '@/components/Skeleton';
+import { useFileUrl } from '@/hooks/useFileUrl';
 import sparcs_logo_white from './../../assets/logos/sparcs_logo_white.png';
-
-interface LinkedInDetailsProps {
-  certificateName: string | undefined;
-  organizationId: string | undefined;
-  certificateIssueYear: number | undefined;
-  certificateIssueMonth: number | undefined;
-  certificateURL: string | undefined;
-  certificateId: string | undefined;
-}
-
-const fillLinkedInDetails = ({
-  certificateName,
-  organizationId,
-  certificateIssueYear,
-  certificateIssueMonth,
-  certificateURL,
-  certificateId
-}: LinkedInDetailsProps) => {
-  const certId = certificateId || '';
-  const certUrl = certificateURL || '';
-  const isFromA2p = true;
-  const issueMonth = certificateIssueMonth || 0;
-  const issueYear = certificateIssueYear || 0;
-  const name = certificateName || '';
-
-  const linkedInURL = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&certId=${certId}&certUrl=${encodeURIComponent(
-    certUrl
-  )}&isFromA2p=${isFromA2p}&issueMonth=${issueMonth}&issueYear=${issueYear}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`;
-
-  return linkedInURL;
-};
+import shareToLinkedIn from './shareToLinkedIn';
 
 const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certificateLink: string | undefined; certificatePDFTemplate: string | undefined }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  console.log(certificateLink);
-  const imageName = `${certificateLink?.split('/').pop()!.split('.')[0]}.jpeg`;
-  const LinkedInParams = {
-    certificateName: 'testCert',
-    organizationId: '96606526',
-    certificateIssueYear: 2023,
-    certificateIssueMonth: 10,
-    certificateURL: certificateLink,
-    certificateId: 'test'
-  };
+  const imageNameImg = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`;
+  const imageNamePdf = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`; // TODO: change certificateLink to certificatePDFTemplate
+  const certificateImgLinkS3 = decodeURIComponent(new URL(certificateLink!).pathname.split('?')[0].slice(1));
+  const certificatePdfLinkS3 = decodeURIComponent(new URL(certificateLink!).pathname.split('?')[0].slice(1)); // TODO: change certificateLink to certificatePDFTemplate
+  const certificateImgDataURL = useFileUrl(certificateImgLinkS3!);
+  const certificatePdfDataURL = useFileUrl(certificatePdfLinkS3!);
 
-  const LinkedInDetails = fillLinkedInDetails(LinkedInParams);
-  console.log('LinkedinDetails', LinkedInDetails);
-
-  useEffect(() => {
-    console.log('CertificatePDF: ', certificatePDFTemplate);
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-
-    const img = new Image();
-    img.onload = function () {
-      canvas!.width = img.width;
-      canvas!.height = img.height;
-
-      context?.drawImage(img, 0, 0, img.width, img.height);
-    };
-
-    img.setAttribute('crossorigin', 'anonymous');
-    img.src = certificateLink!;
-  }, [canvasRef]);
+  console.log(certificatePDFTemplate);
 
   const downloadImage = () => {
-    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.href = certificateImgDataURL!;
+    link.download = imageNameImg;
 
-    if (canvas) {
-      const dataUrl = canvas.toDataURL('image/png');
-
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = imageName;
-
-      link.click();
-    }
+    link.click();
   };
 
   const downloadPDF = async () => {
     try {
-      const link = await fetch(certificateLink!); // change argument to certificatePDFTemplate
-      const blob = await link.blob();
-      const dataURL = URL.createObjectURL(blob);
-      const downloadLink = document.createElement('a');
-      downloadLink.href = dataURL;
-      downloadLink.download = imageName;
+      const link = document.createElement('a');
+      link.href = certificatePdfDataURL!;
+      link.download = imageNamePdf;
 
-      downloadLink.click();
+      link.click();
     } catch (error) {
       console.log(error);
     }
   };
+
+  const shareCertificate = () => {
+    const LinkedInParams = {
+      certificateName: 'testCert',
+      organizationId: '96606526',
+      certificateIssueYear: 2023,
+      certificateIssueMonth: 10,
+      certificateURL: 'https://i.pinimg.com/originals/1d/bd/a3/1dbda3a29df5da215a639c8d35070c9c.jpg',
+      certificateId: 'test'
+    };
+    shareToLinkedIn(LinkedInParams);
+  };
+
   return (
     <>
       <div className="flex flex-col items-center">
@@ -105,16 +57,14 @@ const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certifi
         </div>
         <div className="mt-12">
           <p className="text-2xl font-bold font-subjectivity leading-6 text-neutral-50 text-center">Here's your Certificate!</p>
-          <div className="my-5 sm:h-72 w-[91vw] ">
+          <div className="my-5 w-[91vw] ">
             {certificateLink ? (
-              <>
-                {/* <img
-                  src={certificateLink}
-                  alt="image_placeholder"
+              <div>
+                <FileViewerComponent
+                  objectKey={certificateImgLinkS3}
                   className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
-                /> */}
-                <canvas ref={canvasRef} className="w-full h-full animate-[fade-in_3s_ease-in-out] rounded-2xl"></canvas>
-              </>
+                />
+              </div>
             ) : (
               <Skeleton className="rounded-2xl h-[330px] w-full bg-neutral-500" />
             )}
@@ -128,7 +78,7 @@ const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certifi
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
-            <Button variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#4F65E3] to-[#F43F79] text-[#F6F6F6]">
+            <Button onClick={shareCertificate} variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#4F65E3] to-[#F43F79] text-[#F6F6F6]">
               <Icon name="ShareNetwork" className="mr-2 h-4 w-4" />
               Share
             </Button>

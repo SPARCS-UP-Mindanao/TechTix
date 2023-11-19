@@ -4,7 +4,6 @@ import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
-import FileViewerComponent from '@/components/S3Image';
 import { getEvent } from '@/api/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
