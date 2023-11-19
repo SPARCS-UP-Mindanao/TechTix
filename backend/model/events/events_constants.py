@@ -13,6 +13,7 @@ class EventUploadType(str, Enum):
     BANNER = 'banner'
     LOGO = 'logo'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
+    PAYMENT_PROOF = 'proofOfPayment'
 
 
 class EventUploadField(str, Enum):

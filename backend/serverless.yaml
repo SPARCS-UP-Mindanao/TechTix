@@ -5,17 +5,17 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
-  bucket: ${self:custom.stage}-${self:custom.projectName}-bucket
+  bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   emailQueue:
-    !ImportValue EmailQueue-${self:provider.stage}
+    !ImportValue EmailQueue-${self:custom.stage}
   basicAuthorizerARN:
-    !ImportValue BasicAuthAuthorizerARN-${self:provider.stage}
+    !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
     dockerizePip: non-linux
     layer:
-      name: sparcs-events-${self:provider.stage}-python-requirements
+      name: sparcs-events-${self:custom.stage}-python-requirements
       path: .
       compatibleRuntimes:
         - python3.8
@@ -45,9 +45,9 @@ provider:
     EMAIL_QUEUE: ${self:custom.emailQueue}
     S3_BUCKET: ${self:custom.bucket}
     USER_POOL_ID:
-      !ImportValue UserPoolId-${self:provider.stage}
+      !ImportValue UserPoolId-${self:custom.stage}
     USER_POOL_CLIENT_ID:
-      !ImportValue AppClientId-${self:provider.stage}
+      !ImportValue AppClientId-${self:custom.stage}
     SPARCS_GMAIL: sparcsup@gmail.com
   logs:
     restApi: true
@@ -59,7 +59,7 @@ resources:
 
 functions:
   - ${file(resources/api.yml)}
-  - ${file(resources/functions.yml)}
+  # - ${file(resources/functions.yml)}
 
 plugins:
   - serverless-python-requirements

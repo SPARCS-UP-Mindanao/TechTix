@@ -7,9 +7,9 @@ const RegisterForm1 = () => {
     <>
       <FormItem name="careerStatus">
         {({ field }) => (
-          <div className="flex flex-col">
-            <FormLabel>Status</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <div className="flex flex-col gap-1">
+            <FormLabel>Professional Status</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -25,9 +25,9 @@ const RegisterForm1 = () => {
 
       <FormItem name="yearsOfExperience">
         {({ field }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <FormLabel>Years of Experience</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Years of Experience" />
               </SelectTrigger>
@@ -46,9 +46,9 @@ const RegisterForm1 = () => {
 
       <FormItem name="organization">
         {({ field }) => (
-          <div className="flex flex-col space-y-2">
-            <FormLabel>Organization</FormLabel>
-            <Input type="text" placeholder="Enter organization name" className="" {...field} />
+          <div className="flex flex-col gap-1">
+            <FormLabel>Affiliation</FormLabel>
+            <Input type="text" placeholder="Enter affiliation (e.g. SPARCS)" className="" {...field} />
             <FormError />
           </div>
         )}
@@ -56,9 +56,9 @@ const RegisterForm1 = () => {
 
       <FormItem name="title">
         {({ field }) => (
-          <div className="flex flex-col space-y-2">
-            <FormLabel>Title</FormLabel>
-            <Input type="text" placeholder="Enter organization title" className="" {...field} />
+          <div className="flex flex-col gap-1">
+            <FormLabel>Position</FormLabel>
+            <Input type="text" placeholder="Enter your position (e.g. Student)" className="" {...field} />
             <FormError />
           </div>
         )}

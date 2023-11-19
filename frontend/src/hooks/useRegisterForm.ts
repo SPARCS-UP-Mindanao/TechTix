@@ -10,7 +10,7 @@ const isValidContactNumber = (value: string) => {
   return phoneNumberPattern.test(value);
 };
 
-export const RegisterFormSchema = z.object({
+const RegisterFormSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email address'
   }),
@@ -32,19 +32,34 @@ export const RegisterFormSchema = z.object({
     message: 'Please select your career status'
   }),
   yearsOfExperience: z.string().min(1, {
-    message: 'Please enter your years of experience'
+    message: 'Please select your years of experience'
   }),
   organization: z.string().min(1, {
     message: 'Please enter your organization'
   }),
   title: z.string().min(1, {
     message: 'Please enter your title'
+  }),
+  gcashPayment: z.string().min(1, {
+    message: 'Please submit a screenshot of your Gcash payment'
+  }),
+  referenceNumber: z
+    .string()
+    .min(1, {
+      message: 'Please enter your Gcash reference number'
+    })
+    .refine((value) => value.length === 13, {
+      message: 'Please enter a valid Gcash reference number'
+    }),
+  discountCode: z.string().optional(),
+  amountPaid: z.number().min(0, {
+    message: 'Please enter a valid amount'
   })
 });
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
-export const useRegisterForm = (entryId: string) => {
+export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
   const form = useForm<RegisterFormValues>({
     mode: 'onChange',
@@ -57,7 +72,11 @@ export const useRegisterForm = (entryId: string) => {
       careerStatus: '',
       yearsOfExperience: '',
       organization: '',
-      title: ''
+      title: '',
+      gcashPayment: '',
+      referenceNumber: '',
+      discountCode: '',
+      amountPaid: 0
     }
   });
 
@@ -73,6 +92,13 @@ export const useRegisterForm = (entryId: string) => {
         successToast({
           title: 'Register Info',
           description: `Registering user with email: ${values.email}`
+        });
+        navigateOnSuccess();
+      } else if (response.status === 400) {
+        console.log(response);
+        const { message } = response.errorData;
+        errorToast({
+          title: message
         });
       } else if (response.status === 409) {
         form.setError('email', {

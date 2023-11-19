@@ -18,7 +18,11 @@ const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
       return `Page not found.\nPlease check the URL and try again.`;
     }
 
-    return `Something went wrong. Please try again\nError code: ${errorCode} \n Error message: ${error?.errorData.message || error?.errorData.detail[0].msg}`;
+    if (error?.errorData) {
+      return `Something went wrong. Please try again\nError code: ${errorCode} \n Error message: ${error?.errorData.message || error?.errorData.detail[0].msg}`;
+    }
+
+    return 'Something went wrong. Please try again';
   };
 
   return (
@@ -27,7 +31,7 @@ const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
         <div className="text-8xl font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500">
           {errorCode}
         </div>
-        <h2 className="text-xl font-raleway font-bold">{getErrorMessage()}</h2>
+        <h2 className="text-xl font-raleway font-bold px-5">{getErrorMessage()}</h2>
       </div>
     </div>
   );

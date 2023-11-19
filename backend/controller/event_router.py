@@ -3,7 +3,7 @@ from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, Path
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventUploadType
@@ -153,8 +153,6 @@ def get_presigned_url(
     upload_in: FileUploadIn,
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
     upload_type: EventUploadType = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE),
-    current_user: AccessUser = Depends(get_current_user),
 ):
-    _ = current_user
     file_s3_uc = FileS3Usecase()
     return file_s3_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}/{upload_in.fileName}')

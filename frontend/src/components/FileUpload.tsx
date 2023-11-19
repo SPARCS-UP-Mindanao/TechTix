@@ -1,65 +1,109 @@
-import * as React from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { getPresignedUrl } from '@/api/events';
 import { useFetchQuery } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import Input from './Input';
+import Label from './Label';
+import { Progress } from './Progress';
+import FileViewerComponent from './S3Image';
+import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
   entryId: string;
   uploadType: string;
-  originalImage?: string;
+  setObjectKeyValue: (value: string) => void;
+  setFileUrl?: (value: string) => void;
+  originalImage?: string | null;
 }
 
-const FileUpload = ({ entryId, uploadType, originalImage }: FileUploadProps) => {
+const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
   const { successToast, errorToast } = useNotifyToast();
   const { fetchQuery } = useFetchQuery<any>();
-  const [image] = React.useState<string>(originalImage || '');
+  const [image, setImage] = useState<string>(originalImage || '');
+  const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState('No file chosen');
+  const [isRawPhoto, setIsRawPhoto] = useState(false);
 
   const handleFileChange = async (e: any) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      await uploadFile(selectedFile);
+    setIsLoading(true);
+    const selectedFileObj = e.target.files[0];
+    setSelectedFile(selectedFileObj.name);
+    if (selectedFileObj) {
+      await uploadFile(selectedFileObj);
     }
+    setIsLoading(false);
+    setUploadProgress(0);
   };
 
   const getPresignedUrlTrigger = async (entryId: string, fileName: string, fileType: string) => {
     const response = await fetchQuery(getPresignedUrl(entryId, fileName, fileType));
-    return response.data.uploadLink;
+    return response.data;
   };
 
   const uploadFile = async (file: any) => {
-    try {
-      const presignedUrl = await getPresignedUrlTrigger(entryId, file.name, uploadType);
-      const response = await axios.put(presignedUrl, file, {
-        headers: {
-          'Content-Type': file.type
-        }
-      });
-
-      if (response.status === 200) {
-        successToast({
-          title: 'File Upload Success',
-          description: `${file.name} uploaded successfully`
-        });
-      } else {
-        errorToast({
-          title: 'File Upload Failed',
-          description: `${file.name} upload failed`
-        });
+    const s3Client = new S3Client({
+      region: 'ap-southeast-1',
+      credentials: {
+        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
+        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!
       }
-    } catch (error) {
+    });
+    const { objectKey } = await getPresignedUrlTrigger(entryId, file.name, uploadType);
+
+    // Function to upload a file to S3
+    const uploadParams: PutObjectCommandInput = {
+      Bucket: import.meta.env.VITE_S3_BUCKET!,
+      Key: objectKey,
+      Body: file
+    };
+
+    try {
+      const command = new PutObjectCommand(uploadParams);
+      await s3Client.send(command);
+      setUploadProgress(100);
+
+      successToast({
+        title: 'File Upload Success',
+        description: 'File uploaded successfully'
+      });
+      setObjectKeyValue(objectKey);
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+      setIsRawPhoto(true);
+      setFileUrl && setFileUrl(imageUrl);
+    } catch (err) {
+      console.error('Error', err);
       errorToast({
         title: 'File Upload Failed',
-        description: `${file.name} upload failed`
+        description: `File upload failed`
       });
     }
   };
 
   return (
     <>
-      <img src={image} />
-      <Input onChange={handleFileChange} type="file" />
+      {isRawPhoto ? (
+        <img src={image} className="h-40 w-fit" alt="No Image Uploaded" />
+      ) : (
+        image && <FileViewerComponent objectKey={image} className="h-40 w-fit" alt="No Image Uploaded" />
+      )}
+      {isLoading ? (
+        <Progress className="w-full max-w-md" value={uploadProgress} />
+      ) : (
+        <div className="flex flex-row items-center w-full">
+          <Input id={`upload-custom-${uploadType}`} onChange={handleFileChange} type="file" accept="image/*" className="hidden" />
+          <Label
+            htmlFor={`upload-custom-${uploadType}`}
+            className="block text-sm mr-4 py-2 px-4
+              rounded-md border-0 font-semibold
+              hover:cursor-pointer bg-input"
+          >
+            Choose file
+          </Label>
+          <Label className="text-sm text-white break-all w-1/2">{selectedFile}</Label>
+        </div>
+      )}
     </>
   );
 };

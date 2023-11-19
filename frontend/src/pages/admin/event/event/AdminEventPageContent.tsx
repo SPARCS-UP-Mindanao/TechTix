@@ -1,25 +1,14 @@
-import { Outlet as AdminEventRoute } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { FormProvider } from 'react-hook-form';
-import Button from '@/components/Button';
-import FileUpload from '@/components/FileUpload';
-import { FormItem, FormLabel, FormError } from '@/components/Form';
-import Input from '@/components/Input';
-import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
-import { Textarea } from '@/components/TextArea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { getEvent } from '@/api/events';
-import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi } from '@/hooks/useApi';
-import { EVENT_STATUSES } from '@/model/events';
+import AdminEventInfo from './AdminEventInfo';
+import AdminEventRegistrations from './AdminEventRegistrations';
+import AdminEventDiscounts from './AdminEventDiscounts';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
   const { data: response, isFetching } = useApi(getEvent(eventId!));
-  const { form, submit } = useEventForm({ eventId });
-
-  const handleSubmit = async () => {
-    await submit()
-  };
 
   if (isFetching) {
     return (
@@ -39,135 +28,37 @@ const AdminEventPageContent = () => {
     );
   }
 
-  const eventInfo = response.data;
-
+  const event = response.data;
   return (
-    <section className="p-10">
-      <div className="flex flex-col gap-3 items-center justify-center w-full">
-        <h1>Update {eventInfo.name}</h1>
-        <FormProvider {...form}>
-          <main className="w-full">
-            <FormItem name="name">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Event Name</FormLabel>
-                  <Input type="text" className="" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="description">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Description</FormLabel>
-                  <Textarea placeholder="Type your message here." {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="email">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Email</FormLabel>
-                  <Input type="email" className="" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="venue">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Venue</FormLabel>
-                  <Input type="text" className="" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="price">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Price</FormLabel>
-                  <Input type="number" className="" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="status">
-              {({ field }) => (
-                <div className="flex flex-col w-full">
-                  <FormLabel>Status</FormLabel>
-                  <Select {...field} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select an Event Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Event Status</SelectLabel>
-                        {EVENT_STATUSES.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="startDate">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Event Start Date</FormLabel>
-                  <Input type="datetime-local" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="endDate">
-              {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Event End Date</FormLabel>
-                  <Input type="datetime-local" {...field} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="eventBanner">
-              {() => (
-                <div className="flex flex-col gap-3">
-                  <FormLabel>Event Banner</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="banner" originalImage={eventInfo.bannerLink} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="logoLink">
-              {() => (
-                <div className="flex flex-col gap-3">
-                  <FormLabel>Event Logo</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="logo" originalImage={eventInfo.logoLink} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <FormItem name="certificateTemplate">
-              {() => (
-                <div className="flex flex-col gap-3">
-                  <FormLabel>Event Certificate Template</FormLabel>
-                  <FileUpload entryId={eventId!} uploadType="certificateTemplate" originalImage={eventInfo.certificateTemplate} />
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-            <Button onClick={handleSubmit} type="submit">
-              Submit
-            </Button>
-          </main>
-        </FormProvider>
-      </div>
-      <AdminEventRoute />
-    </section>
+    <Tabs defaultValue="dashboard" className="max-w-5xl w-full">
+      <TabsList className="grid px-4 grid-cols-5">
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="eventInfo">Info</TabsTrigger>
+        <TabsTrigger value="registration">Registrations</TabsTrigger>
+        <TabsTrigger value="discounts">Discounts</TabsTrigger>
+        <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="dashboard">
+        <h1>Dashboard</h1>
+      </TabsContent>
+
+      <TabsContent value="eventInfo">
+        <AdminEventInfo event={event} />
+      </TabsContent>
+
+      <TabsContent value="registration">
+        <AdminEventRegistrations eventId={event.entryId} />
+      </TabsContent>
+
+      <TabsContent value="discounts">
+        <AdminEventDiscounts eventId={event.entryId} />
+      </TabsContent>
+
+      <TabsContent value="evaluations">
+        <h1>Evaluations</h1>
+      </TabsContent>
+    </Tabs>
   );
 };
 

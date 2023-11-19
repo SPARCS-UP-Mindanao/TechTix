@@ -9,8 +9,12 @@ export interface RegisterUserInfo {
   certificateClaimed: boolean;
   email: string;
   eventId: string;
-  paymentId?: string;
   registrationId?: string;
-  createDate?: Date;
-  updateDate?: Date;
+  createDate?: string;
+  paymentId?: string | null;
+  discountCode?: string | null;
+  amountPaid?: number | null;
+  referenceNumber?: string | null;
+  gcashPayment?: string | null;
+  gcashPaymentUrl?: string | null;
 }

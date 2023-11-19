@@ -86,9 +86,6 @@ export const postEvaluation = (eventId: string, registrationId: string, data: un
     eventId,
     registrationId
   };
-
-  console.log('POST EVALUATION PARAMS', params);
-
   return createApi({
     method: 'post',
     url: `/evaluations`,
