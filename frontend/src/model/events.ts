@@ -6,6 +6,8 @@ export interface Event {
   endDate: string;
   venue: string;
   bannerLink?: string;
+  bannerUrl?: string;
+  logoUrl?: string;
   logoLink?: string;
   autoConfirm?: boolean;
   payedEvent?: boolean;

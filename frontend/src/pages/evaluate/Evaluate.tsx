@@ -97,14 +97,19 @@ const Evaluate = () => {
     nextStep();
   }
 
-  const cachedCertificate = <CertificateClaim certificateLink={certificateResponse?.certificateTemplate} />;
+  let cachedCertificate;
+  if (certificateResponse) {
+    cachedCertificate = (
+      <CertificateClaim certificateLink={certificateResponse?.certificateTemplate} certificatePDFTemplate={certificateResponse?.certificatePDFTemplate} />
+    );
+  }
 
   return (
     <section>
       <div className="flex flex-col items-center w-full">
         <FormProvider {...form}>
           <section className="full">
-            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={eventInfo.bannerLink} bannerImg={eventInfo.bannerLink} />}
+            {currentStep !== 'ClaimCertificate' && <PageHeader avatarImg={eventInfo.logoUrl} bannerImg={eventInfo.bannerUrl} />}
             {currentStep === 'EventInformation' && (
               <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
             )}
@@ -135,21 +140,21 @@ const Evaluate = () => {
 
             <div className={`flex w-full my-4 ${currentStep !== 'Evaluation_1' ? 'justify-between' : 'justify-center'}`}>
               {currentStep === 'Evaluation_2' && (
-                <Button onClick={prevStep} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
+                <Button onClick={prevStep} className="py-3 px-6 rounded-xl w-[120px]">
                   <Icon name="CaretLeft" />
                   Previous
                 </Button>
               )}
 
               {currentStep === 'Evaluation_1' && (
-                <Button onClick={nextStep} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
+                <Button onClick={nextStep} className="py-3 px-6 rounded-xl w-[120px]">
                   Next
                   <Icon name="CaretRight" />
                 </Button>
               )}
 
               {currentStep === 'Evaluation_2' && (
-                <Button onClick={submitForm} variant={'gradient'} className="py-3 px-6 rounded-xl w-[120px]">
+                <Button onClick={submitForm} className="py-3 px-6 rounded-xl w-[120px]">
                   Submit
                   <Icon name="CaretRight" />
                 </Button>
