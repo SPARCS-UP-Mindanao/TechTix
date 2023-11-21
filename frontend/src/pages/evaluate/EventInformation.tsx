@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { FormProvider } from 'react-hook-form';
@@ -9,23 +9,23 @@ import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import { claimCertificate } from '@/api/evaluations';
+import { Event } from '@/model/events';
 import { useApi } from '@/hooks/useApi';
 import { ClaimCertificateFormSchema } from '@/hooks/useCheckEmailForm';
-import { Event } from '@/model/events';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const EventInformation = ({
-  event,
-  // nextStep,
-  // eventId,
-  claimCertificateForm,
-  submit
-}: {
+interface Props {
   event: Event;
   nextStep: () => void;
   eventId: string | undefined;
   claimCertificateForm: any;
-  submit: () => void;
+}
+
+const EventInformation: FC<Props> = ({
+  event,
+  // nextStep,
+  // eventId,
+  claimCertificateForm
 }) => {
   const isSameDayEvent = moment(event.startDate).isSame(event.endDate, 'day');
   const getDate = () => {
@@ -63,9 +63,6 @@ const EventInformation = ({
                 </div>
               )}
             </FormItem>
-            <Button onClick={submit} variant="gradient" className="py-6 px-20 my-10">
-              Evaluate
-            </Button>
           </FormProvider>
         </div>
       </div>

@@ -5,9 +5,13 @@ import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
 import Icon from '@/components/Icon';
 import FileViewerComponent from '@/components/S3Image';
+import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
+import { Pricing } from '@/model/discount';
+import { showEvent } from '@/model/events';
+import { Event } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useFetchQuery } from '@/hooks/useApi';
@@ -21,21 +25,24 @@ import RegisterFormLoading from './RegisterFormLoading';
 import Stepper from './Stepper';
 import Success from './Success';
 import Summary from './Summary';
-import { Pricing } from '@/model/discount';
-import { showEvent } from '@/model/events';
-import { Event } from '@/model/events';
 
 // TODO: Add success page
 const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'] as const;
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
 const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
-const map_steps_to_title = new Map<string, string>();
-map_steps_to_title.set('EventDetails', 'Register');
-map_steps_to_title.set('UserBio', 'Personal Information');
-map_steps_to_title.set('PersonalInfo', 'Professional Information');
-map_steps_to_title.set('GCash', 'GCash Payment');
-map_steps_to_title.set('Summary', 'Summary');
-map_steps_to_title.set('Success', 'Registration Successful!');
+
+const getStepTitle = (step: RegisterSteps) => {
+  const map: Record<RegisterSteps, string> = {
+    EventDetails: 'Register',
+    UserBio: 'Personal Information',
+    PersonalInfo: 'Professional Information',
+    GCash: 'GCash Payment',
+    Summary: 'Summary',
+    Success: 'Registration Successful!'
+  };
+
+  return map[step];
+};
 
 type RegisterField = keyof RegisterFormValues;
 
@@ -57,11 +64,6 @@ const Register = () => {
   const { fetchQuery } = useFetchQuery<any>();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
-  const [sectionTitle, setSectionTitle] = useState<string>('Register');
-
-  useEffect(() => {
-    setSectionTitle(map_steps_to_title.get(currentStep) || 'Register');
-  }, [currentStep]);
 
   useEffect(() => {
     if (isFetching || !response || (response && !response.data)) {
@@ -100,7 +102,11 @@ const Register = () => {
   }
 
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
-
+  const scrollToView = () => {
+    const viewportHeight = window.innerHeight;
+    const scrollAmount = viewportHeight * (1 - 0.8);
+    window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
+  };
   const checkDiscountCode = async () => {
     const currentDiscountCode = getValues('discountCode');
     if (!eventId || !currentDiscountCode) {
@@ -150,6 +156,7 @@ const Register = () => {
       const currentIndex = REGISTER_STEPS.indexOf(currentStep);
       if (currentIndex < REGISTER_STEPS.length - 1) {
         setCurrentStep(REGISTER_STEPS[currentIndex + 1]);
+        scrollToView();
       }
     };
 
@@ -209,6 +216,7 @@ const Register = () => {
       await form.trigger(fieldsToCheck).then((isValid) => {
         if (isValid) {
           moveToNextStep();
+          scrollToView();
         }
       });
     }
@@ -224,28 +232,28 @@ const Register = () => {
   const showStepper = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) !== REGISTER_STEPS.length - 1;
   const showRegisterButton = REGISTER_STEPS.indexOf(currentStep) === 0;
   const showNextButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
-  const showPrevButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
+  const showPrevButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 1;
   const showSubmitButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 2;
   const showReloadButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 1;
   const reloadPage = () => window.location.reload();
 
   return (
     <section className="flex flex-col items-center px-4">
-      <div className="w-full max-w-2xl flex flex-col items-center">
+      <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <FileViewerComponent objectKey={eventInfo.logoLink} />
         </div>
-        <div className="flex w-full justify-center my-8 relative overflow-hidden">
+        <div className="flex w-full justify-center relative overflow-hidden">
           <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
         </div>
 
         <FormProvider {...form}>
           <main className="w-full">
-            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">{sectionTitle}</h1>}
+            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">{getStepTitle(currentStep)}</h1>}
             {showStepper && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
-            {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
             <div className="space-y-4">
+              {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
               {currentStep === 'GCash' && (
@@ -260,8 +268,9 @@ const Register = () => {
             </div>
             {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} />}
             {currentStep === 'Success' && <Success />}
+            {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 
-            <div className="flex w-full justify-around my-10">
+            <div className="flex w-full justify-around my-6">
               {showRegisterButton && (
                 <Button onClick={nextStep} variant={'gradient'} className="py-6 px-20">
                   Register

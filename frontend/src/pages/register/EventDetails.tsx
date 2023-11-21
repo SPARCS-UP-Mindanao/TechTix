@@ -17,24 +17,22 @@ const EventDetails = ({ event }: Props) => {
   };
   return (
     <>
-      <div className="h-full">
-        <header className="text-left space-y-4">
-          <h1 className="text-lg ">{event.name}</h1>
-          <div className="space-y-1">
-            <div className="flex">
-              <Icon name="Clock" className="mr-1" />
-              <p className="">{getDate()}</p>
-            </div>
-
-            <div className="flex">
-              <Icon name="MapPin" size={20} className="mr-1" />
-              <p className="flex text-sm">{event.venue}</p>
-            </div>
+      <header className="text-left space-y-4">
+        <h1 className="text-lg ">{event.name}</h1>
+        <div className="space-y-1">
+          <div className="flex">
+            <Icon name="Clock" className="mr-1" />
+            <p className="">{getDate()}</p>
           </div>
-        </header>
-      </div>
 
-      <Separator className="my-4" />
+          <div className="flex">
+            <Icon name="MapPin" size={20} className="mr-1" />
+            <p className="flex text-sm">{event.venue}</p>
+          </div>
+        </div>
+      </header>
+
+      <Separator />
 
       <div className="text-left space-y-2">
         <h3 className="text-base">About this Event</h3>

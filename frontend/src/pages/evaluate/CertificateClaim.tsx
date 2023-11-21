@@ -56,7 +56,7 @@ const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certifi
           <Avatar src={sparcs_logo_white} fallback="CN" />
         </div>
         <div className="mt-12">
-          <p className="text-2xl font-bold font-subjectivity leading-6 text-neutral-50 text-center">Here's your Certificate!</p>
+          <p className="text-2xl font-bold font-subjectivity leading-6 text-center">Here's your Certificate!</p>
           <div className="my-5 w-[91vw] ">
             {certificateLink ? (
               <div>

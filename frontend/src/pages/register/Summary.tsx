@@ -1,4 +1,5 @@
 import { useFormContext } from 'react-hook-form';
+import Separator from '@/components/Separator';
 
 interface SummaryProps {
   receiptUrl: string;
@@ -9,7 +10,7 @@ const Summary = ({ receiptUrl }: SummaryProps) => {
   return (
     <div className="space-y-2 mb-4">
       <p className="w-full text-center">Please review the information below before submitting.</p>
-      <hr />
+      <Separator />
       <div className="space-y-2">
         <div>
           <span className="font-bold">First name: </span>

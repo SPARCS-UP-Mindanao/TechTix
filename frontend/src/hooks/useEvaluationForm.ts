@@ -102,7 +102,7 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
   });
 
   // To add onSubmit function
-  const submitForm = form.handleSubmit(async (values) => {
+  const submitEvaluation = form.handleSubmit(async (values) => {
     const { queryFn: postEvaluationData } = postEvaluation(eventId, registrationId, values);
     const response = await postEvaluationData();
     try {
@@ -121,7 +121,7 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
 
   return {
     form,
-    submitForm,
+    submitEvaluation,
     postEvalSuccess
   };
 };

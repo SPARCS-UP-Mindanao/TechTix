@@ -1,10 +1,13 @@
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import Button from '@/components/Button';
+import ErrorPage from '@/components/ErrorPage';
 import Icon from '@/components/Icon';
+import Separator from '@/components/Separator';
 import { getEvent } from '@/api/events';
+import { showEvent } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
@@ -34,11 +37,17 @@ const Evaluate = () => {
   };
 
   const fieldsToCheck: EvaluationField[] = EVALUATION_FORM_STEPS_FIELD[currentStep as keyof typeof EVALUATION_FORM_STEPS_FIELD];
+  const scrollToView = () => {
+    const viewportHeight = window.innerHeight;
+    const scrollAmount = viewportHeight * (1 - 0.8);
+    window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
+  };
   const nextStep = async () => {
     const moveToNextStep = () => {
       const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
       if (currentIndex < EVALUATE_STEPS.length - 1) {
         setCurrentStep(EVALUATE_STEPS[currentIndex + 1]);
+        scrollToView();
       }
     };
 
@@ -55,7 +64,7 @@ const Evaluate = () => {
 
   const {
     claimCertificateForm,
-    submit,
+    checkEmail,
     data: certificateResponse
   } = useCheckEmailForm({
     eventId,
@@ -64,7 +73,7 @@ const Evaluate = () => {
     EVALUATE_STEPS
   });
 
-  const { form, submitForm, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId!);
+  const { form, submitEvaluation, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId!);
 
   const prevStep = () => {
     const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
@@ -82,13 +91,12 @@ const Evaluate = () => {
     );
   }
 
-  if (!eventResponse || (eventResponse && !eventResponse.data)) {
-    return (
-      // TODO: Add event not found page
-      <div>
-        <h1>Event not found</h1>
-      </div>
-    );
+  if (!eventResponse || (eventResponse && !eventResponse.data && eventResponse.errorData)) {
+    return <ErrorPage error={eventResponse} />;
+  }
+
+  if (!showEvent(eventResponse.data.status)) {
+    return <ErrorPage />;
   }
 
   const eventInfo = eventResponse.data;
@@ -104,6 +112,11 @@ const Evaluate = () => {
     );
   }
 
+  const showEvaluateButton = EVALUATE_STEPS.indexOf(currentStep) === 0;
+  const showNextButton = EVALUATE_STEPS.indexOf(currentStep) !== 0 && EVALUATE_STEPS.indexOf(currentStep) < EVALUATE_STEPS.length - 2;
+  const showPrevButton = EVALUATE_STEPS.indexOf(currentStep) !== 0 && EVALUATE_STEPS.indexOf(currentStep) < EVALUATE_STEPS.length - 1;
+  const showSubmitButton = EVALUATE_STEPS.indexOf(currentStep) === EVALUATE_STEPS.length - 2;
+
   return (
     <section className="flex flex-col items-center px-4">
       <div className="flex flex-col items-center w-full max-w-2xl">
@@ -113,7 +126,7 @@ const Evaluate = () => {
               <PageHeader avatarImg={eventInfo.logoLink} bannerImg={eventInfo.bannerLink} bannerUrl={eventInfo.bannerUrl} />
             )}
             {currentStep === 'EventInformation' && (
-              <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} submit={submit} />
+              <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} />
             )}
             {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && (
               <div className="flex flex-col items-center w-full mt-6">
@@ -127,38 +140,40 @@ const Evaluate = () => {
             {currentStep === 'Evaluation_1' && (
               <div className="flex flex-col items-center mt-6 w-full">
                 <QuestionBuilder questions={question1} />
-                <hr className="my-9 bg-neutral-200 w-full" />
               </div>
             )}
 
             {currentStep === 'Evaluation_2' && (
               <div className="flex flex-col items-center mt-6 w-full">
                 <QuestionBuilder questions={question2} />
-                <hr className="my-9 bg-neutral-200 w-full" />
               </div>
             )}
 
+            {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && <Separator className="my-4" />}
+
             {currentStep === 'ClaimCertificate' && cachedCertificate}
 
-            <div className={`flex w-full my-4 ${currentStep !== 'Evaluation_1' ? 'justify-between' : 'justify-center'}`}>
-              {currentStep === 'Evaluation_2' && (
-                <Button onClick={prevStep} className="py-3 px-6 rounded-xl w-[120px]">
-                  <Icon name="CaretLeft" />
-                  Previous
+            <div className="flex w-full justify-around my-6">
+              {showEvaluateButton && (
+                <Button onClick={checkEmail} variant="gradient" className="py-6 sm:px-16">
+                  Evaluate
                 </Button>
               )}
-
-              {currentStep === 'Evaluation_1' && (
-                <Button onClick={nextStep} className="py-3 px-6 rounded-xl w-[120px]">
+              {showPrevButton && (
+                <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
+                  <Icon name="CaretLeft" />
+                  Back
+                </Button>
+              )}
+              {showNextButton && (
+                <Button onClick={nextStep} className="py-6 sm:px-16">
                   Next
                   <Icon name="CaretRight" />
                 </Button>
               )}
-
-              {currentStep === 'Evaluation_2' && (
-                <Button onClick={submitForm} className="py-3 px-6 rounded-xl w-[120px]">
+              {showSubmitButton && (
+                <Button onClick={submitEvaluation} type="submit" className="py-6 sm:px-16">
                   Submit
-                  <Icon name="CaretRight" />
                 </Button>
               )}
             </div>
