@@ -62,6 +62,8 @@ class Registration(Model):
     referenceNumber = UnicodeAttribute(null=True)
     discountCode = UnicodeAttribute(null=True)
     amountPaid = NumberAttribute(null=True)
+    certificateImgObjectKey = UnicodeAttribute(null=True)
+    certificatePdfObjectKey = UnicodeAttribute(null=True)
 
 
 class RegistrationPatch(BaseModel):
@@ -80,6 +82,8 @@ class RegistrationPatch(BaseModel):
     gcashPayment: str = Field(None, title="Gcash Payment")
     referenceNumber: str = Field(None, title="Reference Number")
     amountPaid: float = Field(None, title="Amount Paid")
+    certificateImgObjectKey: str = Field(None, title="Certificate Image Object Key")
+    certificatePdfObjectKey: str = Field(None, title="Certificate PDF Object Key")
 
 
 class RegistrationIn(RegistrationPatch):

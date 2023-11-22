@@ -43,7 +43,7 @@ export const useDiscountForm = (eventId: string, setFormResponse: (discounts: Di
           description: 'An error occurred while creating discount. Please try again.'
         });
       }
-      return response; 
+      return response;
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({
