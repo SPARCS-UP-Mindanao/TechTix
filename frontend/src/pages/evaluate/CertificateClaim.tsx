@@ -1,13 +1,17 @@
-import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import FileViewerComponent from '@/components/S3Image';
 import Skeleton from '@/components/Skeleton';
 import { useFileUrl } from '@/hooks/useFileUrl';
-import sparcs_logo_white from './../../assets/logos/sparcs_logo_white.png';
 import shareToLinkedIn from './shareToLinkedIn';
 
-const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certificateLink: string | undefined; certificatePDFTemplate: string | undefined }) => {
+interface CertificateClaimProps {
+  logoLink: string | undefined | null;
+  certificateLink: string | undefined;
+  certificatePDFTemplate: string | undefined;
+}
+
+const CertificateClaim = ({ logoLink, certificateLink, certificatePDFTemplate }: CertificateClaimProps) => {
   const imageNameImg = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`;
   const imageNamePdf = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`; // TODO: change certificateLink to certificatePDFTemplate
   const certificateImgLinkS3 = decodeURIComponent(new URL(certificateLink!).pathname.split('?')[0].slice(1));
@@ -51,11 +55,11 @@ const CertificateClaim = ({ certificateLink, certificatePDFTemplate }: { certifi
 
   return (
     <>
-      <div className="flex flex-col items-center">
-        <div className="h-12 w-12">
-          <Avatar src={sparcs_logo_white} fallback="CN" />
+      <div className="flex flex-col items-center h-[calc(100vh-64px)]">
+        <div className="w-12 h-12 rounded-full overflow-hidden">
+          <FileViewerComponent objectKey={logoLink} />
         </div>
-        <div className="mt-12">
+        <div className="flex flex-col justify-center h-full">
           <p className="text-2xl font-bold font-subjectivity leading-6 text-center">Here's your Certificate!</p>
           <div className="my-5 w-[91vw] ">
             {certificateLink ? (

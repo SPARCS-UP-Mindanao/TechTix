@@ -108,7 +108,11 @@ const Evaluate = () => {
   let cachedCertificate;
   if (certificateResponse) {
     cachedCertificate = (
-      <CertificateClaim certificateLink={certificateResponse?.certificateTemplate} certificatePDFTemplate={certificateResponse?.certificatePDFTemplate} />
+      <CertificateClaim
+        logoLink={eventInfo?.logoLink}
+        certificateLink={certificateResponse?.certificateTemplate}
+        certificatePDFTemplate={certificateResponse?.certificatePDFTemplate}
+      />
     );
   }
 
