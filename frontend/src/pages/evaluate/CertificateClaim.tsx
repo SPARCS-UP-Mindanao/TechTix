@@ -19,8 +19,6 @@ const CertificateClaim = ({ logoLink, certificateLink, certificatePDFTemplate }:
   const certificateImgDataURL = useFileUrl(certificateImgLinkS3!);
   const certificatePdfDataURL = useFileUrl(certificatePdfLinkS3!);
 
-  console.log(certificatePDFTemplate);
-
   const downloadImage = () => {
     const link = document.createElement('a');
     link.href = certificateImgDataURL!;
