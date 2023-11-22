@@ -18,6 +18,7 @@ import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
 import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormLoading';
+import CustomError from '@/components/CustomError';
 import Stepper from './Stepper';
 import Success from './Success';
 import Summary from './Summary';
@@ -67,8 +68,9 @@ const Register = () => {
     if (isFetching || !response || (response && !response.data)) {
       return;
     }
-    setEventInfo(response.data);
-    const price = response.data.price;
+    const eventData = response.data
+    setEventInfo(eventData);
+    const {price} = eventData;
     setPricing({
       price: price,
       discount: 0,
@@ -90,6 +92,10 @@ const Register = () => {
 
   if (!showEvent(response.data.status)) {
     return <ErrorPage />;
+  }
+
+  if (eventInfo.status != 'open') {
+    return <CustomError error='Registration is Closed' message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
   }
 
   document.title = eventInfo.name;

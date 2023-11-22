@@ -51,8 +51,8 @@ export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
       if (eventId) {
         const { queryFn: event } = getEvent(eventId);
         const response = await event();
-        const eventResponse = response.data;
-        return eventResponse;
+        const { data } = response;
+        return data;
       }
 
       return {
@@ -84,8 +84,24 @@ export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
           title: 'Event Info',
           description: `Event Updated Successfully  `
         });
+
         form.reset();
         refetch && refetch();
+
+        // Fetch the event details after successful submission
+        if (eventId) {
+          const { queryFn: getEventDetails } = getEvent(eventId);
+          const eventResponse = await getEventDetails();
+          const eventData = eventResponse.data;
+
+          // Set the form values with the fetched event data
+          Object.keys(eventData).forEach(key => {
+            const eventKey = key as keyof EventFormValues;
+            if (eventData[eventKey] !== undefined) {
+              form.setValue(eventKey, eventData[eventKey]);
+            }
+          });
+        }
       } else {
         errorToast({
           title: 'Error in Event',
