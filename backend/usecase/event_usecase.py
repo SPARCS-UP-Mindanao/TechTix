@@ -1,4 +1,5 @@
 import json
+import os
 from http import HTTPStatus
 from typing import List, Union
 from urllib.parse import unquote_plus
@@ -8,8 +9,10 @@ from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
+from usecase.certificate_usecase import CertificateUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
+from utils.logger import logger
 
 
 class EventUsecase:
@@ -18,6 +21,7 @@ class EventUsecase:
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__registration_repository = RegistrationsRepository()
+        self.__certificate_usecase = CertificateUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         event_in.status = EventStatus.DRAFT.value
@@ -43,11 +47,20 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if update_event.status == EventStatus.COMPLETED.value:
+        if update_event.status == EventStatus.CLOSED.value:
+            logger.info(f'Generating certificates triggered for event: {event_id}')
+            self.__certificate_usecase.generate_certificates(event_id=event_id)
+
+        elif update_event.status == EventStatus.COMPLETED.value:
+            logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.entryId
+            claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
             status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
             self.__email_usecase.send_event_completion_email(
-                event_id=event_id, participants=[entry.email for entry in registrations]
+                event_id=event_id,
+                event_name=event.name,
+                claim_certificate_url=claim_certificate_url,
+                participants=[entry.email for entry in registrations],
             )
 
         event_data = self.__convert_data_entry_to_dict(update_event)
