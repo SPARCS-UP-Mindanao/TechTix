@@ -33,7 +33,7 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
     }
   });
 
-  const submit = claimCertificateForm.handleSubmit(async (values) => {
+  const checkEmail = claimCertificateForm.handleSubmit(async (values) => {
     const { queryFn: checkEmail } = claimCertificate(values.email, eventId);
     const response = await checkEmail();
     // TO FIX: Ensure data arrives
@@ -59,7 +59,7 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
 
   return {
     claimCertificateForm,
-    submit,
+    checkEmail,
     data
   };
 };

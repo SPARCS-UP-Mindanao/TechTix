@@ -9,6 +9,8 @@ export interface EventDto {
   endDate: string;
   venue: string;
   bannerLink: string;
+  bannerUrl: string;
+  logoUrl: string;
   logoLink: string;
   autoConfirm: true;
   payedEvent: true;

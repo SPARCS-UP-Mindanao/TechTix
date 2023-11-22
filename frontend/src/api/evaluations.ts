@@ -13,6 +13,7 @@ export interface EvaluationResponseProps {
 export interface ClaimCertificateResponse {
   isFirstClaim: boolean;
   certificateTemplate: string;
+  certificatePDFTemplate: string;
   registrationId: string;
 }
 
