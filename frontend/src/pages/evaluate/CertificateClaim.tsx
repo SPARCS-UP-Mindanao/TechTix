@@ -11,7 +11,7 @@ interface CertificateClaimProps {
   certificatePDFTemplate: string | undefined;
 }
 
-const CertificateClaim = ({ logoLink, certificateLink, certificatePDFTemplate }: CertificateClaimProps) => {
+const CertificateClaim = ({ logoLink, certificateLink }: CertificateClaimProps) => {
   const imageNameImg = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`;
   const imageNamePdf = `${decodeURIComponent(certificateLink?.split('/').pop()!.split('.')[0] ?? '')}.jpeg`; // TODO: change certificateLink to certificatePDFTemplate
   const certificateImgLinkS3 = decodeURIComponent(new URL(certificateLink!).pathname.split('?')[0].slice(1));
