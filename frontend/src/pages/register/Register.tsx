@@ -272,7 +272,7 @@ const Register = () => {
 
             <div className="flex w-full justify-around my-6">
               {showRegisterButton && (
-                <Button onClick={nextStep} variant={'gradient'} className="py-6 px-20">
+                <Button onClick={nextStep} variant={'primaryGradient'} className="py-6 px-20">
                   Register
                 </Button>
               )}

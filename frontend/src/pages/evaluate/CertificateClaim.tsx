@@ -70,23 +70,22 @@ const CertificateClaim = ({ logoLink, certificateLink, certificatePDFTemplate }:
                 />
               </div>
             ) : (
-              <Skeleton className="rounded-2xl h-[330px] w-full bg-neutral-500" />
+              <Skeleton className="rounded-2xl h-[330px] w-full" />
             )}
           </div>
           <div className="flex flex-col pt-3 w-[91vw] space-y-3">
-            <Button onClick={downloadImage} variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#D95229] to-[#F4805D] text-[#F6F6F6]">
+            <Button onClick={downloadImage} variant="secondaryGradient" className="py-3 px-6">
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download Image
             </Button>
-            <Button onClick={downloadPDF} variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#D95229] to-[#F4805D] text-[#F6F6F6]">
+            <Button onClick={downloadPDF} variant="secondaryGradient" className="py-3 px-6">
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
-            <Button onClick={shareCertificate} variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#4F65E3] to-[#F43F79] text-[#F6F6F6]">
+            <Button onClick={shareCertificate} variant="primaryGradient" className="py-3 px-6">
               <Icon name="ShareNetwork" className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Icon name="download-simple" className="mr-2 h-4 w-4" />
           </div>
         </div>
       </div>

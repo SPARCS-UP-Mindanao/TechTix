@@ -159,7 +159,7 @@ const Evaluate = () => {
 
             <div className="flex w-full justify-around my-6">
               {showEvaluateButton && (
-                <Button onClick={checkEmail} variant="gradient" className="py-6 sm:px-16">
+                <Button onClick={checkEmail} variant="primaryGradient" className="py-6 sm:px-16">
                   Evaluate
                 </Button>
               )}
