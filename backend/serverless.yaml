@@ -17,11 +17,15 @@ custom:
     !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
     dockerizePip: non-linux
+    noDeploy:
+      - requests
+      - boto3
+      - botocore
     layer:
       name: sparcs-events-${self:custom.stage}-python-requirements
-      path: .
       compatibleRuntimes:
         - python3.8
+    slim: true
 
 package: ${file(resources/package.yml)}
 

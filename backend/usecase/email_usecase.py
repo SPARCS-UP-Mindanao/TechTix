@@ -43,7 +43,7 @@ class EmailUsecase:
         subject = f"Event {event.name} has been created"
         body = [f"Event {event.name} has been created. Please check the event page for more details."]
         salutation = "Dear Sparcs ,"
-        regards = ["Best,", "SPARCS Team"]
+        regards = ["Best,"]
         email_in = EmailIn(
             to=[os.getenv("SPARCS_GMAIL")],
             subject=subject,
@@ -61,7 +61,7 @@ class EmailUsecase:
             "See you soon!",
         ]
         salutation = f"Good day {registration.firstName},"
-        regards = ["Best,", "SPARCS Team"]
+        regards = ["Best,"]
         email_in = EmailIn(
             to=[registration.email],
             subject=subject,
@@ -82,12 +82,15 @@ class EmailUsecase:
             claim_certificate_url,
             "We're excited to see you at future SPARCS events – more great experiences await!",
         ]
-        regards = ["Best,", "SPARCS Team"]
-        email_in = EmailIn(
-            bcc=participants,
-            subject=subject,
-            body=body,
-            salutation=salutation,
-            regards=regards,
-        )
-        return self.send_email(email_in=email_in, event_id=event_id)
+        regards = ["Best,"]
+        for participant in participants:
+            email_in = EmailIn(
+                to=[participant],
+                subject=subject,
+                body=body,
+                salutation=salutation,
+                regards=regards,
+            )
+            self.send_email(email_in=email_in, event_id=event_id)
+
+        return
