@@ -77,9 +77,9 @@ const QuestionBuilder = ({ questions }: QuestionBuilderProps) => {
   ) => {
     switch (question.questionType) {
       case 'text_short':
-        return <Input className="rounded-xl" type="text" {...field} />;
+        return <Input type="text" {...field} />;
       case 'text_long':
-        return <Textarea className="rounded-lg bg-neutral-700 text-neutral-300" {...field} />;
+        return <Textarea {...field} />;
       case 'multiple_choice_dropdown':
         return (
           <Select onValueChange={field.onChange}>

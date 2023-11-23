@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { FormProvider } from 'react-hook-form';
@@ -9,23 +9,23 @@ import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import { claimCertificate } from '@/api/evaluations';
+import { Event } from '@/model/events';
 import { useApi } from '@/hooks/useApi';
 import { ClaimCertificateFormSchema } from '@/hooks/useCheckEmailForm';
-import { Event } from '@/model/events';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const EventInformation = ({
-  event,
-  // nextStep,
-  // eventId,
-  claimCertificateForm,
-  submit
-}: {
+interface Props {
   event: Event;
   nextStep: () => void;
   eventId: string | undefined;
   claimCertificateForm: any;
-  submit: () => void;
+}
+
+const EventInformation: FC<Props> = ({
+  event,
+  // nextStep,
+  // eventId,
+  claimCertificateForm
 }) => {
   const isSameDayEvent = moment(event.startDate).isSame(event.endDate, 'day');
   const getDate = () => {
@@ -50,12 +50,12 @@ const EventInformation = ({
           </div>
         </div>
         <Separator className="my-4" />
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full">
           <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
           <FormProvider {...claimCertificateForm}>
             <FormItem name="email">
               {({ field }) => (
-                <div className="flex flex-col items-start space-y-2">
+                <div className="flex flex-col items-start space-y-2 w-full">
                   <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your e-mail</FormLabel>
                   <Input type="email" placeholder="Email" {...field} />
                   <FormDescription>Please enter the email address you used when registering for the event</FormDescription>
@@ -63,9 +63,6 @@ const EventInformation = ({
                 </div>
               )}
             </FormItem>
-            <Button onClick={submit} variant="gradient">
-              Evaluate
-            </Button>
           </FormProvider>
         </div>
       </div>

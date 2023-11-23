@@ -13,7 +13,10 @@ export interface EvaluationResponseProps {
 export interface ClaimCertificateResponse {
   isFirstClaim: boolean;
   certificateTemplate: string;
+  certificatePDFTemplate: string;
   registrationId: string;
+  certificateTemplateKey: string;
+  certificatePDFTemplateKey: string;
 }
 
 export const claimCertificate = (email: string, eventId: string) =>

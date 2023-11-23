@@ -153,11 +153,16 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
     header: () => <div className="text-right">Amount Paid</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('amountPaid'));
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'PHP'
-      }).format(amount);
-
+      const formatted = amount
+        ? new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'PHP',
+            currencyDisplay: 'code'
+          })
+            .format(amount)
+            .replace('PHP', '')
+            .trim()
+        : '0.00';
       return <div className="text-right font-medium">{formatted}</div>;
     },
     enableHiding: getEnableHiding('amountPaid')

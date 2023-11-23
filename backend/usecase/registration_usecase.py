@@ -90,7 +90,9 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={"message": message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
+
         # self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
+
         registration_out = RegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 

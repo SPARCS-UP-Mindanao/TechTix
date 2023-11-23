@@ -54,7 +54,7 @@ export const enum EVENT_UPLOAD_TYPE {
   BANNER = 'banner',
   LOGO = 'logo',
   CERTIFICATE_TEMPLATE = 'certificateTemplate',
-  PROOF_OF_PAYMENT = 'proofOfPayment',
+  PROOF_OF_PAYMENT = 'proofOfPayment'
 }
 
 export const enum EVENT_OBJECT_KEY_MAP {

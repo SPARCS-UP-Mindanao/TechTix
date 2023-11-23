@@ -5,7 +5,7 @@ import { useNotifyToast } from '@/hooks/useNotifyToast';
 import Input from './Input';
 import Label from './Label';
 import { Progress } from './Progress';
-import FileViewerComponent from './S3Image';
+import FileViewerComponent from './FileViewerComponent';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
@@ -96,12 +96,12 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
           <Label
             htmlFor={`upload-custom-${uploadType}`}
             className="block text-sm mr-4 py-2 px-4
-              rounded-md border-0 font-semibold
-              hover:cursor-pointer bg-input"
+              rounded-md bg-input border border-border transition-colors
+              hover:cursor-pointer hover:bg-accent"
           >
             Choose file
           </Label>
-          <Label className="text-sm text-white break-all w-1/2">{selectedFile}</Label>
+          <Label className="text-sm break-all w-1/2">{selectedFile}</Label>
         </div>
       )}
     </>

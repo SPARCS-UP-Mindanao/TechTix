@@ -8,17 +8,24 @@ custom:
   bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
+  frontendUrl: https://techtix.app
   emailQueue:
     !ImportValue EmailQueue-${self:custom.stage}
+  certificateQueue:
+    !ImportValue CertificateQueue-${self:custom.stage}
   basicAuthorizerARN:
     !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
     dockerizePip: non-linux
+    noDeploy:
+      - requests
+      - boto3
+      - botocore
     layer:
       name: sparcs-events-${self:custom.stage}-python-requirements
-      path: .
       compatibleRuntimes:
         - python3.8
+    slim: true
 
 package: ${file(resources/package.yml)}
 
@@ -39,10 +46,12 @@ provider:
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:custom.stage}
+    FRONTEND_URL: ${self:custom.frontendUrl}
     ENTITIES_TABLE: ${self:custom.entities}
     REGISTRATIONS_TABLE: ${self:custom.registrations}
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EMAIL_QUEUE: ${self:custom.emailQueue}
+    CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:custom.stage}

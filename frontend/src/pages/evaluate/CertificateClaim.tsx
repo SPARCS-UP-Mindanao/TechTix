@@ -1,43 +1,87 @@
-import sparcs_logo_white from '@/assets/logos/sparcs_logo_white.png';
-import Avatar from '@/components/Avatar';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
+import FileViewerComponent from '@/components/FileViewerComponent';
 import Skeleton from '@/components/Skeleton';
+import { useFileUrl } from '@/hooks/useFileUrl';
+import shareToLinkedIn from './shareToLinkedIn';
 
-const CertificateClaim = ({ certificateLink }: { certificateLink?: string }) => {
+interface CertificateClaimProps {
+  logoLink: string | undefined | null;
+  certificateTemplateKey: string | undefined;
+  certificatePDFTemplateKey: string | undefined;
+}
+
+const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemplateKey }: CertificateClaimProps) => {
+  const imageNameImg = `${decodeURIComponent(certificateTemplateKey?.split('/').pop() ?? '')}`;
+  const imageNamePdf = `${decodeURIComponent(certificatePDFTemplateKey?.split('/').pop() ?? '')}`;
+  const certificateImgDataURL = useFileUrl(certificateTemplateKey!);
+  const certificatePdfDataURL = useFileUrl(certificatePDFTemplateKey!);
+
+  const downloadImage = () => {
+    const link = document.createElement('a');
+    link.href = certificateImgDataURL!;
+    link.download = imageNameImg;
+
+    link.click();
+  };
+
+  const downloadPDF = async () => {
+    try {
+      const link = document.createElement('a');
+      link.href = certificatePdfDataURL!;
+      link.download = imageNamePdf;
+
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const shareCertificate = () => {
+    const LinkedInParams = {
+      certificateName: 'testCert',
+      organizationId: '96606526',
+      certificateIssueYear: 2023,
+      certificateIssueMonth: 10,
+      certificateURL: 'https://i.pinimg.com/originals/1d/bd/a3/1dbda3a29df5da215a639c8d35070c9c.jpg',
+      certificateId: 'test'
+    };
+    shareToLinkedIn(LinkedInParams);
+  };
+
   return (
     <>
-      <div className="flex flex-col items-center">
-        <div className="h-12 w-12">
-          <Avatar src={sparcs_logo_white} fallback="CN" />
+      <div className="flex flex-col items-center h-[calc(100vh-64px)]">
+        <div className="w-12 h-12 rounded-full overflow-hidden">
+          <FileViewerComponent objectKey={logoLink} />
         </div>
-        <div className="mt-12">
-          <p className="text-2xl font-bold font-subjectivity leading-6 text-neutral-50 text-center">Here's your Certificate!</p>
-          <div className="my-5 sm:h-72 w-[91vw] ">
-            {certificateLink ? (
-              <img
-                src={certificateLink}
-                alt="image_placeholder"
-                className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
-              />
+        <div className="flex flex-col justify-center h-full items-center">
+          <p className="text-2xl font-bold font-subjectivity leading-6 text-center">Here's your Certificate!</p>
+          <div className="my-5 w-[91vw] max-w-2xl ">
+            {certificateTemplateKey ? (
+              <div>
+                <FileViewerComponent
+                  objectKey={certificateTemplateKey}
+                  className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
+                />
+              </div>
             ) : (
-              <Skeleton className="rounded-2xl h-[330px] w-full bg-neutral-500" />
+              <Skeleton className="rounded-2xl h-[330px] w-full" />
             )}
           </div>
-          <div className="flex flex-col pt-3 w-[91vw] space-y-3">
-            <Button variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#D95229] to-[#F4805D] text-[#F6F6F6]">
+          <div className="flex flex-col pt-3 w-[91vw] space-y-3  max-w-2xl ">
+            <Button onClick={downloadImage} variant="secondaryGradient" className="py-3 px-6">
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download Image
             </Button>
-            <Button variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#D95229] to-[#F4805D] text-[#F6F6F6]">
+            <Button onClick={downloadPDF} variant="secondaryGradient" className="py-3 px-6">
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
-            <Button variant="default" className="py-3 px-6 font-raleway bg-gradient-to-r from-[#4F65E3] to-[#F43F79] text-[#F6F6F6]">
+            <Button onClick={shareCertificate} variant="primaryGradient" className="py-3 px-6">
               <Icon name="ShareNetwork" className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Icon name="download-simple" className="mr-2 h-4 w-4" />
           </div>
         </div>
       </div>
