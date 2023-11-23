@@ -1,14 +1,15 @@
 import json
-import logging
 import os
 from datetime import datetime
 from http import HTTPStatus
 from typing import Tuple
 
+import ulid
 from boto3 import client as boto3_client
 from model.email.email import EmailIn
 from model.events.event import Event
 from model.registrations.registration import Registration
+from utils.logger import logger
 
 
 class EmailUsecase:
@@ -21,19 +22,20 @@ class EmailUsecase:
         try:
             timestamp = datetime.utcnow().isoformat(timespec="seconds")
             payload = email_in.dict()
+            message_id = ulid.ulid()
             response = self.__sqs_client.send_message(
                 QueueUrl=self.__sqs_url,
                 MessageBody=json.dumps(payload),
-                MessageDeduplicationId=f"sparcs-event-{event_id}-{timestamp}",
+                MessageDeduplicationId=f"sparcs-event-{event_id}-{timestamp}-{message_id}",
                 MessageGroupId=f"sparcs-event-{event_id}",
             )
             message_id = response.get("MessageId")
             message = f"Queue message success: {message_id}"
-            logging.info(message)
+            logger.info(message)
 
         except Exception as e:
             message = f"Failed to send email: {str(e)}"
-            logging.error(message)
+            logger.error(message)
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
         else:
@@ -69,6 +71,7 @@ class EmailUsecase:
             salutation=salutation,
             regards=regards,
         )
+        logger.info(f"Sending registration confirmation email to {registration.email}")
         return self.send_email(email_in=email_in, event_id=event.entryId)
 
     def send_event_completion_email(
@@ -91,6 +94,7 @@ class EmailUsecase:
                 salutation=salutation,
                 regards=regards,
             )
+            logger.info(f"Sending event completion email to {participant}")
             self.send_email(email_in=email_in, event_id=event_id)
 
         return

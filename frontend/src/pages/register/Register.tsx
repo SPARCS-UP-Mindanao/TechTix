@@ -4,7 +4,7 @@ import { FormProvider, set } from 'react-hook-form';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
 import Icon from '@/components/Icon';
-import FileViewerComponent from '@/components/S3Image';
+import FileViewerComponent from '@/components/FileViewerComponent';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
@@ -94,6 +94,10 @@ const Register = () => {
 
   if (!showEvent(response.data.status)) {
     return <ErrorPage />;
+  }
+
+  if (eventInfo.status == 'closed') {
+    return <CustomError error='Sold Out' message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
   }
 
   if (eventInfo.status != 'open') {

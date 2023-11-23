@@ -14,7 +14,7 @@ import { getAllEvents, deleteEvent } from '@/api/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi, useFetchQuery } from '@/hooks/useApi';
 import { Event } from '@/model/events';
-import FileViewerComponent from '@/components/S3Image';
+import FileViewerComponent from '@/components/FileViewerComponent';
 
 const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

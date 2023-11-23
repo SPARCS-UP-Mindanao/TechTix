@@ -15,6 +15,8 @@ export interface ClaimCertificateResponse {
   certificateTemplate: string;
   certificatePDFTemplate: string;
   registrationId: string;
+  certificateTemplateKey: string;
+  certificatePDFTemplateKey: string;
 }
 
 export const claimCertificate = (email: string, eventId: string) =>

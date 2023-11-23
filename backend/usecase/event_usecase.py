@@ -1,5 +1,6 @@
 import json
 import os
+from copy import deepcopy
 from http import HTTPStatus
 from typing import List, Union
 from urllib.parse import unquote_plus
@@ -43,15 +44,23 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        original_event = deepcopy(event)
+        original_status = original_event.status
+
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if update_event.status == EventStatus.CLOSED.value:
+        if original_status != EventStatus.CLOSED.value and update_event.status == EventStatus.CLOSED.value:
             logger.info(f'Generating certificates triggered for event: {event_id}')
             self.__certificate_usecase.generate_certificates(event_id=event_id)
 
-        elif update_event.status == EventStatus.COMPLETED.value:
+            __, registrations, __ = self.__registration_repository.query_registrations(event_id=event_id)
+            if registrations:
+                for registration in registrations:
+                    self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
+
+        elif original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.entryId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'

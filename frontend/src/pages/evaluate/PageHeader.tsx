@@ -1,5 +1,5 @@
 import Avatar from '@/components/Avatar';
-import FileViewerComponent from '@/components/S3Image';
+import FileViewerComponent from '@/components/FileViewerComponent';
 
 interface PageHeaderProps {
   avatarImg?: string | null;

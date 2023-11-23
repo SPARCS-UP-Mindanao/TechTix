@@ -95,7 +95,7 @@ const Evaluate = () => {
     return <ErrorPage error={eventResponse} />;
   }
 
-  if (!showEvent(eventResponse.data.status)) {
+  if (eventResponse.data && !showEvent(eventResponse.data.status)) {
     return <ErrorPage />;
   }
 
@@ -106,12 +106,12 @@ const Evaluate = () => {
   }
 
   let cachedCertificate;
-  if (certificateResponse) {
+  if (certificateResponse && eventInfo && eventInfo?.logoLink) {
     cachedCertificate = (
       <CertificateClaim
         logoLink={eventInfo?.logoLink}
-        certificateLink={certificateResponse?.certificateTemplate}
-        certificatePDFTemplate={certificateResponse?.certificatePDFTemplate}
+        certificateTemplateKey={certificateResponse?.certificateTemplateKey}
+        certificatePDFTemplateKey={certificateResponse?.certificatePDFTemplateKey}
       />
     );
   }
