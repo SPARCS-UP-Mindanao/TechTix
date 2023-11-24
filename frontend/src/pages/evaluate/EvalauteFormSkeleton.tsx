@@ -17,7 +17,7 @@ const EvaluateFormSkeleton: FC = () => {
             <Separator />
             <Skeleton className="w-full h-12 rounded-sm mt-4 mb-10" />
             <Skeleton className="w-full h-12 rounded-sm mb-2" />
-            <Skeleton className="w-full h-4 rounded-sm" />
+            <Skeleton className="w-[40%] h-4 rounded-sm" />
           </div>
 
           <div className="flex w-full justify-around my-8">
