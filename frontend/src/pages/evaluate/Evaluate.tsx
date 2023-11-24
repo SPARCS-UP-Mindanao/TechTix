@@ -7,13 +7,13 @@ import ErrorPage from '@/components/ErrorPage';
 import Icon from '@/components/Icon';
 import Separator from '@/components/Separator';
 import { getEvent } from '@/api/events';
-import { showEvent } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
 import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationForm';
 import QuestionBuilder from '../evaluate/QuestionBuilder';
 import CertificateClaim from './CertificateClaim';
+import EvaluateFormSkeleton from './EvalauteFormSkeleton';
 import EventInformation from './EventInformation';
 import PageHeader from './PageHeader';
 import Stepper from './Stepper';
@@ -39,7 +39,7 @@ const Evaluate = () => {
   const fieldsToCheck: EvaluationField[] = EVALUATION_FORM_STEPS_FIELD[currentStep as keyof typeof EVALUATION_FORM_STEPS_FIELD];
   const scrollToView = () => {
     const viewportHeight = window.innerHeight;
-    const scrollAmount = viewportHeight * (1 - 0.8);
+    const scrollAmount = viewportHeight * 0.2;
     window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
   };
   const nextStep = async () => {
@@ -83,23 +83,25 @@ const Evaluate = () => {
   };
 
   if (isFetching) {
-    return (
-      // TODO: Add loading page
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+    return <EvaluateFormSkeleton />;
   }
 
   if (!eventResponse || (eventResponse && !eventResponse.data && eventResponse.errorData)) {
     return <ErrorPage error={eventResponse} />;
   }
 
-  if (eventResponse.data && !showEvent(eventResponse.data.status)) {
+  if (eventResponse.data.status !== 'completed') {
     return <ErrorPage />;
   }
 
   const eventInfo = eventResponse.data;
+
+  document.title = eventInfo.name;
+  const link = document.querySelector('link[rel="icon"]');
+
+  if (link && eventInfo.logoUrl) {
+    link.setAttribute('href', eventInfo.logoUrl);
+  }
 
   if (postEvalSuccess) {
     nextStep();
