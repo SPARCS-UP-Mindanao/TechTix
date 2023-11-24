@@ -1,5 +1,5 @@
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventStatusValue } from '@/model/events';
+import { Event, EventStatus } from '@/model/events';
 
 export interface EventDto {
   name: string;
@@ -16,7 +16,7 @@ export interface EventDto {
   payedEvent: true;
   price: number;
   certificateTemplate: string;
-  status: EventStatusValue;
+  status: EventStatus;
   entryId: string;
   createDate: string;
   updateDate: string;

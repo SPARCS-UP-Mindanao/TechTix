@@ -1,11 +1,14 @@
 import { GenericReturn } from '@/api/utils/createApi';
+import { cn } from '@/utils/classes';
 
 interface Props<T> {
   error?: GenericReturn<T>;
-  customErrors?: [{ status: number; message: string }];
+  customErrors?: { status: number; message: string }[];
+  errorTitle?: string;
+  message?: string;
 }
 
-const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
+const ErrorPage = <T,>({ error, customErrors, errorTitle, message }: Props<T>) => {
   const errorCode = error?.status || 404;
   const getErrorMessage = () => {
     const customError = customErrors && customErrors?.find((error) => error.status === errorCode);
@@ -28,10 +31,15 @@ const ErrorPage = <T,>({ error, customErrors }: Props<T>) => {
   return (
     <div className="h-screen text-center">
       <div className="flex flex-col items-center h-full" style={{ paddingTop: '15rem' }}>
-        <div className="text-8xl font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500">
-          {errorCode}
+        <div
+          className={cn(
+            'font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500',
+            errorTitle ? 'text-5xl' : 'text-8xl'
+          )}
+        >
+          {errorTitle ?? errorCode}
         </div>
-        <h2 className="text-xl font-raleway font-bold px-5">{getErrorMessage()}</h2>
+        <h2 className="text-xl font-raleway font-bold p-5">{message ?? getErrorMessage()}</h2>
       </div>
     </div>
   );
