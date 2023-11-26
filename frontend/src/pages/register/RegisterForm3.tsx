@@ -2,10 +2,10 @@ import Button from '@/components/Button';
 import FileUpload from '@/components/FileUpload';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
-import { formatMoney, formatPercentage } from '@/utils/functions';
-import gcash_qr from '../../assets/gcash.png';
 import { Pricing } from '@/model/discount';
 import { EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP } from '@/model/events';
+import { formatMoney, formatPercentage } from '@/utils/functions';
+import gcash_qr from '../../assets/gcash.png';
 
 interface RegisterForm3Props {
   setValue: any;
@@ -25,7 +25,7 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
             <FormLabel>Discount Coupon (Optional)</FormLabel>
             <div className="flex sm:flex-row flex-col gap-2 w-full items-center">
               <Input type="text" placeholder="Enter Discount Coupon Code" className="w-full sm:w-1/2" {...field} />
-              <Button className='w-full sm:w-1/2' onClick={checkDiscountCode}>
+              <Button className="w-full sm:w-1/2" onClick={checkDiscountCode}>
                 Check Code
               </Button>
             </div>
@@ -40,13 +40,13 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
             <h4>Price:</h4>
             <p>{formatMoney(pricing.price, 'PHP')}</p>
             <h4>Discount</h4>
-            <p>{pricing.discount == 0 ? 'None' : <span>-{formatPercentage(pricing.discount)}</span> }</p>
+            <p>{pricing.discount == 0 ? 'None' : <span>-{formatPercentage(pricing.discount)}</span>}</p>
             <h4>Total</h4>
             <p>{formatMoney(pricing.total, 'PHP')}</p>
           </div>
           <hr />
           <div className="flex flex-col gap-1">
-            <h4>Gcash Information</h4 >
+            <h4>Gcash Information</h4>
             <p>Camyl Magdalyn Tanjay</p>
             <p>09772494796</p>
           </div>

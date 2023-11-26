@@ -73,8 +73,8 @@ export const isValidDate = (dateString: string): boolean => {
 
 export const formatMoney = (amount: number, currency: string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
-}
+};
 
 export const formatPercentage = (float: number) => {
   return `${(float * 100).toFixed(2)}%`;
-}
+};

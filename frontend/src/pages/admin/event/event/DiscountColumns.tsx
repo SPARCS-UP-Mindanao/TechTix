@@ -2,9 +2,9 @@ import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
-import { formatPercentage } from '@/utils/functions';
 import { Discount } from '@/model/discount';
 import { RegisterUserInfo } from '@/model/registrations';
+import { formatPercentage } from '@/utils/functions';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = ['entryId', 'createDate', 'claimed', 'discountPercentage', 'registration', 'email'];

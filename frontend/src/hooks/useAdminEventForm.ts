@@ -95,7 +95,7 @@ export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
           const eventData = eventResponse.data;
 
           // Set the form values with the fetched event data
-          Object.keys(eventData).forEach(key => {
+          Object.keys(eventData).forEach((key) => {
             const eventKey = key as keyof EventFormValues;
             if (eventData[eventKey] !== undefined) {
               form.setValue(eventKey, eventData[eventKey]);

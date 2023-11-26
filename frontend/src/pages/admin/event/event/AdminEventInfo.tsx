@@ -7,8 +7,8 @@ import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
 import { Textarea } from '@/components/TextArea';
-import { useEventForm } from '@/hooks/useAdminEventForm';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
+import { useEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
   event: Event;

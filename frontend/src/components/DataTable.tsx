@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   });
   table.getVisibleFlatColumns;
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="ml-auto">

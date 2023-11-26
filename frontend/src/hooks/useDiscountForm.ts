@@ -2,9 +2,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { createDiscount } from '@/api/discounts';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { Discount } from '@/model/discount';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Discount } from '@/model/discount';
 
 const DiscountFormSchema = z.object({
   discountPercentage: z.coerce.number().min(0, {
@@ -56,6 +56,6 @@ export const useDiscountForm = (eventId: string, setFormResponse: (discounts: Di
 
   return {
     form,
-    submit,
+    submit
   };
 };

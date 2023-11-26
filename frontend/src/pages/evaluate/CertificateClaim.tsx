@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
-import Icon from '@/components/Icon';
 import FileViewerComponent from '@/components/FileViewerComponent';
+import Icon from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import { useFileUrl } from '@/hooks/useFileUrl';
 import shareToLinkedIn from './shareToLinkedIn';
@@ -52,9 +52,7 @@ const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemp
   return (
     <>
       <div className="flex flex-col items-center h-[calc(100vh-64px)]">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
-          <FileViewerComponent objectKey={logoLink} />
-        </div>
+        <FileViewerComponent objectKey={logoLink} className="w-12 h-auto rounded-full" />
         <div className="flex flex-col justify-center h-full items-center">
           <p className="text-2xl font-bold font-subjectivity leading-6 text-center">Here's your Certificate!</p>
           <div className="my-5 w-[91vw] max-w-2xl ">
@@ -80,7 +78,7 @@ const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemp
             </Button>
             <Button onClick={shareCertificate} variant="primaryGradient" className="py-3 px-6">
               <Icon name="ShareNetwork" className="mr-2 h-4 w-4" />
-              Share
+              Share to LinkedIn
             </Button>
           </div>
         </div>
