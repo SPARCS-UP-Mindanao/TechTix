@@ -1,28 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FormProvider, set } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
-import Icon from '@/components/Icon';
 import FileViewerComponent from '@/components/FileViewerComponent';
+import Icon from '@/components/Icon';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Pricing } from '@/model/discount';
-import { showEvent } from '@/model/events';
 import { Event } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
-import { useApi } from '@/hooks/useApi';
-import { useFetchQuery } from '@/hooks/useApi';
+import { useApi, useFetchQuery } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
 import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
 import RegisterForm3 from './RegisterForm3';
-import RegisterFormLoading from './RegisterFormLoading';
-import CustomError from '@/components/CustomError';
+import RegisterFormLoading from './RegisterFormSkeleton';
 import Stepper from './Stepper';
 import Success from './Success';
 import Summary from './Summary';
@@ -70,9 +67,9 @@ const Register = () => {
     if (isFetching || !response || (response && !response.data)) {
       return;
     }
-    const eventData = response.data
+    const eventData = response.data;
     setEventInfo(eventData);
-    const {price} = eventData;
+    const { price } = eventData;
     setPricing({
       price: price,
       discount: 0,
@@ -92,16 +89,16 @@ const Register = () => {
     return <ErrorPage error={response} />;
   }
 
-  if (!showEvent(response.data.status)) {
+  if (eventInfo.status === 'draft') {
     return <ErrorPage />;
   }
 
-  if (eventInfo.status == 'closed') {
-    return <CustomError error='Sold Out' message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
+  if (eventInfo.status === 'closed') {
+    return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
   }
 
-  if (eventInfo.status != 'open') {
-    return <CustomError error='Registration is Closed' message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
+  if (eventInfo.status !== 'open') {
+    return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
   }
 
   document.title = eventInfo.name;
@@ -114,7 +111,7 @@ const Register = () => {
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
   const scrollToView = () => {
     const viewportHeight = window.innerHeight;
-    const scrollAmount = viewportHeight * (1 - 0.8);
+    const scrollAmount = viewportHeight * 0.2;
     window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
   };
   const checkDiscountCode = async () => {
@@ -250,9 +247,7 @@ const Register = () => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
-          <FileViewerComponent objectKey={eventInfo.logoLink} />
-        </div>
+        <FileViewerComponent objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
         <div className="flex w-full justify-center relative overflow-hidden">
           <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>

@@ -6,15 +6,15 @@ import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import DatePicker from '@/components/DatePicker';
+import FileViewerComponent from '@/components/FileViewerComponent';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { Textarea } from '@/components/TextArea';
 import { getAllEvents, deleteEvent } from '@/api/events';
+import { Event } from '@/model/events';
 import { useEventForm } from '@/hooks/useAdminEventForm';
 import { useApi, useFetchQuery } from '@/hooks/useApi';
-import { Event } from '@/model/events';
-import FileViewerComponent from '@/components/FileViewerComponent';
 
 const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -2,9 +2,9 @@ import { useParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { getEvent } from '@/api/events';
 import { useApi } from '@/hooks/useApi';
+import AdminEventDiscounts from './AdminEventDiscounts';
 import AdminEventInfo from './AdminEventInfo';
 import AdminEventRegistrations from './AdminEventRegistrations';
-import AdminEventDiscounts from './AdminEventDiscounts';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();

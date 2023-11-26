@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { S3Client, GetObjectCommand, GetObjectCommandInput } from "@aws-sdk/client-s3";
 import Skeleton from './Skeleton';
+import { S3Client, GetObjectCommand, GetObjectCommandInput } from '@aws-sdk/client-s3';
 
 // Initialize the S3 Client outside of the component
 const s3Client = new S3Client({
   region: 'ap-southeast-1',
   credentials: {
     accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!,
-  },
+    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!
+  }
 });
 
 interface FileViewerComponentProps {
@@ -23,7 +23,7 @@ const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, cl
   const getFile = async (fileName: string): Promise<void> => {
     const getParams: GetObjectCommandInput = {
       Bucket: import.meta.env.VITE_S3_BUCKET!,
-      Key: fileName,
+      Key: fileName
     };
 
     try {
@@ -31,7 +31,7 @@ const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, cl
       const blob = await new Response(Body as ReadableStream).blob();
       setFileUrl(URL.createObjectURL(blob));
     } catch (err) {
-      console.error("Error", err);
+      console.error('Error', err);
     }
   };
 
@@ -48,11 +48,7 @@ const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, cl
     };
   }, [objectKey]);
 
-  return (
-    <>
-      {fileUrl ? <img src={fileUrl} className={className} alt={alt} /> : <Skeleton className={className}/> }
-    </>
-  );
+  return <>{fileUrl ? <img src={fileUrl} className={className} alt={alt} /> : <Skeleton className={className} />}</>;
 };
 
 export default FileViewerComponent;

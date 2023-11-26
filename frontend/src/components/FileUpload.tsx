@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { getPresignedUrl } from '@/api/events';
 import { useFetchQuery } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import FileViewerComponent from './FileViewerComponent';
 import Input from './Input';
 import Label from './Label';
 import { Progress } from './Progress';
-import FileViewerComponent from './FileViewerComponent';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {

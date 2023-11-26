@@ -1,18 +1,11 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import moment from 'moment';
-import { useForm } from 'react-hook-form';
 import { FormProvider } from 'react-hook-form';
-import { z } from 'zod';
-import Button from '@/components/Button';
 import { FormDescription, FormItem, FormLabel, FormError } from '@/components/Form';
 import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Separator from '@/components/Separator';
-import { claimCertificate } from '@/api/evaluations';
 import { Event } from '@/model/events';
-import { useApi } from '@/hooks/useApi';
-import { ClaimCertificateFormSchema } from '@/hooks/useCheckEmailForm';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 interface Props {
   event: Event;
@@ -51,12 +44,12 @@ const EventInformation: FC<Props> = ({
         </div>
         <Separator className="my-4" />
         <div className="flex flex-col items-center w-full">
-          <p className="text-left font-raleway font-semibold text-lg leading-5 tracking-tight mb-6">Claim your certificate by evaluating the event</p>
+          <p className="font-raleway font-semibold text-lg leading-5 tracking-tight mb-6 text-center">Claim your certificate by evaluating the event</p>
           <FormProvider {...claimCertificateForm}>
             <FormItem name="email">
               {({ field }) => (
                 <div className="flex flex-col items-start space-y-2 w-full">
-                  <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your e-mail</FormLabel>
+                  <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your Email</FormLabel>
                   <Input type="email" placeholder="Email" {...field} />
                   <FormDescription>Please enter the email address you used when registering for the event</FormDescription>
                   <FormError />

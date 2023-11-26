@@ -6,10 +6,10 @@ import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { getAllDiscounts } from '@/api/discounts';
+import { Discount } from '@/model/discount';
 import { useApi } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
-import { Discount } from '@/model/discount';
 
 interface CreateDiscountModalProps {
   eventId: string;
