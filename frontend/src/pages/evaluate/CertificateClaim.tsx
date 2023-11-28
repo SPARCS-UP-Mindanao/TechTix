@@ -72,7 +72,7 @@ const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemp
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download Image
             </Button>
-            <Button onClick={downloadPDF} variant="secondaryGradient" className="py-3 px-6">
+            <Button onClick={downloadPDF} variant="primaryGradient" className="py-3 px-6">
               <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
