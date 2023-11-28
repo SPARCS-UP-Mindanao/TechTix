@@ -125,7 +125,7 @@ const Evaluate = () => {
 
   return (
     <section className="flex flex-col items-center px-4">
-      <div className="flex flex-col items-center w-full max-w-2xl">
+      <div className="flex flex-col items-center w-full max-w-2xl mb-9">
         <FormProvider {...form}>
           <section className="w-full">
             {currentStep !== 'ClaimCertificate' && (
