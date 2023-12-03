@@ -24,12 +24,12 @@ const refreshApi = createRefresh({
           newRefreshToken: response.data.refreshToken,
           newAuthTokenExpireIn: response.data.expiresIn
         };
-      } else {
-        return {
-          isSuccess: false,
-          newAuthToken: ''
-        };
-      }
+      } 
+
+      return {
+        isSuccess: false,
+        newAuthToken: ''
+      };
     } catch (error) {
       console.error(error);
       return {
@@ -43,8 +43,8 @@ const refreshApi = createRefresh({
 export default refreshApi;
 
 export const resetAuth = () => {
-  removeCookie('_auth_user');
-  removeCookie('_auth');
+  removeCookie('_auth_user', { path: '/' });
+  removeCookie('_auth', { path: '/' });
   window.location.reload();
 };
 
