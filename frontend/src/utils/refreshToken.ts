@@ -75,7 +75,7 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           try {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
-            if (response.status === 400) {
+            if (response.status === 400 || response.status === 401) {
               navigate('/admin/login');
             } else if (response.status !== 200) {
               resetAuth();
