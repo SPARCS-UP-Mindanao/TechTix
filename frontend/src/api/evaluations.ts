@@ -1,5 +1,4 @@
 import { createApi } from './utils/createApi';
-import { GenericReturn } from './utils/createApi';
 
 export interface EvaluationResponseProps {
   answer: string | null;
@@ -80,7 +79,6 @@ export const convertToEvaluationList = (data: any) => {
     return response;
   });
 };
-// export const postEvaluation = (eventId: string, data: any) =>
 
 export const postEvaluation = (eventId: string, registrationId: string, data: unknown) => {
   const params = {
@@ -94,3 +92,11 @@ export const postEvaluation = (eventId: string, registrationId: string, data: un
     body: params
   });
 };
+
+export const getEventEvaluations = (eventId: string) =>
+  createApi({
+    method: 'get',
+    url: '/evaluations',
+    authorize: true,
+    queryParams: { eventId }
+  });
