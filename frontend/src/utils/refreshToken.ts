@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosInstance } from 'axios';
-import { createRefresh } from 'react-auth-kit';
+import { createRefresh, useSignOut } from 'react-auth-kit';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
 
 const refreshApi = createRefresh({
@@ -49,14 +49,11 @@ export const resetAuth = () => {
 };
 
 const resetAllCookies = () => {
+  const signOut = useSignOut();
   resetAuth();
-  removeCookie('_auth_refresh_time', { path: '/' });
-  removeCookie('_auth_storage', { path: '/' });
-  removeCookie('_auth_refresh', { path: '/' });
-  removeCookie('_auth_state', { path: '/' });
-  removeCookie('_auth_type', { path: '/' });
-
+  signOut();
   window.location.reload();
+  console.log('Logout');
 };
 
 export const refreshAccessToken = async (refreshToken: string, userId: string) => {
