@@ -1,5 +1,5 @@
+import BuilderQuestion from '@/components/BuilderQuestion';
 import { FormError, FormItem, FormLabel } from '@/components/Form';
-import BuilderQuestion from '@/components/QuestionBuilder';
 import { QuestionConfigItem } from '@/model/evaluations';
 
 interface QuestionBuilderProps {
