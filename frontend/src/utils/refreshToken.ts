@@ -46,15 +46,8 @@ export default refreshApi;
 export const resetAuth = () => {
   removeCookie('_auth_user', { path: '/' });
   removeCookie('_auth', { path: '/' });
+  window.location.reload();
 };
-
-// const resetAllCookies = () => {
-//   const signOut = useSignOut();
-//   resetAuth();
-//   console.log(signOut());
-//   // window.location.reload();
-//   console.log('Logout');
-// };
 
 export const refreshAccessToken = async (refreshToken: string, userId: string) => {
   return await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
@@ -82,17 +75,9 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           try {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
-            if (response.status === 400 || response.status === 401) {
-              console.log('400 or 401');
+            if (response.status !== 200) {
               removeCookie('_auth_user', { path: '/' });
               signOut();
-              // removeCookie('_auth', { path: '/' });
-              // removeCookie('_auth_refresh', { path: '/' });
-              // removeCookie('_auth_type', { path: '/' });
-              // removeCookie('_auth_state', { path: '/' });
-              // removeCookie('_refresh_time', { path: '/' });
-            } else if (response.status !== 200) {
-              console.log('else', response.status);
               resetAuth();
             }
 
