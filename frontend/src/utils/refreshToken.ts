@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import axios, { AxiosInstance } from 'axios';
 import { createRefresh } from 'react-auth-kit';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
@@ -24,7 +25,7 @@ const refreshApi = createRefresh({
           newRefreshToken: response.data.refreshToken,
           newAuthTokenExpireIn: response.data.expiresIn
         };
-      } 
+      }
 
       return {
         isSuccess: false,
@@ -56,6 +57,7 @@ export const refreshAccessToken = async (refreshToken: string, userId: string) =
 };
 
 export const refreshOnIntercept = (api: AxiosInstance) => {
+  const navigate = useNavigate();
   return api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -73,8 +75,9 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           try {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
-
-            if (response.status !== 200) {
+            if (response.status === 400) {
+              navigate('/admin/login');
+            } else if (response.status !== 200) {
               resetAuth();
             }
 
