@@ -36,6 +36,20 @@ export const useAdminLoginForm = () => {
       if (response.status === 200) {
         setCookie('_auth_user', response.data.authState?.userId);
         signIn(response.data);
+      } else {
+        const { errorData } = response as CustomAxiosError;
+        errorToast({
+          title: 'Error in logging in',
+          description: errorData.message || errorData.detail[0].msg
+        });
+        form.setError('email', {
+          type: 'custom',
+          message: errorData.message || errorData.detail[0].msg
+        });
+        form.setError('password', {
+          type: 'custom',
+          message: errorData.message || errorData.detail[0].msg
+        });
       }
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
@@ -48,6 +62,7 @@ export const useAdminLoginForm = () => {
 
   return {
     form,
-    submit
+    submit,
+    isSubmitting: form.formState.isSubmitting
   };
 };

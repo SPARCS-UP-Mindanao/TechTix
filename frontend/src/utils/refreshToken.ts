@@ -92,12 +92,10 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            console.log('refreshError');
             removeCookie('_auth_user', { path: '/' });
             signOut();
           }
         } else {
-          console.log('else');
           removeCookie('_auth_user', { path: '/' });
           signOut();
         }

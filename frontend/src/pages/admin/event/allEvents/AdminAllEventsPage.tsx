@@ -13,12 +13,12 @@ import Modal from '@/components/Modal';
 import { Textarea } from '@/components/TextArea';
 import { getAllEvents, deleteEvent } from '@/api/events';
 import { Event } from '@/model/events';
-import { useEventForm } from '@/hooks/useAdminEventForm';
+import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 import { useApi, useFetchQuery } from '@/hooks/useApi';
 
 const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { form, submit } = useEventForm({ refetch });
+  const { form, submit } = useAdminEventForm({ refetch });
 
   const handleSubmit = async () => await submit();
 

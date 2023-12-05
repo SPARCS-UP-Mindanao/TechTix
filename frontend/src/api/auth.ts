@@ -40,3 +40,19 @@ export const logoutUser = (accessToken: string) =>
     url: '/auth/logout',
     body: { accessToken }
   });
+
+export const sendCodeForForgotPassword = (email: string) =>
+  createApi({
+    method: 'post',
+    apiService: 'auth',
+    url: '/auth/forgot-password',
+    body: { email }
+  });
+
+export const resetPassword = (email: string, confirmationCode: string, password: string) =>
+  createApi({
+    method: 'post',
+    apiService: 'auth',
+    url: '/auth/reset-password',
+    body: { email, code: confirmationCode, password }
+  });
