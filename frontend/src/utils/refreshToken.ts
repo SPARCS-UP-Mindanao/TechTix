@@ -48,13 +48,13 @@ export const resetAuth = () => {
   removeCookie('_auth', { path: '/' });
 };
 
-const resetAllCookies = () => {
-  const signOut = useSignOut();
-  resetAuth();
-  signOut();
-  window.location.reload();
-  console.log('Logout');
-};
+// const resetAllCookies = () => {
+//   const signOut = useSignOut();
+//   resetAuth();
+//   console.log(signOut());
+//   // window.location.reload();
+//   console.log('Logout');
+// };
 
 export const refreshAccessToken = async (refreshToken: string, userId: string) => {
   return await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
@@ -64,6 +64,7 @@ export const refreshAccessToken = async (refreshToken: string, userId: string) =
 };
 
 export const refreshOnIntercept = (api: AxiosInstance) => {
+  const signOut = useSignOut();
   return api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -82,8 +83,16 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status === 400 || response.status === 401) {
-              resetAllCookies();
+              console.log('400 or 401');
+              removeCookie('_auth_user', { path: '/' });
+              signOut();
+              // removeCookie('_auth', { path: '/' });
+              // removeCookie('_auth_refresh', { path: '/' });
+              // removeCookie('_auth_type', { path: '/' });
+              // removeCookie('_auth_state', { path: '/' });
+              // removeCookie('_refresh_time', { path: '/' });
             } else if (response.status !== 200) {
+              console.log('else', response.status);
               resetAuth();
             }
 
@@ -98,10 +107,14 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            resetAllCookies();
+            console.log('refreshError');
+            removeCookie('_auth_user', { path: '/' });
+            signOut();
           }
         } else {
-          resetAllCookies();
+          console.log('else');
+          removeCookie('_auth_user', { path: '/' });
+          signOut();
         }
       }
 
