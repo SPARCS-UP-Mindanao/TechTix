@@ -98,7 +98,7 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           }
         } else {
           console.log('number 3');
-          resetAuth();
+          navigate('/admin/login');
         }
       }
 
