@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import axios, { AxiosInstance } from 'axios';
-import { createRefresh } from 'react-auth-kit';
+import { createRefresh, useSignOut } from 'react-auth-kit';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
 
 const refreshApi = createRefresh({
@@ -56,6 +57,7 @@ export const refreshAccessToken = async (refreshToken: string, userId: string) =
 };
 
 export const refreshOnIntercept = (api: AxiosInstance) => {
+  const signOut = useSignOut();
   return api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -73,14 +75,16 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           try {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
-
             if (response.status !== 200) {
+              removeCookie('_auth_user', { path: '/' });
+              signOut();
               resetAuth();
             }
 
             // Store the new token
             const newAccessToken = response.data.accessToken;
             setCookie('_auth', newAccessToken);
+            setCookie('_auth_user', userId);
 
             // Update the header for the original request
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
@@ -88,10 +92,14 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            resetAuth();
+            console.log('refreshError');
+            removeCookie('_auth_user', { path: '/' });
+            signOut();
           }
         } else {
-          resetAuth();
+          console.log('else');
+          removeCookie('_auth_user', { path: '/' });
+          signOut();
         }
       }
 

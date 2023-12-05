@@ -106,3 +106,11 @@ export const postEvaluation = (eventId: string, registrationId: string, data: un
     body: params
   });
 };
+
+export const getEventEvaluations = (eventId: string) =>
+  createApi({
+    method: 'get',
+    url: '/evaluations',
+    authorize: true,
+    queryParams: { eventId }
+  });
