@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { postEvaluation } from '@/api/evaluations';
+import { QuestionConfigItem } from '@/model/evaluations';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -28,24 +29,6 @@ export const useClaimCertificateForm = () => {
     form
   };
 };
-
-const questionTypes = [
-  'text_short',
-  'text_long',
-  'multiple_choice_dropdown',
-  'multiple_choice',
-  'multiple_choice_dropdown',
-  'multiple_answers',
-  'slider'
-] as const;
-
-export interface QuestionConfigItem {
-  questionType: (typeof questionTypes)[number];
-  name: string;
-  question: string;
-  options?: string | string[];
-  required?: boolean;
-}
 
 export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
   const schema = questions.reduce(

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 from model.evaluations.evaluations_constants import EvaluationQuestionType, QuestionType
+from model.registrations.registration import RegistrationPreviewOut
 from pydantic import BaseModel, Extra, Field
 from pynamodb.attributes import (
     BooleanAttribute,
@@ -87,6 +88,13 @@ class EvaluationOut(EvaluationIn):
         extra = Extra.ignore
 
     eventId: str = Field(None, title="Event ID")
-    registrationId: str = Field(None, title="Registration ID")
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
+
+
+class EvaluationListOut(BaseModel):
+    class Config:
+        extra = Extra.ignore
+
+    registration: RegistrationPreviewOut = Field(None, title="Registration")
+    evaluationList: List[EvaluationOut] = Field(None, title="List of Evaluations")

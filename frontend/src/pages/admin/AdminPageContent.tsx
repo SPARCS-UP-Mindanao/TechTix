@@ -9,9 +9,11 @@ const AdminPageContent = () => {
   }
 
   return (
-    <div className="adminPage">
+    <div>
       <AdminPageHeader />
-      <AdminPageRoute />
+      <div className="adminPage">
+        <AdminPageRoute />
+      </div>
     </div>
   );
 };

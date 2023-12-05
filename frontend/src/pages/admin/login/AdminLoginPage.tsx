@@ -2,10 +2,11 @@ import LoginForm from './LoginForm';
 
 const AdminLoginPage = () => {
   return (
-    <div>
-      <h1>Admin Login Page</h1>
-      <LoginForm />
-    </div>
+    <main className="loginPage">
+      <div className="w-full flex justify-center">
+        <LoginForm />
+      </div>
+    </main>
   );
 };
 
