@@ -46,6 +46,16 @@ export default refreshApi;
 export const resetAuth = () => {
   removeCookie('_auth_user', { path: '/' });
   removeCookie('_auth', { path: '/' });
+};
+
+const resetAllCookies = () => {
+  resetAuth();
+  removeCookie('_auth_refresh_time', { path: '/' });
+  removeCookie('_auth_storage', { path: '/' });
+  removeCookie('_auth_refresh', { path: '/' });
+  removeCookie('_auth_state', { path: '/' });
+  removeCookie('_auth_type', { path: '/' });
+
   window.location.reload();
 };
 
@@ -57,7 +67,6 @@ export const refreshAccessToken = async (refreshToken: string, userId: string) =
 };
 
 export const refreshOnIntercept = (api: AxiosInstance) => {
-  const navigate = useNavigate();
   return api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -76,16 +85,16 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status === 400 || response.status === 401) {
-              console.log('number 1');
-              navigate('/admin/login');
+              resetAllCookies();
             } else if (response.status !== 200) {
-              console.log('number 2');
               resetAuth();
+              window.location.reload();
             }
 
             // Store the new token
             const newAccessToken = response.data.accessToken;
             setCookie('_auth', newAccessToken);
+            setCookie('_auth_user', userId);
 
             // Update the header for the original request
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
@@ -93,12 +102,10 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            resetAuth();
+            resetAllCookies();
           }
         } else {
-          console.log('number 3');
-          navigate('/admin/login');
-          console.log('navigated to login');
+          resetAllCookies();
         }
       }
 
