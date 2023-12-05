@@ -41,7 +41,7 @@ interface EventFormProps {
   refetch?: () => void;
 }
 
-export const useEventForm = ({ eventId, refetch }: EventFormProps) => {
+export const useAdminEventForm = ({ eventId, refetch }: EventFormProps) => {
   const { successToast, errorToast } = useNotifyToast();
 
   const form = useForm<EventFormValues>({

@@ -8,7 +8,7 @@ import Input from '@/components/Input';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
 import { Textarea } from '@/components/TextArea';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
-import { useEventForm } from '@/hooks/useAdminEventForm';
+import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
   event: Event;
@@ -16,7 +16,7 @@ interface Props {
 
 const AdminEventInfo: FC<Props> = ({ event }) => {
   const eventId = event.entryId;
-  const { form, submit } = useEventForm({ eventId });
+  const { form, submit } = useAdminEventForm({ eventId });
   const { setValue } = form;
 
   const handleSubmit = async () => {
