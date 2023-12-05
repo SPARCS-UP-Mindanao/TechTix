@@ -48,7 +48,7 @@ export const FormItem = <TFieldValues extends FieldValues, TName extends FieldPa
 
   const fieldState = getFieldState(name, formState);
 
-  const ariaDescribedby = !fieldState.error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`;
+  const ariaDescribedby = fieldState.error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`;
 
   return (
     <FormItemContext.Provider

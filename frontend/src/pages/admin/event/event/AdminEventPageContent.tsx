@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { getEvent } from '@/api/events';
 import { useApi } from '@/hooks/useApi';
 import AdminEventDiscounts from './AdminEventDiscounts';
+import AdminEventEvaluations from './AdminEventEvaluations';
 import AdminEventInfo from './AdminEventInfo';
 import AdminEventRegistrations from './AdminEventRegistrations';
 
@@ -56,7 +57,7 @@ const AdminEventPageContent = () => {
       </TabsContent>
 
       <TabsContent value="evaluations">
-        <h1>Evaluations</h1>
+        <AdminEventEvaluations eventId={event.entryId} />
       </TabsContent>
     </Tabs>
   );

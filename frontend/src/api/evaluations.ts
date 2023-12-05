@@ -1,3 +1,4 @@
+import { EvaluationListOut } from '@/model/evaluations';
 import { createApi } from './utils/createApi';
 
 export interface EvaluationResponseProps {
@@ -77,6 +78,17 @@ export const convertToEvaluationList = (data: any) => {
     }
 
     return response;
+  });
+};
+
+export const getEvaluations = (eventId: string, registrationId?: string) => {
+  return createApi<EvaluationListOut[]>({
+    method: 'get',
+    url: `/evaluations`,
+    queryParams: {
+      eventId,
+      registrationId
+    }
   });
 };
 

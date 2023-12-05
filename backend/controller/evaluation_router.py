@@ -4,8 +4,8 @@ from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Path, Query
 from model.common import Message
 from model.evaluations.evaluation import (
-    EvaluationIn,
     EvaluationListIn,
+    EvaluationListOut,
     EvaluationOut,
     EvaluationPatch,
 )
@@ -17,7 +17,7 @@ evaluation_router = APIRouter()
 
 @evaluation_router.get(
     '',
-    response_model=List[EvaluationOut],
+    response_model=List[EvaluationListOut],
     responses={
         404: {"model": Message, "description": "Evaluation not found"},
         500: {"model": Message, "description": "Internal server error"},
@@ -26,7 +26,7 @@ evaluation_router = APIRouter()
 )
 @evaluation_router.get(
     '/',
-    response_model=List[EvaluationOut],
+    response_model=List[EvaluationListOut],
     response_model_exclude_none=True,
     response_model_exclude_unset=True,
     include_in_schema=False,

@@ -103,3 +103,14 @@ class RegistrationOut(RegistrationIn):
     createDate: datetime = Field(..., title="Created At")
     updateDate: datetime = Field(..., title="Updated At")
     gcashPaymentUrl: str = Field(None, title="Gcash Payment Address")
+
+
+class RegistrationPreviewOut(BaseModel):
+    class Config:
+        extra = Extra.ignore
+
+    firstName: str = Field(None, title="First Name")
+    lastName: str = Field(None, title="Last Name")
+    contactNumber: str = Field(None, title="Contact Number")
+    email: EmailStr = Field(None, title="Email")
+    registrationId: str = Field(..., title="ID")

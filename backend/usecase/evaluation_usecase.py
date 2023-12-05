@@ -4,10 +4,11 @@ from typing import List, Union
 
 from model.evaluations.evaluation import (
     EvaluationListIn,
+    EvaluationListOut,
     EvaluationOut,
     EvaluationPatch,
 )
-from model.registrations.registration import RegistrationPatch
+from model.registrations.registration import RegistrationPatch, RegistrationPreviewOut
 from repository.evaluations_repository import EvaluationRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
@@ -90,7 +91,7 @@ class EvaluationUsecase:
 
     def get_evaluations(
         self, event_id: str = None, registration_id: str = None, question: str = None
-    ) -> Union[JSONResponse, List[EvaluationOut]]:
+    ) -> Union[JSONResponse, List[EvaluationListOut]]:
         if event_id:
             status, _, message = self.__events_repository.query_events(event_id=event_id)
             if status != HTTPStatus.OK:
@@ -102,7 +103,29 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluations]
+        evaluation_out_dict = {}
+        for evaluation in evaluations:
+            registration_id = evaluation.registrationId
+            evealuation_dict = self.__convert_data_entry_to_dict(evaluation)
+            evaluation_out = EvaluationOut(**evealuation_dict)
+
+            evaluation_out_dict.setdefault(registration_id, []).append(evaluation_out)
+
+        evaluations_return = []
+        for registration_id, evaluation_out_list in evaluation_out_dict.items():
+            evaluations_return_entry = EvaluationListOut(evaluationList=evaluation_out_list)
+
+            _, registration, _ = self.__registrations_repository.query_registrations(
+                event_id=event_id, registration_id=registration_id
+            )
+            if registration:
+                registration_data = self.__convert_data_entry_to_dict(registration)
+                registration_out = RegistrationPreviewOut(**registration_data)
+                evaluations_return_entry.registration = registration_out
+
+            evaluations_return.append(evaluations_return_entry)
+
+        return evaluations_return
 
     def get_evaluations_by_question(self, event_id: str, question: str) -> Union[JSONResponse, List[EvaluationOut]]:
         status, _, message = self.__events_repository.query_events(event_id=event_id)
@@ -113,7 +136,13 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluations]
+        evaluation_out_list = []
+        for evaluation in evaluations:
+            evaluation_dict = self.__convert_data_entry_to_dict(evaluation)
+            evaluation_out = EvaluationOut(**evaluation_dict)
+            evaluation_out_list.append(evaluation_out)
+
+        return evaluation_out_list
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
