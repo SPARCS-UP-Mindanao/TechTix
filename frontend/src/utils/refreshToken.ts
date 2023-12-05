@@ -76,8 +76,10 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status === 400 || response.status === 401) {
+              console.log('number 1');
               navigate('/admin/login');
             } else if (response.status !== 200) {
+              console.log('number 2');
               resetAuth();
             }
 
@@ -91,9 +93,11 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
+            console.log('fetch failed');
             resetAuth();
           }
         } else {
+          console.log('number 3');
           resetAuth();
         }
       }
