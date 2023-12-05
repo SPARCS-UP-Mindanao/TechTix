@@ -88,7 +88,6 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
               resetAllCookies();
             } else if (response.status !== 200) {
               resetAuth();
-              window.location.reload();
             }
 
             // Store the new token
