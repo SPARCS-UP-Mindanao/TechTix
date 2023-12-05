@@ -4,14 +4,18 @@ import AdminPageHeader from './AdminPageHeader';
 
 const AdminPageContent = () => {
   const isAuthenticated = useIsAuthenticated();
+  console.log(isAuthenticated());
+
   if (!isAuthenticated()) {
     return <Navigate to="/admin/login" />;
   }
 
   return (
-    <div className="adminPage">
+    <div>
       <AdminPageHeader />
-      <AdminPageRoute />
+      <div className="adminPage">
+        <AdminPageRoute />
+      </div>
     </div>
   );
 };

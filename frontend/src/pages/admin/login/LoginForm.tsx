@@ -15,12 +15,13 @@ const LoginForm = () => {
   }
 
   return (
-    <div>
-      <h1>Admin login</h1>
+    <section className="flex flex-col space-y-4 w-full max-w-2xl">
+      <h1 className="text-center">Admin login</h1>
+
       <FormProvider {...form}>
         <FormItem name="email">
           {({ field }) => (
-            <div className="flex flex-col items-start mb-5 space-y-2">
+            <div className="space-y-2">
               <FormLabel>Email</FormLabel>
               <Input type="email" {...field} />
               <FormError />
@@ -30,7 +31,7 @@ const LoginForm = () => {
 
         <FormItem name="password">
           {({ field }) => (
-            <div className="flex flex-col items-start mb-5 space-y-2">
+            <div className="flex flex-col items-start space-y-2">
               <FormLabel>Password</FormLabel>
               <Input type="password" {...field} />
               <FormError />
@@ -38,9 +39,13 @@ const LoginForm = () => {
           )}
         </FormItem>
 
-        <Button onClick={submit}>Submit</Button>
+        <div className="w-full flex justify-center">
+          <Button onClick={submit} className="w-full min-w-min max-w-[40%]">
+            Submit
+          </Button>
+        </div>
       </FormProvider>
-    </div>
+    </section>
   );
 };
 
