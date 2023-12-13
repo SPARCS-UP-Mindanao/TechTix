@@ -43,12 +43,6 @@ const refreshApi = createRefresh({
 
 export default refreshApi;
 
-export const resetAuth = () => {
-  removeCookie('_auth_user', { path: '/' });
-  removeCookie('_auth', { path: '/' });
-  window.location.reload();
-};
-
 export const refreshAccessToken = async (refreshToken: string, userId: string) => {
   return await axios.post(`${import.meta.env.VITE_API_AUTH_BASE_URL}/auth/refresh`, {
     refreshToken: refreshToken,
@@ -57,7 +51,6 @@ export const refreshAccessToken = async (refreshToken: string, userId: string) =
 };
 
 export const refreshOnIntercept = (api: AxiosInstance) => {
-  const signOut = useSignOut();
   return api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -76,9 +69,13 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status !== 200) {
+              removeCookie('_auth', { path: '/' });
               removeCookie('_auth_user', { path: '/' });
-              signOut();
-              resetAuth();
+              removeCookie('_auth_refresh', { path: '/' });
+              removeCookie('_auth_storage', { path: '/' });
+              removeCookie('_auth_type', { path: '/' });
+              removeCookie('_auth_refresh_time', { path: '/' });
+              window.location.reload();
             }
 
             // Store the new token
@@ -92,12 +89,22 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
+            removeCookie('_auth', { path: '/' });
             removeCookie('_auth_user', { path: '/' });
-            signOut();
+            removeCookie('_auth_refresh', { path: '/' });
+            removeCookie('_auth_storage', { path: '/' });
+            removeCookie('_auth_type', { path: '/' });
+            removeCookie('_auth_refresh_time', { path: '/' });
+            window.location.reload();
           }
         } else {
+          removeCookie('_auth', { path: '/' });
           removeCookie('_auth_user', { path: '/' });
-          signOut();
+          removeCookie('_auth_refresh', { path: '/' });
+          removeCookie('_auth_storage', { path: '/' });
+          removeCookie('_auth_type', { path: '/' });
+          removeCookie('_auth_refresh_time', { path: '/' });
+          window.location.reload();
         }
       }
 
