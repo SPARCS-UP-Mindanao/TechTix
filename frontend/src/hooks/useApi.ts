@@ -23,23 +23,23 @@ export const useApiQuery = <T>(request: createApiReturn<T>, { active = true, sus
 export class ApiClient {
   constructor(private queryClient: QueryClient) {}
 
-  execute<T>(api: createApiReturn<T>, signal?: AbortSignal) {
+  execute<T>(request: createApiReturn<T>, signal?: AbortSignal) {
     if (!this.queryClient) {
       throw new Error('QueryClient is not initialized');
     }
-    return api.queryFn(signal);
+    return request.queryFn(signal);
   }
 
-  query<T>(api: createApiReturn<T>, signal?: AbortSignal) {
-    return this.queryClient.fetchQuery(api.queryKey, () => this.execute(api, signal));
+  query<T>(request: createApiReturn<T>, signal?: AbortSignal) {
+    return this.queryClient.fetchQuery(request.queryKey, () => this.execute(request, signal), { staleTime: request.staleTime, cacheTime: request.cacheTime });
   }
 
-  invalidateQueries<T>(api: createApiReturn<T>) {
-    return this.queryClient.invalidateQueries(api.queryKey);
+  invalidateQueries<T>(request: createApiReturn<T>) {
+    return this.queryClient.invalidateQueries(request.queryKey);
   }
 
-  refetchQueries<T>(api: createApiReturn<T>) {
-    return this.queryClient.refetchQueries(api.queryKey);
+  refetchQueries<T>(request: createApiReturn<T>) {
+    return this.queryClient.refetchQueries(request.queryKey);
   }
 }
 
