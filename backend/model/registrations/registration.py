@@ -64,6 +64,9 @@ class Registration(Model):
     amountPaid = NumberAttribute(null=True)
     certificateImgObjectKey = UnicodeAttribute(null=True)
     certificatePdfObjectKey = UnicodeAttribute(null=True)
+    registrationEmailSent = BooleanAttribute(default=False)
+    confirmationEmailSent = BooleanAttribute(default=False)
+    evaluationEmailSent = BooleanAttribute(default=False)
 
 
 class RegistrationPatch(BaseModel):
