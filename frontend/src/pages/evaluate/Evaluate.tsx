@@ -8,9 +8,10 @@ import Icon from '@/components/Icon';
 import Separator from '@/components/Separator';
 import { getEvent } from '@/api/events';
 import { isEmpty } from '@/utils/functions';
-import { useApi } from '@/hooks/useApi';
+import { useApiQuery } from '@/hooks/useApi';
 import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
 import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationForm';
+import { useMetaData } from '@/hooks/useMetaData';
 import QuestionBuilder from '../evaluate/QuestionBuilder';
 import CertificateClaim from './CertificateClaim';
 import EvaluateFormSkeleton from './EvalauteFormSkeleton';
@@ -26,7 +27,7 @@ const EVALUATIONS_FORM_STEPS = ['Evaluation_1', 'Evaluation_2'];
 const Evaluate = () => {
   const [currentStep, setCurrentStep] = useState<EvaluateSteps>(EVALUATE_STEPS[0]);
   const eventId = useParams().eventId!;
-  const { data: eventResponse, isFetching } = useApi(getEvent(eventId!));
+  const { data: eventResponse, isFetching } = useApiQuery(getEvent(eventId!));
 
   const evaluationSchema = QuestionSchemaBuilder([...question1, ...question2]);
   type EvaluationField = keyof z.infer<typeof evaluationSchema> & string;
@@ -96,12 +97,10 @@ const Evaluate = () => {
 
   const eventInfo = eventResponse.data;
 
-  document.title = eventInfo.name;
-  const link = document.querySelector('link[rel="icon"]');
-
-  if (link && eventInfo.logoUrl) {
-    link.setAttribute('href', eventInfo.logoUrl);
-  }
+  useMetaData({
+    title: eventInfo.name,
+    iconUrl: eventInfo.logoUrl
+  });
 
   if (postEvalSuccess) {
     nextStep();

@@ -54,7 +54,7 @@ export function createApi<D, T = D>({
 }: createApiProps<D, T>) {
   const baseURL = apiService === 'events' ? import.meta.env.VITE_API_EVENTS_BASE_URL : import.meta.env.VITE_API_AUTH_BASE_URL;
   const api = axios.create();
-  const queryFn = async () => {
+  const queryFn = async (signal?: AbortSignal) => {
     const accessToken = getCookie('_auth')!;
     try {
       const response = await api({
@@ -64,6 +64,7 @@ export function createApi<D, T = D>({
         params: queryParams,
         data: body,
         timeout,
+        signal,
         headers: {
           'Content-Type': 'application/json',
           ...(authorize && {
@@ -103,5 +104,5 @@ export function createApi<D, T = D>({
 
 export interface createApiReturn<T> {
   queryKey: QueryKey;
-  queryFn: () => Promise<T>;
+  queryFn: (signal?: AbortSignal) => Promise<T>;
 }

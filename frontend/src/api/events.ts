@@ -26,6 +26,11 @@ export interface EventDto {
 
 export type OptionalEvent = Partial<Event>;
 
+export interface PresignedUrl {
+  uploadLink: string;
+  objectKey: string;
+}
+
 const mapEventDtoToEvent = (event: EventDto): Event => ({
   ...event
 });
@@ -73,7 +78,7 @@ export const deleteEvent = (entryId: string) =>
   });
 
 export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
-  createApi({
+  createApi<PresignedUrl>({
     method: 'put',
     authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,

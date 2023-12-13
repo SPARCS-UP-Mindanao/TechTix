@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { getEvent } from '@/api/events';
-import { useApi } from '@/hooks/useApi';
+import { useApiQuery } from '@/hooks/useApi';
 import AdminEventDiscounts from './AdminEventDiscounts';
 import AdminEventEvaluations from './AdminEventEvaluations';
 import AdminEventInfo from './AdminEventInfo';
@@ -9,7 +9,7 @@ import AdminEventRegistrations from './AdminEventRegistrations';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
-  const { data: response, isFetching } = useApi(getEvent(eventId!));
+  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
 
   if (isFetching) {
     return (

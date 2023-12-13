@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { DataTable } from '@/components/DataTable';
 import { getEventRegistrations } from '@/api/registrations';
-import { useApi } from '@/hooks/useApi';
+import { useApiQuery } from '@/hooks/useApi';
 import { registrationColumns } from './RegistrationsColumns';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const AdminEventRegistrations: FC<Props> = ({ eventId }) => {
   // TODO: Implement table
 
-  const { data: response, isFetching } = useApi(getEventRegistrations(eventId!));
+  const { data: response, isFetching } = useApiQuery(getEventRegistrations(eventId!));
 
   if (!eventId) {
     return <h1>Event not found</h1>;

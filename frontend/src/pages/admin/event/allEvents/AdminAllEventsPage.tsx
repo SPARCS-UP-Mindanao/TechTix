@@ -14,7 +14,7 @@ import { Textarea } from '@/components/TextArea';
 import { getAllEvents, deleteEvent } from '@/api/events';
 import { Event } from '@/model/events';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
-import { useApi, useFetchQuery } from '@/hooks/useApi';
+import { useApiQuery, useApi } from '@/hooks/useApi';
 
 const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,12 +126,12 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => setIsModalOpen(false);
-  const { fetchQuery } = useFetchQuery();
+  const api = useApi();
   const deleteEventTrigger = async () => {
     if (eventInfo.entryId === undefined) {
       return;
     }
-    await fetchQuery(deleteEvent(eventInfo.entryId));
+    await api.execute(deleteEvent(eventInfo.entryId));
     refetch();
     closeModal();
   };
@@ -153,7 +153,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
 };
 
 const AdminAllEvents = () => {
-  const { data: response, isFetching, refetch } = useApi(getAllEvents());
+  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents());
 
   if (isFetching) {
     return (
