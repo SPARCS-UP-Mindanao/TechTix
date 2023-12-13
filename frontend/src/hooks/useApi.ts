@@ -37,10 +37,6 @@ export class ApiClient {
   invalidateQueries<T>(request: createApiReturn<T>) {
     return this.queryClient.invalidateQueries(request.queryKey);
   }
-
-  refetchQueries<T>(request: createApiReturn<T>) {
-    return this.queryClient.refetchQueries(request.queryKey);
-  }
 }
 
 export const useApi = () => {
