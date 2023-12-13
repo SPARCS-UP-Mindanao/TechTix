@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getPresignedUrl } from '@/api/events';
-import { useFetchQuery } from '@/hooks/useApi';
+import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import FileViewerComponent from './FileViewerComponent';
 import Input from './Input';
@@ -18,7 +18,7 @@ interface FileUploadProps {
 
 const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
   const { successToast, errorToast } = useNotifyToast();
-  const { fetchQuery } = useFetchQuery<any>();
+  const api = useApi();
   const [image, setImage] = useState<string>(originalImage || '');
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -37,7 +37,7 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
   };
 
   const getPresignedUrlTrigger = async (entryId: string, fileName: string, fileType: string) => {
-    const response = await fetchQuery(getPresignedUrl(entryId, fileName, fileType));
+    const response = await api.execute(getPresignedUrl(entryId, fileName, fileType));
     return response.data;
   };
 

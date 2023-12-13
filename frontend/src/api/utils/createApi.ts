@@ -42,19 +42,14 @@ interface createApiProps<D, T = D> {
 
 export type GenericReturn<T> = AxiosResponse<T> & CustomAxiosError;
 
-export function createApi<D, T = D>({
-  method = 'get',
-  url,
-  authorize = false,
-  apiService = 'events',
-  queryParams = {},
-  body,
-  timeout = 1000 * 60,
-  output
-}: createApiProps<D, T>) {
+export function createApi<D, T = D>(
+  { method = 'get', url, authorize = false, apiService = 'events', queryParams = {}, body, timeout = 1000 * 60, output }: createApiProps<D, T>,
+  staleTime?: number,
+  cacheTime?: number
+) {
   const baseURL = apiService === 'events' ? import.meta.env.VITE_API_EVENTS_BASE_URL : import.meta.env.VITE_API_AUTH_BASE_URL;
   const api = axios.create();
-  const queryFn = async () => {
+  const queryFn = async (signal?: AbortSignal) => {
     const accessToken = getCookie('_auth')!;
     try {
       const response = await api({
@@ -64,6 +59,7 @@ export function createApi<D, T = D>({
         params: queryParams,
         data: body,
         timeout,
+        signal,
         headers: {
           'Content-Type': 'application/json',
           ...(authorize && {
@@ -97,11 +93,15 @@ export function createApi<D, T = D>({
 
   return {
     queryKey: createQueryKey(url, body) as unknown as QueryKey,
-    queryFn
+    queryFn,
+    staleTime,
+    cacheTime
   };
 }
 
 export interface createApiReturn<T> {
   queryKey: QueryKey;
-  queryFn: () => Promise<T>;
+  queryFn: (signal?: AbortSignal) => Promise<T>;
+  staleTime?: number;
+  cacheTime?: number;
 }

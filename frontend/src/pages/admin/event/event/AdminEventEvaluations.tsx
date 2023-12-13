@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { DataTable } from '@/components/DataTable';
 import { getEvaluations } from '@/api/evaluations';
-import { useApi } from '@/hooks/useApi';
+import { useApiQuery } from '@/hooks/useApi';
 import { evaluationColumns } from './EvaluationColumns';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const AdminEventeEvaluations: FC<Props> = ({ eventId }) => {
-  const { data: response, isFetching } = useApi(getEvaluations(eventId!));
+  const { data: response, isFetching } = useApiQuery(getEvaluations(eventId!));
 
   if (!eventId) {
     return <h1>Event not found</h1>;

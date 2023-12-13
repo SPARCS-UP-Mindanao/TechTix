@@ -12,7 +12,8 @@ import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Pricing } from '@/model/discount';
 import { Event } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
-import { useApi, useFetchQuery } from '@/hooks/useApi';
+import { useApiQuery, useApi } from '@/hooks/useApi';
+import { useMetaData } from '@/hooks/useMetaData';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
@@ -55,11 +56,11 @@ const Register = () => {
   const { eventId } = useParams();
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
   const navigateOnSuccess = () => setCurrentStep('Success');
-  const { data: response, isFetching } = useApi(getEvent(eventId!));
+  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { setValue, getValues } = form;
   const [receiptUrl, setReceiptUrl] = useState<string>('');
-  const { fetchQuery } = useFetchQuery<any>();
+  const api = useApi();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
 
@@ -101,12 +102,10 @@ const Register = () => {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
   }
 
-  document.title = eventInfo.name;
-  const link = document.querySelector('link[rel="icon"]');
-
-  if (link && eventInfo.logoUrl) {
-    link.setAttribute('href', eventInfo.logoUrl);
-  }
+  useMetaData({
+    title: eventInfo.name,
+    iconUrl: eventInfo.logoUrl
+  });
 
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
   const scrollToView = () => {
@@ -125,7 +124,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));
+      const response = await api.query(getDiscount(currentDiscountCode, eventId));
       const discountCode = response.data;
       if (response.status === 200) {
         if (discountCode.claimed) {
@@ -171,7 +170,7 @@ const Register = () => {
     const eventId = eventInfo.entryId;
     if (currentStep == 'UserBio' && eventId && currentEmail) {
       try {
-        const response = await fetchQuery(getEventRegistrationWithEmail(eventId, currentEmail));
+        const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));
         if (response.status === 200) {
           errorToast({
             title: 'Email already registered',
@@ -187,7 +186,7 @@ const Register = () => {
     const currentDiscountCode = getValues('discountCode');
     if (currentStep == 'GCash' && currentDiscountCode && eventId) {
       try {
-        const response = await fetchQuery(getDiscount(currentDiscountCode, eventId));
+        const response = await api.query(getDiscount(currentDiscountCode, eventId));
         const discountCode = response.data;
         if (response.status === 200) {
           const price = eventInfo.price * (1 - discountCode.discountPercentage);
