@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import axios, { AxiosInstance } from 'axios';
 import { createRefresh, useSignOut } from 'react-auth-kit';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
