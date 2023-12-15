@@ -6,6 +6,7 @@ from typing import Tuple
 
 import ulid
 from boto3 import client as boto3_client
+from constants.common_constants import EmailType
 from model.email.email import EmailIn
 from model.events.event import Event
 from model.registrations.registration import Registration
@@ -17,10 +18,11 @@ class EmailUsecase:
         self.__sqs_client = boto3_client("sqs", region_name=os.getenv("REGION", "ap-southeast-1"))
         self.__sqs_url = os.getenv("EMAIL_QUEUE")
 
-    def send_email(self, email_in: EmailIn, event_id: str) -> Tuple[HTTPStatus, str]:
+    def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
         message = None
         try:
             timestamp = datetime.utcnow().isoformat(timespec="seconds")
+            event_id = email_in.eventId
             payload = email_in.dict()
             message_id = ulid.ulid()
             response = self.__sqs_client.send_message(
@@ -47,13 +49,15 @@ class EmailUsecase:
         salutation = "Dear Sparcs ,"
         regards = ["Best,"]
         email_in = EmailIn(
-            to=[os.getenv("SPARCS_GMAIL")],
+            to=[event.email],
             subject=subject,
             body=body,
             salutation=salutation,
             regards=regards,
+            emailType=EmailType.EVENT_CREATION_EMAIL,
+            eventId=event.entryId,
         )
-        return self.send_email(email_in=email_in, event_id=event.entryId)
+        return self.send_email(email_in=email_in)
 
     def send_registration_creation_email(self, registration: Registration, event: Event):
         subject = f"{event.name} Registration Confirmation"
@@ -70,9 +74,11 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
+            emailType=EmailType.REGISTRATION_EMAIL,
+            eventId=event.entryId,
         )
         logger.info(f"Sending registration confirmation email to {registration.email}")
-        return self.send_email(email_in=email_in, event_id=event.entryId)
+        return self.send_email(email_in=email_in)
 
     def send_event_completion_email(
         self, event_id: str, event_name: str, claim_certificate_url: str, participants: list
@@ -93,8 +99,10 @@ class EmailUsecase:
                 body=body,
                 salutation=salutation,
                 regards=regards,
+                emailType=EmailType.EVALUATION_EMAIL,
+                eventId=event_id,
             )
             logger.info(f"Sending event completion email to {participant}")
-            self.send_email(email_in=email_in, event_id=event_id)
+            self.send_email(email_in=email_in)
 
         return

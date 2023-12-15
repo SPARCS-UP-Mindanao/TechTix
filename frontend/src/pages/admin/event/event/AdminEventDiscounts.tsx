@@ -7,7 +7,7 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { getAllDiscounts } from '@/api/discounts';
 import { Discount } from '@/model/discount';
-import { useApi } from '@/hooks/useApi';
+import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
 
@@ -107,7 +107,7 @@ interface Props {
   eventId?: string;
 }
 const AdminEventDiscounts: FC<Props> = ({ eventId }) => {
-  const { data: response, isFetching, refetch } = useApi(getAllDiscounts(eventId!));
+  const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
 
   if (!eventId) {
     return <h1>Event not found</h1>;

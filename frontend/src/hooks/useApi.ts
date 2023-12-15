@@ -1,5 +1,7 @@
+import { useContext } from 'react';
 import { createApiReturn } from '@/api/utils/createApi';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { ApiContext } from '@/context/QueryClientContext';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface QueryOptions {
   active?: boolean;
@@ -7,8 +9,9 @@ interface QueryOptions {
   keepPreviousData?: boolean;
 }
 
-export const useApi = <T>(api: createApiReturn<T>, { active = true, suspense = false, keepPreviousData = false }: QueryOptions = {}) => {
-  return useQuery(api.queryKey, api.queryFn, {
+export const useApiQuery = <T>(request: createApiReturn<T>, { active = true, suspense = false, keepPreviousData = false }: QueryOptions = {}) => {
+  const api = useApi();
+  return useQuery(request.queryKey, ({ signal }) => api.execute(request, signal), {
     enabled: active,
     suspense,
     keepPreviousData,
@@ -17,8 +20,30 @@ export const useApi = <T>(api: createApiReturn<T>, { active = true, suspense = f
   });
 };
 
-export const useFetchQuery = <T>() => {
-  const queryClient = useQueryClient();
-  const fetchQuery = async (api: createApiReturn<T>) => await queryClient.fetchQuery(api.queryKey, api.queryFn);
-  return { fetchQuery };
+export class ApiClient {
+  constructor(private queryClient: QueryClient) {}
+
+  execute<T>(request: createApiReturn<T>, signal?: AbortSignal) {
+    if (!this.queryClient) {
+      throw new Error('QueryClient is not initialized');
+    }
+    return request.queryFn(signal);
+  }
+
+  query<T>(request: createApiReturn<T>, signal?: AbortSignal) {
+    return this.queryClient.fetchQuery(request.queryKey, () => this.execute(request, signal), { staleTime: request.staleTime, cacheTime: request.cacheTime });
+  }
+
+  invalidateQueries<T>(request: createApiReturn<T>) {
+    return this.queryClient.invalidateQueries(request.queryKey);
+  }
+}
+
+export const useApi = () => {
+  const client = useContext(ApiContext);
+  if (!client) {
+    throw new Error('useApi should be used within a QueryClientProvider');
+  }
+
+  return client;
 };

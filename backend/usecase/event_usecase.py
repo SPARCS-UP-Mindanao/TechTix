@@ -55,21 +55,17 @@ class EventUsecase:
             logger.info(f'Generating certificates triggered for event: {event_id}')
             self.__certificate_usecase.generate_certificates(event_id=event_id)
 
-            __, registrations, __ = self.__registration_repository.query_registrations(event_id=event_id)
-            if registrations:
-                for registration in registrations:
-                    self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
-
         elif original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.entryId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
             status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
+            participants = [entry.email for entry in registrations if not entry.evaluationEmailSent]
             self.__email_usecase.send_event_completion_email(
                 event_id=event_id,
                 event_name=event.name,
                 claim_certificate_url=claim_certificate_url,
-                participants=[entry.email for entry in registrations],
+                participants=participants,
             )
 
         event_data = self.__convert_data_entry_to_dict(update_event)
