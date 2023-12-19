@@ -132,11 +132,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
     if (eventInfo.eventId === undefined) {
       return;
     }
-<<<<<<< Updated upstream
-    await api.execute(deleteEvent(eventInfo.entryId));
-=======
-    await fetchQuery(deleteEvent(eventInfo.eventId));
->>>>>>> Stashed changes
+    await api.execute(deleteEvent(eventInfo.eventId));
     refetch();
     closeModal();
   };
@@ -158,12 +154,8 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
 };
 
 const AdminAllEvents = () => {
-<<<<<<< Updated upstream
-  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents());
-=======
   const adminId = getCookie('_auth_user');
-  const { data: response, isFetching, refetch } = useApi(getAllEvents(adminId));
->>>>>>> Stashed changes
+  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents(adminId));
 
   if (isFetching) {
     return (
