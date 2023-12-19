@@ -1,5 +1,4 @@
-import { RegisterUserInfo } from "./registrations";
-
+import { RegisterUserInfo } from './registrations';
 
 const questionTypes = [
   'text_short',

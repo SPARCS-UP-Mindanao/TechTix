@@ -12,7 +12,7 @@ export interface Event {
   price: number;
   certificateTemplate?: string | null;
   status: EventStatus;
-  entryId?: string;
+  eventId?: string;
   createDate?: string;
   updateDate?: string;
   createdBy?: string;

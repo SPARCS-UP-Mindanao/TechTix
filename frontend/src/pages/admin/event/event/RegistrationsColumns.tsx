@@ -2,6 +2,7 @@ import { useState } from 'react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
+import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
 import Modal from '@/components/Modal';
 import { RegisterUserInfo } from '@/model/registrations';
@@ -190,7 +191,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
           }
         >
           <h4>{registrationInfo.registrationId}</h4>
-          {registrationInfo.gcashPayment && <img src={registrationInfo.gcashPaymentUrl!} />}
+          {registrationInfo.gcashPayment && <FileViewerComponent objectKey={registrationInfo.gcashPayment} />}
         </Modal>
       );
     },

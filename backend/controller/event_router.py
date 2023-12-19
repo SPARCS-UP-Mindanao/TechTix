@@ -3,7 +3,7 @@ from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventUploadType
@@ -33,10 +33,11 @@ event_router = APIRouter()
 )
 def get_events(
     current_user: AccessUser = Depends(get_current_user),
+    admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
 ):
     _ = current_user
     events_uc = EventUsecase()
-    return events_uc.get_events()
+    return events_uc.get_events(admin_id=admin_id)
 
 
 @event_router.get(

@@ -55,7 +55,7 @@ class EmailUsecase:
             salutation=salutation,
             regards=regards,
             emailType=EmailType.EVENT_CREATION_EMAIL,
-            eventId=event.entryId,
+            eventId=event.eventId,
         )
         return self.send_email(email_in=email_in)
 
@@ -75,7 +75,7 @@ class EmailUsecase:
             salutation=salutation,
             regards=regards,
             emailType=EmailType.REGISTRATION_EMAIL,
-            eventId=event.entryId,
+            eventId=event.eventId,
         )
         logger.info(f"Sending registration confirmation email to {registration.email}")
         return self.send_email(email_in=email_in)

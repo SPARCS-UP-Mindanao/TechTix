@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { FormProvider } from 'react-hook-form';
+import { getCookie } from 'typescript-cookie';
 import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
@@ -128,10 +129,14 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
   const closeModal = () => setIsModalOpen(false);
   const api = useApi();
   const deleteEventTrigger = async () => {
-    if (eventInfo.entryId === undefined) {
+    if (eventInfo.eventId === undefined) {
       return;
     }
+<<<<<<< Updated upstream
     await api.execute(deleteEvent(eventInfo.entryId));
+=======
+    await fetchQuery(deleteEvent(eventInfo.eventId));
+>>>>>>> Stashed changes
     refetch();
     closeModal();
   };
@@ -153,7 +158,12 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
 };
 
 const AdminAllEvents = () => {
+<<<<<<< Updated upstream
   const { data: response, isFetching, refetch } = useApiQuery(getAllEvents());
+=======
+  const adminId = getCookie('_auth_user');
+  const { data: response, isFetching, refetch } = useApi(getAllEvents(adminId));
+>>>>>>> Stashed changes
 
   if (isFetching) {
     return (
@@ -190,10 +200,10 @@ const AdminAllEvents = () => {
       <div className="grid grid-cols-2 p-10 gap-5">
         {eventInfos.map((eventInfo) => (
           <Card
-            key={eventInfo.entryId}
+            key={eventInfo.eventId}
             cardTitle={<CardHeader eventInfo={eventInfo} refetch={refetch} />}
             cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
-            cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
+            cardFooter={<ViewEventButton eventId={eventInfo.eventId!} />}
             className="flex flex-col items-center justify-between"
           >
             <p>

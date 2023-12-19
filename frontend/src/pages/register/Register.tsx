@@ -167,7 +167,7 @@ const Register = () => {
     };
 
     const currentEmail = getValues('email');
-    const eventId = eventInfo.entryId;
+    const eventId = eventInfo.eventId;
     if (currentStep == 'UserBio' && eventId && currentEmail) {
       try {
         const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));

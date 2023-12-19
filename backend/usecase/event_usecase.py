@@ -14,6 +14,7 @@ from usecase.certificate_usecase import CertificateUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from utils.logger import logger
+from utils.utils import Utils
 
 
 class EventUsecase:
@@ -25,6 +26,13 @@ class EventUsecase:
         self.__certificate_usecase = CertificateUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        slug = Utils.convert_to_slug(event_in.name)
+        status, event, __ = self.__events_repository.query_events(slug)
+        if status == HTTPStatus.OK:
+            return JSONResponse(
+                status_code=HTTPStatus.CONFLICT, content={'message': f'Event with name {event_in.name} already exists'}
+            )
+
         event_in.status = EventStatus.DRAFT.value
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
@@ -57,7 +65,7 @@ class EventUsecase:
 
         elif original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')
-            event_id = update_event.entryId
+            event_id = update_event.eventId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
             status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
             participants = [entry.email for entry in registrations if not entry.evaluationEmailSent]
@@ -73,7 +81,7 @@ class EventUsecase:
         return self.collect_pre_signed_url(event_out)
 
     def get_event(self, event_id: str) -> Union[JSONResponse, EventOut]:
-        status, event, message = self.__events_repository.query_events(event_id)
+        status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -81,8 +89,12 @@ class EventUsecase:
         event_out = EventOut(**event_data)
         return self.collect_pre_signed_url(event_out)
 
-    def get_events(self) -> Union[JSONResponse, List[EventOut]]:
-        status, events, message = self.__events_repository.query_events()
+    def get_events(self, admin_id: str = None) -> Union[JSONResponse, List[EventOut]]:
+        if admin_id:
+            status, events, message = self.__events_repository.query_events_by_admin_id(admin_id)
+        else:
+            status, events, message = self.__events_repository.query_events()
+
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

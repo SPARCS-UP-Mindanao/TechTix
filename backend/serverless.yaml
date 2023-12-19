@@ -5,6 +5,7 @@ custom:
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
+  events: ${self:custom.stage}-${self:custom.projectName}
   bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
@@ -50,6 +51,7 @@ provider:
     ENTITIES_TABLE: ${self:custom.entities}
     REGISTRATIONS_TABLE: ${self:custom.registrations}
     EVALUATIONS_TABLE: ${self:custom.evaluations}
+    EVENTS_TABLE: ${self:custom.events}
     EMAIL_QUEUE: ${self:custom.emailQueue}
     CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}

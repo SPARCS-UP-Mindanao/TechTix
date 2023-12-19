@@ -30,18 +30,19 @@ class EventsRepository:
     def store_event(self, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
         entry_id = Utils.convert_to_slug(event_in.name)
-        range_key = f'v{self.latest_version}#{entry_id}'
+        current_user = os.getenv('CURRENT_USER')
+        range_key = f'{current_user}#{entry_id}'
         try:
             event_entry = Event(
-                hashKey=self.core_obj,
+                hashKey=f'v{self.latest_version}',
                 rangeKey=range_key,
                 createDate=self.current_date,
                 updateDate=self.current_date,
-                createdBy=os.getenv('CURRENT_USER'),
-                updatedBy=os.getenv('CURRENT_USER'),
+                createdBy=current_user,
+                updatedBy=current_user,
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
-                entryId=entry_id,
+                eventId=entry_id,
                 **data,
             )
             event_entry.save()
@@ -62,18 +63,56 @@ class EventsRepository:
             logging.info(f'[{self.core_obj} = {entry_id}]: Save Events strategy data successful')
             return HTTPStatus.OK, event_entry, None
 
-    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+    def query_events_by_admin_id(self, admin_id: str, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
         try:
-            if event_id:
-                range_key_prefix = f'v{self.latest_version}#{event_id}'
-                range_key_condition = Event.rangeKey.__eq__(range_key_prefix)
-            else:
-                range_key_prefix = f'v{self.latest_version}#'
-                range_key_condition = Event.rangeKey.startswith(range_key_prefix)
+            range_key_prefix = f'{admin_id}#{event_id}' if event_id else f'{admin_id}#'
+            range_key_condition = Event.rangeKey.startswith(range_key_prefix)
+            filter_condition = Event.entryStatus == EntryStatus.ACTIVE.value
 
             event_entries = list(
                 Event.query(
-                    hash_key=self.core_obj,
+                    hash_key=f'v{self.latest_version}',
+                    range_key_condition=range_key_condition,
+                    filter_condition=filter_condition,
+                )
+            )
+            if not event_entries:
+                if event_id:
+                    message = f'Event with ID={event_id} not found'
+                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                else:
+                    message = 'No events found'
+                    logging.error(f'[{self.core_obj}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query event: {str(e)}'
+            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            if event_id:
+                logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+                return HTTPStatus.OK, event_entries[0], None
+
+            logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+            return HTTPStatus.OK, event_entries, None
+
+    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+        try:
+            range_key_condition = Event.eventId == event_id if event_id else None
+            event_entries = list(
+                Event.eventIdIndex.query(
+                    hash_key=f'v{self.latest_version}',
                     range_key_condition=range_key_condition,
                     filter_condition=Event.entryStatus == EntryStatus.ACTIVE.value,
                 )
@@ -133,7 +172,7 @@ class EventsRepository:
 
                 # Store Old Entry --------------------------------------------------------------------------
                 old_event_entry = deepcopy(event_entry)
-                old_event_entry.rangeKey = event_entry.rangeKey.replace('v0#', f'v{new_version}#')
+                old_event_entry.hashKey = f'v{new_version}#'
                 old_event_entry.latestVersion = current_version
                 old_event_entry.updatedBy = old_event_entry.updatedBy or os.getenv('CURRENT_USER')
                 transaction.save(old_event_entry)
