@@ -56,3 +56,11 @@ export const resetPassword = (email: string, confirmationCode: string, password:
     url: '/auth/reset-password',
     body: { email, code: confirmationCode, password }
   });
+
+export const updatePassword = (email: string, prevPassword: string, newPassword: string) =>
+  createApi({
+    method: 'post',
+    apiService: 'auth',
+    url: '/admin/auth/update-password',
+    body: { email, prevPassword, newPassword }
+  });
