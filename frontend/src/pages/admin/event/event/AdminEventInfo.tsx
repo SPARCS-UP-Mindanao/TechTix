@@ -15,7 +15,7 @@ interface Props {
 }
 
 const AdminEventInfo: FC<Props> = ({ event }) => {
-  const eventId = event.entryId;
+  const { eventId } = event;
   const { form, submit } = useAdminEventForm({ eventId });
   const { setValue } = form;
 

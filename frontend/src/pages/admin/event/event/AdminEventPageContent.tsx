@@ -49,15 +49,15 @@ const AdminEventPageContent = () => {
       </TabsContent>
 
       <TabsContent value="registration">
-        <AdminEventRegistrations eventId={event.entryId} />
+        <AdminEventRegistrations eventId={event.eventId} />
       </TabsContent>
 
       <TabsContent value="discounts">
-        <AdminEventDiscounts eventId={event.entryId} />
+        <AdminEventDiscounts eventId={event.eventId} />
       </TabsContent>
 
       <TabsContent value="evaluations">
-        <AdminEventEvaluations eventId={event.entryId} />
+        <AdminEventEvaluations eventId={event.eventId} />
       </TabsContent>
     </Tabs>
   );

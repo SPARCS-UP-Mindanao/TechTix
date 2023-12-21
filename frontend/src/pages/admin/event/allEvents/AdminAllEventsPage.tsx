@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { FormProvider } from 'react-hook-form';
+import { getCookie } from 'typescript-cookie';
 import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
@@ -20,7 +21,10 @@ const CreateEventModal = ({ refetch }: { refetch: () => void }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { form, submit } = useAdminEventForm({ refetch });
 
-  const handleSubmit = async () => await submit();
+  const handleSubmit = async () => {
+    await submit();
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="px-4">
@@ -128,10 +132,10 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
   const closeModal = () => setIsModalOpen(false);
   const api = useApi();
   const deleteEventTrigger = async () => {
-    if (eventInfo.entryId === undefined) {
+    if (eventInfo.eventId === undefined) {
       return;
     }
-    await api.execute(deleteEvent(eventInfo.entryId));
+    await api.execute(deleteEvent(eventInfo.eventId));
     refetch();
     closeModal();
   };
@@ -152,9 +156,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch }) => {
   );
 };
 
-const AdminAllEvents = () => {
-  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents());
-
+const AllEventsComponent = ({ response, isFetching, refetch }: { response: any; isFetching: boolean; refetch: () => void }) => {
   if (isFetching) {
     return (
       // TODO: Add skeleton page
@@ -167,7 +169,7 @@ const AdminAllEvents = () => {
   if (!response || (response && !response.data)) {
     return (
       // TODO: Add event not found page
-      <div>
+      <div className="py-10">
         <h1>Events not found</h1>
       </div>
     );
@@ -182,27 +184,35 @@ const AdminAllEvents = () => {
     );
   }
 
-  const eventInfos = response.data;
+  const eventInfos: Event[] = response.data;
+  return (
+    <div className="grid grid-cols-2 p-10 gap-5">
+      {eventInfos.map((eventInfo) => (
+        <Card
+          key={eventInfo.eventId}
+          cardTitle={<CardHeader eventInfo={eventInfo} refetch={refetch} />}
+          cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
+          cardFooter={<ViewEventButton eventId={eventInfo.eventId!} />}
+          className="flex flex-col items-center justify-between"
+        >
+          <p>
+            {moment(eventInfo.startDate).format('MMMM D YYYY hh:mm A')} - {moment(eventInfo.endDate).format('MMM D YYYY hh:mm A')}
+          </p>
+          <div>Ticket Price: ₱{eventInfo.price}</div>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+const AdminAllEvents = () => {
+  const adminId = getCookie('_auth_user');
+  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents(adminId));
 
   return (
     <>
       <CreateEventModal refetch={refetch} />
-      <div className="grid grid-cols-2 p-10 gap-5">
-        {eventInfos.map((eventInfo) => (
-          <Card
-            key={eventInfo.entryId}
-            cardTitle={<CardHeader eventInfo={eventInfo} refetch={refetch} />}
-            cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
-            cardFooter={<ViewEventButton eventId={eventInfo.entryId!} />}
-            className="flex flex-col items-center justify-between"
-          >
-            <p>
-              {moment(eventInfo.startDate).format('MMMM D YYYY hh:mm A')} - {moment(eventInfo.endDate).format('MMM D YYYY hh:mm A')}
-            </p>
-            <div>Ticket Price: ₱{eventInfo.price}</div>
-          </Card>
-        ))}
-      </div>
+      <AllEventsComponent response={response} isFetching={isFetching} refetch={refetch} />
     </>
   );
 };

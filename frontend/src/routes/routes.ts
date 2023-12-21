@@ -7,6 +7,7 @@ import AdminAllEvaluationsPage from '@/pages/admin/event/evaluations/AdminAllEva
 import AdminEventPage from '@/pages/admin/event/event/AdminEventPage';
 import AdminAllRegistrationsPage from '@/pages/admin/event/registrations/AdminAllRegistrationsPage';
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
+import UpdatePasswordPage from '@/pages/admin/update-password/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 import App from '@/App';
@@ -59,6 +60,10 @@ export const routes = createBrowserRouter([
   {
     path: 'admin/authority',
     element: AdminAuthorityPage()
+  },
+  {
+    path: 'admin/update-password',
+    element: UpdatePasswordPage()
   },
   {
     path: '*',

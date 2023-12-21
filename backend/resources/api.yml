@@ -39,6 +39,16 @@ app:
       Action:
         - "dynamodb:*"
       Resource:
+        - { "Fn::GetAtt": [Events, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ Events, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
+        - "dynamodb:*"
+      Resource:
         - { "Fn::GetAtt": [Registrations, Arn] }
         - "Fn::Join":
           - "/"
