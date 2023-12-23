@@ -2,12 +2,14 @@ import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
-import AdminAllEventsPage from '@/pages/admin/event/allEvents/AdminAllEventsPage';
-import AdminAllEvaluationsPage from '@/pages/admin/event/evaluations/AdminAllEvaluationsPage';
-import AdminEventPage from '@/pages/admin/event/event/AdminEventPage';
-import AdminAllRegistrationsPage from '@/pages/admin/event/registrations/AdminAllRegistrationsPage';
+import AdminEventPage from '@/pages/admin/event/AdminEventPage';
+import AdminAllEventsPage from '@/pages/admin/event/dashboard/AdminAllEventsPage';
+import AdminEventDiscountsPage from '@/pages/admin/event/discounts/AdminEventDiscounts';
+import AdminEventeEvaluationsPage from '@/pages/admin/event/evaluations/AdminEventEvaluations';
+import AdminEventInfoPage from '@/pages/admin/event/info/AdminEventInfo';
+import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/AdminEventRegistrations';
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
-import UpdatePasswordPage from '@/pages/admin/update-password/UpdatePasswordPage';
+import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 import App from '@/App';
@@ -45,15 +47,29 @@ export const routes = createBrowserRouter([
       },
       {
         path: ':eventId',
-        element: AdminEventPage()
-      },
-      {
-        path: 'registrations',
-        element: AdminAllRegistrationsPage()
-      },
-      {
-        path: 'evaluations',
-        element: AdminAllEvaluationsPage()
+        element: AdminEventPage(),
+        children: [
+          {
+            index: true,
+            element: AdminEventInfoPage()
+          },
+          {
+            path: 'evaluations',
+            element: AdminEventeEvaluationsPage()
+          },
+          {
+            path: 'discounts',
+            element: AdminEventDiscountsPage()
+          },
+          {
+            path: 'registrations',
+            element: AdminEventRegistrationsPage()
+          },
+          {
+            path: '*',
+            element: ErrorPage({})
+          }
+        ]
       }
     ]
   },

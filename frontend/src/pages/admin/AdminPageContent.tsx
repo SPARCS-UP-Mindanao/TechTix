@@ -1,6 +1,6 @@
 import { Outlet as AdminPageRoute, Navigate } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
-import AdminPageHeader from './AdminPageHeader';
+import AdminSideBar from './AdminSideBar';
 
 const AdminPageContent = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -10,7 +10,8 @@ const AdminPageContent = () => {
 
   return (
     <div>
-      <AdminPageHeader />
+      {/* <AdminPageHeader /> */}
+      <AdminSideBar />
       <div className="adminPage">
         <AdminPageRoute />
       </div>
