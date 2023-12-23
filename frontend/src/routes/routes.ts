@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
+import HomePage from '@/pages/HomePage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
 import AdminAllEventsPage from '@/pages/admin/event/allEvents/AdminAllEventsPage';
@@ -13,6 +14,10 @@ import RegisterPage from '@/pages/register/RegisterPage';
 import App from '@/App';
 
 export const routes = createBrowserRouter([
+  {
+    path: '',
+    element: HomePage()
+  },
   {
     path: '/:eventId',
     element: App(),
