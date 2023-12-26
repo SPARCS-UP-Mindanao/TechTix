@@ -11,19 +11,15 @@ import iconFb from '../assets/logos/icon-fb.svg';
 import iconIg from '../assets/logos/icon-ig.svg';
 import iconLinkedin from '../assets/logos/icon-linkedin.svg';
 import location from '../assets/logos/icon-loc.svg';
-import Logo from '../assets/logos/techtix-logo.png';
-import TitleBorder from '../assets/logos/techtix-title-border.png';
-import TitleWhite from '../assets/logos/techtix-title-white.svg';
+import logoTitleBorder from '../assets/logos/techtix-border-logo-title.png';
+import logoTitleWhite from '../assets/logos/techtix-white-logo-title.png';
 import MakeEvent from '../assets/make-event.png';
 import Robot from '../assets/robot.svg';
 
 function Header() {
   return (
-    <header className="fixed z-20 h-20 md:h-28 md:px-10 flex items-center">
-      <div className="scale-75 h-full">
-        <img src={Logo} alt="Techtix Logo" className="inline" />
-        <img src={TitleBorder} alt="Techtix Title" className="inline h-1/2 w-auto" />
-      </div>
+    <header className="fixed z-20 py-4 md:py-6 h-20 md:h-28 px-5 md:px-24 flex items-center">
+      <img src={logoTitleBorder} alt="Techtix Logo" className="inline h-full w-auto" />
     </header>
   );
 }
@@ -135,9 +131,8 @@ function Footer() {
     >
       <div className="flex flex-col md:items-center">
         <div className="flex flex-col gap-5">
-          <div className="flex md:items-center gap-2 w-full">
-            <img src={Logo} alt="SPARCS UP Min Logo" className="inline" />
-            <img src={TitleWhite} alt="Techtix Title" className="inline" />
+          <div className="flex md:items-center gap-2 w-full max-w-[15rem]">
+            <img src={logoTitleWhite} alt="SPARCS UP Min Logo" className="inline" />
           </div>
           <p>Seamlessly find, follow, and buy tickets for tech events hosted by Davao's vibrant tech communities.</p>
           <div className="flex flex-col gap-2 items-start">
