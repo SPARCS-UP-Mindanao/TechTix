@@ -1,20 +1,28 @@
+import { Globe } from 'lucide-react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import { getAllEvents } from '@/api/events';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
+import diceLogo from '../assets/logos/DICE_Lockup_Colored_Horizontal_Dark.svg';
+import sparcsLogo from '../assets/logos/icon-192x192.png';
+import iconFb from '../assets/logos/icon-fb.svg';
+import iconIg from '../assets/logos/icon-ig.svg';
+import iconLinkedin from '../assets/logos/icon-linkedin.svg';
+import location from '../assets/logos/icon-loc.svg';
 import Logo from '../assets/logos/techtix-logo.png';
-import TitleBlack from '../assets/logos/techtix-title-black.png';
+import TitleBorder from '../assets/logos/techtix-title-border.png';
+import TitleWhite from '../assets/logos/techtix-title-white.svg';
 import MakeEvent from '../assets/make-event.png';
 import Robot from '../assets/robot.svg';
 
 function Header() {
   return (
     <header className="fixed z-20 h-20 md:h-28 md:px-10 flex items-center">
-      <div className="scale-75">
+      <div className="scale-75 h-full">
         <img src={Logo} alt="Techtix Logo" className="inline" />
-        <img src={TitleBlack} alt="Techtix Title" className="inline" />
+        <img src={TitleBorder} alt="Techtix Title" className="inline h-1/2 w-auto" />
       </div>
     </header>
   );
@@ -101,7 +109,7 @@ function Hero() {
 
 function MakeYourOwnEvent() {
   return (
-    <section className="bg-primary-700 flex flex-col md:flex-row items-center md:items-start md:justify-center md:gap-10 px-5 pt-52 md:pt-16 md:pb-16 pb-10 relative">
+    <section className="bg-primary-700 flex flex-col md:flex-row items-center md:items-start md:justify-center md:gap-16 px-5 pt-52 md:pt-16 md:pb-16 pb-10 relative">
       <div className="md:relative w-full h-full max-w-sm md:max-w-md md:min-w-[20rem]">
         <img
           src={MakeEvent}
@@ -119,6 +127,84 @@ function MakeYourOwnEvent() {
     </section>
   );
 }
+function Footer() {
+  return (
+    <footer
+      className="bg-primary-700 w-full grid md:grid-cols-3 grid-cols-1 gap-10 md:gap-5 lg:gap-10 text-white font-raleway font-light p-12 md:px-10 lg:px-32"
+      id="contact"
+    >
+      <div className="flex flex-col md:items-center">
+        <div className="flex flex-col gap-5">
+          <div className="flex md:items-center gap-2 w-full">
+            <img src={Logo} alt="SPARCS UP Min Logo" className="inline" />
+            <img src={TitleWhite} alt="Techtix Title" className="inline" />
+          </div>
+          <p>Seamlessly find, follow, and buy tickets for tech events hosted by Davao's vibrant tech communities.</p>
+          <div className="flex flex-col gap-2 items-start">
+            <p className="font-bold text-lg">In Collaboration with:</p>
+            <img src={diceLogo} alt="DICE Logo" className="h-9" />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col md:items-center">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2 items-start">
+            <p className="font-bold text-lg">Brought To You By:</p>
+            <div className="flex md:items-center gap-1">
+              <img src={sparcsLogo} alt="SPARCS UP Min Logo" className="w-16 h-16" />
+              <div className="flex flex-col">
+                <p className="font-raleway">UP Mindanao</p>
+                <p className="font-arca font-bold text-3xl">SPARCS</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex md:items-center gap-5">
+            <img src={location} alt="Location Icon" />
+            <p>University of the Philippines Mindanao, Tugbok District, Mintal, Davao City, Philippines 8000</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <Globe />
+              <a target="_blank" className="hover:underline" href="https://www.sparcsup.com/">
+                sparcsup.com
+              </a>
+            </div>
+            <div className="flex gap-2">
+              <img src={iconFb} alt="Facebook" />
+              <a target="_blank" className="hover:underline" href="https://www.facebook.com/SPARCSUPMin/">
+                /SparcsUPMin
+              </a>
+            </div>
+            <div className="flex gap-2">
+              <img src={iconLinkedin} alt="LinkedIn" />
+              <a target="_blank" className="hover:underline" href="https://www.linkedin.com/company/sparcsup/">
+                /sparcs_upmin
+              </a>
+            </div>
+            <div className="flex gap-2">
+              <img src={iconIg} alt="Instagram" />
+              <a target="_blank" className="hover:underline" href="https://www.instagram.com/sparcsup/">
+                /sparcsup
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col md:items-center">
+        <div className="flex flex-col gap-5">
+          <p className="font-bold text-lg">Stay in the loop</p>
+          <p>Join our mailing list to stay in the loop with our newest for Tech Events and meetups.</p>
+          <div className="w-full max-w-xs relative">
+            <input type="text" placeholder="Enter your email address" className="h-12 text-xs rounded-full p-5 w-full text-black" />
+            <Button variant={'primaryGradient'} className="h-12 rounded-full absolute right-0">
+              Subscribe
+            </Button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
 
 function HomePageComponent() {
   return (
@@ -128,6 +214,8 @@ function HomePageComponent() {
         <Hero />
         <EventCardList />
         <MakeYourOwnEvent />
+        <Footer />
+        <p className="text-black bg-white text-center text-xs py-2">Copyright © 2024 UP Mindanao SPARCS</p>
       </main>
     </>
   );
