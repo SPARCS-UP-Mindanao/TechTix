@@ -1,83 +1,25 @@
-import { Globe } from 'lucide-react';
-import moment from 'moment';
+import { useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import Button from '@/components/Button';
-import Card from '@/components/Card';
-import { getAllEvents } from '@/api/events';
-import { Event } from '@/model/events';
-import { useApiQuery } from '@/hooks/useApi';
-import diceLogo from '../assets/logos/DICE_Lockup_Colored_Horizontal_Dark.svg';
-import sparcsLogo from '../assets/logos/icon-192x192.png';
-import iconFb from '../assets/logos/icon-fb.svg';
-import iconIg from '../assets/logos/icon-ig.svg';
-import iconLinkedin from '../assets/logos/icon-linkedin.svg';
-import location from '../assets/logos/icon-loc.svg';
+import EventCardList from '@/components/EventCardList';
+import Footer from '@/components/Footer';
 import logoTitleBorder from '../assets/logos/techtix-border-logo-title.png';
-import logoTitleWhite from '../assets/logos/techtix-white-logo-title.png';
 import MakeEvent from '../assets/make-event.png';
 import Robot from '../assets/robot.svg';
 
 function Header() {
   return (
     <header className="fixed z-20 py-4 md:py-6 h-20 md:h-28 px-5 md:px-24 flex items-center">
-      <img src={logoTitleBorder} alt="Techtix Logo" className="inline h-full w-auto" />
+      <Link to={'#hero'} className="inline h-full w-auto">
+        <img src={logoTitleBorder} alt="Techtix Logo" className="inline h-full w-auto" />
+      </Link>
     </header>
-  );
-}
-
-function EventCardList() {
-  const { data: response, isFetching } = useApiQuery(getAllEvents());
-  if (isFetching) {
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
-
-  if (!response || (response && !response.data)) {
-    return (
-      <div className="py-10">
-        <h1>Events not found</h1>
-      </div>
-    );
-  }
-
-  if (response.status === 200 && !response.data.length) {
-    return (
-      <div>
-        <h1>There are currently no events</h1>
-      </div>
-    );
-  }
-
-  const eventInfos: Event[] = response.data;
-  return (
-    <section className="bg-white md:p-20 py-20 flex flex-col items-center">
-      <h1 className="text-center !text-primary-700">Upcoming Events</h1>
-      <div className="grid grid-cols-2 p-10 gap-5">
-        {eventInfos.map((eventInfo) => (
-          <Card
-            key={eventInfo.eventId}
-            cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
-            className="flex flex-col items-center justify-between"
-          >
-            <p>
-              {moment(eventInfo.startDate).format('MMMM D YYYY hh:mm A')} - {moment(eventInfo.endDate).format('MMM D YYYY hh:mm A')}
-            </p>
-            <div>Ticket Price: ₱{eventInfo.price}</div>
-          </Card>
-        ))}
-      </div>
-      <Button className="py-8 px-14 rounded-full w-56" variant={'outline'}>
-        Load More
-      </Button>
-    </section>
   );
 }
 
 function Hero() {
   return (
-    <section className={`w-full bg-[url('../assets/logos/hero-bg.png')] bg-no-repeat bg-cover bg-right relative`}>
+    <section id="hero" className={`w-full bg-[url('../assets/logos/hero-bg.png')] bg-no-repeat bg-cover bg-right relative`}>
       <div className="absolute h-full w-full bg-white opacity-80 z-0"></div>
       <div className="pt-20 relative z-10 min-h-screen md:px-28 grid grid-rows-5 md:grid-rows-none md:grid-cols-6 md:justify-center w-full">
         <div className="relative md:absolute md:right-0 md:w-1/2 max-w-3xl row-span-2 w-full md:h-full">
@@ -94,9 +36,11 @@ function Hero() {
               Seamlessly find, follow, and buy tickets for tech events hosted by Davao's vibrant tech communities.
             </p>
           </div>
-          <Button variant={'primaryGradient'} className="text-lg w-48 p-8 rounded-2xl">
-            Join Events
-          </Button>
+          <Link to="./events">
+            <Button variant={'primaryGradient'} className="text-lg w-48 p-8 rounded-2xl">
+              Join Events
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
@@ -123,94 +67,34 @@ function MakeYourOwnEvent() {
     </section>
   );
 }
-function Footer() {
-  return (
-    <footer
-      className="bg-primary-700 w-full grid md:grid-cols-3 grid-cols-1 gap-10 md:gap-5 lg:gap-10 text-white font-raleway font-light p-12 md:px-10 lg:px-32"
-      id="contact"
-    >
-      <div className="flex flex-col md:items-center">
-        <div className="flex flex-col gap-5">
-          <div className="flex md:items-center gap-2 w-full max-w-[15rem]">
-            <img src={logoTitleWhite} alt="SPARCS UP Min Logo" className="inline" />
-          </div>
-          <p>Seamlessly find, follow, and buy tickets for tech events hosted by Davao's vibrant tech communities.</p>
-          <div className="flex flex-col gap-2 items-start">
-            <p className="font-bold text-lg">In Collaboration with:</p>
-            <img src={diceLogo} alt="DICE Logo" className="h-9" />
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col md:items-center">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2 items-start">
-            <p className="font-bold text-lg">Brought To You By:</p>
-            <div className="flex md:items-center gap-1">
-              <img src={sparcsLogo} alt="SPARCS UP Min Logo" className="w-16 h-16" />
-              <div className="flex flex-col">
-                <p className="font-raleway">UP Mindanao</p>
-                <p className="font-arca font-bold text-3xl">SPARCS</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex md:items-center gap-5">
-            <img src={location} alt="Location Icon" />
-            <p>University of the Philippines Mindanao, Tugbok District, Mintal, Davao City, Philippines 8000</p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <Globe />
-              <a target="_blank" className="hover:underline" href="https://www.sparcsup.com/">
-                sparcsup.com
-              </a>
-            </div>
-            <div className="flex gap-2">
-              <img src={iconFb} alt="Facebook" />
-              <a target="_blank" className="hover:underline" href="https://www.facebook.com/SPARCSUPMin/">
-                /SparcsUPMin
-              </a>
-            </div>
-            <div className="flex gap-2">
-              <img src={iconLinkedin} alt="LinkedIn" />
-              <a target="_blank" className="hover:underline" href="https://www.linkedin.com/company/sparcsup/">
-                /sparcs_upmin
-              </a>
-            </div>
-            <div className="flex gap-2">
-              <img src={iconIg} alt="Instagram" />
-              <a target="_blank" className="hover:underline" href="https://www.instagram.com/sparcsup/">
-                /sparcsup
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col md:items-center">
-        <div className="flex flex-col gap-5">
-          <p className="font-bold text-lg">Stay in the loop</p>
-          <p>Join our mailing list to stay in the loop with our newest for Tech Events and meetups.</p>
-          <div className="w-full max-w-xs relative">
-            <input type="text" placeholder="Enter your email address" className="h-12 text-xs rounded-full p-5 w-full text-black" />
-            <Button variant={'primaryGradient'} className="h-12 rounded-full absolute right-0">
-              Subscribe
-            </Button>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 function HomePageComponent() {
+  const location = useLocation();
+  useEffect(() => {
+    const anchorId = location.hash.replace('#', '');
+    if (anchorId) {
+      const element = document.getElementById(anchorId);
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
+  }, [location.hash]);
+
   return (
     <>
       <main>
         <Header />
         <Hero />
-        <EventCardList />
+        <section className="bg-white md:p-20 px-5 py-20 flex flex-col items-center">
+          <h1 className="text-center !text-primary-700">Upcoming Events</h1>
+          <EventCardList />
+          <Button className="py-8 px-14 rounded-full w-56" variant={'outline'}>
+            Load More
+          </Button>
+        </section>
         <MakeYourOwnEvent />
         <Footer />
-        <p className="text-black bg-white text-center text-xs py-2">Copyright © 2024 UP Mindanao SPARCS</p>
+        <div id="contact"></div>
       </main>
     </>
   );

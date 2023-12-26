@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
+import EventsPage from '@/pages/EventsPage';
 import HomePage from '@/pages/HomePage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
@@ -17,6 +18,10 @@ export const routes = createBrowserRouter([
   {
     path: '',
     element: HomePage()
+  },
+  {
+    path: '/events',
+    element: EventsPage()
   },
   {
     path: '/:eventId',
