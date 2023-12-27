@@ -50,6 +50,7 @@ const AdminPageContent = () => {
         alertModalTitle="Sign out"
         alertModalDescription="Are you sure you want to sign out?"
         visible={isLogoutOpen}
+        confirmVariant="negative"
         onOpenChange={setLogoutOpen}
         onCancelAction={onCloseLogoutModal}
         onCompleteAction={onLogoutAdmin}
