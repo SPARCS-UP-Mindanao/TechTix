@@ -58,8 +58,8 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
       <li>
         <Button
           className={cn(
-            'flex w-full justify-start text-primary-foreground border-none hover:bg-primary-foreground hover:text-primary-500',
-            (currentRouteSelected || selected) && 'text-primary-500 bg-primary-foreground pointer-events-none',
+            'flex w-full justify-start text-primary-700 md:text-primary-foreground border-none hover:bg-primary-foreground hover:text-primary-700',
+            (currentRouteSelected || selected) && 'text-primary-foreground bg-primary-700 md:text-primary-700 md:bg-primary-foreground pointer-events-none',
             !isSidebarOpen && 'justify-center'
           )}
           onClick={onOptionSelect}
@@ -83,7 +83,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
     };
 
     const MobileSidebar = () => (
-      <Sheet className="bg-primary-500 pt-12" closeIconClassName="text-primary-foreground" visible={isMobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+      <Sheet className="bg-background pt-12" closeIconClassName="text-primary-700" visible={isMobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
         <div className="h-full flex flex-col justify-between">
           <ul className="space-y-4">{upperOptions}</ul>
           <ul className="space-y-4">{lowerOptions}</ul>
@@ -92,7 +92,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
     );
 
     return (
-      <nav className="flex flex-shrink-0 justify-center items-center p-2 bg-primary-500">
+      <nav className="flex flex-shrink-0 justify-center items-center p-2 bg-primary-700">
         <Button
           variant="ghost"
           className="text-primary-foreground absolute left-2"
@@ -112,7 +112,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
 
   return (
     <CollapsibleSidebar
-      className="max-h-screen h-full left-0 p-4 bg-primary-500 flex-shrink-0 relative z-0 mr-[-25px]"
+      className="max-h-screen h-full left-0 p-4 bg-primary-700 flex-shrink-0 relative z-0 mr-[-25px]"
       open={isSidebarOpen}
       openSidebarWidth={openSidebarWidth}
       collapsedSidebarWidth={collapsedSidebarWidth}

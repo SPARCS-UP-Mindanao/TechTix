@@ -36,7 +36,7 @@ const CreateEventSheet: FC<CreateEventSheetProps> = ({ isCreateEventOpen, setCre
   );
 
   return (
-    <Sheet side="right" onOpenChange={setCreateEventOpen} visible={isCreateEventOpen} className="space-y-4" footer={footer}>
+    <Sheet side="right" onOpenChange={setCreateEventOpen} visible={isCreateEventOpen} className="pt-12 space-y-4" footer={footer}>
       <h3>Create event</h3>
       <FormProvider {...form}>
         <CreateEventForm />

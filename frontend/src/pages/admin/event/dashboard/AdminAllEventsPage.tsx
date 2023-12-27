@@ -68,10 +68,12 @@ const Dashboard: FC<DashboardProps> = ({ events, refetch }) => {
 
   return (
     <div className="flex flex-col w-full h-full p-8 space-y-6 overflow-auto">
-      <h3>Dashboard</h3>
+      <h3 className="text-primary-900">Dashboard</h3>
 
       <div>
-        <span className="font-bold text-primary-400 rounded-md border border-primary p-2">{events.length} Events</span>
+        <span className="font-bold text-primary-700 text-base rounded-md border border-primary p-2">
+          <span className="text-primary-400">{events.length}</span> Events
+        </span>
       </div>
 
       {!!onGoingEvents.length && (
