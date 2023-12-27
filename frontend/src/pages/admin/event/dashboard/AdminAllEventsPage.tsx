@@ -78,8 +78,8 @@ const Dashboard: FC<DashboardProps> = ({ events, refetch }) => {
         <div>
           <h4>Ongoing events</h4>
           <div className="flex space-x-2">
-            {onGoingEvents.map((eventInfo) => (
-              <EventCard key={eventInfo.eventId} eventInfo={eventInfo} refetch={refetch} onClick={viewEvent(eventInfo.eventId)} />
+            {onGoingEvents.map((event) => (
+              <EventCard key={event.eventId} event={event} refetch={refetch} onClick={viewEvent(event.eventId)} />
             ))}
           </div>
         </div>
@@ -89,8 +89,8 @@ const Dashboard: FC<DashboardProps> = ({ events, refetch }) => {
         <div>
           <h4>Upcoming events</h4>
           <div className="flex space-x-2">
-            {upcomingEvents.map((eventInfo) => (
-              <EventCard key={eventInfo.eventId} eventInfo={eventInfo} refetch={refetch} onClick={viewEvent(eventInfo.eventId)} />
+            {upcomingEvents.map((event) => (
+              <EventCard key={event.eventId} event={event} refetch={refetch} onClick={viewEvent(event.eventId)} />
             ))}
           </div>
         </div>
@@ -100,8 +100,8 @@ const Dashboard: FC<DashboardProps> = ({ events, refetch }) => {
         <div>
           <h4>Past events</h4>
           <div className="flex space-x-2">
-            {pastEvents.map((eventInfo) => (
-              <EventCard key={eventInfo.eventId} eventInfo={eventInfo} refetch={refetch} onClick={viewEvent(eventInfo.eventId)} />
+            {pastEvents.map((event) => (
+              <EventCard key={event.eventId} event={event} refetch={refetch} onClick={viewEvent(event.eventId)} />
             ))}
           </div>
         </div>

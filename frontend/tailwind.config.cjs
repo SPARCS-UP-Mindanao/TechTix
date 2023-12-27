@@ -168,7 +168,8 @@ module.exports = {
       },
       transitionProperty: {
         width: 'width',
-        height: 'height'
+        height: 'height',
+        opacity: 'opacity'
       }
     }
   },
