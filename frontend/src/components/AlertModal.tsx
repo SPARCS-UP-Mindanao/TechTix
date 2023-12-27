@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { VariantProps } from 'class-variance-authority';
 import { buttonVariants } from '@/components/Button';
 import { cn } from '@/utils/classes';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
@@ -75,29 +76,24 @@ const AlertDialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => <AlertDialogPrimitive.Description ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />);
 AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayName;
 
-interface AlertDialogActionProps extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action> {
+interface AlertDialogActionProps extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>, VariantProps<typeof buttonVariants> {
   onCompleteAction: () => void;
 }
 
 const AlertDialogAction = React.forwardRef<React.ElementRef<typeof AlertDialogPrimitive.Action>, AlertDialogActionProps>(
-  ({ className, onCompleteAction, ...props }, ref) => (
-    <AlertDialogPrimitive.Action ref={ref} onClick={onCompleteAction} className={cn(buttonVariants(), className)} {...props} />
+  ({ className, variant, onCompleteAction, ...props }, ref) => (
+    <AlertDialogPrimitive.Action ref={ref} onClick={onCompleteAction} className={cn(buttonVariants({ variant }), className)} {...props} />
   )
 );
 AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
 
-interface AlertDialogCancelProps extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel> {
+interface AlertDialogCancelProps extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>, VariantProps<typeof buttonVariants> {
   onCancelAction: () => void;
 }
 
 const AlertDialogCancel = React.forwardRef<React.ElementRef<typeof AlertDialogPrimitive.Cancel>, AlertDialogCancelProps>(
-  ({ className, onCancelAction, ...props }, ref) => (
-    <AlertDialogPrimitive.Cancel
-      ref={ref}
-      onClick={onCancelAction}
-      className={cn(buttonVariants({ variant: 'outline' }), 'mt-2 sm:mt-0', className)}
-      {...props}
-    />
+  ({ className, variant = 'outline', onCancelAction, ...props }, ref) => (
+    <AlertDialogPrimitive.Cancel ref={ref} onClick={onCancelAction} className={cn(buttonVariants({ variant }), 'mt-2 sm:mt-0', className)} {...props} />
   )
 );
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
@@ -122,6 +118,8 @@ interface AlertDialogProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultOpen?: boolean;
   cancelText?: string;
   confirmText?: string;
+  cancelVariant?: VariantProps<typeof buttonVariants>['variant'];
+  confirmVariant?: VariantProps<typeof buttonVariants>['variant'];
   onOpenChange: (open: boolean) => void;
   onCancelAction?: () => void;
   onCompleteAction: () => void;
@@ -135,6 +133,8 @@ const AlertModal = ({
   defaultOpen = false,
   cancelText,
   confirmText,
+  cancelVariant,
+  confirmVariant,
   onOpenChange,
   onCancelAction,
   onCompleteAction
@@ -150,8 +150,12 @@ const AlertModal = ({
           <AlertDialogDescription>{alertModalDescription}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onCancelAction={onCancelAction || defaultOnCancelAction}>{cancelText ? cancelText : 'Cancel'}</AlertDialogCancel>
-          <AlertDialogAction onCompleteAction={onCompleteAction}>{confirmText ? confirmText : 'Confirm'}</AlertDialogAction>
+          <AlertDialogCancel variant={cancelVariant} onCancelAction={onCancelAction || defaultOnCancelAction}>
+            {cancelText ? cancelText : 'Cancel'}
+          </AlertDialogCancel>
+          <AlertDialogAction variant={confirmVariant} onCompleteAction={onCompleteAction}>
+            {confirmText ? confirmText : 'Confirm'}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialogContainer>

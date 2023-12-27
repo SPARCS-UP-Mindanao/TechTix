@@ -14,8 +14,8 @@ interface CertificateClaimProps {
 const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemplateKey }: CertificateClaimProps) => {
   const imageNameImg = `${decodeURIComponent(certificateTemplateKey?.split('/').pop() ?? '')}`;
   const imageNamePdf = `${decodeURIComponent(certificatePDFTemplateKey?.split('/').pop() ?? '')}`;
-  const certificateImgDataURL = useFileUrl(certificateTemplateKey!);
-  const certificatePdfDataURL = useFileUrl(certificatePDFTemplateKey!);
+  const { fileUrl: certificateImgDataURL } = useFileUrl(certificateTemplateKey!);
+  const { fileUrl: certificatePdfDataURL } = useFileUrl(certificatePDFTemplateKey!);
 
   const downloadImage = () => {
     const link = document.createElement('a');

@@ -44,16 +44,18 @@ const sheetVariants = cva(
   }
 );
 
-interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>, VariantProps<typeof sheetVariants> {}
+interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>, VariantProps<typeof sheetVariants> {
+  closeIconClassName?: string;
+}
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
-  ({ side = 'left', className, children, ...props }, ref) => (
+  ({ side = 'left', className, closeIconClassName, children, ...props }, ref) => (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
         {children}
         <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <Icon name="X" className="h-4 w-4" />
+          <Icon name="X" className={cn('w-4 h-4', closeIconClassName)} />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
@@ -86,6 +88,8 @@ SheetDescription.displayName = SheetPrimitive.Description.displayName;
 export { SheetContainer, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription };
 
 interface SheetProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> {
+  side?: 'left' | 'right' | 'top' | 'bottom';
+  closeIconClassName?: string;
   trigger?: React.ReactNode;
   header?: React.ReactNode;
   footer?: React.ReactNode;
@@ -96,19 +100,33 @@ interface SheetProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitiv
   onOpenChange?: (open: boolean) => void;
 }
 
-const Sheet = ({ trigger, header, description, sheetClose, children, defaultOpen = false, onOpenChange, ...props }: SheetProps) => {
+const Sheet = ({
+  side = 'left',
+  trigger,
+  header,
+  description,
+  footer,
+  sheetClose,
+  className,
+  closeIconClassName,
+  children,
+  defaultOpen = false,
+  visible = false,
+  onOpenChange,
+  ...props
+}: SheetProps) => {
   return (
-    <SheetContainer defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+    <SheetContainer defaultOpen={defaultOpen} open={visible} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
-      <SheetContent {...props}>
-        <SheetHeader>
-          <SheetTitle>{header}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
-        </SheetHeader>
+      <SheetContent side={side} closeIconClassName={closeIconClassName} className={cn('h-max-screen overflow-y-auto', className)} {...props}>
+        {(header || description) && (
+          <SheetHeader>
+            {header && <SheetTitle>{header}</SheetTitle>}
+            {description && <SheetDescription>{description}</SheetDescription>}
+          </SheetHeader>
+        )}
         {children}
-        <SheetFooter>
-          <SheetClose asChild>{sheetClose}</SheetClose>
-        </SheetFooter>
+        {footer && <SheetFooter>{footer}</SheetFooter>}
       </SheetContent>
     </SheetContainer>
   );

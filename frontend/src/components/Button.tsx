@@ -42,25 +42,26 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   asChild?: boolean;
   loading?: boolean;
   icon?: string;
+  iconClassname?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, children, icon = '', asChild = false, loading = false, disabled = false, ...props }, ref) => {
+  ({ className, variant, size, children, icon = '', iconClassname, asChild = false, loading = false, disabled = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
-    const iconClassName = cn('h-4 w-4', size !== 'icon' && 'mr-3', loading && 'animate-spin');
+    const iconStyles = cn('h-4 w-4', size !== 'icon' && 'mr-3', iconClassname, loading && 'animate-spin');
 
     const getButtonContent = () => {
       if (size === 'icon') {
         return (
           <>
-            <Icon name={loading ? 'CircleNotch' : icon} className={iconClassName} />
+            <Icon name={loading ? 'CircleNotch' : icon} className={iconStyles} />
             {children}
           </>
         );
       }
       return (
         <>
-          {loading && <Icon name="CircleNotch" className={iconClassName} />}
+          {loading && <Icon name="CircleNotch" className={iconStyles} />}
           {children}
         </>
       );

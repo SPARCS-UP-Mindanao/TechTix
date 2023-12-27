@@ -39,9 +39,10 @@ export type EventFormValues = z.infer<typeof EventFormSchema>;
 interface EventFormProps {
   eventId?: string;
   refetch?: () => void;
+  setCreateEventOpen?: (value: boolean) => void;
 }
 
-export const useAdminEventForm = ({ eventId, refetch }: EventFormProps) => {
+export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: EventFormProps) => {
   const { successToast, errorToast } = useNotifyToast();
 
   const form = useForm<EventFormValues>({
@@ -79,10 +80,13 @@ export const useAdminEventForm = ({ eventId, refetch }: EventFormProps) => {
       }
 
       const response = await event();
+
       if (response.status === 200) {
+        const successTitle = eventId ? 'Event updated' : 'Event created';
+        const successMessage = eventId ? 'Event updated successfully' : 'Event created successfully';
         successToast({
-          title: 'Event Info',
-          description: `Event Updated Successfully  `
+          title: successTitle,
+          description: successMessage
         });
 
         form.reset();
@@ -91,8 +95,7 @@ export const useAdminEventForm = ({ eventId, refetch }: EventFormProps) => {
         // Fetch the event details after successful submission
         if (eventId) {
           const { queryFn: getEventDetails } = getEvent(eventId);
-          const eventResponse = await getEventDetails();
-          const eventData = eventResponse.data;
+          const { data: eventData } = await getEventDetails();
 
           // Set the form values with the fetched event data
           Object.keys(eventData).forEach((key) => {
@@ -101,11 +104,13 @@ export const useAdminEventForm = ({ eventId, refetch }: EventFormProps) => {
               form.setValue(eventKey, eventData[eventKey]);
             }
           });
+        } else if (setCreateEventOpen) {
+          setCreateEventOpen(false);
         }
       } else {
         errorToast({
-          title: 'Error in Event',
-          description: 'An error occurred while submitting. Please try again.'
+          title: 'Error in creating an event',
+          description: response.errorData.message || 'An error occurred while submitting. Please try again.'
         });
       }
     } catch (e) {

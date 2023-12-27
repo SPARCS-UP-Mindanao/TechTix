@@ -1,0 +1,24 @@
+{
+  "name": "tech-tix-app",
+  "version": "1.0.0",
+  "description": "- Serverless Framework\r - AWS Lambda\r - Python\r - FastAPI\r - Vite\r - React + Typescript\r - Shadcn/ui",
+  "main": "/frontend/src/main.tsx",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "install": "cd frontend && npm install",
+    "i": "cd frontend && npm i",
+    "build": "cd frontend && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SPARCS-UP-Mindanao/TechTix.git"
+  },
+  "author": "SPARCS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SPARCS-UP-Mindanao/TechTix/issues"
+  },
+  "homepage": "https://github.com/SPARCS-UP-Mindanao/TechTix#readme"
+}
