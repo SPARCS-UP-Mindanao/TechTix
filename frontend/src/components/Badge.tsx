@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/classes';
+import Icon from './Icon';
 
 const badgeVariants = cva(
   'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -20,10 +21,21 @@ const badgeVariants = cva(
   }
 );
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
+  loading?: boolean;
+}
 
-function Badge({ className, variant, onClick, ...props }: BadgeProps) {
-  return <div onClick={onClick} className={cn(badgeVariants({ variant }), className, onClick && 'cursor-pointer')} {...props} />;
+function Badge({ className, variant, onClick, children, loading = false, ...props }: BadgeProps) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(badgeVariants({ variant }), 'flex justify-center items-center p-2', className, onClick && 'cursor-pointer')}
+      {...props}
+    >
+      {loading && <Icon name="CircleNotch" className="w-3 h-3 animate-spin mr-1" />}
+      {children}
+    </div>
+  );
 }
 
 export { badgeVariants };

@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
@@ -7,6 +8,7 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { getAllDiscounts } from '@/api/discounts';
 import { Discount } from '@/model/discount';
+import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
@@ -103,10 +105,9 @@ const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => 
   );
 };
 
-interface Props {
-  eventId?: string;
-}
-const AdminEventDiscounts: FC<Props> = ({ eventId }) => {
+const AdminEventDiscounts: FC = () => {
+  const { eventId } = useOutletContext<Event>();
+
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
 
   if (!eventId) {
@@ -151,4 +152,8 @@ const AdminEventDiscounts: FC<Props> = ({ eventId }) => {
   );
 };
 
-export default AdminEventDiscounts;
+const AdminEventDiscountsPage = () => {
+  return <AdminEventDiscounts />;
+};
+
+export default AdminEventDiscountsPage;

@@ -13,6 +13,7 @@ const s3Client = new S3Client({
 
 export const useFileUrl = (key: string) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
 
   const getFile = async (filename: string): Promise<void> => {
     const getParams: GetObjectAclCommandInput = {
@@ -21,11 +22,14 @@ export const useFileUrl = (key: string) => {
     };
 
     try {
+      setLoading(true);
       const { Body } = await s3Client.send(new GetObjectCommand(getParams));
       const blob = await new Response(Body as ReadableStream).blob();
       setFileUrl(URL.createObjectURL(blob));
     } catch (error) {
       console.log('Error', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,5 +46,8 @@ export const useFileUrl = (key: string) => {
     };
   }, [key]);
 
-  return fileUrl;
+  return {
+    fileUrl,
+    isLoading
+  };
 };

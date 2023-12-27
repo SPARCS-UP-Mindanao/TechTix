@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import DatePicker from '@/components/DatePicker';
@@ -10,11 +11,8 @@ import { Textarea } from '@/components/TextArea';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
-interface Props {
-  event: Event;
-}
-
-const AdminEventInfo: FC<Props> = ({ event }) => {
+const AdminEventInfo: FC = () => {
+  const event = useOutletContext<Event>();
   const { eventId } = event;
   const { form, submit } = useAdminEventForm({ eventId });
   const { setValue } = form;
@@ -181,4 +179,8 @@ const AdminEventInfo: FC<Props> = ({ event }) => {
   );
 };
 
-export default AdminEventInfo;
+const AdminEventInfoPage = () => {
+  return <AdminEventInfo />;
+};
+
+export default AdminEventInfoPage;

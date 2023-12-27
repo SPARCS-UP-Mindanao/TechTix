@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignOut } from 'react-auth-kit';
 import { getCookie, removeCookie } from 'typescript-cookie';
@@ -6,6 +7,7 @@ import { CustomAxiosError } from '@/api/utils/createApi';
 import { useNotifyToast } from './useNotifyToast';
 
 export const useAdminLogout = () => {
+  const [isLogoutOpen, setLogoutOpen] = useState(false);
   const { errorToast } = useNotifyToast();
   const navigate = useNavigate();
   const signOut = useSignOut();
@@ -30,5 +32,5 @@ export const useAdminLogout = () => {
     }
   };
 
-  return { onLogoutUser: onLogoutAdmin };
+  return { isLogoutOpen, setLogoutOpen, onLogoutAdmin };
 };

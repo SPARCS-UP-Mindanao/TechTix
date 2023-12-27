@@ -33,7 +33,7 @@ const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive
       sideOffset={sideOffset}
       side={side}
       className={cn(
-        'z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        'z-50 overflow-hidden rounded-md bg-card text-card-foreground border border-border px-3 py-1.5 text-xs animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
         className
       )}
       {...props}
@@ -49,17 +49,17 @@ interface TooltipProps extends React.ComponentPropsWithoutRef<typeof TooltipCont
   delayDuration?: number;
   skipDelayDuration?: number;
   defaultOpen?: boolean;
+  side?: 'top' | 'right' | 'bottom' | 'left';
 }
 
-const Tooltip = ({ children, toolTipContent, delayDuration = 300, skipDelayDuration = 300, defaultOpen = false, ...props }: TooltipProps) => {
+const Tooltip = ({ children, toolTipContent, delayDuration = 300, skipDelayDuration = 300, defaultOpen = false, side = 'top', ...props }: TooltipProps) => {
   return (
     <TooltipProvider delayDuration={delayDuration} skipDelayDuration={skipDelayDuration} disableHoverableContent>
       <TooltipContainer defaultOpen={defaultOpen}>
         <TooltipTrigger asChild>
           <div>{children}</div>
         </TooltipTrigger>
-        <TooltipContent {...props} sideOffset={8}>
-          <TooltipArrow />
+        <TooltipContent side={side} {...props} sideOffset={8}>
           {toolTipContent}
         </TooltipContent>
       </TooltipContainer>

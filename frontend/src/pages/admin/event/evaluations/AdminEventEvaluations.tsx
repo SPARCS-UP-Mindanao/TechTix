@@ -1,14 +1,13 @@
 import { FC } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { DataTable } from '@/components/DataTable';
 import { getEvaluations } from '@/api/evaluations';
+import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { evaluationColumns } from './EvaluationColumns';
 
-interface Props {
-  eventId?: string;
-}
-
-const AdminEventeEvaluations: FC<Props> = ({ eventId }) => {
+const AdminEventeEvaluations: FC = () => {
+  const { eventId } = useOutletContext<Event>();
   const { data: response, isFetching } = useApiQuery(getEvaluations(eventId!));
 
   if (!eventId) {
@@ -43,4 +42,8 @@ const AdminEventeEvaluations: FC<Props> = ({ eventId }) => {
   );
 };
 
-export default AdminEventeEvaluations;
+const AdminEventeEvaluationsPage = () => {
+  return <AdminEventeEvaluations />;
+};
+
+export default AdminEventeEvaluationsPage;
