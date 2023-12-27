@@ -75,32 +75,4 @@
       margin: 0;
     }
   }
-
-  .adminPage {
-    height: 100%;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 2rem;
-  }
-
-  .adminSideBar {
-    max-height: 100vh;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    z-index: 10;
-    padding: 2rem;
-  }
-
-  .loginPage {
-    height: 100%;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 8rem;
-    padding-bottom: 4rem;
-  }
 }
