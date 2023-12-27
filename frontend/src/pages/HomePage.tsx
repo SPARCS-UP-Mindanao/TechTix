@@ -85,7 +85,7 @@ function HomePageComponent() {
       <main>
         <Header />
         <Hero />
-        <section className="bg-white md:p-20 px-5 py-20 flex flex-col items-center">
+        <section className="bg-white px-5 py-20 flex flex-col items-center">
           <h1 className="text-center !text-primary-700">Upcoming Events</h1>
           <EventCardList />
           <Button className="py-8 px-14 rounded-full w-56" variant={'outline'}>

@@ -1,8 +1,7 @@
-import moment from 'moment';
-import Card from '@/components/Card';
 import { getAllEvents } from '@/api/events';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
+import EventCard from './EventCard';
 import Skeleton from './Skeleton';
 
 function EventCardList() {
@@ -10,20 +9,15 @@ function EventCardList() {
   const { data: response, isFetching } = useApiQuery(getAllEvents());
   if (isFetching) {
     return (
-      <div className="grid grid-cols-2 py-10 gap-5">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 py-10 gap-5 items-center justify-center justify-items-center">
         {[...Array(skeletonCount)].map((index) => (
-          <div className="flex flex-col gap-2 rounded-xl p-5 shadow-lg" key={index}>
-            <div className="flex items-center space-x-4 ">
-              <Skeleton className="h-12 w-12 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-              </div>
+          <div className="flex flex-col gap-2 rounded-xl shadow-lg w-[245px] h-[220px]" key={index}>
+            <Skeleton className="w-full h-1/2" />
+            <div className="p-4 flex flex-col gap-1">
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
             </div>
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
           </div>
         ))}
       </div>
@@ -48,18 +42,9 @@ function EventCardList() {
 
   const eventInfos: Event[] = response.data;
   return (
-    <div className="grid grid-cols-2 py-10 gap-5">
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 py-10 gap-5 items-center justify-center justify-items-center">
       {eventInfos.map((eventInfo) => (
-        <Card
-          key={eventInfo.eventId}
-          cardDescription={<span className="inline-block w-full text-center ">{eventInfo.description}</span>}
-          className="flex flex-col items-center justify-between"
-        >
-          <p>
-            {moment(eventInfo.startDate).format('MMMM D YYYY hh:mm A')} - {moment(eventInfo.endDate).format('MMM D YYYY hh:mm A')}
-          </p>
-          <div>Ticket Price: ₱{eventInfo.price}</div>
-        </Card>
+        <EventCard key={eventInfo.eventId} event={eventInfo} isDeleteEnabled={false} className="w-[245px] h-[220px] shadow-lg light border-none" />
       ))}
     </div>
   );

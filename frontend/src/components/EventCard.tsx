@@ -79,7 +79,7 @@ const EventCardFooter: FC<CardFooterProps> = ({ event }) => {
   };
   return (
     <CardFooter className="w-full h-1/2 flex flex-col justify-evenly space-y-1 items-start p-4 pt-2 overflow-hidden group-hover:bg-accent transition-colors">
-      <h4 className="max-w-full max-h-full text-sm line-clamp-2">{event.name}</h4>
+      <p className="max-w-full max-h-full line-clamp-2 text-sm font-subjectivity font-semibold tracking-tight">{event.name}</p>
       <div>
         <div className="flex items-center">
           <Icon name="Clock" weight="light" className="w-4 h-4" />
@@ -96,12 +96,13 @@ const EventCardFooter: FC<CardFooterProps> = ({ event }) => {
 
 interface EventCardProps {
   event: Event;
+  className?: string;
   isDeleteEnabled?: boolean;
   refetch?: () => void;
   onClick?: () => void;
 }
 
-const EventCard: FC<EventCardProps> = ({ event: event, isDeleteEnabled = true, refetch, onClick }) => {
+const EventCard: FC<EventCardProps> = ({ event: event, className = '', isDeleteEnabled = true, refetch, onClick }) => {
   const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId!);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => setIsModalOpen(false);
@@ -132,7 +133,8 @@ const EventCard: FC<EventCardProps> = ({ event: event, isDeleteEnabled = true, r
         key={event.eventId}
         className={cn(
           'group overflow-hidden w-[250px] min-h-[200px] flex flex-col flex-shrink-0 border-primary-950 hover:cursor-pointer',
-          isDeletingEvent && 'pointer-events-none'
+          isDeletingEvent && 'pointer-events-none',
+          className
         )}
         onClick={onClick}
       >

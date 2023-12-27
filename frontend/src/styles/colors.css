@@ -1,5 +1,5 @@
 @layer base {
-  :root {
+  :root, .light {
     --background: var(--primary-50);
     --foreground: var(--neutrals-950);
 
