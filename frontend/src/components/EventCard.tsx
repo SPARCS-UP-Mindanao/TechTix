@@ -7,25 +7,28 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import Icon from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import { Event } from '@/model/events';
+import { cn } from '@/utils/classes';
 import { useDeleteEvent } from '@/hooks/useDeleteEvent';
 import { useFileUrl } from '@/hooks/useFileUrl';
+import Badge from './Badge';
 
 interface CardHeaderProps {
   eventInfo: Event;
-  deleteEnabled?: boolean;
+  isDeleteEnabled: boolean;
+  isDeletingEvent?: boolean;
   refetch?: () => void;
+  onDeleteEvent?: () => Promise<void>;
 }
 
-const EventCardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch, deleteEnabled = true }) => {
+const EventCardHeader: React.FC<CardHeaderProps> = ({ eventInfo, isDeleteEnabled, isDeletingEvent, onDeleteEvent, refetch }) => {
   const { fileUrl: imageUrl, isLoading } = useFileUrl(eventInfo.bannerLink!);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => setIsModalOpen(false);
   const deleteEventTrigger = async () => {
-    if (eventInfo.eventId && deleteEnabled && refetch) {
-      const { onDeleteEvent } = useDeleteEvent(eventInfo.eventId!);
+    if (eventInfo.eventId && onDeleteEvent && refetch) {
       try {
-        onDeleteEvent();
+        await onDeleteEvent();
         closeModal();
         refetch();
       } catch (error) {
@@ -54,8 +57,17 @@ const EventCardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch, delete
 
   return (
     <div className="h-1/2" style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}>
-      {isLoading && <Skeleton className="w-full h-full" />}
-      <div className="w-full flex justify-end p-2">{deleteEnabled && <ActionsDropdown />}</div>
+      {isLoading || (isDeletingEvent && <Skeleton className="w-full h-full" />)}
+      {isDeleteEnabled && (
+        <div className="w-full flex justify-end p-2">
+          {!isDeletingEvent && <ActionsDropdown />}
+          {isDeletingEvent && (
+            <Badge variant="negative" loading={isDeletingEvent} className="h-6">
+              Deleting
+            </Badge>
+          )}
+        </div>
+      )}
       <AlertModal
         alertModalTitle="Delete Event"
         alertModalDescription="Are you sure you want to delete this event?"
@@ -70,10 +82,11 @@ const EventCardHeader: React.FC<CardHeaderProps> = ({ eventInfo, refetch, delete
 
 interface CardFooterProps {
   event: Event;
+  isDeleteingEvent?: boolean;
   onClick?: () => void;
 }
 
-const EventCardFooter: FC<CardFooterProps> = ({ event, onClick }) => {
+const EventCardFooter: FC<CardFooterProps> = ({ event, isDeleteingEvent, onClick }) => {
   const isSameDayEvent = moment(event.startDate).isSame(event.endDate, 'day');
   const getDate = () => {
     if (isSameDayEvent) {
@@ -83,7 +96,10 @@ const EventCardFooter: FC<CardFooterProps> = ({ event, onClick }) => {
   };
   return (
     <CardFooter
-      className="w-full h-1/2 flex flex-col justify-evenly space-y-1 items-start p-4 pt-2 hover:bg-accent overflow-hidden hover:cursor-pointer transition-colors"
+      className={cn(
+        'w-full h-1/2 flex flex-col justify-evenly space-y-1 items-start p-4 pt-2 overflow-hidden hover:cursor-pointer hover:bg-accent transition-colors',
+        isDeleteingEvent && 'pointer-events-none hover:pointer-events-none'
+      )}
       onClick={onClick}
     >
       <h4 className="max-w-full max-h-full text-sm line-clamp-2">{event.name}</h4>
@@ -103,15 +119,23 @@ const EventCardFooter: FC<CardFooterProps> = ({ event, onClick }) => {
 
 interface EventCardProps {
   eventInfo: Event;
+  isDeleteEnabled?: boolean;
   refetch?: () => void;
   onClick?: () => void;
 }
 
-const EventCard: FC<EventCardProps> = ({ eventInfo, refetch, onClick }) => {
+const EventCard: FC<EventCardProps> = ({ eventInfo, isDeleteEnabled = true, refetch, onClick }) => {
+  const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(eventInfo.eventId!);
   return (
     <CardContainer key={eventInfo.eventId} className="overflow-hidden w-[250px] min-h-[200px] flex flex-col flex-shrink-0 border-primary-950">
-      <EventCardHeader eventInfo={eventInfo} refetch={refetch} />
-      <EventCardFooter event={eventInfo} onClick={onClick} />
+      <EventCardHeader
+        eventInfo={eventInfo}
+        refetch={refetch}
+        isDeletingEvent={isDeletingEvent}
+        onDeleteEvent={onDeleteEvent}
+        isDeleteEnabled={isDeleteEnabled}
+      />
+      <EventCardFooter event={eventInfo} onClick={onClick} isDeleteingEvent={isDeletingEvent} />
     </CardContainer>
   );
 };

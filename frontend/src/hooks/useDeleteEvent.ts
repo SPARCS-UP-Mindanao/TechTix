@@ -12,7 +12,7 @@ export const useDeleteEvent = (eventId: string) => {
     try {
       setDeletingEvent(true);
       const response = await api.execute(deleteEvent(eventId));
-      if (response.status === 200) {
+      if (response.status === 204) {
         successToast({
           title: 'Deleted successfully',
           description: 'Event deleted successfully'

@@ -25,7 +25,7 @@ const CreateEventSheet: FC<CreateEventSheetProps> = ({ isCreateEventOpen, setCre
   };
 
   const footer = (
-    <div className="flex justify-end space-x-4">
+    <div className="flex justify-end space-x-2">
       <Button variant="ghost" onClick={handleCancel}>
         Cancel
       </Button>
