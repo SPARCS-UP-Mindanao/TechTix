@@ -7,8 +7,10 @@ import iconIg from '../assets/logos/icon-ig.svg';
 import iconLinkedin from '../assets/logos/icon-linkedin.svg';
 import location from '../assets/logos/icon-loc.svg';
 import logoTitleWhite from '../assets/logos/techtix-white-logo-title.png';
+import Input from './Input';
 
 function Footer() {
+  const isSubscribingDisabled = true;
   return (
     <>
       <footer className="bg-primary-700 w-full grid md:grid-cols-3 grid-cols-1 gap-10 md:gap-5 lg:gap-10 text-white font-raleway font-light p-12 md:px-10 lg:px-32">
@@ -72,9 +74,14 @@ function Footer() {
           <div className="flex flex-col gap-5">
             <p className="font-bold text-lg">Stay in the loop</p>
             <p>Join our mailing list to stay in the loop with our newest for Tech Events and meetups.</p>
-            <div className="w-full max-w-xs relative">
-              <input type="text" placeholder="Enter your email address" className="h-12 text-xs rounded-full p-5 w-full text-black" />
-              <Button variant={'primaryGradient'} className="h-12 rounded-full absolute right-0">
+            <div className="group w-full flex max-w-xs relative" aria-disabled={isSubscribingDisabled}>
+              <Input
+                type="email"
+                placeholder="Enter your email address"
+                className="text-xs font-semibold pr-[6.5rem] rounded-full w-full focus-visible:ring-0 border-none"
+                disabled={isSubscribingDisabled}
+              />
+              <Button variant="primaryGradient" className="rounded-full absolute right-0" disabled={isSubscribingDisabled}>
                 Subscribe
               </Button>
             </div>

@@ -1,7 +1,12 @@
-import React from 'react';
+import { useMetaData } from '@/hooks/useMetaData';
+
+const AdminAuthority = () => {
+  useMetaData({});
+  return <div>AdminAuthorityPage</div>;
+};
 
 const AdminAuthorityPage = () => {
-  return <div>AdminAuthorityPage</div>;
+  return <AdminAuthority />;
 };
 
 export default AdminAuthorityPage;

@@ -3,9 +3,11 @@ import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
+import { useMetaData } from '@/hooks/useMetaData';
 import { useAdminUpdatePasswordForm } from '@/hooks/userAdminUpdatePasswordForm';
 
 const UpdatePasswordForm = () => {
+  useMetaData({});
   const navigate = useNavigate();
   const successHandler = () => {
     navigate('/admin/login');
