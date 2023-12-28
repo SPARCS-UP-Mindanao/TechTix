@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import Button from '@/components/Button';
 import EventCardList from '@/components/EventCardList';
@@ -70,6 +70,9 @@ function MakeYourOwnEvent() {
 
 function HomePageComponent() {
   const location = useLocation();
+  const initCount = 8;
+  const [eventCount, setEventCount] = useState(initCount);
+
   useEffect(() => {
     const anchorId = location.hash.replace('#', '');
     if (anchorId) {
@@ -80,6 +83,10 @@ function HomePageComponent() {
     }
   }, [location.hash]);
 
+  const loadMore = () => {
+    setEventCount((prev) => prev + initCount);
+  };
+
   return (
     <>
       <main>
@@ -87,8 +94,8 @@ function HomePageComponent() {
         <Hero />
         <section className="bg-white px-5 py-20 flex flex-col items-center">
           <h1 className="text-center !text-primary-700">Upcoming Events</h1>
-          <EventCardList />
-          <Button className="py-8 px-14 rounded-full w-56" variant={'outline'}>
+          <EventCardList isLoadAll={false} count={eventCount} />
+          <Button className="py-8 px-14 rounded-full w-56" variant={'outline'} onClick={loadMore}>
             Load More
           </Button>
         </section>

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { TECHTIX_72, TECHTIX_WORD_72 } from '@/assets/techtix';
 import Button from '@/components/Button';
