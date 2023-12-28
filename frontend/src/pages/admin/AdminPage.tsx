@@ -4,13 +4,14 @@ import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useLayout } from '@/hooks/useLayout';
+import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './AdminSideBar';
 import AdminSideBarTrigger from './AdminSideBarTrigger';
 import { getAdminRouteConfig } from './getAdminRouteConfig';
 
 const AdminPageContent = () => {
+  useMetaData({});
   const [isSideBarOpen, setSideBarOpen] = useState(true);
-  const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
 
   const layout = useLayout('md');
@@ -42,8 +43,6 @@ const AdminPageContent = () => {
         adminConfig={ADMIN_CONFIG}
         setSidebarOpen={setSideBarOpen}
         openSidebarWidth={openSidebarWidth}
-        isMobileSidebarOpen={isMobileSidebarOpen}
-        setMobileSidebarOpen={setMobileSidebarOpen}
         collapsedSidebarWidth={collapsedSidebarWidth}
       />
       <AlertModal

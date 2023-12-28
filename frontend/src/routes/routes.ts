@@ -11,13 +11,21 @@ import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/Admin
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
+import EventsPage from '@/pages/landingPage/EventsPage';
+import HomePage from '@/pages/landingPage/HomePage';
 import RegisterPage from '@/pages/register/RegisterPage';
-import App from '@/App';
 
 export const routes = createBrowserRouter([
   {
+    path: '',
+    element: HomePage()
+  },
+  {
+    path: '/events',
+    element: EventsPage()
+  },
+  {
     path: '/:eventId',
-    element: App(),
     children: [
       {
         path: 'register',

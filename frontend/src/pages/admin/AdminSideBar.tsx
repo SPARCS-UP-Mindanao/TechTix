@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import { TECHTIX_72, TECHTIX_WORD_72 } from '@/assets/techtix';
 import Button from '@/components/Button';
 import CollapsibleSidebar from '@/components/CollapsibleSidebar/CollapsibleSidebar';
@@ -13,26 +14,16 @@ interface AdminSideBarProps {
   adminConfig: AdminRouteConfigProps[];
   isSidebarOpen: boolean;
   isCreateEventOpen: boolean;
-  isMobileSidebarOpen: boolean;
   openSidebarWidth: number;
   collapsedSidebarWidth: number;
   setSidebarOpen: (value: boolean) => void;
-  setMobileSidebarOpen: (value: boolean) => void;
 }
 
-const AdminSideBar: FC<AdminSideBarProps> = ({
-  tablet,
-  isSidebarOpen,
-  isMobileSidebarOpen,
-  adminConfig,
-  openSidebarWidth,
-  collapsedSidebarWidth,
-  setSidebarOpen,
-  setMobileSidebarOpen
-}) => {
+const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfig, openSidebarWidth, collapsedSidebarWidth, setSidebarOpen }) => {
   const navigate = useNavigate();
   const SIDEBAR_ROUTE_MAP = adminConfig;
   const { pathname } = useLocation();
+  const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const toggleMobileSidebar = () => setMobileSidebarOpen(!isMobileSidebarOpen);
 
   const TECHTIX_LOGO = <img src={TECHTIX_WORD_72} alt="" className="w-24" />;
@@ -103,8 +94,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
         />
         <MobileSidebar />
         <span className="flex items-center justify-center space-x-2">
-          <img src={TECHTIX_72} className="w-[50px]" alt="TechTix Logo" />
-          <img src={TECHTIX_WORD_72} alt="" className="w-24" />
+          <img src={logoTitleBorder} alt="Techtix Logo" className="h-12" />
         </span>
       </nav>
     );
