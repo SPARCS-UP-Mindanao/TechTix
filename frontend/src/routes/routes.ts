@@ -1,7 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
-import EventsPage from '@/pages/EventsPage';
-import HomePage from '@/pages/HomePage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
 import AdminEventPage from '@/pages/admin/event/AdminEventPage';
@@ -13,8 +11,9 @@ import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/Admin
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
+import EventsPage from '@/pages/landingPage/EventsPage';
+import HomePage from '@/pages/landingPage/HomePage';
 import RegisterPage from '@/pages/register/RegisterPage';
-import App from '@/App';
 
 export const routes = createBrowserRouter([
   {
@@ -27,7 +26,6 @@ export const routes = createBrowserRouter([
   },
   {
     path: '/:eventId',
-    element: App(),
     children: [
       {
         path: 'register',

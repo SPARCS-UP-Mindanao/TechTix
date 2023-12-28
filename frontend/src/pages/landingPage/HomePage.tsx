@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
+import MakeEvent from '@/assets/make-event.png';
+import Robot from '@/assets/robot.svg';
 import Button from '@/components/Button';
-import EventCardList from '@/components/EventCardList';
 import Footer from '@/components/Footer';
-import logoTitleBorder from '../assets/logos/techtix-border-logo-title.png';
-import MakeEvent from '../assets/make-event.png';
-import Robot from '../assets/robot.svg';
+import { useMetaData } from '@/hooks/useMetaData';
+import EventCardList from '@/pages/landingPage/EventCardList';
 
-function Header() {
+const Header = () => {
   return (
     <header className="fixed z-20 py-4 md:py-6 h-20 md:h-28 px-5 md:px-24 flex items-center">
       <Link to={'#hero'} className="inline h-full w-auto">
@@ -15,18 +16,18 @@ function Header() {
       </Link>
     </header>
   );
-}
+};
 
-function Hero() {
+const Hero = () => {
   return (
     <section id="hero" className={`w-full bg-[url('../assets/logos/hero-bg.png')] bg-no-repeat bg-cover bg-right relative`}>
-      <div className="absolute h-full w-full bg-white opacity-80 z-0"></div>
+      <div className="absolute h-full w-full bg-white opacity-80 z-0" />
       <div className="pt-20 relative z-10 min-h-screen md:px-28 grid grid-rows-5 md:grid-rows-none md:grid-cols-6 md:justify-center w-full">
         <div className="relative md:absolute md:right-0 md:w-1/2 max-w-3xl row-span-2 w-full md:h-full">
           <img
             src={Robot}
             alt="Robot"
-            className="absolute bottom-[-1rem] md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-full md:pr-32"
+            className="absolute bottom-[-1rem] md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-[90%] md:pr-32"
           />
         </div>
         <div className="pb-10 row-span-3 md:col-span-4 flex flex-col justify-start md:justify-center gap-10 items-center md:items-start md:gap-20 w-full z-20">
@@ -37,7 +38,7 @@ function Hero() {
             </p>
           </div>
           <Link to="./events">
-            <Button variant={'primaryGradient'} className="text-lg w-48 p-8 rounded-2xl">
+            <Button variant="primaryGradient" className="text-lg w-48 p-6 rounded-2xl">
               Join Events
             </Button>
           </Link>
@@ -45,9 +46,9 @@ function Hero() {
       </div>
     </section>
   );
-}
+};
 
-function MakeYourOwnEvent() {
+const MakeYourOwnEvent = () => {
   return (
     <section className="bg-primary-700 flex flex-col md:flex-row items-center md:items-start md:justify-center md:gap-16 px-5 pt-52 md:pt-16 md:pb-16 pb-10 relative">
       <div className="md:relative w-full h-full max-w-sm md:max-w-md md:min-w-[20rem]">
@@ -57,21 +58,21 @@ function MakeYourOwnEvent() {
           className="absolute top-[-4rem] md:top-[-6rem] left-1/2 transform -translate-x-1/2 md:-translate-x-0 md:left-0 w-full max-w-sm md:max-w-none"
         />
       </div>
-      <div className="flex flex-col items-center md:items-start gap-4 w-full md:w-fit">
-        <h2 className="text-center md:text-left">Make your own Event</h2>
-        <p className="text-center md:text-left">Apply as a Tech Community in Davao City.</p>
-        <Button variant={'primaryGradient'} className="py-6 px-14 w-56 rounded-2xl">
+      <div className="flex flex-col text-primary-foreground text-center items-center md:text-left md:items-start gap-4 w-full md:w-fit">
+        <h2 className="text-primary-foreground">Make your own Event</h2>
+        <p>Apply as a Tech Community in Davao City.</p>
+        <Button variant={'primaryGradient'} className="p-6 w-56 rounded-2xl">
           Create Events
         </Button>
       </div>
     </section>
   );
-}
+};
 
-function HomePageComponent() {
+const HomePageComponent = () => {
+  useMetaData({});
   const location = useLocation();
-  const initCount = 8;
-  const [eventCount, setEventCount] = useState(initCount);
+  const initCount = 4;
 
   useEffect(() => {
     const anchorId = location.hash.replace('#', '');
@@ -83,36 +84,23 @@ function HomePageComponent() {
     }
   }, [location.hash]);
 
-  const loadMore = () => {
-    setEventCount((prev) => prev + initCount);
-  };
-
   return (
-    <>
-      <main>
-        <Header />
-        <Hero />
-        <section className="bg-white px-5 py-20 flex flex-col items-center">
-          <h1 className="text-center !text-primary-700">Upcoming Events</h1>
-          <EventCardList isLoadAll={false} count={eventCount} />
-          <Button className="py-8 px-14 rounded-full w-56" variant={'outline'} onClick={loadMore}>
-            Load More
-          </Button>
-        </section>
-        <MakeYourOwnEvent />
-        <Footer />
-        <div id="contact"></div>
-      </main>
-    </>
+    <main>
+      <Header />
+      <Hero />
+      <section className="bg-white px-5 py-20 flex flex-col items-center">
+        <h1 className="text-center text-primary-700">Upcoming Events</h1>
+        <EventCardList isLoadAll={false} initialCount={initCount} />
+      </section>
+      <MakeYourOwnEvent />
+      <Footer />
+      <div id="contact" />
+    </main>
   );
-}
+};
 
-function HomePage() {
-  return (
-    <>
-      <HomePageComponent />
-    </>
-  );
-}
+const HomePage = () => {
+  return <HomePageComponent />;
+};
 
 export default HomePage;
