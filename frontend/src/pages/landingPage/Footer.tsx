@@ -1,16 +1,15 @@
 import { Globe } from 'lucide-react';
+import diceLogo from '@/assets/logos/DICE_Lockup_Colored_Horizontal_Dark.svg';
+import sparcsLogo from '@/assets/logos/icon-192x192.png';
+import iconFb from '@/assets/logos/icon-fb.svg';
+import iconIg from '@/assets/logos/icon-ig.svg';
+import iconLinkedin from '@/assets/logos/icon-linkedin.svg';
+import location from '@/assets/logos/icon-loc.svg';
+import logoTitleWhite from '@/assets/logos/techtix-white-logo-title.png';
 import Button from '@/components/Button';
-import diceLogo from '../assets/logos/DICE_Lockup_Colored_Horizontal_Dark.svg';
-import sparcsLogo from '../assets/logos/icon-192x192.png';
-import iconFb from '../assets/logos/icon-fb.svg';
-import iconIg from '../assets/logos/icon-ig.svg';
-import iconLinkedin from '../assets/logos/icon-linkedin.svg';
-import location from '../assets/logos/icon-loc.svg';
-import logoTitleWhite from '../assets/logos/techtix-white-logo-title.png';
-import Input from './Input';
+import Input from '@/components/Input';
 
-function Footer() {
-  const isSubscribingDisabled = true;
+const Footer = () => {
   return (
     <>
       <footer className="bg-primary-700 w-full grid md:grid-cols-3 grid-cols-1 gap-10 md:gap-5 lg:gap-10 text-white font-raleway font-light p-12 md:px-10 lg:px-32">
@@ -74,14 +73,13 @@ function Footer() {
           <div className="flex flex-col gap-5">
             <p className="font-bold text-lg">Stay in the loop</p>
             <p>Join our mailing list to stay in the loop with our newest for Tech Events and meetups.</p>
-            <div className="group w-full flex max-w-xs relative" aria-disabled={isSubscribingDisabled}>
+            <div className="group w-full flex max-w-xs relative">
               <Input
                 type="email"
                 placeholder="Enter your email address"
                 className="light text-xs font-semibold pr-[6.5rem] rounded-full w-full focus-visible:ring-0 border-none"
-                disabled={isSubscribingDisabled}
               />
-              <Button variant="primaryGradient" className="rounded-full absolute right-0" disabled={isSubscribingDisabled}>
+              <Button variant="primaryGradient" className="rounded-full absolute right-0">
                 Subscribe
               </Button>
             </div>
@@ -91,6 +89,6 @@ function Footer() {
       <p className="text-black bg-white text-center text-xs py-2">Copyright © 2024 UP Mindanao SPARCS</p>
     </>
   );
-}
+};
 
 export default Footer;

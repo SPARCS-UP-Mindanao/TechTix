@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import Button from '@/components/Button';
-import Footer from '@/components/Footer';
 import Sheet from '@/components/Sheet';
 import { useMetaData } from '@/hooks/useMetaData';
 import EventCardList from '@/pages/landingPage/EventCardList';
+import Footer from './Footer';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);

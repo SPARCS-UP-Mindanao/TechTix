@@ -4,9 +4,9 @@ import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import MakeEvent from '@/assets/make-event.png';
 import Robot from '@/assets/robot.svg';
 import Button from '@/components/Button';
-import Footer from '@/components/Footer';
 import { useMetaData } from '@/hooks/useMetaData';
 import EventCardList from '@/pages/landingPage/EventCardList';
+import Footer from './Footer';
 
 const Header = () => {
   return (
