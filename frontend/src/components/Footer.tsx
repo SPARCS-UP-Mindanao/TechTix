@@ -78,7 +78,7 @@ function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email address"
-                className="text-xs font-semibold pr-[6.5rem] rounded-full w-full focus-visible:ring-0 border-none"
+                className="light text-xs font-semibold pr-[6.5rem] rounded-full w-full focus-visible:ring-0 border-none"
                 disabled={isSubscribingDisabled}
               />
               <Button variant="primaryGradient" className="rounded-full absolute right-0" disabled={isSubscribingDisabled}>

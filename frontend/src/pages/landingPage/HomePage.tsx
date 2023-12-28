@@ -89,7 +89,7 @@ const HomePageComponent = () => {
       <Header />
       <Hero />
       <section className="bg-white px-5 py-20 flex flex-col items-center">
-        <h1 className="text-center text-primary-700">Upcoming Events</h1>
+        <h1 className="text-center !text-primary-700">Upcoming Events</h1>
         <EventCardList isLoadAll={false} initialCount={initCount} />
       </section>
       <MakeYourOwnEvent />

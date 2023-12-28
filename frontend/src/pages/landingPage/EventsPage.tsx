@@ -58,11 +58,11 @@ const Header = () => {
 const EventsPageComponent = () => {
   useMetaData({});
   return (
-    <main className="flex flex-col h-full">
+    <main className="flex flex-col h-full light">
       <Header />
       <div className="max-h-full overflow-auto">
         <section className="p-8 md:p-10 bg-white items-center">
-          <h1 className="text-primary-700 pl-0 md:p-6 self-start">Upcoming Events</h1>
+          <h1 className="!text-primary-700 pl-0 md:p-6 self-start">Upcoming Events</h1>
           <EventCardList isLoadAll={false} />
         </section>
         <Footer />
