@@ -40,7 +40,7 @@ const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) 
 export const getAllEvents = (adminId?: string) => {
   return createApi<EventDto[], Event[]>({
     method: 'get',
-    authorize: true,
+    authorize: adminId ? true : false,
     url: '/events',
     queryParams: { adminId },
     output: mapEventsDtoToEvent
@@ -84,5 +84,5 @@ export const getPresignedUrl = (entryId: string, fileName: string, uploadType: s
     method: 'put',
     authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
-    body: { fileName: fileName }
+    body: { fileName }
   });
