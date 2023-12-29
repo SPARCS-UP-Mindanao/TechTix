@@ -78,3 +78,8 @@ export const formatMoney = (amount: number, currency: string) => {
 export const formatPercentage = (float: number) => {
   return `${(float * 100).toFixed(2)}%`;
 };
+
+export const isValidContactNumber = (value: string) => {
+  const phoneNumberPattern = /^\d{11}$/;
+  return phoneNumberPattern.test(value);
+};

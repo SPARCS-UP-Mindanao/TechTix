@@ -1,88 +1,45 @@
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventStatus } from '@/model/events';
+import { Admin } from '@/model/admin';
 
-export interface EventDto {
-  name: string;
-  description: string;
-  email: string;
-  startDate: string;
-  endDate: string;
-  venue: string;
-  bannerLink: string;
-  bannerUrl: string;
-  logoUrl: string;
-  logoLink: string;
-  autoConfirm: true;
-  payedEvent: true;
-  price: number;
-  certificateTemplate: string;
-  status: EventStatus;
-  eventId: string;
-  createDate: string;
-  updateDate: string;
-  createdBy: string;
-  updatedBy: string;
-}
 
-export type OptionalEvent = Partial<Event>;
+export const inviteAdmin = (admin: Admin) => createApi({
+    method: 'post',
+    authorize: true,
+    url: `/admin/auth/invite`,
+    apiService: 'auth',
+    body: { ...admin }
+  })
 
-export interface PresignedUrl {
-  uploadLink: string;
-  objectKey: string;
-}
-
-const mapEventDtoToEvent = (event: EventDto): Event => ({
-  ...event
-});
-
-const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
-
-export const getAllAdmins = (adminId?: string) => {
-  return createApi<EventDto[], Event[]>({
+export const getAllAdmins = () => {
+  return createApi<Admin[]>({
     method: 'get',
     authorize: true,
-    url: '/events',
-    queryParams: { adminId },
-    output: mapEventsDtoToEvent
+    apiService: 'auth',
+    url: '/admin/auth'
   });
 };
 
-export const createEvent = (event: Event) =>
-  createApi({
-    method: 'post',
-    authorize: true,
-    url: '/events',
-    body: { ...event }
-  });
-
-export const getEvent = (entryId: string) =>
-  createApi<EventDto, Event>({
+export const getAdmin = (entryId: string) =>
+  createApi<Admin>({
     method: 'get',
-    url: `/events/${entryId}`,
-    output: mapEventDtoToEvent
+    authorize: true,
+    apiService: 'auth',
+    url: `/admin/auth${entryId}`
   });
 
-export const updateEvent = (entryId: string, event: OptionalEvent) =>
-  createApi<EventDto, Event>({
+export const updateAdmin = (entryId: string, admin: Admin) =>
+  createApi<Admin>({
     method: 'put',
     authorize: true,
-    url: `/events/${entryId}`,
-    body: { ...event },
-    output: mapEventDtoToEvent
+    url: `/admin/auth/${entryId}`,
+    apiService: 'auth',
+    body: { ...admin }
   });
 
 export const deleteEvent = (entryId: string) =>
-  createApi<EventDto, Event>({
+  createApi({
     method: 'delete',
     authorize: true,
-    url: `/events/${entryId}`,
-    output: mapEventDtoToEvent
-  });
-
-export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
-  createApi<PresignedUrl>({
-    method: 'put',
-    authorize: true,
-    url: `/events/${entryId}/upload/${uploadType}`,
-    body: { fileName: fileName }
+    apiService: 'auth',
+    url: `/admin/auth/${entryId}`
   });
