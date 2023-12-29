@@ -1,18 +1,22 @@
-import { useState } from 'react';
-import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Outlet as AdminPageRoute, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
+import { getCurrentUser } from '@/api/auth';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './AdminSideBar';
 import AdminSideBarTrigger from './AdminSideBarTrigger';
 import { getAdminRouteConfig } from './getAdminRouteConfig';
+import { AdminRouteConfigProps } from './getAdminRouteConfig';
 
 const AdminPageContent = () => {
   useMetaData({});
+  const navigate = useNavigate();
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
+  const [adminConfig, setAdminConfig] = useState<AdminRouteConfigProps[]>([]);
 
   const layout = useLayout('md');
 
@@ -27,12 +31,31 @@ const AdminPageContent = () => {
 
   const { isLogoutOpen, setLogoutOpen, onLogoutAdmin } = useAdminLogout();
   const onCloseLogoutModal = () => setLogoutOpen(false);
-  const ADMIN_CONFIG = getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen });
 
   const isAuthenticated = useIsAuthenticated();
   if (!isAuthenticated()) {
-    return <Navigate to="/admin/login" />;
+    navigate('/admin/login');
+    return;
   }
+
+  const updateAdminConfig = async () => {
+    const { queryFn: getCurrent } = getCurrentUser();
+    const response = await getCurrent();
+    let isSuperAdmin = false;
+    if (response.status == 200) {
+      const { data: currentUser } = response;
+      const group = currentUser['cognito:groups'];
+      if (group && group.length > 0) {
+        isSuperAdmin = group.includes('super_admin');
+      }
+    }
+
+    setAdminConfig(getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }));
+  };
+
+  useEffect(() => {
+    updateAdminConfig();
+  }, [eventId]);
 
   return (
     <div className="flex w-full h-full flex-col md:flex-row">
@@ -40,7 +63,7 @@ const AdminPageContent = () => {
         tablet={layout.md}
         isSidebarOpen={isSideBarOpen}
         isCreateEventOpen={isCreateEventOpen}
-        adminConfig={ADMIN_CONFIG}
+        adminConfig={adminConfig}
         setSidebarOpen={setSideBarOpen}
         openSidebarWidth={openSidebarWidth}
         collapsedSidebarWidth={collapsedSidebarWidth}
@@ -60,7 +83,7 @@ const AdminPageContent = () => {
           style={{ paddingLeft: !layout.md ? 0 : SIDEBAR_OFFSET }}
         >
           {layout.md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: ADMIN_CONFIG }} />
+          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: adminConfig }} />
         </div>
       </main>
     </div>

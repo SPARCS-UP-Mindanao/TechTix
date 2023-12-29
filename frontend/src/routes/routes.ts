@@ -83,7 +83,13 @@ export const routes = createBrowserRouter([
   },
   {
     path: 'admin/authority',
-    element: AdminAuthorityPage()
+    element: AdminPage(),
+    children: [
+      {
+        index: true,
+        element: AdminAuthorityPage()
+      }
+    ]
   },
   {
     path: 'admin/update-password',
