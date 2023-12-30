@@ -67,6 +67,7 @@ class Registration(Model):
     registrationEmailSent = BooleanAttribute(default=False)
     confirmationEmailSent = BooleanAttribute(default=False)
     evaluationEmailSent = BooleanAttribute(default=False)
+    certificateGenerated = BooleanAttribute(default=False)
 
 
 class RegistrationPatch(BaseModel):
@@ -87,6 +88,7 @@ class RegistrationPatch(BaseModel):
     amountPaid: float = Field(None, title="Amount Paid")
     certificateImgObjectKey: str = Field(None, title="Certificate Image Object Key")
     certificatePdfObjectKey: str = Field(None, title="Certificate PDF Object Key")
+    certificateGenerated: bool = Field(None, title="Certificate Generated")
 
 
 class RegistrationIn(RegistrationPatch):

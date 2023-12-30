@@ -1,5 +1,7 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
+import { getCookie } from 'typescript-cookie';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { FormItem } from '@/components/Form';
@@ -7,6 +9,7 @@ import { FormLabel } from '@/components/Form';
 import { FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
+import Skeleton from '@/components/Skeleton';
 import { getAllAdmins } from '@/api/admin';
 import { useApiQuery } from '@/hooks/useApi';
 import { useAdminForm } from '@/hooks/useInviteAdminForm';
@@ -17,11 +20,11 @@ interface InviteAdmintModalProps {
 }
 const CreateDiscountModal = ({ refetch }: InviteAdmintModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  const onSuccess = async() => {
+
+  const onSuccess = async () => {
     setIsModalOpen(false);
     await refetch();
-  }
+  };
 
   const { form, submit } = useAdminForm(onSuccess);
 
@@ -80,7 +83,7 @@ const CreateDiscountModal = ({ refetch }: InviteAdmintModalProps) => {
                 </div>
               )}
             </FormItem>
-            <FormItem name='address'>
+            <FormItem name="address">
               {({ field }) => (
                 <div className="flex flex-col gap-1">
                   <FormLabel>Address</FormLabel>
@@ -89,7 +92,7 @@ const CreateDiscountModal = ({ refetch }: InviteAdmintModalProps) => {
                 </div>
               )}
             </FormItem>
-            <FormItem name='contactNumber'>
+            <FormItem name="contactNumber">
               {({ field }) => (
                 <div className="flex flex-col gap-1">
                   <FormLabel>Contact Number</FormLabel>
@@ -106,13 +109,33 @@ const CreateDiscountModal = ({ refetch }: InviteAdmintModalProps) => {
 };
 
 const AdminAuthority: FC = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const isSuperAdmin = getCookie('_is_super_admin');
+    if (!isSuperAdmin) {
+      navigate('/admin/events');
+    }
+  }, []);
+
   const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins());
 
   if (isFetching) {
+    const colCount = 6;
+    const rowCount = 15;
     return (
-      // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
+      <div className="flex flex-col items-center gap-2 py-10 px-4">
+        <h2>Admins</h2>
+        <CreateDiscountModal refetch={refetch} />
+        <Skeleton className="h-9 w-36 self-start" />
+        <div className="rounded-md border w-full">
+          {Array.from(Array(rowCount)).map((_, index) => (
+            <div key={index} className="grid grid-cols-6 gap-3 w-full py-4 px-2">
+              {Array.from(Array(colCount)).map((_, index) => (
+                <Skeleton className="w-full h-5" key={index} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -131,7 +154,7 @@ const AdminAuthority: FC = () => {
     <section className="flex flex-col items-center py-10 px-4">
       <h2>Admins</h2>
       <CreateDiscountModal refetch={refetch} />
-      <DataTable columns={adminColumns} data={admins} />
+      <DataTable columns={adminColumns(refetch)} data={admins} />
     </section>
   );
 };

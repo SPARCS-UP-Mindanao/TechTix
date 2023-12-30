@@ -14,7 +14,7 @@ interface Props {
   isCreateEventOpen: boolean;
   toggleCreateEvent: () => void;
   setLogoutOpen: (open: boolean) => void;
-  isSuperAdmin: boolean;
+  isSuperAdmin: boolean | null;
 }
 
 export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }: Props): AdminRouteConfigProps[] => {

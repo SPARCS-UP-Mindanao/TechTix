@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Outlet as AdminPageRoute, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
+import { setCookie } from 'typescript-cookie';
 import AlertModal from '@/components/AlertModal';
 import { getCurrentUser } from '@/api/auth';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
@@ -17,6 +18,7 @@ const AdminPageContent = () => {
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
   const [adminConfig, setAdminConfig] = useState<AdminRouteConfigProps[]>([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean | null>(null);
 
   const layout = useLayout('md');
 
@@ -39,23 +41,28 @@ const AdminPageContent = () => {
   }
 
   const updateAdminConfig = async () => {
-    const { queryFn: getCurrent } = getCurrentUser();
-    const response = await getCurrent();
-    let isSuperAdmin = false;
-    if (response.status == 200) {
-      const { data: currentUser } = response;
-      const group = currentUser['cognito:groups'];
-      if (group && group.length > 0) {
-        isSuperAdmin = group.includes('super_admin');
+    if (isSuperAdmin == null) {
+      const { queryFn: getCurrent } = getCurrentUser();
+      const response = await getCurrent();
+      if (response.status == 200) {
+        const { data: currentUser } = response;
+        const group = currentUser['cognito:groups'];
+        if (group && group.length > 0) {
+          const isSuperAdminVal = group.includes('super_admin');
+          setIsSuperAdmin(isSuperAdminVal);
+          setCookie('_is_super_admin', isSuperAdminVal);
+        }
       }
     }
-
-    setAdminConfig(getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }));
   };
 
   useEffect(() => {
     updateAdminConfig();
-  }, [eventId]);
+  }, []);
+
+  useEffect(() => {
+    setAdminConfig(getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }));
+  }, [eventId, isCreateEventOpen, isSuperAdmin]);
 
   return (
     <div className="flex w-full h-full flex-col md:flex-row">

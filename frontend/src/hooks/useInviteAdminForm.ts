@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { inviteAdmin } from '@/api/admin';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { Admin } from '@/model/admin';
-import { inviteAdmin } from '@/api/admin';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,7 +51,7 @@ export const useAdminForm = (onSuccess: () => void) => {
           title: 'Admin Invited Successfully',
           description: `Admin will be sent an Invitation Email`
         });
-        onSuccess()
+        onSuccess();
       } else {
         errorToast({
           title: 'Error in Invited Admin',

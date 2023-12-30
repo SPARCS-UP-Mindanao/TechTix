@@ -179,9 +179,11 @@ class RegistrationUsecase:
         )
         if status != HTTPStatus.OK or not registrations:
             return JSONResponse(status_code=status, content={"message": message})
+
         registration = registrations[0]
         registration_data = self.__convert_data_entry_to_dict(registration)
         registration_out = RegistrationOut(**registration_data)
+
         return self.collect_pre_signed_url(registration_out)
 
     def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:

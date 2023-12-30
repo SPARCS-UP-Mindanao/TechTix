@@ -2,28 +2,28 @@ import { useState } from 'react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
 import Modal from '@/components/Modal';
 import { Admin } from '@/model/admin';
+import { useDeleteAdmin } from '@/hooks/useDeleteAdmin';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = [
-    'email',
-    'firstName',
-    'lastName',
-    'position',
-    'address',
-    'contactNumber',
-    'entryId',
-    'createDate',
-    'updateDate',
-    'createdBy',
-    'isConfirmed',
+  'email',
+  'firstName',
+  'lastName',
+  'position',
+  'address',
+  'contactNumber',
+  'entryId',
+  'createDate',
+  'updateDate',
+  'createdBy',
+  'isConfirmed'
 ];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
-export const adminColumns: ColumnDef<Admin>[] = [
+export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetch: () => void) => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -111,5 +111,43 @@ export const adminColumns: ColumnDef<Admin>[] = [
     accessorKey: 'isConfirmed',
     header: 'Is Confirmed',
     enableHiding: getEnableHiding('isConfirmed')
+  },
+  {
+    header: 'Actions',
+    id: 'actions',
+    cell: ({ row }) => {
+      const adminInfo = row.original;
+      const [showModal, setShowModal] = useState(false);
+      const { onDeleteAdmin, isDeletingAdmin } = useDeleteAdmin(adminInfo.entryId!);
+
+      const deleteAdmin = async () => {
+        await onDeleteAdmin();
+        setShowModal(false);
+        await refetch();
+      };
+      return (
+        <Modal
+          modalTitle="Delete Admin"
+          visible={showModal}
+          onOpenChange={setShowModal}
+          trigger={
+            <Button variant={'negative'} className="p-2 w-28">
+              Delete Event
+            </Button>
+          }
+          modalFooter={
+            <>
+              <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
+                Cancel
+              </Button>
+              <Button onClick={() => deleteAdmin()} loading={isDeletingAdmin} variant="negative" type="submit" className="w-full">
+                Delete
+              </Button>
+            </>
+          }
+        ></Modal>
+      );
+    },
+    enableHiding: getEnableHiding('actions')
   }
 ];
