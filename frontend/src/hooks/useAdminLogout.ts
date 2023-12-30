@@ -4,20 +4,21 @@ import { useSignOut } from 'react-auth-kit';
 import { getCookie, removeCookie } from 'typescript-cookie';
 import { logoutUser } from '@/api/auth';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 
 export const useAdminLogout = () => {
   const [isLogoutOpen, setLogoutOpen] = useState(false);
   const { errorToast } = useNotifyToast();
+  const api = useApi();
   const navigate = useNavigate();
   const signOut = useSignOut();
 
   const onLogoutAdmin = async () => {
     try {
       const accessToken = getCookie('_auth')!;
-      const { queryFn: logOut } = logoutUser(accessToken);
-      const response = await logOut();
-      if (response) {
+      const logoutResponse = await api.execute(logoutUser(accessToken));
+      if (logoutResponse.status === 200 || logoutResponse.status === 422) {
         signOut();
         removeCookie('_auth_user');
         navigate('/admin/login');
