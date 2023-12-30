@@ -74,8 +74,7 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
               removeCookie('_auth_storage', { path: '/' });
               removeCookie('_auth_type', { path: '/' });
               removeCookie('_auth_refresh_time', { path: '/' });
-              alert('test');
-              // window.location.reload();
+              window.location.reload();
             }
 
             // Store the new token
@@ -95,7 +94,7 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             removeCookie('_auth_storage', { path: '/' });
             removeCookie('_auth_type', { path: '/' });
             removeCookie('_auth_refresh_time', { path: '/' });
-            // window.location.reload();
+            window.location.reload();
           }
         } else {
           removeCookie('_auth', { path: '/' });
@@ -104,7 +103,7 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
           removeCookie('_auth_storage', { path: '/' });
           removeCookie('_auth_type', { path: '/' });
           removeCookie('_auth_refresh_time', { path: '/' });
-          // window.location.reload();
+          window.location.reload();
         }
       }
 

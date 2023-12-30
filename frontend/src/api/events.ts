@@ -37,15 +37,22 @@ const mapEventDtoToEvent = (event: EventDto): Event => ({
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
 
-export const getAllEvents = (adminId?: string) => {
+export const getAllEvents = () => {
   return createApi<EventDto[], Event[]>({
     method: 'get',
-    authorize: adminId ? true : false,
     url: '/events',
-    queryParams: { adminId },
     output: mapEventsDtoToEvent
   });
 };
+
+export const getAdminEvents = (adminId: string) =>
+  createApi({
+    method: 'get',
+    authorize: true,
+    url: `/events/admin`,
+    queryParams: { adminId },
+    output: mapEventsDtoToEvent
+  });
 
 export const createEvent = (event: Event) =>
   createApi({
