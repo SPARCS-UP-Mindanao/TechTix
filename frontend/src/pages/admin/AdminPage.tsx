@@ -16,7 +16,6 @@ import { getAdminRouteConfig } from './getAdminRouteConfig';
 const AdminPageContent = () => {
   useMetaData({});
   const { data: response, isFetching } = useApiQuery(getCurrentUser());
-  cookieConfiguration();
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
 
