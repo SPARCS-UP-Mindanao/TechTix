@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
-import { getAllEvents } from '@/api/events';
+import { getAdminEvents } from '@/api/events';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDashboardEvents } from '@/hooks/useDashboardEvents';
@@ -16,41 +16,44 @@ interface AdminAllEventsContext {
 const AdminAllEvents = () => {
   const adminId = getCookie('_auth_user');
   const { isCreateEventOpen, setCreateEventOpen } = useOutletContext<AdminAllEventsContext>();
-  const { data: response, isFetching, refetch } = useApiQuery(getAllEvents(adminId));
+  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents(adminId!));
 
-  if (isFetching) {
-    return (
-      // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
+  const Dashboard = () => {
+    if (isFetching) {
+      return (
+        // TODO: Add skeleton page
+        <div>
+          <h1>Loading...</h1>
+        </div>
+      );
+    }
 
-  if (!response || (response && !response.data)) {
-    return (
-      // TODO: Add event not found page
-      <div className="py-10">
-        <h1>Events not found</h1>
-      </div>
-    );
-  }
+    if (!response || (response && response.status !== 200 && response.status !== 404)) {
+      return (
+        // TODO: Add event not found page
+        <div className="py-10">
+          <h1>Events not found</h1>
+        </div>
+      );
+    }
 
-  if (response.status === 200 && !response.data.length) {
-    return (
-      // TODO: Add empty event list
-      <div>
-        <h1>There are currently no events</h1>
-      </div>
-    );
-  }
+    if (response.status === 404) {
+      return (
+        // TODO: Add empty event list
+        <div className="py-10">
+          <h1>There are currently no events</h1>
+        </div>
+      );
+    }
 
-  const events: Event[] = response.data;
+    const events: Event[] = response.data;
+    return <DashboardContent events={events} refetch={refetch} />;
+  };
 
   return (
     <>
       <CreateEventSheet refetch={refetch} isCreateEventOpen={isCreateEventOpen} setCreateEventOpen={setCreateEventOpen} />
-      <Dashboard events={events} refetch={refetch} />
+      <Dashboard />
     </>
   );
 };
@@ -60,7 +63,7 @@ interface DashboardProps {
   refetch: () => void;
 }
 
-const Dashboard: FC<DashboardProps> = ({ events, refetch }) => {
+const DashboardContent: FC<DashboardProps> = ({ events, refetch }) => {
   const navigate = useNavigate();
   const viewEvent = (eventId?: string) => () => navigate(`${eventId}/`);
 

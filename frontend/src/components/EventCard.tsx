@@ -53,7 +53,7 @@ const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, is
       {isLoading && <Skeleton className="w-full h-full" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
-          {!isDeletingEvent && <ActionsDropdown />}
+          {!isDeletingEvent && !isLoading && <ActionsDropdown />}
           {isDeletingEvent && (
             <Badge variant="negative" loading={isDeletingEvent} className="h-6 self-end">
               Deleting
@@ -102,7 +102,7 @@ interface EventCardProps {
   onClick?: () => void;
 }
 
-const EventCard: FC<EventCardProps> = ({ event: event, className = '', isDeleteEnabled = true, refetch, onClick }) => {
+const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled = true, refetch, onClick }) => {
   const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId!);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => setIsModalOpen(false);

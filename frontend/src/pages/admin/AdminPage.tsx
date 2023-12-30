@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
+import ErrorPage from '@/components/ErrorPage';
+import { getCurrentUser } from '@/api/auth';
+import { cookieConfiguration } from '@/utils/cookies';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
+import { useApiQuery } from '@/hooks/useApi';
 import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './AdminSideBar';
@@ -11,10 +15,11 @@ import { getAdminRouteConfig } from './getAdminRouteConfig';
 
 const AdminPageContent = () => {
   useMetaData({});
+  const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
 
-  const layout = useLayout('md');
+  const { md } = useLayout('md');
 
   const { eventId } = useParams();
 
@@ -27,17 +32,34 @@ const AdminPageContent = () => {
 
   const { isLogoutOpen, setLogoutOpen, onLogoutAdmin } = useAdminLogout();
   const onCloseLogoutModal = () => setLogoutOpen(false);
-  const ADMIN_CONFIG = getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen });
 
   const isAuthenticated = useIsAuthenticated();
   if (!isAuthenticated()) {
     return <Navigate to="/admin/login" />;
   }
 
+  if (isFetching) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (!response || (response && !response.data && response.errorData)) {
+    return <ErrorPage error={response} />;
+  }
+
+  const userGroups = response.data['cognito:groups'];
+
+  const ADMIN_CONFIG = getAdminRouteConfig({
+    userGroups: userGroups,
+    eventId: eventId!,
+    isCreateEventOpen,
+    toggleCreateEvent,
+    setLogoutOpen
+  });
+
   return (
     <div className="flex w-full h-full flex-col md:flex-row">
       <AdminSideBar
-        tablet={layout.md}
+        tablet={md}
         isSidebarOpen={isSideBarOpen}
         isCreateEventOpen={isCreateEventOpen}
         adminConfig={ADMIN_CONFIG}
@@ -57,10 +79,10 @@ const AdminPageContent = () => {
       <main className="h-full w-full relative z-10 overflow-hidden">
         <div
           className="h-full max-h-full overflow-y-auto overflow-x-hidden bg-background rounded-none md:rounded-l-3xl"
-          style={{ paddingLeft: !layout.md ? 0 : SIDEBAR_OFFSET }}
+          style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
-          {layout.md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: ADMIN_CONFIG }} />
+          {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
+          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: ADMIN_CONFIG, userGroups }} />
         </div>
       </main>
     </div>

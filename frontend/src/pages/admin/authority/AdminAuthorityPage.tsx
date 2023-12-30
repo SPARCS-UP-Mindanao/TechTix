@@ -1,8 +1,22 @@
+import { useOutletContext } from 'react-router-dom';
+import { CurrentUser } from '@/api/auth';
 import { useMetaData } from '@/hooks/useMetaData';
+
+interface AdminAuthorityContext {
+  userGroups: CurrentUser['cognito:groups'];
+}
 
 const AdminAuthority = () => {
   useMetaData({});
-  return <div>AdminAuthorityPage</div>;
+
+  const { userGroups } = useOutletContext<AdminAuthorityContext>();
+
+  return (
+    <div>
+      AdminAuthorityPage
+      <p> Groups: {userGroups}</p>
+    </div>
+  );
 };
 
 const AdminAuthorityPage = () => {
