@@ -68,12 +68,12 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status !== 200) {
-              removeCookie('_auth');
-              removeCookie('_auth_user');
-              removeCookie('_auth_refresh');
-              removeCookie('_auth_storage');
-              removeCookie('_auth_type');
-              removeCookie('_auth_refresh_time');
+              removeCookie('_auth', { path: '/' });
+              removeCookie('_auth_user', { path: '/' });
+              removeCookie('_auth_refresh', { path: '/' });
+              removeCookie('_auth_storage', { path: '/' });
+              removeCookie('_auth_type', { path: '/' });
+              removeCookie('_auth_refresh_time', { path: '/' });
               alert('test');
               // window.location.reload();
             }
@@ -89,21 +89,21 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            removeCookie('_auth');
-            removeCookie('_auth_user');
-            removeCookie('_auth_refresh');
-            removeCookie('_auth_storage');
-            removeCookie('_auth_type');
-            removeCookie('_auth_refresh_time');
+            removeCookie('_auth', { path: '/' });
+            removeCookie('_auth_user', { path: '/' });
+            removeCookie('_auth_refresh', { path: '/' });
+            removeCookie('_auth_storage', { path: '/' });
+            removeCookie('_auth_type', { path: '/' });
+            removeCookie('_auth_refresh_time', { path: '/' });
             // window.location.reload();
           }
         } else {
-          removeCookie('_auth');
-          removeCookie('_auth_user');
-          removeCookie('_auth_refresh');
-          removeCookie('_auth_storage');
-          removeCookie('_auth_type');
-          removeCookie('_auth_refresh_time');
+          removeCookie('_auth', { path: '/' });
+          removeCookie('_auth_user', { path: '/' });
+          removeCookie('_auth_refresh', { path: '/' });
+          removeCookie('_auth_storage', { path: '/' });
+          removeCookie('_auth_type', { path: '/' });
+          removeCookie('_auth_refresh_time', { path: '/' });
           // window.location.reload();
         }
       }
