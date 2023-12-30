@@ -1,3 +1,5 @@
+import { UserGroups } from '@/api/auth';
+
 export interface AdminRouteConfigProps {
   optionName: string;
   iconName: string;
@@ -12,11 +14,12 @@ export interface AdminRouteConfigProps {
 interface Props {
   eventId?: string;
   isCreateEventOpen: boolean;
+  userGroups?: UserGroups[];
   toggleCreateEvent: () => void;
   setLogoutOpen: (open: boolean) => void;
 }
 
-export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen }: Props): AdminRouteConfigProps[] => {
+export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen, userGroups }: Props): AdminRouteConfigProps[] => {
   return [
     {
       optionName: 'Dashboard',
@@ -63,6 +66,7 @@ export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCre
     {
       optionName: 'Admins',
       iconName: 'Users',
+      visible: userGroups && userGroups.includes('super_admin'),
       route: `/admin/authority`,
       location: 'lower'
     },

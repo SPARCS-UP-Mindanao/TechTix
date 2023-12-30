@@ -49,7 +49,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
       <li>
         <Button
           className={cn(
-            'flex w-full justify-start text-primary-700 md:text-primary-foreground border-none hover:bg-primary-foreground hover:text-primary-700',
+            'flex w-full justify-start text-primary-700 md:text-primary-foreground border-none hover:bg-primary-700 hover:text-primary-foreground',
             (currentRouteSelected || selected) && 'text-primary-foreground bg-primary-700 md:text-primary-700 md:bg-primary-foreground pointer-events-none',
             !isSidebarOpen && 'justify-center'
           )}
