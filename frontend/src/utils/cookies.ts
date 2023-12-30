@@ -1,8 +1,7 @@
-export const cookieConfiguration = () => {
-  const cookieConfig = {
-    path: '/',
-    secure: true
-  };
+import { CookieAttributes } from 'node_modules/typescript-cookie/dist/types';
 
-  console.log(cookieConfig);
+export const cookieConfiguration: CookieAttributes = {
+  path: '/',
+  domain: window.location.hostname,
+  secure: true
 };

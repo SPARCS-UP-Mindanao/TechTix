@@ -4,6 +4,7 @@ import { setCookie } from 'typescript-cookie';
 import { z } from 'zod';
 import { loginUser } from '@/api/auth';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { cookieConfiguration } from '@/utils/cookies';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +36,7 @@ export const useAdminLoginForm = () => {
       const loginResponse = await api.execute(loginUser(email, password));
 
       if (loginResponse.status === 200) {
-        setCookie('_auth_user', loginResponse.data.authState?.userId);
+        setCookie('_auth_user', loginResponse.data.authState?.userId, cookieConfiguration);
         signIn(loginResponse.data);
       } else {
         const { errorData } = loginResponse as CustomAxiosError;

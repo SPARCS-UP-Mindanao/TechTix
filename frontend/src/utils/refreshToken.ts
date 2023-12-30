@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { createRefresh } from 'react-auth-kit';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
+import { cookieConfiguration } from './cookies';
 
 const refreshApi = createRefresh({
   interval: 10,
@@ -17,7 +18,7 @@ const refreshApi = createRefresh({
       const refreshToken = getCookie('_auth_refresh')!;
       const response = await refreshAccessToken(refreshToken, userId);
       if (response.status === 200) {
-        setCookie('_auth', response.data.accessToken);
+        setCookie('_auth', response.data.accessToken, cookieConfiguration);
         return {
           isSuccess: true,
           newAuthToken: response.data.token,
@@ -68,19 +69,19 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Encapsulate token refresh logic in a function
             const response = await refreshAccessToken(refreshToken, userId);
             if (response.status !== 200) {
-              removeCookie('_auth', { path: '/' });
-              removeCookie('_auth_user', { path: '/' });
-              removeCookie('_auth_refresh', { path: '/' });
-              removeCookie('_auth_storage', { path: '/' });
-              removeCookie('_auth_type', { path: '/' });
-              removeCookie('_auth_refresh_time', { path: '/' });
+              removeCookie('_auth', cookieConfiguration);
+              removeCookie('_auth_user', cookieConfiguration);
+              removeCookie('_auth_refresh', cookieConfiguration);
+              removeCookie('_auth_storage', cookieConfiguration);
+              removeCookie('_auth_type', cookieConfiguration);
+              removeCookie('_auth_refresh_time', cookieConfiguration);
               window.location.reload();
             }
 
             // Store the new token
             const newAccessToken = response.data.accessToken;
-            setCookie('_auth', newAccessToken);
-            setCookie('_auth_user', userId);
+            setCookie('_auth', newAccessToken, cookieConfiguration);
+            setCookie('_auth_user', userId, cookieConfiguration);
 
             // Update the header for the original request
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
@@ -88,21 +89,21 @@ export const refreshOnIntercept = (api: AxiosInstance) => {
             // Retry the original request with the new token
             return api(originalRequest);
           } catch (refreshError) {
-            removeCookie('_auth', { path: '/' });
-            removeCookie('_auth_user', { path: '/' });
-            removeCookie('_auth_refresh', { path: '/' });
-            removeCookie('_auth_storage', { path: '/' });
-            removeCookie('_auth_type', { path: '/' });
-            removeCookie('_auth_refresh_time', { path: '/' });
+            removeCookie('_auth', cookieConfiguration);
+            removeCookie('_auth_user', cookieConfiguration);
+            removeCookie('_auth_refresh', cookieConfiguration);
+            removeCookie('_auth_storage', cookieConfiguration);
+            removeCookie('_auth_type', cookieConfiguration);
+            removeCookie('_auth_refresh_time', cookieConfiguration);
             window.location.reload();
           }
         } else {
-          removeCookie('_auth', { path: '/' });
-          removeCookie('_auth_user', { path: '/' });
-          removeCookie('_auth_refresh', { path: '/' });
-          removeCookie('_auth_storage', { path: '/' });
-          removeCookie('_auth_type', { path: '/' });
-          removeCookie('_auth_refresh_time', { path: '/' });
+          removeCookie('_auth', cookieConfiguration);
+          removeCookie('_auth_user', cookieConfiguration);
+          removeCookie('_auth_refresh', cookieConfiguration);
+          removeCookie('_auth_storage', cookieConfiguration);
+          removeCookie('_auth_type', cookieConfiguration);
+          removeCookie('_auth_refresh_time', cookieConfiguration);
           window.location.reload();
         }
       }
