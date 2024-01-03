@@ -136,14 +136,14 @@ export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetc
             </Button>
           }
           modalFooter={
-            <>
-              <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
-                Cancel
-              </Button>
-              <Button onClick={() => deleteAdmin()} loading={isDeletingAdmin} variant="negative" type="submit" className="w-full">
-                Delete
-              </Button>
-            </>
+              <div className='w-full flex flex-row gap-2'>
+                <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
+                  Cancel
+                </Button>
+                <Button onClick={() => deleteAdmin()} loading={isDeletingAdmin} variant="negative" type="submit" className="w-full">
+                  Delete
+                </Button>
+              </div>
           }
         ></Modal>
       );

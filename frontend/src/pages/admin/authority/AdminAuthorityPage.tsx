@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
+import notFound from '@/assets/not-found.png';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { FormItem } from '@/components/Form';
@@ -151,8 +152,9 @@ const AdminAuthority: FC = () => {
 
   if (!response || (response && !response.data)) {
     return (
-      <div className="flex flex-col items-center">
-        <h1>No Admins found</h1>
+      <div className="flex flex-col items-center justify-center w-full h-full gap-5">
+        <img src={notFound} alt="Not Found" />
+        <h1 className="text-center">No Admins found</h1>
       </div>
     );
   }
