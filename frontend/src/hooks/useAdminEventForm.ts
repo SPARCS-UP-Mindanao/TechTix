@@ -4,6 +4,7 @@ import { updateEvent, createEvent, getEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { isEmpty } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const EventFormSchema = z.object({
@@ -44,7 +45,7 @@ interface EventFormProps {
 
 export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: EventFormProps) => {
   const { successToast, errorToast } = useNotifyToast();
-
+  const api = useApi();
   const form = useForm<EventFormValues>({
     mode: 'onChange',
     resolver: zodResolver(EventFormSchema),
@@ -72,14 +73,12 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
   });
 
   const submit = form.handleSubmit(async (values) => {
-    const { queryFn: event } = eventId ? updateEvent(eventId, values) : createEvent(values);
-
     try {
       if (!isEmpty(form.formState.errors)) {
         throw new Error('Please fill in all the required fields');
       }
 
-      const response = await event();
+      const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent(values)));
 
       if (response.status === 200) {
         const successTitle = eventId ? 'Event updated' : 'Event created';

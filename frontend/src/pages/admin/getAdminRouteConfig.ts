@@ -1,3 +1,5 @@
+import { UserGroups } from '@/api/auth';
+
 export interface AdminRouteConfigProps {
   optionName: string;
   iconName: string;
@@ -12,13 +14,13 @@ export interface AdminRouteConfigProps {
 interface Props {
   eventId?: string;
   isCreateEventOpen: boolean;
+  userGroups?: UserGroups[];
   toggleCreateEvent: () => void;
   setLogoutOpen: (open: boolean) => void;
-  isSuperAdmin: boolean | null;
 }
 
-export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }: Props): AdminRouteConfigProps[] => {
-  const adminConfig: AdminRouteConfigProps[] = [
+export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen, userGroups }: Props): AdminRouteConfigProps[] => {
+  return [
     {
       optionName: 'Dashboard',
       iconName: 'House',
@@ -60,24 +62,19 @@ export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCre
       visible: !!eventId,
       route: `/admin/events/${eventId}/evaluations`,
       location: 'upper'
-    }
-  ];
-
-  if (isSuperAdmin) {
-    adminConfig.push({
+    },
+    {
       optionName: 'Admins',
       iconName: 'Users',
+      visible: userGroups && userGroups.includes('super_admin'),
       route: `/admin/authority`,
       location: 'lower'
-    });
-  }
-
-  adminConfig.push({
-    optionName: 'Sign out',
-    iconName: 'SignOut',
-    location: 'lower',
-    onClick: () => setLogoutOpen(true)
-  });
-
-  return adminConfig;
+    },
+    {
+      optionName: 'Sign out',
+      iconName: 'SignOut',
+      location: 'lower',
+      onClick: () => setLogoutOpen(true)
+    }
+  ];
 };

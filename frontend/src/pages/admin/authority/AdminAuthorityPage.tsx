@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
-import { getCookie } from 'typescript-cookie';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { FormItem } from '@/components/Form';
@@ -11,9 +11,15 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import Skeleton from '@/components/Skeleton';
 import { getAllAdmins } from '@/api/admin';
+import { CurrentUser } from '@/api/auth';
 import { useApiQuery } from '@/hooks/useApi';
 import { useAdminForm } from '@/hooks/useInviteAdminForm';
+import { useMetaData } from '@/hooks/useMetaData';
 import { adminColumns } from './AdminColumns';
+
+interface AdminAuthorityContext {
+  userGroups: CurrentUser['cognito:groups'];
+}
 
 interface InviteAdmintModalProps {
   refetch: () => void;
@@ -109,13 +115,16 @@ const CreateDiscountModal = ({ refetch }: InviteAdmintModalProps) => {
 };
 
 const AdminAuthority: FC = () => {
+  useMetaData({});
+  const { userGroups } = useOutletContext<AdminAuthorityContext>();
+
   const navigate = useNavigate();
   useEffect(() => {
-    const isSuperAdmin = getCookie('_is_super_admin');
+    const isSuperAdmin = userGroups && userGroups.includes('super_admin');
     if (!isSuperAdmin) {
       navigate('/admin/events');
     }
-  }, []);
+  }, [userGroups]);
 
   const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins());
 

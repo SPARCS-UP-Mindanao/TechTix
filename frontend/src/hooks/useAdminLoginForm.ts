@@ -4,7 +4,9 @@ import { setCookie } from 'typescript-cookie';
 import { z } from 'zod';
 import { loginUser } from '@/api/auth';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { cookieConfiguration } from '@/utils/cookies';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const LoginFormSchema = z.object({
@@ -19,6 +21,7 @@ const LoginFormSchema = z.object({
 export const useAdminLoginForm = () => {
   const { errorToast } = useNotifyToast();
   const signIn = useSignIn();
+  const api = useApi();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -30,14 +33,13 @@ export const useAdminLoginForm = () => {
 
   const submit = form.handleSubmit(async ({ email, password }) => {
     try {
-      const { queryFn: login } = loginUser(email, password);
-      const response = await login();
+      const loginResponse = await api.execute(loginUser(email, password));
 
-      if (response.status === 200) {
-        setCookie('_auth_user', response.data.authState?.userId);
-        signIn(response.data);
+      if (loginResponse.status === 200) {
+        setCookie('_auth_user', loginResponse.data.authState?.userId, cookieConfiguration);
+        signIn(loginResponse.data);
       } else {
-        const { errorData } = response as CustomAxiosError;
+        const { errorData } = loginResponse as CustomAxiosError;
         errorToast({
           title: 'Error in logging in',
           description: errorData.message || errorData.detail[0].msg

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Outlet as AdminPageRoute, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
-import { setCookie } from 'typescript-cookie';
 import AlertModal from '@/components/AlertModal';
+import ErrorPage from '@/components/ErrorPage';
 import { getCurrentUser } from '@/api/auth';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
+import { useApiQuery } from '@/hooks/useApi';
 import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './AdminSideBar';
@@ -15,14 +16,33 @@ import { AdminRouteConfigProps } from './getAdminRouteConfig';
 const AdminPageContent = () => {
   useMetaData({});
   const navigate = useNavigate();
+  const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
   const [adminConfig, setAdminConfig] = useState<AdminRouteConfigProps[]>([]);
-  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean | null>(null);
-
-  const layout = useLayout('md');
-
+  const [userGroups, setUserGroups] = useState<string[]>([]);
   const { eventId } = useParams();
+
+  useEffect(() => {
+    if (!response) {
+      return;
+    }
+
+    const userGroupsRes = response.data['cognito:groups'];
+    setUserGroups(userGroupsRes);
+
+    const ADMIN_CONFIG = getAdminRouteConfig({
+      userGroups: userGroupsRes,
+      eventId: eventId!,
+      isCreateEventOpen,
+      toggleCreateEvent,
+      setLogoutOpen
+    });
+
+    setAdminConfig(ADMIN_CONFIG);
+  }, [response, eventId]);
+
+  const { md } = useLayout('md');
 
   const SIDEBAR_OFFSET = 25;
   const openSidebarWidth = 220 + SIDEBAR_OFFSET;
@@ -40,34 +60,18 @@ const AdminPageContent = () => {
     return;
   }
 
-  const updateAdminConfig = async () => {
-    if (isSuperAdmin == null) {
-      const { queryFn: getCurrent } = getCurrentUser();
-      const response = await getCurrent();
-      if (response.status == 200) {
-        const { data: currentUser } = response;
-        const group = currentUser['cognito:groups'];
-        if (group && group.length > 0) {
-          const isSuperAdminVal = group.includes('super_admin');
-          setIsSuperAdmin(isSuperAdminVal);
-          setCookie('_is_super_admin', isSuperAdminVal);
-        }
-      }
-    }
-  };
+  if (isFetching) {
+    return <h1>Loading...</h1>;
+  }
 
-  useEffect(() => {
-    updateAdminConfig();
-  }, []);
-
-  useEffect(() => {
-    setAdminConfig(getAdminRouteConfig({ eventId: eventId!, isCreateEventOpen, toggleCreateEvent, setLogoutOpen, isSuperAdmin }));
-  }, [eventId, isCreateEventOpen, isSuperAdmin]);
+  if (!response || (response && !response.data && response.errorData)) {
+    return <ErrorPage error={response} />;
+  }
 
   return (
     <div className="flex w-full h-full flex-col md:flex-row">
       <AdminSideBar
-        tablet={layout.md}
+        tablet={md}
         isSidebarOpen={isSideBarOpen}
         isCreateEventOpen={isCreateEventOpen}
         adminConfig={adminConfig}
@@ -87,10 +91,10 @@ const AdminPageContent = () => {
       <main className="h-full w-full relative z-10 overflow-hidden">
         <div
           className="h-full max-h-full overflow-y-auto overflow-x-hidden bg-background rounded-none md:rounded-l-3xl"
-          style={{ paddingLeft: !layout.md ? 0 : SIDEBAR_OFFSET }}
+          style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
-          {layout.md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: adminConfig }} />
+          {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
+          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: adminConfig, userGroups }} />
         </div>
       </main>
     </div>

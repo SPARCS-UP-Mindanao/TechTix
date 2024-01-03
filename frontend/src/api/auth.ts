@@ -1,5 +1,4 @@
 import { signInFunctionParams } from 'react-auth-kit/dist/types';
-import { CurrentUser } from '@/model/auth';
 import { createApi } from './utils/createApi';
 
 export interface LoginResponse {
@@ -66,10 +65,11 @@ export const updatePassword = (email: string, prevPassword: string, newPassword:
     body: { email, prevPassword, newPassword }
   });
 
-export const getCurrentUser = () =>
-  createApi<CurrentUser>({
-    method: 'get',
-    apiService: 'auth',
-    authorize: true,
-    url: '/admin/auth/current-user'
-  });
+export type UserGroups = 'super_admin' | 'admin';
+export interface CurrentUser {
+  sub: string;
+  'cognito:groups': UserGroups[];
+  username: string;
+}
+
+export const getCurrentUser = () => createApi<CurrentUser>({ apiService: 'auth', authorize: true, url: '/admin/auth/current-user' });
