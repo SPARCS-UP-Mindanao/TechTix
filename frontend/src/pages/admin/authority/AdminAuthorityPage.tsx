@@ -11,6 +11,7 @@ import { FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import Skeleton from '@/components/Skeleton';
+import TableSkeleton from '@/components/TableSkeleton';
 import { getAllAdmins } from '@/api/admin';
 import { CurrentUser } from '@/api/auth';
 import { useApiQuery } from '@/hooks/useApi';
@@ -137,15 +138,7 @@ const AdminAuthority: FC = () => {
         <h2>Admins</h2>
         <CreateDiscountModal refetch={refetch} />
         <Skeleton className="h-9 w-36 self-start" />
-        <div className="rounded-md border w-full">
-          {Array.from(Array(rowCount)).map((_, index) => (
-            <div key={index} className="grid grid-cols-6 gap-3 w-full py-4 px-2">
-              {Array.from(Array(colCount)).map((_, index) => (
-                <Skeleton className="w-full h-5" key={index} />
-              ))}
-            </div>
-          ))}
-        </div>
+        <TableSkeleton colCount={colCount} rowCount={rowCount} />
       </div>
     );
   }
@@ -154,7 +147,7 @@ const AdminAuthority: FC = () => {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full gap-5">
         <img src={notFound} alt="Not Found" />
-        <h1 className="text-center">No Admins found</h1>
+        <h2 className="text-center">No Admins found</h2>
       </div>
     );
   }
