@@ -150,22 +150,18 @@ const AdminAuthority: FC = () => {
     );
   }
 
-  if (!response || (response && !response.data)) {
-    return (
-      <div className="flex flex-col items-center justify-center w-full h-full gap-5">
-        <img src={notFound} alt="Not Found" />
-        <h1 className="text-center">No Admins found</h1>
-      </div>
-    );
-  }
-
-  const admins = response.data;
-
   return (
-    <section className="flex flex-col items-center py-10 px-4">
+    <section className="flex flex-col items-center py-10 px-4 h-full">
       <h2>Admins</h2>
       <CreateDiscountModal refetch={refetch} />
-      <DataTable columns={adminColumns(refetch)} data={admins} />
+      {!response || (response && !response.data) ? (
+        <div className="flex flex-col items-center justify-center w-full h-full gap-5">
+          <img src={notFound} alt="Not Found" />
+          <h2 className="text-center">No Admins found</h2>
+        </div>
+      ) : (
+        <DataTable columns={adminColumns(refetch)} data={response.data} />
+      )}
     </section>
   );
 };
