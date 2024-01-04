@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Icon from '@/components/Icon';
 import { cn } from '@/utils/classes';
@@ -38,14 +38,14 @@ const buttonVariants = cva(
   }
 );
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
   icon?: string;
   iconClassname?: string;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, children, icon = '', iconClassname, asChild = false, loading = false, disabled = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     const iconStyles = cn('h-4 w-4', size !== 'icon' && 'mr-3', iconClassname, loading && 'animate-spin');

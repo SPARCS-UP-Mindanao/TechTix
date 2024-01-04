@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { S3Client, GetObjectCommand, GetObjectCommandInput } from '@aws-sdk/client-s3';
 
@@ -17,7 +17,7 @@ interface FileViewerComponentProps {
   alt?: string;
 }
 
-const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ objectKey, className, alt }) => {
+const FileViewerComponent: FC<FileViewerComponentProps> = ({ objectKey, className, alt }) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const getFile = async (fileName: string): Promise<void> => {

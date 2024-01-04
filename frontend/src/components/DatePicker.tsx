@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Calendar from '@/components/Calendar';
@@ -16,18 +16,18 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, className, includeTime = false, onChange }: DatePickerProps) => {
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [time, setTime] = React.useState<string | undefined>(undefined);
-  const [newDateValue, setNewDateValue] = React.useState<string | undefined>(undefined);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [time, setTime] = useState<string | undefined>(undefined);
+  const [newDateValue, setNewDateValue] = useState<string | undefined>(undefined);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initialDate = isValidDate(value) ? new Date(value) : undefined;
     const initialTime = includeTime && initialDate ? initialDate.getHours() + ':' + initialDate.getMinutes() : '00:00';
     setDate(initialDate);
     setTime(initialTime);
   }, [value]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!date) {
       return;
     }
@@ -50,7 +50,7 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
     setNewDateValue(newDate);
   }, [date, onChange, time, includeTime]);
 
-  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeTime = (e: ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value);
   };
 

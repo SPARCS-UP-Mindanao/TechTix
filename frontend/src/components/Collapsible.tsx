@@ -1,15 +1,12 @@
-import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
+import { ReactNode } from 'react';
+import { Root, CollapsibleContent, CollapsibleTrigger, CollapsibleProps as CollapsiblePrimitiveProps } from '@radix-ui/react-collapsible';
 
-const CollapsibleContainer = CollapsiblePrimitive.Root;
-
-const CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger;
-
-const CollapsibleContent = CollapsiblePrimitive.CollapsibleContent;
+const CollapsibleContainer = Root;
 
 export { CollapsibleContainer, CollapsibleTrigger, CollapsibleContent };
 
-interface CollapsibleProps extends CollapsiblePrimitive.CollapsibleProps {
-  collapsibleTrigger?: React.ReactNode;
+interface CollapsibleProps extends CollapsiblePrimitiveProps {
+  collapsibleTrigger?: ReactNode;
 }
 
 const Collapsible = ({ open = false, onOpenChange, collapsibleTrigger, children }: CollapsibleProps) => {

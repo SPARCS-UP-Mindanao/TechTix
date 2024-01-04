@@ -1,34 +1,34 @@
-import * as React from 'react';
+import { ComponentPropsWithoutRef, ElementRef, ReactNode, forwardRef } from 'react';
 import Icon from '@/components/Icon';
 import { cn } from '@/utils/classes';
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { Content, Provider, Root, Trigger } from '@radix-ui/react-tooltip';
 
-const TooltipProvider = TooltipPrimitive.Provider;
+const TooltipProvider = Provider;
 
-const TooltipContainer = TooltipPrimitive.Root;
+const TooltipContainer = Root;
 
-const TooltipTrigger = TooltipPrimitive.Trigger;
+const TooltipTrigger = Trigger;
 
-const TooltipArrow = () => {
-  return (
-    <span
-      style={{
-        position: 'absolute',
-        bottom: 1,
-        transform: 'translateY(100%)',
-        left: 78.5
-      }}
-    >
-      <svg width="10" height="5" viewBox="0 0 30 10" preserveAspectRatio="none" style={{ display: 'block' }}>
-        <polygon points="0,0 30,0 15,10" />
-      </svg>
-    </span>
-  );
-};
+// const TooltipArrow = () => {
+//   return (
+//     <span
+//       style={{
+//         position: 'absolute',
+//         bottom: 1,
+//         transform: 'translateY(100%)',
+//         left: 78.5
+//       }}
+//     >
+//       <svg width="10" height="5" viewBox="0 0 30 10" preserveAspectRatio="none" style={{ display: 'block' }}>
+//         <polygon points="0,0 30,0 15,10" />
+//       </svg>
+//     </span>
+//   );
+// };
 
-const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive.Content>, React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>>(
+const TooltipContent = forwardRef<ElementRef<typeof Content>, ComponentPropsWithoutRef<typeof Content>>(
   ({ className, sideOffset = 4, side = 'top', ...props }, ref) => (
-    <TooltipPrimitive.Content
+    <Content
       ref={ref}
       sideOffset={sideOffset}
       side={side}
@@ -40,12 +40,12 @@ const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive
     />
   )
 );
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+TooltipContent.displayName = Content.displayName;
 
 export { TooltipContainer, TooltipTrigger, TooltipContent, TooltipProvider };
 
-interface TooltipProps extends React.ComponentPropsWithoutRef<typeof TooltipContent> {
-  toolTipContent: React.ReactNode;
+interface TooltipProps extends ComponentPropsWithoutRef<typeof TooltipContent> {
+  toolTipContent: ReactNode;
   delayDuration?: number;
   skipDelayDuration?: number;
   defaultOpen?: boolean;
