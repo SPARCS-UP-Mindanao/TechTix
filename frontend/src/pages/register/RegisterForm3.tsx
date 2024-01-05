@@ -1,11 +1,12 @@
 import Button from '@/components/Button';
 import FileUpload from '@/components/FileUpload';
+import FileViewerComponent from '@/components/FileViewerComponent';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Pricing } from '@/model/discount';
 import { EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP } from '@/model/events';
+import { Event } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
-import gcash_qr from '../../assets/gcash.png';
 
 interface RegisterForm3Props {
   setValue: any;
@@ -13,8 +14,9 @@ interface RegisterForm3Props {
   setReceiptUrl: (value: string) => void;
   checkDiscountCode: () => void;
   pricing: Pricing;
+  event: Event;
 }
-const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode, pricing }: RegisterForm3Props) => {
+const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode, pricing, event }: RegisterForm3Props) => {
   const generateSessionId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
   return (
@@ -47,11 +49,11 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
           <hr />
           <div className="flex flex-col gap-1">
             <h4>Gcash Information</h4>
-            <p>Camyl Magdalyn Tanjay</p>
-            <p>09772494796</p>
+            <p>{event.gcashName}</p>
+            <p>{event.gcashNumber}</p>
           </div>
         </div>
-        <img src={gcash_qr} className="self-center h-fit w-full max-w-md object-cover" alt="No Image Uploaded" />
+        <FileViewerComponent objectKey={event.gcashQRCode} className="max-w-md object-cover" alt="No Image Uploaded" />
       </div>
       <hr />
       <FormItem name="referenceNumber">

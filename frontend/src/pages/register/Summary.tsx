@@ -1,10 +1,12 @@
 import { useFormContext } from 'react-hook-form';
 import Separator from '@/components/Separator';
+import { Event } from '@/model/events';
 
 interface SummaryProps {
   receiptUrl: string;
+  event: Event;
 }
-const Summary = ({ receiptUrl }: SummaryProps) => {
+const Summary = ({ receiptUrl, event }: SummaryProps) => {
   const { watch } = useFormContext();
   const summary = watch();
   return (
@@ -44,20 +46,25 @@ const Summary = ({ receiptUrl }: SummaryProps) => {
           <span className="font-bold">Title: </span>
           <span>{summary.title}</span>
         </div>
-        {summary.discountCode && (
-          <div>
-            <span className="font-bold">Discount Code: </span>
-            <span>{summary.discountCode}</span>
-          </div>
+        {event.payedEvent && (
+          <>
+            {summary.discountCode && (
+              <div>
+                <span className="font-bold">Discount Code: </span>
+                <span>{summary.discountCode}</span>
+              </div>
+            )}
+
+            <div>
+              <span className="font-bold">Gcash Payment Reference Number: </span>
+              <span>{summary.referenceNumber}</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="font-bold">Gcash Receipt Screenshot: </div>
+              <img src={receiptUrl} className="h-40 w-fit" />
+            </div>
+          </>
         )}
-        <div>
-          <span className="font-bold">Gcash Payment Reference Number: </span>
-          <span>{summary.referenceNumber}</span>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="font-bold">Gcash Receipt Screenshot: </div>
-          <img src={receiptUrl} className="h-40 w-fit" />
-        </div>
       </div>
     </div>
   );

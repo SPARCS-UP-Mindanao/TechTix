@@ -2,12 +2,13 @@ import { FC } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
+import Checkbox from '@/components/Checkbox';
 import DatePicker from '@/components/DatePicker';
 import FileUpload from '@/components/FileUpload';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
+import RichTextEditor from '@/components/RichTextEditor';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
-import { Textarea } from '@/components/TextArea';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
@@ -15,7 +16,9 @@ const AdminEventInfo: FC = () => {
   const event = useOutletContext<Event>();
   const { eventId } = event;
   const { form, submit } = useAdminEventForm({ eventId });
-  const { setValue } = form;
+  const { setValue, watch } = form;
+  const watchPayedEvent = watch('payedEvent', false);
+  const watchDescription = watch('description', '');
 
   const handleSubmit = async () => {
     await submit();
@@ -31,10 +34,10 @@ const AdminEventInfo: FC = () => {
         <h1>{event.name}</h1>
         <Button onClick={redirectToRegistration}>Go to Event Registration</Button>
         <FormProvider {...form}>
-          <main className="w-full">
+          <main className="w-full flex flex-col">
             <FormItem name="name">
               {({ field }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <FormLabel>Event Name</FormLabel>
                   <Input type="text" className="" {...field} />
                   <FormError />
@@ -42,17 +45,22 @@ const AdminEventInfo: FC = () => {
               )}
             </FormItem>
             <FormItem name="description">
-              {({ field }) => (
-                <div className="flex flex-col">
+              {({}) => (
+                <div className="flex flex-col gap-1">
                   <FormLabel>Description</FormLabel>
-                  <Textarea placeholder="Type your message here." {...field} />
+                  <RichTextEditor
+                    description={watchDescription}
+                    setDescription={(value: string) => {
+                      setValue('description', value);
+                    }}
+                  />
                   <FormError />
                 </div>
               )}
             </FormItem>
             <FormItem name="email">
               {({ field }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <FormLabel>Email</FormLabel>
                   <Input type="email" className="" {...field} />
                   <FormError />
@@ -61,25 +69,75 @@ const AdminEventInfo: FC = () => {
             </FormItem>
             <FormItem name="venue">
               {({ field }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <FormLabel>Venue</FormLabel>
                   <Input type="text" className="" {...field} />
                   <FormError />
                 </div>
               )}
             </FormItem>
-            <FormItem name="price">
+            <FormItem name="payedEvent">
               {({ field }) => (
-                <div className="flex flex-col">
-                  <FormLabel>Price</FormLabel>
-                  <Input type="number" className="" {...field} />
+                <div className="flex flex-col gap-1">
+                  <div className="flex flex-row gap-2">
+                    <FormLabel>Is this a Payed Event?</FormLabel>
+                    <Checkbox id="isPayedEvent" value="isPayedEvent" checked={field.value} onCheckedChange={field.onChange} />
+                  </div>
                   <FormError />
                 </div>
               )}
             </FormItem>
+            {watchPayedEvent && (
+              <>
+                <FormItem name="price">
+                  {({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <FormLabel>Price</FormLabel>
+                      <Input type="number" className="" {...field} />
+                      <FormError />
+                    </div>
+                  )}
+                </FormItem>
+                <FormItem name="gcashName">
+                  {({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <FormLabel>GCash Name</FormLabel>
+                      <Input type="text" className="" {...field} />
+                      <FormError />
+                    </div>
+                  )}
+                </FormItem>
+                <FormItem name="gcashNumber">
+                  {({ field }) => (
+                    <div className="flex flex-col gap-1">
+                      <FormLabel>GCash Number</FormLabel>
+                      <Input type="text" className="" {...field} />
+                      <FormError />
+                    </div>
+                  )}
+                </FormItem>
+                <FormItem name="gcashQRCode">
+                  {({ field }) => (
+                    <div className="flex flex-col gap-3">
+                      <FormLabel>GCash QR Code</FormLabel>
+                      <FileUpload
+                        entryId={eventId!}
+                        uploadType={EVENT_UPLOAD_TYPE.GCASH_QR}
+                        originalImage={event.gcashQRCode}
+                        setObjectKeyValue={(value: string) => {
+                          setValue(EVENT_OBJECT_KEY_MAP.GCASH_QR, value);
+                        }}
+                        {...field}
+                      />
+                      <FormError />
+                    </div>
+                  )}
+                </FormItem>
+              </>
+            )}
             <FormItem name="status">
               {({ field }) => (
-                <div className="flex flex-col w-full">
+                <div className="flex flex-col gap-1 w-full">
                   <FormLabel>Status</FormLabel>
                   <Select {...field} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
@@ -102,7 +160,7 @@ const AdminEventInfo: FC = () => {
             </FormItem>
             <FormItem name="startDate">
               {({ field: { value, onChange } }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <FormLabel>Event Start Date</FormLabel>
                   <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
@@ -111,7 +169,7 @@ const AdminEventInfo: FC = () => {
             </FormItem>
             <FormItem name="endDate">
               {({ field: { value, onChange } }) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <FormLabel>Event End Date</FormLabel>
                   <DatePicker value={value} onChange={onChange} includeTime />
                   <FormError />
@@ -169,7 +227,7 @@ const AdminEventInfo: FC = () => {
                 </div>
               )}
             </FormItem>
-            <Button onClick={handleSubmit} type="submit">
+            <Button onClick={handleSubmit} type="submit" variant={'primaryGradient'} className="self-center">
               Submit
             </Button>
           </main>
