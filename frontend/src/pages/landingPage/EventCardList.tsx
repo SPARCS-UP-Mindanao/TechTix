@@ -29,7 +29,7 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll, initialCount = 8 }) 
   if (isFetching) {
     return (
       <div className="w-full flex items-center justify-center p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 items-center justify-center justify-items-center md:w-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 items-center justify-center justify-items-center md:w-auto">
           {[...Array(initialCount)].map((index) => (
             <div className="flex flex-col gap-2 rounded-xl shadow-lg w-full md:w-[245px] h-[220px]" key={index}>
               <Skeleton className="w-full h-1/2" />
@@ -62,8 +62,8 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll, initialCount = 8 }) 
   }
 
   const allEvents: Event[] = response.data;
-  const events = isLoadAll ? allEvents : allEvents.slice(0, eventCount);
-  const visibleEvents = events.filter((event) => !HIDE_STATUS.includes(event.status));
+  const events = allEvents.filter((event) => !HIDE_STATUS.includes(event.status));
+  const visibleEvents = isLoadAll ? events : events.slice(0, eventCount);
   const showAllEvents = allEvents.length === eventCount;
 
   const loadButton = () => {

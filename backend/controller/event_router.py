@@ -32,8 +32,31 @@ event_router = APIRouter()
     include_in_schema=False,
 )
 def get_events(
-    current_user: AccessUser = Depends(get_current_user),
     admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
+):
+    events_uc = EventUsecase()
+    return events_uc.get_events(admin_id=admin_id)
+
+
+@event_router.get(
+    '/admin',
+    response_model=List[EventOut],
+    responses={
+        404: {"model": Message, "description": "Event not found"},
+        500: {"model": Message, "description": "Internal server error"},
+    },
+    summary="Get admin events",
+)
+@event_router.get(
+    '/admin/',
+    response_model=List[EventOut],
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_admin_events(
+    admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     events_uc = EventUsecase()

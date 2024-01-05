@@ -78,7 +78,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => table.getColumn('email')?.setFilterValue(event.target.value)}
-          className="max-w-[200px]"
+          className="max-w-[160px]"
         />
         {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>

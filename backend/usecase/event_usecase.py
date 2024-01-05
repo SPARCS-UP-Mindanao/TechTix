@@ -10,7 +10,6 @@ from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
-from usecase.certificate_usecase import CertificateUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from utils.logger import logger
@@ -23,7 +22,6 @@ class EventUsecase:
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__registration_repository = RegistrationsRepository()
-        self.__certificate_usecase = CertificateUsecase()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         slug = Utils.convert_to_slug(event_in.name)
@@ -59,11 +57,7 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if original_status != EventStatus.CLOSED.value and update_event.status == EventStatus.CLOSED.value:
-            logger.info(f'Generating certificates triggered for event: {event_id}')
-            self.__certificate_usecase.generate_certificates(event_id=event_id)
-
-        elif original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
+        if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.eventId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'

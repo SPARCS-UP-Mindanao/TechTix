@@ -1,6 +1,6 @@
-from model.events.event import Event
-from model.entities import Entities
 from constants.common_constants import EntryStatus
+from model.entities import Entities
+from model.events.event import Event
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 
 
@@ -21,7 +21,7 @@ class EventOld(Entities, discriminator='Event'):
 
 
 def main():
-    range_key_prefix = f'v0#'
+    range_key_prefix = 'v0#'
     range_key_condition = EventOld.rangeKey.startswith(range_key_prefix)
     old_events = list(
         EventOld.query(
@@ -30,7 +30,7 @@ def main():
             filter_condition=EventOld.entryStatus == EntryStatus.ACTIVE.value,
         )
     )
-    
+
     with Event.batch_write() as batch:
         items = [
             Event(
@@ -61,7 +61,7 @@ def main():
         ]
         for item in items:
             batch.save(item)
-        
+
 
 if __name__ == "__main__":
     main()
