@@ -24,6 +24,7 @@ export const useAdminLoginForm = () => {
   const api = useApi();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
+    mode: 'onChange',
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: '',
