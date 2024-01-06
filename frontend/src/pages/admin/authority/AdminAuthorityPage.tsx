@@ -1,13 +1,11 @@
 import { FC, useState } from 'react';
 import { Navigate, useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
-// import notFound from '@/assets/not-found.png';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { FormLabel, FormItem, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
-// import Skeleton from '@/components/Skeleton';
 import { getAllAdmins } from '@/api/admin';
 import { CurrentUser } from '@/model/auth';
 import { useApiQuery } from '@/hooks/useApi';

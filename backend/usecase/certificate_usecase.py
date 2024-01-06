@@ -28,14 +28,19 @@ class CertificateUsecase:
         try:
             timestamp = datetime.utcnow().isoformat(timespec="seconds")
             payload = {"eventId": event_id}
+            message_group_id = f"sparcs-certificates-{event_id}"
+            message_dedup_id = f"sparcs-certificates-{event_id}-{timestamp}"
+
             if registration_id:
                 payload["registrationId"] = registration_id
+                message_group_id += f'-{registration_id}'
+                message_dedup_id += f'-{registration_id}'
 
             response = self.__sqs_client.send_message(
                 QueueUrl=self.__sqs_url,
                 MessageBody=json.dumps(payload),
-                MessageDeduplicationId=f"sparcs-certificates-{event_id}-{timestamp}-{registration_id}",
-                MessageGroupId=f"sparcs-certificates-{event_id}-{registration_id}",
+                MessageDeduplicationId=message_dedup_id,
+                MessageGroupId=message_group_id
             )
 
             message_id = response.get("MessageId")
