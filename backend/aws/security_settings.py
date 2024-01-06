@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Security, status
 from fastapi.security import APIKeyHeader
 
-api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
+api_key_header = APIKeyHeader(name='x-api-key', auto_error=False)
 api_keys = []
 
 
@@ -11,5 +11,5 @@ def get_api_key(api_key_header: str = Security(api_key_header)) -> str:
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid or missing API Key",
+        detail='Invalid or missing API Key',
     )

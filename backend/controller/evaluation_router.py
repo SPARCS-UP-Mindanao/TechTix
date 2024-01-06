@@ -19,10 +19,10 @@ evaluation_router = APIRouter()
     '',
     response_model=List[EvaluationListOut],
     responses={
-        404: {"model": Message, "description": "Evaluation not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Evaluation not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get evaluations",
+    summary='Get evaluations',
 )
 @evaluation_router.get(
     '/',
@@ -33,7 +33,7 @@ evaluation_router = APIRouter()
 )
 def get_evaluations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
-    registration_id: str = Query(None, title="Registration Id"),
+    registration_id: str = Query(None, title='Registration Id'),
 ):
     """Get Evaluation Entries"""
     evaluations_uc = EvaluationUsecase()
@@ -44,10 +44,10 @@ def get_evaluations(
     '/{eventId}/question/{question}',
     response_model=List[EvaluationOut],
     responses={
-        404: {"model": Message, "description": "Evaluation not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Evaluation not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get evaluations by question",
+    summary='Get evaluations by question',
 )
 @evaluation_router.get(
     '/{eventId}/question/{question}/',
@@ -58,7 +58,7 @@ def get_evaluations(
 )
 def get_evaluations_by_question(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    question: EvaluationQuestionType = Path(..., title="Question"),
+    question: EvaluationQuestionType = Path(..., title='Question'),
 ):
     """Get Evaluation Entries by Question"""
     evaluations_uc = EvaluationUsecase()
@@ -69,10 +69,10 @@ def get_evaluations_by_question(
     '/{eventId}/registration/{registrationId}',
     response_model=EvaluationOut,
     responses={
-        404: {"model": Message, "description": "Evaluation not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Evaluation not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get evaluation",
+    summary='Get evaluation',
 )
 @evaluation_router.get(
     '/{eventId}/registration/{registrationId}/',
@@ -83,8 +83,8 @@ def get_evaluations_by_question(
 )
 def get_evaluation(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    registration_id: str = Path(..., title="Registration Id", alias=CommonConstants.REGISTRATION_ID),
-    question: EvaluationQuestionType = Query(..., title="Question"),
+    registration_id: str = Path(..., title='Registration Id', alias=CommonConstants.REGISTRATION_ID),
+    question: EvaluationQuestionType = Query(..., title='Question'),
 ):
     """Get Evaluation Entry"""
     evaluations_uc = EvaluationUsecase()
@@ -95,10 +95,10 @@ def get_evaluation(
     '',
     response_model=List[EvaluationOut],
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Create evaluation",
+    summary='Create evaluation',
 )
 @evaluation_router.post(
     '/',
@@ -118,11 +118,11 @@ def create_evaluation(
     '/{eventId}',
     response_model=EvaluationOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        404: {"model": Message, "description": "Evaluation not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        404: {'model': Message, 'description': 'Evaluation not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Update evaluation",
+    summary='Update evaluation',
 )
 @evaluation_router.put(
     '/{eventId}/',
@@ -134,8 +134,8 @@ def create_evaluation(
 def update_evaluation(
     evaluation: EvaluationPatch,
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    registration_id: str = Query(..., title="Registration Id"),
-    question: EvaluationQuestionType = Query(..., title="Question"),
+    registration_id: str = Query(..., title='Registration Id'),
+    question: EvaluationQuestionType = Query(..., title='Question'),
 ):
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.update_evaluation(event_id, registration_id, question, evaluation)

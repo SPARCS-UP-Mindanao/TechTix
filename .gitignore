@@ -5,3 +5,4 @@ my.secrets
 
 .env
 .env.local
+.DS_STORE

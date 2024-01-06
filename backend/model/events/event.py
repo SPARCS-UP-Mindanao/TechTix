@@ -65,35 +65,35 @@ class EventIn(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    name: str = Field(None, title="Name")
-    description: str = Field(None, title="Description")
-    email: EmailStr = Field(None, title="Email")
-    startDate: datetime = Field(None, title="Date")
-    endDate: datetime = Field(None, title="Date")
-    venue: str = Field(None, title="Venue")
-    autoConfirm: bool = Field(None, title="Auto Confirm")
-    payedEvent: bool = Field(None, title="Payed Event")
-    price: float = Field(None, title="Price")
-    bannerLink: str = Field(None, title="Banner Link")
-    logoLink: str = Field(None, title="Poster Link")
-    certificateTemplate: str = Field(None, title="Certificate Template")
+    name: str = Field(None, title='Name')
+    description: str = Field(None, title='Description')
+    email: EmailStr = Field(None, title='Email')
+    startDate: datetime = Field(None, title='Date')
+    endDate: datetime = Field(None, title='Date')
+    venue: str = Field(None, title='Venue')
+    autoConfirm: bool = Field(None, title='Auto Confirm')
+    payedEvent: bool = Field(None, title='Payed Event')
+    price: float = Field(None, title='Price')
+    bannerLink: str = Field(None, title='Banner Link')
+    logoLink: str = Field(None, title='Poster Link')
+    certificateTemplate: str = Field(None, title='Certificate Template')
 
-    gcashQRCode: str = Field(None, title="GCash QR Code")
-    gcashName: str = Field(None, title="Gcash Name")
-    gcashNumber: str = Field(None, title="Gcash Number")
+    gcashQRCode: str = Field(None, title='GCash QR Code')
+    gcashName: str = Field(None, title='Gcash Name')
+    gcashNumber: str = Field(None, title='Gcash Number')
 
-    status: Optional[EventStatus] = Field(None, title="Event Status")
+    status: Optional[EventStatus] = Field(None, title='Event Status')
 
 
 class EventOut(EventIn):
     class Config:
         extra = Extra.ignore
 
-    eventId: str = Field(..., title="ID")
-    createDate: datetime = Field(..., title="Created At")
-    updateDate: datetime = Field(..., title="Updated At")
-    createdBy: str = Field(..., title="Created By")
-    updatedBy: str = Field(None, title="Updated By")
-    bannerUrl: Optional[str] = Field(None, title="Banner Pre-signed URL")
-    logoUrl: Optional[str] = Field(None, title="Logo Pre-signed URL")
-    certificateTemplateUrl: Optional[str] = Field(None, title="Certificate Template Pre-signed URL")
+    eventId: str = Field(..., title='ID')
+    createDate: datetime = Field(..., title='Created At')
+    updateDate: datetime = Field(..., title='Updated At')
+    createdBy: str = Field(..., title='Created By')
+    updatedBy: str = Field(None, title='Updated By')
+    bannerUrl: Optional[str] = Field(None, title='Banner Pre-signed URL')
+    logoUrl: Optional[str] = Field(None, title='Logo Pre-signed URL')
+    certificateTemplateUrl: Optional[str] = Field(None, title='Certificate Template Pre-signed URL')

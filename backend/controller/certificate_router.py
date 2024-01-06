@@ -11,10 +11,10 @@ certificate_router = APIRouter()
     '/{eventId}/claim',
     response_model=CertificateOut,
     responses={
-        404: {"model": Message, "description": "Email not found"},
-        400: {"model": Message, "description": "Certificate template unavailable"},
+        404: {'model': Message, 'description': 'Email not found'},
+        400: {'model': Message, 'description': 'Certificate template unavailable'},
     },
-    summary="Claim certificate",
+    summary='Claim certificate',
 )
 @certificate_router.put(
     '/{eventId}/claim/',
@@ -25,7 +25,7 @@ certificate_router = APIRouter()
 )
 def update_certificate(
     certificate_in: CertificateIn,
-    event_id: str = Path(..., title="Event Id", alias=CommonConstants.EVENT_ID),
+    event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """
     Handle event certificate claiming.

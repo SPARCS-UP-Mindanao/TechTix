@@ -19,10 +19,10 @@ event_router = APIRouter()
     '',
     response_model=List[EventOut],
     responses={
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get events",
+    summary='Get events',
 )
 @event_router.get(
     '/',
@@ -42,10 +42,10 @@ def get_events(
     '/admin',
     response_model=List[EventOut],
     responses={
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get admin events",
+    summary='Get admin events',
 )
 @event_router.get(
     '/admin/',
@@ -67,10 +67,10 @@ def get_admin_events(
     '/{entryId}',
     response_model=EventOut,
     responses={
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get event",
+    summary='Get event',
 )
 @event_router.get(
     '/{entryId}/',
@@ -90,10 +90,10 @@ def get_event(
     '',
     response_model=EventOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Create event",
+    summary='Create event',
 )
 @event_router.post(
     '/',
@@ -115,11 +115,11 @@ def create_event(
     '/{entryId}',
     response_model=EventOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Update event",
+    summary='Update event',
 )
 @event_router.put(
     '/{entryId}/',
@@ -144,7 +144,7 @@ def update_event(
     responses={
         204: {'description': 'Event entry deletion success', 'content': None},
     },
-    summary="Delete event",
+    summary='Delete event',
 )
 @event_router.delete(
     '/{entryId}/',
@@ -163,8 +163,8 @@ def delete_event(
 @event_router.put(
     '/{entryId}/upload/{uploadType}',
     response_model=FileUploadOut,
-    responses={500: {"model": Message, "description": "Interal server error"}},
-    summary="Get presigned URL",
+    responses={500: {'model': Message, 'description': 'Interal server error'}},
+    summary='Get presigned URL',
 )
 @event_router.put(
     '/{entryId}/upload/{uploadType}/',

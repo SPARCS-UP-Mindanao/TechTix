@@ -63,5 +63,5 @@ def main():
             batch.save(item)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
