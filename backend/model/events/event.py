@@ -54,6 +54,10 @@ class Event(Model):
     price = NumberAttribute(null=True)
     certificateTemplate = UnicodeAttribute(null=True)
 
+    gcashQRCode = UnicodeAttribute(null=True)
+    gcashName = UnicodeAttribute(null=True)
+    gcashNumber = UnicodeAttribute(null=True)
+
     eventIdIndex = EventIdIndex()
 
 
@@ -73,6 +77,11 @@ class EventIn(BaseModel):
     bannerLink: str = Field(None, title="Banner Link")
     logoLink: str = Field(None, title="Poster Link")
     certificateTemplate: str = Field(None, title="Certificate Template")
+
+    gcashQRCode: str = Field(None, title="GCash QR Code")
+    gcashName: str = Field(None, title="Gcash Name")
+    gcashNumber: str = Field(None, title="Gcash Number")
+
     status: Optional[EventStatus] = Field(None, title="Event Status")
 
 

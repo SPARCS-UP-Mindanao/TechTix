@@ -3,7 +3,7 @@ import UpdatePasswordForm from './UpdatePasswordForm';
 
 const UpdatePasswordPage = () => {
   return (
-    <main className="loginPage">
+    <main className="h-full max-w-[1080px] mx-auto my-0 p-8 pt-32">
       <div className="w-full flex justify-center">
         <section className="flex flex-col space-y-4 w-full max-w-2xl">
           <header className="flex justify-center">

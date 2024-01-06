@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { updateEvent, createEvent, getEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { isEmpty } from '@/utils/functions';
+import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,13 +27,22 @@ export const EventFormSchema = z.object({
   venue: z.string().min(1, {
     message: 'Please enter the event venue'
   }),
+  payedEvent: z.boolean(),
   price: z.coerce.number().min(0, {
     message: 'Please enter the event price'
   }),
   status: z.enum(['draft', 'open', 'cancelled', 'closed', 'completed']),
   bannerLink: z.string().nullish(),
   logoLink: z.string().nullish(),
-  certificateTemplate: z.string().nullish()
+  certificateTemplate: z.string().nullish(),
+  gcashQRCode: z.string().nullish(),
+  gcashName: z.string().nullish(),
+  gcashNumber: z
+    .string()
+    .refine(isValidContactNumber, {
+      message: 'Please enter a valid PH contact number'
+    })
+    .nullish()
 });
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;

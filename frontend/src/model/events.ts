@@ -8,9 +8,12 @@ export interface Event {
   bannerLink?: string | null;
   logoLink?: string | null;
   autoConfirm?: boolean;
-  payedEvent?: boolean;
+  payedEvent: boolean;
   price: number;
   certificateTemplate?: string | null;
+  gcashQRCode?: string | null;
+  gcashName?: string | null;
+  gcashNumber?: string | null;
   status: EventStatus;
   eventId?: string;
   createDate?: string;
@@ -51,12 +54,14 @@ export const enum EVENT_UPLOAD_TYPE {
   BANNER = 'banner',
   LOGO = 'logo',
   CERTIFICATE_TEMPLATE = 'certificateTemplate',
-  PROOF_OF_PAYMENT = 'proofOfPayment'
+  PROOF_OF_PAYMENT = 'proofOfPayment',
+  GCASH_QR = 'gcashQRCode'
 }
 
 export const enum EVENT_OBJECT_KEY_MAP {
   BANNER = 'bannerLink',
   LOGO = 'logoLink',
   CERTIFICATE_TEMPLATE = 'certificateTemplate',
-  GCASH_PAYMENT = 'gcashPayment'
+  GCASH_PAYMENT = 'gcashPayment',
+  GCASH_QR = 'gcashQRCode'
 }

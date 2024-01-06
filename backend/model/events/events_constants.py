@@ -14,6 +14,7 @@ class EventUploadType(str, Enum):
     LOGO = 'logo'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
     PAYMENT_PROOF = 'proofOfPayment'
+    GCASH_QR = 'gcashQRCode'
 
 
 class EventUploadField(str, Enum):
