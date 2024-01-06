@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
+import { Outlet as AdminPageRoute, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
 import ErrorPage from '@/components/ErrorPage';
 import { getCurrentUser } from '@/api/auth';
-import { cookieConfiguration } from '@/utils/cookies';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useApiQuery } from '@/hooks/useApi';
 import { useLayout } from '@/hooks/useLayout';
@@ -18,10 +17,9 @@ const AdminPageContent = () => {
   const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
-
-  const { md } = useLayout('md');
-
   const { eventId } = useParams();
+  const { pathname } = useLocation();
+  const { md } = useLayout('md');
 
   const SIDEBAR_OFFSET = 25;
   const openSidebarWidth = 220 + SIDEBAR_OFFSET;
@@ -51,6 +49,7 @@ const AdminPageContent = () => {
   const ADMIN_CONFIG = getAdminRouteConfig({
     userGroups: userGroups,
     eventId: eventId!,
+    pathname,
     isCreateEventOpen,
     toggleCreateEvent,
     setLogoutOpen

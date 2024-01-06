@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
 import EventCard from '@/components/EventCard';
@@ -10,26 +10,19 @@ import { useApiQuery } from '@/hooks/useApi';
 const HIDE_STATUS: EventStatus[] = ['draft'];
 
 interface EventCardListProps {
-  isLoadAll: boolean;
+  isLoadAll?: boolean;
   initialCount?: number;
 }
 
-const EventCardList: FC<EventCardListProps> = ({ isLoadAll, initialCount = 8 }) => {
+const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount = 8 }) => {
   const navigate = useNavigate();
   const [eventCount, setEventCount] = useState(initialCount);
-  const [showMoreButton, setShowMoreButton] = useState(false);
   const { data: response, isFetching } = useApiQuery(getAllEvents());
-
-  useEffect(() => {
-    if (setShowMoreButton && response && response.data) {
-      setShowMoreButton(response.data.length > initialCount);
-    }
-  }, [response?.data]);
 
   if (isFetching) {
     return (
       <div className="w-full flex items-center justify-center p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 items-center justify-center justify-items-center md:w-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 items-center justify-center justify-items-center md:w-auto">
           {[...Array(initialCount)].map((index) => (
             <div className="flex flex-col gap-2 rounded-xl shadow-lg w-full md:w-[245px] h-[220px]" key={index}>
               <Skeleton className="w-full h-1/2" />
@@ -62,12 +55,13 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll, initialCount = 8 }) 
   }
 
   const allEvents: Event[] = response.data;
-  const events = isLoadAll ? allEvents : allEvents.slice(0, eventCount);
-  const visibleEvents = events.filter((event) => !HIDE_STATUS.includes(event.status));
-  const showAllEvents = allEvents.length === eventCount;
+  const events = allEvents.filter((event) => !HIDE_STATUS.includes(event.status));
+  const visibleEvents = isLoadAll ? events : events.slice(0, eventCount);
+  const sameAsInitial = visibleEvents.length === initialCount;
+  const allEventsShown = allEvents.length === eventCount;
 
-  const loadButton = () => {
-    if (!showAllEvents) {
+  const onShow = () => {
+    if (!allEventsShown) {
       setEventCount(allEvents.length);
     } else {
       setEventCount(initialCount);
@@ -96,12 +90,27 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll, initialCount = 8 }) 
           ))}
         </div>
       </div>
-      {!isLoadAll && showMoreButton && (
-        <Button className="p-5 rounded-full w-56" variant={'outline'} onClick={loadButton}>
-          {showAllEvents ? 'Show less' : 'Show more'}
-        </Button>
-      )}
+      <ShowButton isLoadAll={isLoadAll} allEventsShown={allEventsShown} onShow={onShow} sameAsInitial={sameAsInitial} />
     </>
+  );
+};
+
+interface ShowButtonProps {
+  isLoadAll: boolean;
+  sameAsInitial: boolean;
+  allEventsShown: boolean;
+  onShow: () => void;
+}
+
+const ShowButton = ({ isLoadAll, allEventsShown, sameAsInitial, onShow }: ShowButtonProps) => {
+  if (isLoadAll || sameAsInitial) {
+    return;
+  }
+
+  return (
+    <Button className="p-5 rounded-full w-56" variant="outline" onClick={onShow}>
+      {allEventsShown ? 'Show less' : 'Show more'}
+    </Button>
   );
 };
 

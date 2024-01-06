@@ -19,14 +19,18 @@ interface AdminSideBarProps {
   setSidebarOpen: (value: boolean) => void;
 }
 
-const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfig, openSidebarWidth, collapsedSidebarWidth, setSidebarOpen }) => {
+const AdminSideBar: FC<AdminSideBarProps> = ({
+  tablet,
+  isSidebarOpen,
+  adminConfig: SIDEBAR_ROUTE_MAP,
+  openSidebarWidth,
+  collapsedSidebarWidth,
+  setSidebarOpen
+}) => {
   const navigate = useNavigate();
-  const SIDEBAR_ROUTE_MAP = adminConfig;
   const { pathname } = useLocation();
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const toggleMobileSidebar = () => setMobileSidebarOpen(!isMobileSidebarOpen);
-
-  const TECHTIX_LOGO = <img src={TECHTIX_WORD_72} alt="" className="w-24" />;
 
   const SideBarOption = ({ optionName, iconName, route, onClick, selected = false, disabled = false, visible = true }: AdminRouteConfigProps) => {
     if (!visible) {
@@ -49,7 +53,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
       <li>
         <Button
           className={cn(
-            'flex w-full justify-start text-primary-700 md:text-primary-foreground border-none hover:bg-primary-700 hover:text-primary-foreground',
+            'flex w-full justify-start text-primary-700 md:text-primary-foreground border-none hover:bg-primary-700 hover:text-primary-foreground md:hover:bg-primary-foreground md:hover:text-primary-700 ',
             (currentRouteSelected || selected) && 'text-primary-foreground bg-primary-700 md:text-primary-700 md:bg-primary-foreground pointer-events-none',
             !isSidebarOpen && 'justify-center'
           )}
@@ -58,7 +62,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
           disabled={disabled}
         >
           {iconName && <Icon name={iconName} className={cn('flex-shrink-0', isSidebarOpen && 'mr-3')} />}
-          {isSidebarOpen && <p>{optionName}</p>}
+          <p className={cn(!isSidebarOpen && 'hidden')}>{optionName}</p>
         </Button>
       </li>
     );
@@ -73,7 +77,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
       setMobileSidebarOpen(!isMobileSidebarOpen);
     };
 
-    const MobileSidebar = () => (
+    const MobileSidebar = (
       <Sheet className="bg-background pt-12" closeIconClassName="text-primary-700" visible={isMobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
         <div className="h-full flex flex-col justify-between">
           <ul className="space-y-4">{upperOptions}</ul>
@@ -92,7 +96,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
           onClick={handleMobileClick}
           iconClassname="w-6 h-6"
         />
-        <MobileSidebar />
+        {MobileSidebar}
         <span className="flex items-center justify-center space-x-2">
           <img src={logoTitleBorder} alt="Techtix Logo" className="h-12" />
         </span>
@@ -111,7 +115,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({ tablet, isSidebarOpen, adminConfi
         <ul className="space-y-4">
           <span className="flex items-center justify-center space-x-1">
             <img src={TECHTIX_72} className="w-[50px]" alt="TechTix Logo" />
-            {isSidebarOpen && TECHTIX_LOGO}
+            <img src={TECHTIX_WORD_72} alt="" className={cn('w-24', !isSidebarOpen && 'hidden')} />;
           </span>
           {upperOptions}
         </ul>

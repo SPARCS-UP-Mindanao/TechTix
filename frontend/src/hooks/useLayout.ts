@@ -30,7 +30,7 @@ const calculateBreakpoints = <T extends BreakpointName>(width: number, keys: T[]
 
     const layout = useLayout('xs', 'sm', 'md', 'lg', 'xl', 'xxl');
 
-    then, 
+    then,
 
     layout.xs, layout.sm, layout.md, layout.lg, layout.xl, layout.xxl
 

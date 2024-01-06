@@ -2,13 +2,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { registerUserInEvent } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-const isValidContactNumber = (value: string) => {
-  const phoneNumberPattern = /^\d{11}$/;
-  return phoneNumberPattern.test(value);
-};
 
 const RegisterFormSchema = z.object({
   email: z.string().email({

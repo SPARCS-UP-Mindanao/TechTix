@@ -51,8 +51,7 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
     resolver: zodResolver(EventFormSchema),
     defaultValues: async () => {
       if (eventId) {
-        const { queryFn: event } = getEvent(eventId);
-        const response = await event();
+        const response = await api.execute(getEvent(eventId));
         const { data } = response;
         return data;
       }
@@ -107,8 +106,9 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
           setCreateEventOpen(false);
         }
       } else {
+        const toastMessage = eventId ? 'Error in updating an event' : 'Error in creating an event';
         errorToast({
-          title: 'Error in creating an event',
+          title: toastMessage,
           description: response.errorData.message || 'An error occurred while submitting. Please try again.'
         });
       }
