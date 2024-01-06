@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Outlet as AdminPageRoute, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet as AdminPageRoute, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
 import ErrorPage from '@/components/ErrorPage';
@@ -11,37 +11,14 @@ import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './AdminSideBar';
 import AdminSideBarTrigger from './AdminSideBarTrigger';
 import { getAdminRouteConfig } from './getAdminRouteConfig';
-import { AdminRouteConfigProps } from './getAdminRouteConfig';
 
 const AdminPageContent = () => {
   useMetaData({});
-  const navigate = useNavigate();
   const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const [isCreateEventOpen, setCreateEventOpen] = useState(false);
-  const [adminConfig, setAdminConfig] = useState<AdminRouteConfigProps[]>([]);
-  const [userGroups, setUserGroups] = useState<string[]>([]);
   const { eventId } = useParams();
-
-  useEffect(() => {
-    if (!response) {
-      return;
-    }
-
-    const userGroupsRes = response.data['cognito:groups'];
-    setUserGroups(userGroupsRes);
-
-    const ADMIN_CONFIG = getAdminRouteConfig({
-      userGroups: userGroupsRes,
-      eventId: eventId!,
-      isCreateEventOpen,
-      toggleCreateEvent,
-      setLogoutOpen
-    });
-
-    setAdminConfig(ADMIN_CONFIG);
-  }, [response, eventId]);
-
+  const { pathname } = useLocation();
   const { md } = useLayout('md');
 
   const SIDEBAR_OFFSET = 25;
@@ -56,8 +33,7 @@ const AdminPageContent = () => {
 
   const isAuthenticated = useIsAuthenticated();
   if (!isAuthenticated()) {
-    navigate('/admin/login');
-    return;
+    return <Navigate to="/admin/login" />;
   }
 
   if (isFetching) {
@@ -68,13 +44,24 @@ const AdminPageContent = () => {
     return <ErrorPage error={response} />;
   }
 
+  const userGroups = response.data['cognito:groups'];
+
+  const ADMIN_CONFIG = getAdminRouteConfig({
+    userGroups: userGroups,
+    eventId: eventId!,
+    pathname,
+    isCreateEventOpen,
+    toggleCreateEvent,
+    setLogoutOpen
+  });
+
   return (
     <div className="flex w-full h-full flex-col md:flex-row">
       <AdminSideBar
         tablet={md}
         isSidebarOpen={isSideBarOpen}
         isCreateEventOpen={isCreateEventOpen}
-        adminConfig={adminConfig}
+        adminConfig={ADMIN_CONFIG}
         setSidebarOpen={setSideBarOpen}
         openSidebarWidth={openSidebarWidth}
         collapsedSidebarWidth={collapsedSidebarWidth}
@@ -94,7 +81,7 @@ const AdminPageContent = () => {
           style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
           {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: adminConfig, userGroups }} />
+          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: ADMIN_CONFIG, userGroups }} />
         </div>
       </main>
     </div>
