@@ -9,7 +9,7 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 // import Skeleton from '@/components/Skeleton';
 import { getAllAdmins } from '@/api/admin';
-import { CurrentUser } from '@/api/auth';
+import { CurrentUser } from '@/model/auth';
 import { useApiQuery } from '@/hooks/useApi';
 import { useAdminForm } from '@/hooks/useInviteAdminForm';
 import { useMetaData } from '@/hooks/useMetaData';
