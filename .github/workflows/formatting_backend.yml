@@ -1,0 +1,30 @@
+name: Backend Formatting Check on Push
+
+on:
+  push:
+    paths:
+      - backend/**
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+            pip install flake8 black 
+        working-directory: backend
+
+      - name: Run Formatters
+        run: |
+            flake8 --max-line-length=120 --ignore=E203,E266,E501,W503,F403,F401,E402,F841,C901,F722,F405,F811
+            black --check . --line-length=120 --skip-string-normalization
+        working-directory: backend

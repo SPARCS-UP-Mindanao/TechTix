@@ -40,7 +40,7 @@ class CertificateUsecase:
                 QueueUrl=self.__sqs_url,
                 MessageBody=json.dumps(payload),
                 MessageDeduplicationId=message_dedup_id,
-                MessageGroupId=message_group_id
+                MessageGroupId=message_group_id,
             )
 
             message_id = response.get("MessageId")
