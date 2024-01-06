@@ -1,4 +1,4 @@
-import { UserGroups } from '@/api/auth';
+import { UserGroup } from '@/model/auth';
 
 export interface AdminRouteConfigProps {
   optionName: string;
@@ -14,12 +14,20 @@ export interface AdminRouteConfigProps {
 interface Props {
   eventId?: string;
   isCreateEventOpen: boolean;
-  userGroups?: UserGroups[];
+  pathname: string;
+  userGroups?: UserGroup[];
   toggleCreateEvent: () => void;
   setLogoutOpen: (open: boolean) => void;
 }
 
-export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCreateEvent, setLogoutOpen, userGroups }: Props): AdminRouteConfigProps[] => {
+export const getAdminRouteConfig = ({
+  eventId = '',
+  isCreateEventOpen,
+  pathname,
+  userGroups,
+  toggleCreateEvent,
+  setLogoutOpen
+}: Props): AdminRouteConfigProps[] => {
   return [
     {
       optionName: 'Dashboard',
@@ -30,7 +38,7 @@ export const getAdminRouteConfig = ({ eventId = '', isCreateEventOpen, toggleCre
     {
       optionName: 'Create event',
       iconName: 'Plus',
-      visible: !eventId,
+      visible: !eventId && pathname !== '/admin/authority',
       onClick: toggleCreateEvent,
       selected: isCreateEventOpen,
       location: 'upper'

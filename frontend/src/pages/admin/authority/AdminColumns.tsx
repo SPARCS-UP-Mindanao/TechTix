@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import moment from 'moment';
+import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
-import Modal from '@/components/Modal';
 import { Admin } from '@/model/admin';
 import { useDeleteAdmin } from '@/hooks/useDeleteAdmin';
 import { ColumnDef } from '@tanstack/react-table';
@@ -122,30 +122,27 @@ export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetc
 
       const deleteAdmin = async () => {
         await onDeleteAdmin();
-        setShowModal(false);
-        await refetch();
+        refetch();
       };
+
       return (
-        <Modal
-          modalTitle="Delete Admin"
-          visible={showModal}
-          onOpenChange={setShowModal}
-          trigger={
-            <Button variant={'negative'} className="p-2 w-28">
-              Delete Event
-            </Button>
-          }
-          modalFooter={
-            <div className="w-full flex flex-row gap-2">
-              <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
-                Cancel
-              </Button>
-              <Button onClick={() => deleteAdmin()} loading={isDeletingAdmin} variant="negative" type="submit" className="w-full">
+        <div className="flex items-center justify-center">
+          <AlertModal
+            trigger={
+              <Button role="button" loading={isDeletingAdmin} variant="negative" className="">
                 Delete
               </Button>
-            </div>
-          }
-        ></Modal>
+            }
+            alertModalTitle="Delete Admin"
+            alertModalDescription="Are you sure you want to delete this admin?"
+            visible={showModal}
+            confirmText="Delete"
+            confirmVariant="negative"
+            onOpenChange={setShowModal}
+            onCompleteAction={deleteAdmin}
+            onCancelAction={() => setShowModal(false)}
+          />
+        </div>
       );
     },
     enableHiding: getEnableHiding('actions')

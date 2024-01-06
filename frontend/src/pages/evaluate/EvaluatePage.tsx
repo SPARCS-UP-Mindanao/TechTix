@@ -2,7 +2,7 @@ import Evaluate from './Evaluate';
 
 const EvaluatePage = () => {
   return (
-    <main className="h-screen w-[1080px] mx-auto pl-8 pr-8 pt-8 md:p-4 lg:m-0">
+    <main className="h-max max-w-[1080px] mx-auto my-0 p-0 md:p-4 lg:px-8 lg:pt-8">
       <Evaluate />
     </main>
   );

@@ -27,12 +27,22 @@ const AdminEventInfo: FC = () => {
   const redirectToRegistration = () => {
     window.open(`/${eventId}/register`, '_blank');
   };
+  const redirectToEvaluation = () => {
+    window.open(`/${eventId}/evaluate`, '_blank');
+  };
 
   return (
     <section className="p-10">
       <div className="flex flex-col gap-3 items-center justify-center w-full">
         <h1>{event.name}</h1>
-        <Button onClick={redirectToRegistration}>Go to Event Registration</Button>
+        <div className="flex md:flex-row flex-col gap-2">
+          <Button onClick={redirectToRegistration} isExternal>
+            Event Registration
+          </Button>
+          <Button onClick={redirectToEvaluation} isExternal>
+            Event Evaluation
+          </Button>
+        </div>
         <FormProvider {...form}>
           <main className="w-full flex flex-col">
             <FormItem name="name">

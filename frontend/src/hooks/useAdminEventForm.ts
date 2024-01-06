@@ -61,8 +61,7 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
     resolver: zodResolver(EventFormSchema),
     defaultValues: async () => {
       if (eventId) {
-        const { queryFn: event } = getEvent(eventId);
-        const response = await event();
+        const response = await api.execute(getEvent(eventId));
         const { data } = response;
         return data;
       }
