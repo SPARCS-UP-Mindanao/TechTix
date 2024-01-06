@@ -65,11 +65,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <>
           {loading && <Icon name="CircleNotch" className={iconStyles} />}
           {children}
-          {isExternal && (
-            <span className="p-2">
-              <ExternalLink />
-            </span>
-          )}
+          {isExternal && <ExternalLink className="ml-2 h-4 w-4" />}
         </>
       );
     };

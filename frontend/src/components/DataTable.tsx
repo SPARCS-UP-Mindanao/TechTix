@@ -6,6 +6,8 @@ import Input from '@/components/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Table';
 import { cn } from '@/utils/classes';
 import Icon from './Icon';
+import Skeleton from './Skeleton';
+import TableSkeleton from './TableSkeleton';
 import {
   ColumnDef,
   SortingState,
@@ -23,29 +25,23 @@ import {
 interface TableContentProps<TData> {
   table: TableType<TData>;
   data: TData[];
+  colCount: number;
   noDataText?: string;
   loading?: boolean;
 }
 
-function TableContent<TData>({ table, data, loading, noDataText }: TableContentProps<TData>) {
-  const headerColumns = table.getHeaderGroups()[0].headers.length;
+function TableContent<TData>({ table, colCount, data, loading, noDataText }: TableContentProps<TData>) {
+  console.log(colCount);
+
   if (loading) {
     // TODO : Add Table Skeleton
-    return (
-      <tr>
-        <td colSpan={headerColumns}>
-          <div className="flex justify-center items-center p-10">
-            <Icon name="CircleNotch" size={24} className="animate-spin" />
-          </div>
-        </td>
-      </tr>
-    );
+    return <TableSkeleton colCount={colCount} rowCount={5} />;
   }
 
   if (!table || data.length === 0) {
     return (
       <tr>
-        <td colSpan={headerColumns}>
+        <td colSpan={colCount}>
           <div className="flex flex-col justify-center items-center p-10 space-y-4">
             <img src={notFound} alt="" className="w-16" />
             <p>{noDataText || 'No data'}</p>
@@ -164,7 +160,7 @@ export function DataTable<TData, TValue>({ columns, data, noDataText, loading = 
                 </TableCell>
               </TableRow>
             )} */}
-          <TableContent data={tableData} table={table} loading={loading} noDataText={noDataText} />
+          <TableContent data={tableData} colCount={columns.length} table={table} loading={loading} noDataText={noDataText} />
         </Table>
 
         <div className="flex items-center justify-end p-4 gap-2">

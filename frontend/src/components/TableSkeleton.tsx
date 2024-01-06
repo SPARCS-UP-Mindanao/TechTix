@@ -1,16 +1,19 @@
 import Skeleton from './Skeleton';
+import { TableBody } from './Table';
 
 function TableSkeleton({ colCount, rowCount }: { colCount: number; rowCount: number }) {
   return (
-    <div className="rounded-md border w-full">
-      {Array.from(Array(rowCount)).map((_, index) => (
-        <div key={index} className="grid grid-cols-6 gap-3 w-full py-4 px-2">
-          {Array.from(Array(colCount)).map((_, index) => (
-            <Skeleton className="w-full h-5" key={index} />
+    <TableBody>
+      {new Array(rowCount).fill(0).map((_, index) => (
+        <tr key={index}>
+          {new Array(colCount).fill(0).map((_, index) => (
+            <td key={index} className="p-1">
+              <Skeleton className="w-full h-16 rounded-md" />
+            </td>
           ))}
-        </div>
+        </tr>
       ))}
-    </div>
+    </TableBody>
   );
 }
 
