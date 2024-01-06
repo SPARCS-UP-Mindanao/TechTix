@@ -33,10 +33,10 @@ const AdminEventInfo: FC = () => {
       <div className="flex flex-col gap-3 items-center justify-center w-full">
         <h1>{event.name}</h1>
         <div className="flex md:flex-row flex-col gap-2">
-          <Button onClick={redirectToRegistration} isExternal={true}>
+          <Button onClick={redirectToRegistration} isExternal>
             Event Registration
           </Button>
-          <Button onClick={redirectToEvaluation} isExternal={true}>
+          <Button onClick={redirectToEvaluation} isExternal>
             Event Evaluation
           </Button>
         </div>

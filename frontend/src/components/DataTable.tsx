@@ -34,7 +34,6 @@ function TableContent<TData>({ table, colCount, data, loading, noDataText }: Tab
   console.log(colCount);
 
   if (loading) {
-    // TODO : Add Table Skeleton
     return <TableSkeleton colCount={colCount} rowCount={5} />;
   }
 
