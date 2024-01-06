@@ -50,6 +50,10 @@ export const routes = createBrowserRouter([
     element: AdminPage(),
     children: [
       {
+        path: 'authority',
+        element: AdminAuthorityPage()
+      },
+      {
         path: 'events',
         element: AdminAllEventsPage()
       },
@@ -78,16 +82,6 @@ export const routes = createBrowserRouter([
             element: ErrorPage({})
           }
         ]
-      }
-    ]
-  },
-  {
-    path: 'admin/authority',
-    element: AdminPage(),
-    children: [
-      {
-        index: true,
-        element: AdminAuthorityPage()
       }
     ]
   },
