@@ -28,7 +28,8 @@ class EventUsecase:
         status, event, __ = self.__events_repository.query_events(slug)
         if status == HTTPStatus.OK:
             return JSONResponse(
-                status_code=HTTPStatus.CONFLICT, content={'message': f'Event with name {event_in.name} already exists'}
+                status_code=HTTPStatus.CONFLICT,
+                content={'message': f'Event with name {event_in.name} already exists'},
             )
 
         event_in.status = EventStatus.DRAFT.value
@@ -61,7 +62,11 @@ class EventUsecase:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.eventId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
-            status, registrations, message = self.__registration_repository.query_registrations(event_id=event_id)
+            (
+                status,
+                registrations,
+                message,
+            ) = self.__registration_repository.query_registrations(event_id=event_id)
             participants = [entry.email for entry in registrations if not entry.evaluationEmailSent]
             self.__email_usecase.send_event_completion_email(
                 event_id=event_id,
@@ -114,11 +119,13 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        fields = {upload_type: decoded_object_key, "status": event.status}  # required
+        fields = {upload_type: decoded_object_key, 'status': event.status}  # required
 
-        status, update_event, message = self.__events_repository.update_event_after_s3_upload(
-            event_entry=event, event_in=EventIn(**fields)
-        )
+        (
+            status,
+            update_event,
+            message,
+        ) = self.__events_repository.update_event_after_s3_upload(event_entry=event, event_in=EventIn(**fields))
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

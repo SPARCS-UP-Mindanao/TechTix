@@ -28,15 +28,19 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, registration, message = self.__registrations_repository.query_registrations(
-            event_id=event_id, registration_id=registration_id
-        )
+        (
+            status,
+            registration,
+            message,
+        ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, evaluation_list, message = self.__evaluations_repository.store_evaluation(
-            evaluation_list_in=evaluation_list_in
-        )
+        (
+            status,
+            evaluation_list,
+            message,
+        ) = self.__evaluations_repository.store_evaluation(evaluation_list_in=evaluation_list_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -48,7 +52,11 @@ class EvaluationUsecase:
         return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluation_list]
 
     def update_evaluation(
-        self, event_id: str, registration_id: str, question: str, evaluation_in: EvaluationPatch
+        self,
+        event_id: str,
+        registration_id: str,
+        question: str,
+        evaluation_in: EvaluationPatch,
     ) -> Union[JSONResponse, EvaluationOut]:
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -66,9 +74,11 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, update_evaluation, message = self.__evaluations_repository.update_evaluation(
-            evaluation_entry=evaluation, evaluation_in=evaluation_in
-        )
+        (
+            status,
+            update_evaluation,
+            message,
+        ) = self.__evaluations_repository.update_evaluation(evaluation_entry=evaluation, evaluation_in=evaluation_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -132,7 +142,11 @@ class EvaluationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        status, evaluations, message = self.__evaluations_repository.query_evaluations_by_question(event_id, question)
+        (
+            status,
+            evaluations,
+            message,
+        ) = self.__evaluations_repository.query_evaluations_by_question(event_id, question)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

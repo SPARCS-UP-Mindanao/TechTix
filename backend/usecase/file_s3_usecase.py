@@ -16,7 +16,7 @@ class FileS3Usecase:
         self.__s3_client = boto3_client(
             's3',
             region_name=os.getenv('REGION', 'ap-southeast-1'),
-            config=Config(signature_version="s3v4"),
+            config=Config(signature_version='s3v4'),
         )
         self.__bucket = os.getenv('S3_BUCKET')
         self.__presigned_url_expiration_time = 30

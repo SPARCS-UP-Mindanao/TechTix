@@ -14,10 +14,10 @@ discount_router = APIRouter()
     '',
     response_model=List[DiscountOut],
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Create Discount",
+    summary='Create Discount',
 )
 @discount_router.post(
     '/',
@@ -39,10 +39,10 @@ def create_discounts(
     '/{entryId}',
     response_model=DiscountOut,
     responses={
-        404: {"model": Message, "description": "Discount not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Discount not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get discounts",
+    summary='Get discounts',
 )
 @discount_router.get(
     '/{entryId}/',
@@ -63,10 +63,10 @@ def get_discount(
     '',
     response_model=List[DiscountOrganization],
     responses={
-        404: {"model": Message, "description": "Discount not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Discount not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get discounts",
+    summary='Get discounts',
 )
 @discount_router.get(
     '/',

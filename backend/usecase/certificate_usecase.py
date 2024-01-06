@@ -20,19 +20,19 @@ class CertificateUsecase:
         self.__registrations_repository = RegistrationsRepository()
         self.__events_repository = EventsRepository()
         self.__file_s3_usecase = FileS3Usecase()
-        self.__sqs_client = boto3_client("sqs", region_name=os.getenv("REGION", "ap-southeast-1"))
-        self.__sqs_url = os.getenv("CERTIFICATE_QUEUE")
+        self.__sqs_client = boto3_client('sqs', region_name=os.getenv('REGION', 'ap-southeast-1'))
+        self.__sqs_url = os.getenv('CERTIFICATE_QUEUE')
 
     def generate_certificates(self, event_id: str, registration_id: str = None) -> Tuple[HTTPStatus, str]:
         message = None
         try:
-            timestamp = datetime.utcnow().isoformat(timespec="seconds")
-            payload = {"eventId": event_id}
-            message_group_id = f"sparcs-certificates-{event_id}"
-            message_dedup_id = f"sparcs-certificates-{event_id}-{timestamp}"
+            timestamp = datetime.utcnow().isoformat(timespec='seconds')
+            payload = {'eventId': event_id}
+            message_group_id = f'sparcs-certificates-{event_id}'
+            message_dedup_id = f'sparcs-certificates-{event_id}-{timestamp}'
 
             if registration_id:
-                payload["registrationId"] = registration_id
+                payload['registrationId'] = registration_id
                 message_group_id += f'-{registration_id}'
                 message_dedup_id += f'-{registration_id}'
 
@@ -43,12 +43,12 @@ class CertificateUsecase:
                 MessageGroupId=message_group_id,
             )
 
-            message_id = response.get("MessageId")
-            message = f"Queue message success: {message_id}"
+            message_id = response.get('MessageId')
+            message = f'Queue message success: {message_id}'
             logger.info(message)
 
         except Exception as e:
-            message = f"Failed to send email: {str(e)}"
+            message = f'Failed to send email: {str(e)}'
             logger.error(message)
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
@@ -62,15 +62,21 @@ class CertificateUsecase:
 
         if event.status != EventStatus.COMPLETED.value:
             return JSONResponse(
-                status_code=400, content={'message': f'Event {event_id} is not open for evaluation yet.'}
+                status_code=400,
+                content={'message': f'Event {event_id} is not open for evaluation yet.'},
             )
 
         if not event.certificateTemplate:
             return JSONResponse(
-                status_code=400, content={'message': f'Certificate template of eventId {event_id} not found.'}
+                status_code=400,
+                content={'message': f'Certificate template of eventId {event_id} not found.'},
             )
 
-        status, registrations, message = self.__registrations_repository.query_registrations_with_email(
+        (
+            status,
+            registrations,
+            message,
+        ) = self.__registrations_repository.query_registrations_with_email(
             event_id=event_id, email=certificate_in.email
         )
         if status != HTTPStatus.OK:
@@ -81,8 +87,13 @@ class CertificateUsecase:
         if not registration.certificateGenerated:
             self.generate_certificates(event_id=event_id, registration_id=registration.registrationId)
 
-            status, registration, message = self.__registrations_repository.update_registration(
-                registration_entry=registration, registration_in=RegistrationPatch(certificateGenerated=True)
+            (
+                status,
+                registration,
+                message,
+            ) = self.__registrations_repository.update_registration(
+                registration_entry=registration,
+                registration_in=RegistrationPatch(certificateGenerated=True),
             )
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})

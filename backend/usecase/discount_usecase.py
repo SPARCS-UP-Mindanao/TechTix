@@ -32,7 +32,11 @@ class DiscountUsecase:
         discount_out = DiscountOut(**discount_data)
 
         if discount.registrationId:
-            _, registration_entry, _ = self.__registrations_repository.query_registrations(
+            (
+                _,
+                registration_entry,
+                _,
+            ) = self.__registrations_repository.query_registrations(
                 event_id=event_id, registration_id=discount.registrationId
             )
             if not registration_entry:
@@ -56,7 +60,11 @@ class DiscountUsecase:
             discount_out = DiscountOut(**discount_data)
 
             if discount.registrationId:
-                _, registration_entry, _ = self.__registrations_repository.query_registrations(
+                (
+                    _,
+                    registration_entry,
+                    _,
+                ) = self.__registrations_repository.query_registrations(
                     event_id=event_id, registration_id=discount.registrationId
                 )
                 if registration_entry:
@@ -80,10 +88,16 @@ class DiscountUsecase:
             discount_id=entry_id, event_id=event_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Discount Does Not Exist'})
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': 'Discount Does Not Exist'},
+            )
 
         if discount_entry.claimed:
-            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Discount already claimed'})
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': 'Discount already claimed'},
+            )
 
         discount_data = self.__convert_data_entry_to_dict(discount_entry)
         discount_data.update(claimed=True)

@@ -20,11 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-            pip install flake8 black 
+            pip install flake8 black ruff
         working-directory: backend
 
       - name: Run Formatters
         run: |
             flake8 --max-line-length=120 --ignore=E203,E266,E501,W503,F403,F401,E402,F841,C901,F722,F405,F811
             black --check . --line-length=120 --skip-string-normalization
+            ruff check .
         working-directory: backend
