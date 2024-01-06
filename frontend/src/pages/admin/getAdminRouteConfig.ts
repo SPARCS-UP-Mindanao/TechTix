@@ -1,5 +1,4 @@
-import { useLocation } from 'react-router-dom';
-import { UserGroups } from '@/api/auth';
+import { UserGroup } from '@/model/auth';
 
 export interface AdminRouteConfigProps {
   optionName: string;
@@ -16,7 +15,7 @@ interface Props {
   eventId?: string;
   isCreateEventOpen: boolean;
   pathname: string;
-  userGroups?: UserGroups[];
+  userGroups?: UserGroup[];
   toggleCreateEvent: () => void;
   setLogoutOpen: (open: boolean) => void;
 }
