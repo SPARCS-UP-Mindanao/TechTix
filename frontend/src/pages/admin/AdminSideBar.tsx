@@ -115,7 +115,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
         <ul className="space-y-4">
           <span className="flex items-center justify-center space-x-1">
             <img src={TECHTIX_72} className="w-[50px]" alt="TechTix Logo" />
-            <img src={TECHTIX_WORD_72} alt="" className={cn('w-24', !isSidebarOpen && 'hidden')} />;
+            <img src={TECHTIX_WORD_72} alt="" className={cn('w-24', !isSidebarOpen && 'hidden')} />
           </span>
           {upperOptions}
         </ul>
