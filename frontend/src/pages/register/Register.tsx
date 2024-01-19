@@ -103,7 +103,12 @@ const Register = () => {
     return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
-  if (eventInfo.status !== 'open') {
+  if (eventInfo.status == 'cancelled')  {
+    const errorTitle = `${eventInfo.name} is Cancelled`
+    return <ErrorPage errorTitle={errorTitle} message={`We've had to cancel, but please follow us on social media for future news. Sorry for the inconvenience, and thank you for your support!`} />;
+  }
+
+  if (eventInfo.payedEvent && eventInfo.status == 'completed')  {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
@@ -277,7 +282,7 @@ const Register = () => {
               )}
             </div>
             {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} event={eventInfo} />}
-            {currentStep === 'Success' && <Success />}
+            {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
             {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 
             <div className="flex w-full justify-around my-6">
