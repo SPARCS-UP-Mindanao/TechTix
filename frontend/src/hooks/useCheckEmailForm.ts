@@ -24,6 +24,7 @@ export type ClaimCertificateFormSchema = z.infer<typeof ClaimCertificateSchema>;
 export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUATE_STEPS */ }: ClaimCertificateFormProps) => {
   const { errorToast } = useNotifyToast();
   const [data, setData] = useState<ClaimCertificateResponse | null>(null);
+  const [isClaimCertificateLoading, setisClaimCertificateLoading] = useState(false);
 
   const claimCertificateForm = useForm<z.infer<typeof ClaimCertificateSchema>>({
     mode: 'onChange',
@@ -34,32 +35,46 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
   });
 
   const checkEmail = claimCertificateForm.handleSubmit(async (values) => {
-    const { queryFn: checkEmail } = claimCertificate(values.email, eventId);
-    const response = await checkEmail();
-    // TO FIX: Ensure data arrives
-    if (response.status === 200) {
-      if (!response.data?.isFirstClaim) {
-        setCurrentStep('ClaimCertificate');
-      } else {
-        nextStep();
+    try {
+      setisClaimCertificateLoading(true);
+      const { queryFn: checkEmail } = claimCertificate(values.email, eventId);
+      const response = await checkEmail();
+
+      // TO FIX: Ensure data arrives
+      if (response.status === 200) {
+        if (!response.data?.isFirstClaim) {
+          setCurrentStep('ClaimCertificate');
+        } else {
+          nextStep();
+        }
+        setData(() => response?.data);
+      } else if (response.status === 404) {
+        errorToast({
+          title: 'Email not found',
+          description: 'Please check your email address and try again.'
+        });
+      } else if (response.status === 400) {
+        errorToast({
+          title: 'Certificate Template Unavailable',
+          description: 'Please try again later or refresh the page.'
+        });
       }
-      setData(() => response?.data);
-    } else if (response.status === 404) {
+    }
+    catch (error) {
       errorToast({
-        title: 'Email not found',
-        description: 'Please check your email address and try again.'
-      });
-    } else if (response.status === 400) {
-      errorToast({
-        title: 'Certificate Template Unavailable',
+        title: 'Error in checking email',
         description: 'Please try again later or refresh the page.'
       });
+    }
+    finally {
+      setisClaimCertificateLoading(false);
     }
   });
 
   return {
     claimCertificateForm,
     checkEmail,
-    data
+    data,
+    isClaimCertificateLoading
   };
 };
