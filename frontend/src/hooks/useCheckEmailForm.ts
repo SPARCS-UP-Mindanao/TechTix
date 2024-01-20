@@ -59,14 +59,12 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
           description: 'Please try again later or refresh the page.'
         });
       }
-    }
-    catch (error) {
+    } catch (error) {
       errorToast({
         title: 'Error in checking email',
         description: 'Please try again later or refresh the page.'
       });
-    }
-    finally {
+    } finally {
       setisClaimCertificateLoading(false);
     }
   });
