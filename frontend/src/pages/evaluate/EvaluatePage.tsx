@@ -2,9 +2,9 @@ import Evaluate from './Evaluate';
 
 const EvaluatePage = () => {
   return (
-    <div>
+    <main className="h-max max-w-[1080px] mx-auto my-0 p-0 md:p-4 lg:px-8 lg:pt-8">
       <Evaluate />
-    </div>
+    </main>
   );
 };
 

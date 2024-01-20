@@ -26,9 +26,9 @@ import Success from './Success';
 import Summary from './Summary';
 
 // TODO: Add success page
-const REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'] as const;
+let REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'];
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
-const REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
+let REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
 
 const getStepTitle = (step: RegisterSteps) => {
   const map: Record<RegisterSteps, string> = {
@@ -76,6 +76,11 @@ const Register = () => {
       discount: 0,
       total: price
     });
+
+    if (!eventData.payedEvent) {
+      REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary', 'Success'];
+      REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Summary'];
+    }
   }, [response]);
 
   useEffect(() => {
@@ -95,11 +100,21 @@ const Register = () => {
   }
 
   if (eventInfo.status === 'closed') {
-    return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
+    return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
-  if (eventInfo.status !== 'open') {
-    return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is not longer open for registration.`} />;
+  if (eventInfo.status === 'cancelled') {
+    const errorTitle = `${eventInfo.name} is Cancelled`;
+    return (
+      <ErrorPage
+        errorTitle={errorTitle}
+        message={`We've had to cancel, but please follow us on social media for future news. Sorry for the inconvenience, and thank you for your support!`}
+      />
+    );
+  }
+
+  if (eventInfo.payedEvent && eventInfo.status === 'completed') {
+    return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
   useMetaData({
@@ -167,7 +182,7 @@ const Register = () => {
     };
 
     const currentEmail = getValues('email');
-    const eventId = eventInfo.entryId;
+    const { eventId } = eventInfo;
     if (currentStep == 'UserBio' && eventId && currentEmail) {
       try {
         const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));
@@ -267,11 +282,12 @@ const Register = () => {
                   setReceiptUrl={setReceiptUrl}
                   pricing={pricing}
                   checkDiscountCode={checkDiscountCode}
+                  event={eventInfo}
                 />
               )}
             </div>
-            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} />}
-            {currentStep === 'Success' && <Success />}
+            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} event={eventInfo} />}
+            {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
             {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 
             <div className="flex w-full justify-around my-6">

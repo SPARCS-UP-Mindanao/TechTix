@@ -1,7 +1,7 @@
-import LandingPage from '@/pages/LandingPage';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  return <LandingPage />;
+  return <Outlet />;
 }
 
 export default App;

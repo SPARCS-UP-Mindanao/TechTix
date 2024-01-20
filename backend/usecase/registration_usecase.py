@@ -47,13 +47,13 @@ class RegistrationUsecase:
         """
         status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         # Check if the event is still open
-        if event.status != EventStatus.OPEN.value:
+        if event.payedEvent and event.status != EventStatus.OPEN.value:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={"message": "Event is not open for registration"},
+                content={'message': 'Event is not open for registration'},
             )
 
         # Check if the registration with the same email already exists
@@ -67,14 +67,16 @@ class RegistrationUsecase:
         if status == HTTPStatus.OK and registrations:
             return JSONResponse(
                 status_code=HTTPStatus.CONFLICT,
-                content={"message": f"Registration with email {email} already exists"},
+                content={'message': f'Registration with email {email} already exists'},
             )
 
         registration_id = ulid.ulid()
         discount_code = registration_in.discountCode
         if discount_code:
             claimed_discount = self.__discount_usecase.claim_discount(
-                entry_id=discount_code, registration_id=registration_id, event_id=event_id
+                entry_id=discount_code,
+                registration_id=registration_id,
+                event_id=event_id,
             )
             if isinstance(claimed_discount, JSONResponse):
                 return claimed_discount
@@ -87,7 +89,7 @@ class RegistrationUsecase:
             registration_in=registration_in, registration_id=registration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 
@@ -113,7 +115,7 @@ class RegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -121,11 +123,13 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         discount_code = registration_in.discountCode
         claimed_discount = self.__discount_usecase.claim_discount(
-            entry_id=discount_code, registration_id=registration.registrationId, event_id=event_id
+            entry_id=discount_code,
+            registration_id=registration.registrationId,
+            event_id=event_id,
         )
         if isinstance(claimed_discount, JSONResponse):
             return claimed_discount
@@ -138,7 +142,7 @@ class RegistrationUsecase:
             registration_entry=registration, registration_in=registration_in
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(update_registration)
         registration_out = RegistrationOut(**registration_data)
@@ -159,7 +163,7 @@ class RegistrationUsecase:
 
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -167,21 +171,25 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
         registration_out = RegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 
     def get_registration_by_email(self, event_id: str, email: str) -> RegistrationOut:
-        status, registrations, message = self.__registrations_repository.query_registrations_with_email(
-            event_id=event_id, email=email
-        )
+        (
+            status,
+            registrations,
+            message,
+        ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
         if status != HTTPStatus.OK or not registrations:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
+
         registration = registrations[0]
         registration_data = self.__convert_data_entry_to_dict(registration)
         registration_out = RegistrationOut(**registration_data)
+
         return self.collect_pre_signed_url(registration_out)
 
     def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
@@ -198,7 +206,7 @@ class RegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -206,7 +214,7 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         return [
             self.collect_pre_signed_url(RegistrationOut(**self.__convert_data_entry_to_dict(registration)))
@@ -227,7 +235,7 @@ class RegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -235,11 +243,11 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         status, message = self.__registrations_repository.delete_registration(registration_entry=registration)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         return None
 

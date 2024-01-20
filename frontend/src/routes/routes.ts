@@ -2,19 +2,30 @@ import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
-import AdminAllEventsPage from '@/pages/admin/event/allEvents/AdminAllEventsPage';
-import AdminAllEvaluationsPage from '@/pages/admin/event/evaluations/AdminAllEvaluationsPage';
-import AdminEventPage from '@/pages/admin/event/event/AdminEventPage';
-import AdminAllRegistrationsPage from '@/pages/admin/event/registrations/AdminAllRegistrationsPage';
+import AdminEventPage from '@/pages/admin/event/AdminEventPage';
+import AdminAllEventsPage from '@/pages/admin/event/dashboard/AdminAllEventsPage';
+import AdminEventDiscountsPage from '@/pages/admin/event/discounts/AdminEventDiscounts';
+import AdminEventeEvaluationsPage from '@/pages/admin/event/evaluations/AdminEventEvaluations';
+import AdminEventInfoPage from '@/pages/admin/event/info/AdminEventInfo';
+import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/AdminEventRegistrations';
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
+import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
+import EventsPage from '@/pages/landingPage/EventsPage';
+import HomePage from '@/pages/landingPage/HomePage';
 import RegisterPage from '@/pages/register/RegisterPage';
-import App from '@/App';
 
 export const routes = createBrowserRouter([
+  // {
+  //   path: '',
+  //   element: HomePage()
+  // },
+  // {
+  //   path: '/events',
+  //   element: EventsPage()
+  // },
   {
     path: '/:eventId',
-    element: App(),
     children: [
       {
         path: 'register',
@@ -35,30 +46,48 @@ export const routes = createBrowserRouter([
     element: AdminLoginPage()
   },
   {
-    path: '/admin/events',
+    path: '/admin',
     element: AdminPage(),
     children: [
       {
-        index: true,
+        path: 'authority',
+        element: AdminAuthorityPage()
+      },
+      {
+        path: 'events',
         element: AdminAllEventsPage()
       },
       {
-        path: ':eventId',
-        element: AdminEventPage()
-      },
-      {
-        path: 'registrations',
-        element: AdminAllRegistrationsPage()
-      },
-      {
-        path: 'evaluations',
-        element: AdminAllEvaluationsPage()
+        path: 'events/:eventId',
+        element: AdminEventPage(),
+        children: [
+          {
+            index: true,
+            element: AdminEventInfoPage()
+          },
+          {
+            path: 'evaluations',
+            element: AdminEventeEvaluationsPage()
+          },
+          {
+            path: 'discounts',
+            element: AdminEventDiscountsPage()
+          },
+          {
+            path: 'registrations',
+            element: AdminEventRegistrationsPage()
+          },
+          {
+            path: '*',
+            element: ErrorPage({})
+          }
+        ]
       }
     ]
   },
   {
-    path: 'admin/authority',
-    element: AdminAuthorityPage()
+    path: 'admin/update-password',
+    element: UpdatePasswordPage()
   },
   {
     path: '*',

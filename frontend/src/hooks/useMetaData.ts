@@ -3,7 +3,7 @@ interface Props {
   iconUrl?: string;
 }
 
-export const useMetaData = ({ title, iconUrl }: Props) => {
+export const useMetaData = ({ title = 'TechTix', iconUrl = '/favicon.ico' }: Props) => {
   if (title) {
     document.title = title;
   }

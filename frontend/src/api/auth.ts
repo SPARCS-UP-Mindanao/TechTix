@@ -1,4 +1,5 @@
 import { signInFunctionParams } from 'react-auth-kit/dist/types';
+import { CurrentUser } from '@/model/auth';
 import { createApi } from './utils/createApi';
 
 export interface LoginResponse {
@@ -56,3 +57,13 @@ export const resetPassword = (email: string, confirmationCode: string, password:
     url: '/auth/reset-password',
     body: { email, code: confirmationCode, password }
   });
+
+export const updatePassword = (email: string, prevPassword: string, newPassword: string) =>
+  createApi({
+    method: 'post',
+    apiService: 'auth',
+    url: '/admin/auth/update-password',
+    body: { email, prevPassword, newPassword }
+  });
+
+export const getCurrentUser = () => createApi<CurrentUser>({ apiService: 'auth', authorize: true, url: '/admin/auth/current-user' });

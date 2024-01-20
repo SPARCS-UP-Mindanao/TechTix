@@ -2,13 +2,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { registerUserInEvent } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-const isValidContactNumber = (value: string) => {
-  const phoneNumberPattern = /^\d{11}$/;
-  return phoneNumberPattern.test(value);
-};
 
 const RegisterFormSchema = z.object({
   email: z.string().email({
@@ -40,9 +36,12 @@ const RegisterFormSchema = z.object({
   title: z.string().min(1, {
     message: 'Please enter your title'
   }),
-  gcashPayment: z.string().min(1, {
-    message: 'Please submit a screenshot of your Gcash payment'
-  }),
+  gcashPayment: z
+    .string()
+    .min(1, {
+      message: 'Please submit a screenshot of your Gcash payment'
+    })
+    .nullish(),
   referenceNumber: z
     .string()
     .min(1, {
@@ -50,11 +49,15 @@ const RegisterFormSchema = z.object({
     })
     .refine((value) => value.length === 13, {
       message: 'Please enter a valid Gcash reference number'
-    }),
+    })
+    .nullish(),
   discountCode: z.string().optional(),
-  amountPaid: z.number().min(0, {
-    message: 'Please enter a valid amount'
-  })
+  amountPaid: z
+    .number()
+    .min(0, {
+      message: 'Please enter a valid amount'
+    })
+    .nullish()
 });
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
@@ -72,11 +75,7 @@ export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) 
       careerStatus: '',
       yearsOfExperience: '',
       organization: '',
-      title: '',
-      gcashPayment: '',
-      referenceNumber: '',
-      discountCode: '',
-      amountPaid: 0
+      title: ''
     }
   });
 

@@ -117,7 +117,10 @@ class EvaluationRepository:
     def query_evaluations_by_question(self, event_id: str, question: str) -> Tuple[HTTPStatus, List[Evaluation], str]:
         try:
             evaluation_entries = list(
-                Evaluation.questionLSI.query(hash_key=event_id, range_key_condition=Evaluation.question == question)
+                Evaluation.questionLSI.query(
+                    hash_key=event_id,
+                    range_key_condition=Evaluation.question == question,
+                )
             )
 
             if not evaluation_entries:

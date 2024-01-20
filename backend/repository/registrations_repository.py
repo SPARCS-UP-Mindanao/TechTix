@@ -63,6 +63,7 @@ class RegistrationsRepository:
                 registrationId=registration_id,
                 **data,
             )
+            registration_entry.certificateGenerated = False
             registration_entry.save()
 
         except PutError as e:

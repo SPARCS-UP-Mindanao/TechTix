@@ -17,7 +17,7 @@ export interface EventDto {
   price: number;
   certificateTemplate: string;
   status: EventStatus;
-  entryId: string;
+  eventId: string;
   createDate: string;
   updateDate: string;
   createdBy: string;
@@ -37,11 +37,20 @@ const mapEventDtoToEvent = (event: EventDto): Event => ({
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
 
-export const getAllEvents = () =>
-  createApi<EventDto[], Event[]>({
+export const getAllEvents = () => {
+  return createApi<EventDto[], Event[]>({
+    method: 'get',
+    url: '/events',
+    output: mapEventsDtoToEvent
+  });
+};
+
+export const getAdminEvents = (adminId: string) =>
+  createApi({
     method: 'get',
     authorize: true,
-    url: '/events',
+    url: `/events/admin`,
+    queryParams: { adminId },
     output: mapEventsDtoToEvent
   });
 
@@ -82,5 +91,5 @@ export const getPresignedUrl = (entryId: string, fileName: string, uploadType: s
     method: 'put',
     authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
-    body: { fileName: fileName }
+    body: { fileName }
   });

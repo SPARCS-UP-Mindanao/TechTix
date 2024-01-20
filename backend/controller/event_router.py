@@ -3,7 +3,7 @@ from typing import List
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventUploadType
@@ -19,10 +19,10 @@ event_router = APIRouter()
     '',
     response_model=List[EventOut],
     responses={
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get events",
+    summary='Get events',
 )
 @event_router.get(
     '/',
@@ -32,21 +32,45 @@ event_router = APIRouter()
     include_in_schema=False,
 )
 def get_events(
+    admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
+):
+    events_uc = EventUsecase()
+    return events_uc.get_events(admin_id=admin_id)
+
+
+@event_router.get(
+    '/admin',
+    response_model=List[EventOut],
+    responses={
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Get admin events',
+)
+@event_router.get(
+    '/admin/',
+    response_model=List[EventOut],
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_admin_events(
+    admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
     _ = current_user
     events_uc = EventUsecase()
-    return events_uc.get_events()
+    return events_uc.get_events(admin_id=admin_id)
 
 
 @event_router.get(
     '/{entryId}',
     response_model=EventOut,
     responses={
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get event",
+    summary='Get event',
 )
 @event_router.get(
     '/{entryId}/',
@@ -66,10 +90,10 @@ def get_event(
     '',
     response_model=EventOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Create event",
+    summary='Create event',
 )
 @event_router.post(
     '/',
@@ -91,11 +115,11 @@ def create_event(
     '/{entryId}',
     response_model=EventOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        404: {"model": Message, "description": "Event not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        404: {'model': Message, 'description': 'Event not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Update event",
+    summary='Update event',
 )
 @event_router.put(
     '/{entryId}/',
@@ -120,7 +144,7 @@ def update_event(
     responses={
         204: {'description': 'Event entry deletion success', 'content': None},
     },
-    summary="Delete event",
+    summary='Delete event',
 )
 @event_router.delete(
     '/{entryId}/',
@@ -139,8 +163,8 @@ def delete_event(
 @event_router.put(
     '/{entryId}/upload/{uploadType}',
     response_model=FileUploadOut,
-    responses={500: {"model": Message, "description": "Interal server error"}},
-    summary="Get presigned URL",
+    responses={500: {'model': Message, 'description': 'Interal server error'}},
+    summary='Get presigned URL',
 )
 @event_router.put(
     '/{entryId}/upload/{uploadType}/',

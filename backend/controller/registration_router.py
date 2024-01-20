@@ -19,10 +19,10 @@ registration_router = APIRouter()
     '',
     response_model=List[RegistrationOut],
     responses={
-        404: {"model": Message, "description": "Registration not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get registrations",
+    summary='Get registrations',
 )
 @registration_router.get(
     '/',
@@ -45,10 +45,10 @@ def get_registrations(
     '/{entryId}',
     response_model=RegistrationOut,
     responses={
-        404: {"model": Message, "description": "Registration not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get registration",
+    summary='Get registration',
 )
 @registration_router.get(
     '/{entryId}/',
@@ -72,10 +72,10 @@ def get_registration(
     '/{email}/email',
     response_model=RegistrationOut,
     responses={
-        404: {"model": Message, "description": "Registration not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Get registration",
+    summary='Get registration',
 )
 @registration_router.get(
     '/{email}/email/',
@@ -99,11 +99,14 @@ def get_registration_by_email(
     '',
     response_model=RegistrationOut,
     responses={
-        400: {"model": Message, "description": "Invalid input"},
-        409: {"model": Message, "description": "Registration with email example@example.com already exists"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Invalid input'},
+        409: {
+            'model': Message,
+            'description': 'Registration with email example@example.com already exists',
+        },
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Create registration",
+    summary='Create registration',
 )
 @registration_router.post(
     '/',
@@ -126,11 +129,11 @@ def create_registration(
     '/{entryId}',
     response_model=RegistrationOut,
     responses={
-        400: {"model": Message, "description": "Bad request"},
-        404: {"model": Message, "description": "Registration not found"},
-        500: {"model": Message, "description": "Internal server error"},
+        400: {'model': Message, 'description': 'Bad request'},
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
     },
-    summary="Update registration",
+    summary='Update registration',
 )
 @registration_router.put(
     '/{entryId}/',
@@ -157,9 +160,9 @@ def update_registration(
     '/{entryId}',
     status_code=HTTPStatus.NO_CONTENT,
     responses={
-        204: {"description": "Joint entry deletion success", 'content': None},
+        204: {'description': 'Joint entry deletion success', 'content': None},
     },
-    summary="Delete registration",
+    summary='Delete registration',
 )
 @registration_router.delete(
     '{entryId}/',

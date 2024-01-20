@@ -1,9 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
+import { ChangeEvent, useState } from 'react';
+import notFound from '@/assets/not-found.png';
 import Button from '@/components/Button';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/DropdownMenu';
+// import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/DropdownMenu';
 import Input from '@/components/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Table';
+import { cn } from '@/utils/classes';
+import Icon from './Icon';
+import Skeleton from './Skeleton';
+import TableSkeleton from './TableSkeleton';
 import {
   ColumnDef,
   SortingState,
@@ -14,22 +18,67 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  useReactTable
+  useReactTable,
+  Table as TableType
 } from '@tanstack/react-table';
+
+interface TableContentProps<TData> {
+  table: TableType<TData>;
+  data: TData[];
+  colCount: number;
+  noDataText?: string;
+  loading?: boolean;
+}
+
+function TableContent<TData>({ table, colCount, data, loading, noDataText }: TableContentProps<TData>) {
+  console.log(colCount);
+
+  if (loading) {
+    return <TableSkeleton colCount={colCount} rowCount={5} />;
+  }
+
+  if (!table || data.length === 0) {
+    return (
+      <tr>
+        <td colSpan={colCount}>
+          <div className="flex flex-col justify-center items-center p-10 space-y-4">
+            <img src={notFound} alt="" className="w-16" />
+            <p>{noDataText || 'No data'}</p>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <TableBody>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="even:bg-primary-100 even:dark:bg-neutrals-950">
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableBody>
+  );
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data?: TData[];
+  noDataText?: string;
+  loading?: boolean;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+export function DataTable<TData, TValue>({ columns, data, noDataText, loading = false }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const tableData = data || [];
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -77,13 +126,15 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => table.getColumn('email')?.setFilterValue(event.target.value)}
-          className="max-w-[200px]"
+          onChange={(event: ChangeEvent<HTMLInputElement>) => table.getColumn('email')?.setFilterValue(event.target.value)}
+          className="max-w-[160px]"
         />
-        {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+        <p className={cn((loading || !tableData.length) && 'hidden')}>
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+        </p>
       </div>
       <div className="rounded-md border">
-        <Table>
+        <Table className="overflow-hidden">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -93,8 +144,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {/* {table.getRowModel().rows?.length ? (
+          {/* {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
@@ -109,18 +159,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 </TableCell>
               </TableRow>
             )} */}
-            {table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className={clsx(row.index % 2 === 0 && 'bg-primary-100 dark:bg-neutrals-950')}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
+          <TableContent data={tableData} colCount={columns.length} table={table} loading={loading} noDataText={noDataText} />
         </Table>
 
         <div className="flex items-center justify-end p-4 gap-2">

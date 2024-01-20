@@ -60,41 +60,41 @@ class EvaluationPatch(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    answer: str = Field(None, title="Answer")
-    answerScale: int = Field(None, title="Answer Scale")
-    multipleAnswers: List[str] = Field(None, title="Multiple Answers")
-    booleanAnswer: bool = Field(None, title="Boolean Answer")
-    questionType: QuestionType = Field(None, title="Question Type")
+    answer: str = Field(None, title='Answer')
+    answerScale: int = Field(None, title='Answer Scale')
+    multipleAnswers: List[str] = Field(None, title='Multiple Answers')
+    booleanAnswer: bool = Field(None, title='Boolean Answer')
+    questionType: QuestionType = Field(None, title='Question Type')
 
 
 class EvaluationIn(EvaluationPatch):
     class Config:
         extra = Extra.forbid
 
-    question: EvaluationQuestionType = Field(None, title="Question")
+    question: EvaluationQuestionType = Field(None, title='Question')
 
 
 class EvaluationListIn(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    evaluationList: List[EvaluationIn] = Field(None, title="List of Evaluations")
-    eventId: str = Field(None, title="Event ID")
-    registrationId: str = Field(None, title="Registration ID")
+    evaluationList: List[EvaluationIn] = Field(None, title='List of Evaluations')
+    eventId: str = Field(None, title='Event ID')
+    registrationId: str = Field(None, title='Registration ID')
 
 
 class EvaluationOut(EvaluationIn):
     class Config:
         extra = Extra.ignore
 
-    eventId: str = Field(None, title="Event ID")
-    createDate: datetime = Field(..., title="Created At")
-    updateDate: datetime = Field(..., title="Updated At")
+    eventId: str = Field(None, title='Event ID')
+    createDate: datetime = Field(..., title='Created At')
+    updateDate: datetime = Field(..., title='Updated At')
 
 
 class EvaluationListOut(BaseModel):
     class Config:
         extra = Extra.ignore
 
-    registration: RegistrationPreviewOut = Field(None, title="Registration")
-    evaluationList: List[EvaluationOut] = Field(None, title="List of Evaluations")
+    registration: RegistrationPreviewOut = Field(None, title='Registration')
+    evaluationList: List[EvaluationOut] = Field(None, title='List of Evaluations')

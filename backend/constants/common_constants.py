@@ -26,6 +26,7 @@ class CommonConstants:
 
     ENTRY_ID = 'entryId'
     EVENT_ID = 'eventId'
+    ADMIN_ID = 'adminId'
     REGISTRATION_ID = 'registrationId'
 
     # Exclude to Comparison Keys
