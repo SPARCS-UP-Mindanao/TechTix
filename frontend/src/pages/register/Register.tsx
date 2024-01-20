@@ -103,7 +103,7 @@ const Register = () => {
     return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
-  if (eventInfo.status == 'cancelled') {
+  if (eventInfo.status === 'cancelled') {
     const errorTitle = `${eventInfo.name} is Cancelled`;
     return (
       <ErrorPage
@@ -113,7 +113,7 @@ const Register = () => {
     );
   }
 
-  if (eventInfo.payedEvent && eventInfo.status == 'completed') {
+  if (eventInfo.payedEvent && eventInfo.status === 'completed') {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
