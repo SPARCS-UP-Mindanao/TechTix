@@ -100,20 +100,20 @@ class CertificateUsecase:
 
         is_first_claim = not registration.certificateClaimed
 
-        img_download_url_response = self.__file_s3_usecase.create_download_url(
-            object_key=registration.certificateImgObjectKey
-        )
-        img_download_url = img_download_url_response.downloadLink if img_download_url_response else None
+        # img_download_url_response = self.__file_s3_usecase.create_download_url(
+        #     object_key=registration.certificateImgObjectKey
+        # )
+        # img_download_url = img_download_url_response.downloadLink if img_download_url_response else None
 
-        pdf_download_url_response = self.__file_s3_usecase.create_download_url(
-            object_key=registration.certificatePdfObjectKey
-        )
-        img_download_url = pdf_download_url_response.downloadLink if pdf_download_url_response else None
+        # pdf_download_url_response = self.__file_s3_usecase.create_download_url(
+        #     object_key=registration.certificatePdfObjectKey
+        # )
+        # img_download_url = pdf_download_url_response.downloadLink if pdf_download_url_response else None
 
         return CertificateOut(
             isFirstClaim=is_first_claim,
-            certificateTemplate=img_download_url,
-            certificatePDFTemplate=img_download_url,
+            # certificateTemplate=img_download_url,
+            # certificatePDFTemplate=img_download_url,
             certificateTemplateKey=registration.certificateImgObjectKey,
             certificatePDFTemplateKey=registration.certificatePdfObjectKey,
             registrationId=registration.registrationId,
