@@ -16,14 +16,14 @@ import HomePage from '@/pages/landingPage/HomePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 
 export const routes = createBrowserRouter([
-  {
-    path: '',
-    element: HomePage()
-  },
-  {
-    path: '/events',
-    element: EventsPage()
-  },
+  // {
+  //   path: '',
+  //   element: HomePage()
+  // },
+  // {
+  //   path: '/events',
+  //   element: EventsPage()
+  // },
   {
     path: '/:eventId',
     children: [

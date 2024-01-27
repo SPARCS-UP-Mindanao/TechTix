@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import axios, { AxiosError, AxiosResponse } from 'axios';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import MakeEvent from '@/assets/make-event.png';
 import Robot from '@/assets/robot.svg';
@@ -70,77 +69,6 @@ const MakeYourOwnEvent = () => {
   );
 };
 
-const AuthTest = () => {
-  const [code, setCode] = useState('');
-  const baseURL = 'https://techtix.auth.ap-southeast-1.amazoncognito.com';
-  const clientId = '58hijha2ki9ms7a20nosfsgt5h';
-  const clientSecret = '61g2so9jg31cguaik9tmp4lvoh66uoboj31u7jgi2crgo2ll0q6';
-  const authorizationHeader = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
-
-  const googleLogin = () => {
-    const currentUrl = window.location.origin;
-    const queryParams = new URLSearchParams({
-      response_type: 'code',
-      client_id: clientId,
-      redirect_uri: currentUrl,
-      identity_provider: 'Google',
-      scope: 'profile email openid'
-    });
-    const authUrl = `${baseURL}/oauth2/authorize?${queryParams.toString()}`;
-    window.location.href = authUrl;
-  };
-
-  const microsoftLogin = () => {
-    const currentUrl = window.location.origin;
-    const queryParams = new URLSearchParams({
-      response_type: 'code',
-      client_id: clientId,
-      redirect_uri: currentUrl,
-      identity_provider: 'MicrosoftOIDC',
-      scope: 'profile email openid'
-    });
-    const authUrl = `${baseURL}/oauth2/authorize?${queryParams.toString()}`;
-    window.location.href = authUrl;
-  }
-
-  const getQueryParams = async () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const code = searchParams.get('code');
-    console.log('Code:', code);
-
-    if (code) {
-      setCode(code);
-
-      const requestBody = new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        code: code,
-        redirect_uri: `${window.location.origin}`
-      });
-
-      const response = await axios.post(`${baseURL}/oauth2/token`, requestBody.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: authorizationHeader
-        }
-      });
-
-      console.log('Tokens:', response.data);
-    }
-  };
-
-  useEffect(() => {
-    getQueryParams();
-  }, [code]);
-
-  return (
-    <>
-      <Button onClick={googleLogin}>Google</Button>
-      <Button onClick={microsoftLogin}>Microsoft</Button>
-    </>
-  );
-};
-
 const HomePageComponent = () => {
   useMetaData({});
   const location = useLocation();
@@ -158,8 +86,7 @@ const HomePageComponent = () => {
 
   return (
     <main>
-      <AuthTest />
-      {/* <Header />
+      <Header />
       <Hero />
       <section className="bg-white px-5 py-20 flex flex-col items-center">
         <h1 className="text-center !text-primary-700">Upcoming Events</h1>
@@ -167,7 +94,7 @@ const HomePageComponent = () => {
       </section>
       <MakeYourOwnEvent />
       <Footer />
-      <div id="contact" /> */}
+      <div id="contact" />
     </main>
   );
 };
