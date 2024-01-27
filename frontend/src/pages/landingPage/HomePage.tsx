@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import MakeEvent from '@/assets/make-event.png';
