@@ -39,7 +39,7 @@ export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetc
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -56,7 +56,7 @@ export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetc
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Last Name
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },

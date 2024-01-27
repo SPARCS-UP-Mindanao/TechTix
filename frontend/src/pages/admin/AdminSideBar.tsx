@@ -13,7 +13,6 @@ interface AdminSideBarProps {
   tablet: boolean;
   adminConfig: AdminRouteConfigProps[];
   isSidebarOpen: boolean;
-  isCreateEventOpen: boolean;
   openSidebarWidth: number;
   collapsedSidebarWidth: number;
   setSidebarOpen: (value: boolean) => void;

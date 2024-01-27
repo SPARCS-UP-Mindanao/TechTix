@@ -54,7 +54,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Last Name
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -66,7 +66,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -83,7 +83,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Career Status
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -95,7 +95,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Years of Experience
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -107,7 +107,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Organization
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -119,7 +119,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Title
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -132,7 +132,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Date Registered
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -178,7 +178,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
           modalTitle="User Info"
           visible={showModal}
           onOpenChange={setShowModal}
-          trigger={<Button variant="ghost" size="icon" icon="DotsThree" />}
+          trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
           modalFooter={
             <>
               <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">

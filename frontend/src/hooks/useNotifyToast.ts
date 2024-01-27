@@ -1,9 +1,10 @@
+import { IconName } from '@/components/Icon';
 import { useToast } from '@/hooks/useToast';
 
 interface ToastProps {
   title?: string;
   description?: string;
-  icon?: string;
+  icon?: IconName;
   iconClassname?: string;
   duration?: number;
 }

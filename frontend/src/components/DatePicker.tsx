@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { LucideCalendar } from 'lucide-react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Calendar from '@/components/Calendar';
@@ -73,7 +74,7 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
             className
           )}
         >
-          <Icon name="CalendarBlank" className="mr-2 h-4 w-4" />
+          <Icon name="Calendar" className="mr-2 h-4 w-4" />
           {getContent()}
         </Button>
       </PopoverTrigger>

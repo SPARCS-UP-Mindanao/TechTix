@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import MakeEvent from '@/assets/make-event.png';
 import Robot from '@/assets/robot.svg';
 import Button from '@/components/Button';
+import { getAllEvents } from '@/api/events';
+import { useApiQuery } from '@/hooks/useApi';
 import { useMetaData } from '@/hooks/useMetaData';
 import EventCardList from '@/pages/landingPage/EventCardList';
 import Footer from './Footer';
@@ -71,6 +73,7 @@ const MakeYourOwnEvent = () => {
 
 const HomePageComponent = () => {
   useMetaData({});
+  const { data: response, isFetching } = useApiQuery(getAllEvents());
   const location = useLocation();
   const initCount = 4;
 
@@ -90,7 +93,7 @@ const HomePageComponent = () => {
       <Hero />
       <section className="bg-white px-5 py-20 flex flex-col items-center">
         <h1 className="text-center !text-primary-700">Upcoming Events</h1>
-        <EventCardList isLoadAll={false} initialCount={initCount} />
+        <EventCardList allEvents={response?.data} isFetching={isFetching} isLoadAll={false} initialCount={initCount} />
       </section>
       <MakeYourOwnEvent />
       <Footer />

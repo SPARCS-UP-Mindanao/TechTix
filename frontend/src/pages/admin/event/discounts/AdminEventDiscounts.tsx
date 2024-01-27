@@ -7,7 +7,7 @@ import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { getAllDiscounts } from '@/api/discounts';
-import { Discount } from '@/model/discount';
+import { Discount, DiscountOrganization } from '@/model/discount';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
@@ -15,9 +15,10 @@ import { discountColumns } from './DiscountColumns';
 
 interface CreateDiscountModalProps {
   eventId: string;
+  disabled: boolean;
   refetch: () => void;
 }
-const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => {
+const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModalProps) => {
   const [discountResponse, setDiscountResponse] = useState<Discount[]>([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,9 +28,7 @@ const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => 
   };
   const { form, submit } = useDiscountForm(eventId, setFormResponse);
 
-  const handleSubmit = async () => {
-    await submit();
-  };
+  const handleSubmit = async () => await submit();
   const handleClose = async () => {
     setIsInfoModalOpen(false);
     setIsModalOpen(false);
@@ -40,7 +39,7 @@ const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => 
     <div className="px-4">
       <Modal
         modalTitle="Create Discount"
-        trigger={<Button>Create Discount</Button>}
+        trigger={<Button disabled={disabled}>Create Discount</Button>}
         modalFooter={
           isInfoModalOpen ? (
             <Button onClick={handleClose} className="w-full">
@@ -105,6 +104,30 @@ const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => 
   );
 };
 
+interface DiscountTablesProps {
+  discounts?: DiscountOrganization[];
+  isFetching: boolean;
+}
+
+const DiscountTables = ({ discounts, isFetching }: DiscountTablesProps) => {
+  if (isFetching || !discounts) {
+    return <DataTable columns={discountColumns} data={[]} loading={isFetching} noDataText="No discounts" />;
+  }
+
+  return (
+    <>
+      {discounts.map((discount) => (
+        <div key={discount.organizationId} className="w-full">
+          <h3>
+            Recipient: <span>{discount.organizationId}</span>{' '}
+          </h3>
+          <DataTable columns={discountColumns} data={discount.discounts} />
+        </div>
+      ))}
+    </>
+  );
+};
+
 const AdminEventDiscounts: FC = () => {
   const { eventId } = useOutletContext<Event>();
 
@@ -114,40 +137,11 @@ const AdminEventDiscounts: FC = () => {
     return <h1>Event not found</h1>;
   }
 
-  if (isFetching) {
-    return (
-      // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
-
-  if (!response || (response && !response.data)) {
-    return (
-      // TODO: Add event not found page
-      <div className="flex flex-col items-center">
-        <h1>No Discounts found</h1>
-      </div>
-    );
-  }
-
-  const eventDiscounts = response.data;
-
   return (
-    <section className="flex flex-col gap-5 items-center py-10">
+    <section className="flex flex-col gap-5 items-center">
       <h1>Discounts</h1>
-      <CreateDiscountModal eventId={eventId} refetch={refetch} />
-      {eventDiscounts.map((discount) => {
-        return (
-          <div key={discount.organizationId} className="w-full">
-            <h3>
-              Recipient: <span>{discount.organizationId}</span>{' '}
-            </h3>
-            <DataTable columns={discountColumns} data={discount.discounts} />
-          </div>
-        );
-      })}
+      <CreateDiscountModal disabled={isFetching} eventId={eventId} refetch={refetch} />
+      <DiscountTables discounts={response?.data} isFetching={isFetching} />
     </section>
   );
 };

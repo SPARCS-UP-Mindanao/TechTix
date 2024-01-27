@@ -1,0 +1,20 @@
+.emptyEditor:first-child::before {
+  color: hsl(var(--muted-foreground));
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap ol {
+  list-style: decimal;
+}
+
+.tiptap ul {
+  list-style: disc;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding: 0 1rem;
+}

@@ -57,7 +57,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Last Name
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -73,7 +73,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -105,7 +105,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
           modalTitle={fullName + ' Evaluations'}
           visible={showModal}
           onOpenChange={setShowModal}
-          trigger={<Button variant="ghost" size="icon" icon="DotsThree" />}
+          trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
         >
           <div className="flex flex-col gap-5">
             {evaluations.map((evaluation: Evaluation) => {

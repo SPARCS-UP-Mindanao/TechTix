@@ -126,7 +126,7 @@ const AdminAuthority: FC = () => {
   const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins());
 
   return (
-    <section className="flex flex-col items-center py-10 px-4 h-full">
+    <section className="flex flex-col items-center">
       <h2>Admins</h2>
       <InviteAdminModal refetch={refetch} disabled={isFetching} />
       <DataTable columns={adminColumns(refetch)} data={response?.data} loading={isFetching} noDataText="No Admins" />

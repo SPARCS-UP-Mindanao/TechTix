@@ -34,11 +34,11 @@ const EventInformation: FC<Props> = ({
         <h1 className="text-lg">{event.name}</h1>
         <div className="w-full mt-3.5 space-y-1.5 items-start">
           <div className="flex">
-            <Icon name="Clock" weight="light" className="w-6 h-6" />
+            <Icon name="Clock" className="w-6 h-6" />
             <span className="text-sm font-raleway font-medium text-left leading-5 ml-1">{getDate()}</span>
           </div>
           <div className="flex">
-            <Icon name="MapPin" weight="light" className="w-6 h-6" />
+            <Icon name="MapPin" className="w-6 h-6" />
             <p className="text-sm font-raleway font-medium text-left leading-5 ml-1">{event.venue}</p>
           </div>
         </div>

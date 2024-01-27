@@ -1,23 +1,22 @@
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
-import EventCard from '@/components/EventCard';
+import EventCard from '@/components/EventCard/EventCard';
 import Skeleton from '@/components/Skeleton';
-import { getAllEvents } from '@/api/events';
 import { Event, EventStatus } from '@/model/events';
-import { useApiQuery } from '@/hooks/useApi';
 
 const HIDE_STATUS: EventStatus[] = ['draft'];
 
 interface EventCardListProps {
+  allEvents?: Event[];
+  isFetching?: boolean;
   isLoadAll?: boolean;
   initialCount?: number;
 }
 
-const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount = 8 }) => {
+const EventCardList: FC<EventCardListProps> = ({ allEvents, isFetching = false, isLoadAll = true, initialCount = 8 }) => {
   const navigate = useNavigate();
   const [eventCount, setEventCount] = useState(initialCount);
-  const { data: response, isFetching } = useApiQuery(getAllEvents());
 
   if (isFetching) {
     return (
@@ -38,7 +37,7 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount 
     );
   }
 
-  if (!response || (response && !response.data)) {
+  if (!allEvents) {
     return (
       <div className="py-10">
         <h1>Events not found</h1>
@@ -46,7 +45,7 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount 
     );
   }
 
-  if (response.status === 200 && !response.data.length) {
+  if (allEvents.length === 0) {
     return (
       <div>
         <h1>There are currently no events</h1>
@@ -54,7 +53,6 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount 
     );
   }
 
-  const allEvents: Event[] = response.data;
   const events = allEvents.filter((event) => !HIDE_STATUS.includes(event.status));
   const visibleEvents = isLoadAll ? events : events.slice(0, eventCount);
   const sameAsInitial = visibleEvents.length === initialCount;
@@ -67,7 +65,7 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount 
       setEventCount(initialCount);
     }
   };
-  const viewEvent = (eventId?: string, status?: string) => () => {
+  const viewEvent = (eventId: string, status: string) => () => {
     if (status === 'open') {
       navigate(`/${eventId}/register`, { relative: 'path' });
     } else {
@@ -84,7 +82,7 @@ const EventCardList: FC<EventCardListProps> = ({ isLoadAll = true, initialCount 
               key={event.eventId}
               event={event}
               isDeleteEnabled={false}
-              onClick={viewEvent(event.eventId, event.status)}
+              onClick={viewEvent(event.eventId!, event.status)}
               className="w-full md:w-[245px] h-[220px] shadow-lg light border-none"
             />
           ))}

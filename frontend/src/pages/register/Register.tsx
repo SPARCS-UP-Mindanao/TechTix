@@ -44,8 +44,9 @@ const getStepTitle = (step: RegisterSteps) => {
 };
 
 type RegisterField = keyof RegisterFormValues;
+type RegisterFieldMap = Partial<Record<RegisterSteps, RegisterField[]>>;
 
-const REGISTER_STEPS_FIELD: { [key: string]: RegisterField[] } = {
+const REGISTER_STEPS_FIELD: RegisterFieldMap = {
   UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
   PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience'],
   GCash: ['gcashPayment', 'referenceNumber']
@@ -122,7 +123,7 @@ const Register = () => {
     iconUrl: eventInfo.logoUrl
   });
 
-  const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep as keyof typeof REGISTER_STEPS_FIELD];
+  const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep] || [];
   const scrollToView = () => {
     const viewportHeight = window.innerHeight;
     const scrollAmount = viewportHeight * 0.2;
@@ -298,14 +299,14 @@ const Register = () => {
               )}
               {showPrevButton && (
                 <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
-                  <Icon name="CaretLeft" />
+                  <Icon name="ChevronLeft" />
                   Back
                 </Button>
               )}
               {showNextButton && (
                 <Button onClick={nextStep} className="py-6 sm:px-16">
                   Next
-                  <Icon name="CaretRight" />
+                  <Icon name="ChevronRight" />
                 </Button>
               )}
               {showSubmitButton && (

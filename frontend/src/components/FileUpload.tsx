@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { getPresignedUrl } from '@/api/events';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import FileViewerComponent from './FileViewerComponent';
 import Input from './Input';
 import Label from './Label';
-import { Progress } from './Progress';
+import Progress from './Progress';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
@@ -25,7 +25,11 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
   const [selectedFile, setSelectedFile] = useState('No file chosen');
   const [isRawPhoto, setIsRawPhoto] = useState(false);
 
-  const handleFileChange = async (e: any) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return;
+    }
+
     setIsLoading(true);
     const selectedFileObj = e.target.files[0];
     setSelectedFile(selectedFileObj.name);
@@ -41,7 +45,9 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
     return response.data;
   };
 
-  const uploadFile = async (file: any) => {
+  const uploadFile = async (file: File) => {
+    console.log(file);
+
     const s3Client = new S3Client({
       region: 'ap-southeast-1',
       credentials: {
@@ -91,17 +97,15 @@ const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, origin
       {isLoading ? (
         <Progress className="w-full max-w-md" value={uploadProgress} />
       ) : (
-        <div className="flex flex-row items-center w-full">
+        <div className="flex flex-wrap gap-2 items-center w-full">
           <Input id={`upload-custom-${uploadType}`} onChange={handleFileChange} type="file" accept="image/*" className="hidden" />
           <Label
             htmlFor={`upload-custom-${uploadType}`}
-            className="block text-sm mr-4 py-2 px-4
-              rounded-md bg-input border border-border transition-colors
-              hover:cursor-pointer hover:bg-accent"
+            className="block text-sm mr-4 py-2 px-4 rounded-md bg-input border border-border transition-colors hover:cursor-pointer hover:bg-accent"
           >
             Choose file
           </Label>
-          <Label className="text-sm break-all w-1/2">{selectedFile}</Label>
+          <Label className="text-sm line-clamp-1 break-all w-1/2">{selectedFile}</Label>
         </div>
       )}
     </>

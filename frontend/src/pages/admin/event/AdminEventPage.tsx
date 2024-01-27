@@ -1,15 +1,9 @@
-import { Outlet as AdminEventRoute, useOutletContext, useParams } from 'react-router-dom';
+import { Outlet as AdminEventRoute, useParams } from 'react-router-dom';
 import { getEvent } from '@/api/events';
 import { useApiQuery } from '@/hooks/useApi';
-import { AdminRouteConfigProps } from '../getAdminRouteConfig';
-
-interface AdminEventContext {
-  adminConfig: AdminRouteConfigProps[];
-}
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
-  // const { adminConfig } = useOutletContext<AdminEventContext>(); to be used later
 
   const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
 

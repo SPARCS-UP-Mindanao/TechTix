@@ -167,14 +167,14 @@ const Evaluate = () => {
               )}
               {showPrevButton && (
                 <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
-                  <Icon name="CaretLeft" />
+                  <Icon name="ChevronLeft" />
                   Back
                 </Button>
               )}
               {showNextButton && (
                 <Button onClick={nextStep} className="py-6 sm:px-16">
                   Next
-                  <Icon name="CaretRight" />
+                  <Icon name="ChevronRight" />
                 </Button>
               )}
               {showSubmitButton && (
