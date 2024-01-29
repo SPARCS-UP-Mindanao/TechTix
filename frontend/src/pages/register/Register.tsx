@@ -53,6 +53,7 @@ const REGISTER_STEPS_FIELD: RegisterFieldMap = {
 };
 
 const Register = () => {
+  const setMetaData = useMetaData();
   const { successToast, errorToast } = useNotifyToast();
   const { eventId } = useParams();
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
@@ -118,7 +119,7 @@ const Register = () => {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
-  useMetaData({
+  setMetaData({
     title: eventInfo.name,
     iconUrl: eventInfo.logoUrl
   });

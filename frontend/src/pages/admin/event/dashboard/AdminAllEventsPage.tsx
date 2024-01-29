@@ -61,7 +61,7 @@ const DashboardContent: FC<DashboardProps> = memo(({ events, refetch }) => {
 
   return (
     <div className="flex flex-col w-full h-full space-y-6 overflow-auto">
-      <h3 className="text-primary-900">Dashboard</h3>
+      <h2 className="text-primary-900">Dashboard</h2>
 
       <div>
         <span className="font-bold text-primary-700 text-base rounded-md border border-primary p-2">

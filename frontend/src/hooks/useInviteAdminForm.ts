@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { inviteAdmin } from '@/api/admin';
@@ -35,7 +36,8 @@ const AdminFormSchema = z.object({
 
 export type AdminFormValues = z.infer<typeof AdminFormSchema>;
 
-export const useAdminForm = (onSuccess: () => void) => {
+export const useAdminForm = (refetch: () => void) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const form = useForm<AdminFormValues>({
@@ -57,16 +59,17 @@ export const useAdminForm = (onSuccess: () => void) => {
       if (response.status === 200) {
         successToast({
           title: 'Admin Invited Successfully',
-          description: `Admin will be sent an Invitation Email`
+          description: 'Admin will receive an invitation email'
         });
-        onSuccess();
+        setIsModalOpen(false);
+        form.reset();
+        refetch();
       } else {
         errorToast({
-          title: 'Error in Invited Admin',
+          title: 'Error in Inviting Admin',
           description: 'An error occurred while inviting admin. Please try again.'
         });
       }
-      return response;
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({
@@ -79,6 +82,10 @@ export const useAdminForm = (onSuccess: () => void) => {
 
   return {
     form,
-    submit
+    submit,
+    isModalOpen,
+    isSubmitting: form.formState.isSubmitting,
+    isDirty: form.formState.isDirty,
+    setIsModalOpen
   };
 };

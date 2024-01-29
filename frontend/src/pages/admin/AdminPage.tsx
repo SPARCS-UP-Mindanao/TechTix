@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { useState } from 'react';
 import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
@@ -14,7 +14,8 @@ import AdminSideBarTrigger from './AdminSideBarTrigger';
 import { getAdminRouteConfig } from './getAdminRouteConfig';
 
 const AdminPageContent = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
   const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const { eventId } = useParams();
@@ -26,7 +27,7 @@ const AdminPageContent = () => {
 
   const toggleSidebar = () => setSideBarOpen(!isSideBarOpen);
 
-  const { isLogoutOpen, setLogoutOpen, onLogoutAdmin } = useAdminLogout();
+  const { isLogoutOpen, setLogoutOpen, isLoggingOut, onLogoutAdmin } = useAdminLogout();
   const onCloseLogoutModal = () => setLogoutOpen(false);
 
   const isAuthenticated = useIsAuthenticated();
@@ -61,17 +62,16 @@ const AdminPageContent = () => {
         collapsedSidebarWidth={collapsedSidebarWidth}
       />
 
-      {isLogoutOpen && (
-        <AlertModal
-          alertModalTitle="Sign out"
-          alertModalDescription="Are you sure you want to sign out?"
-          visible={isLogoutOpen}
-          confirmVariant="negative"
-          onOpenChange={setLogoutOpen}
-          onCancelAction={onCloseLogoutModal}
-          onCompleteAction={onLogoutAdmin}
-        />
-      )}
+      <AlertModal
+        alertModalTitle="Sign out"
+        alertModalDescription="Are you sure you want to sign out?"
+        visible={isLogoutOpen}
+        confirmVariant="negative"
+        isLoading={isLoggingOut}
+        onOpenChange={setLogoutOpen}
+        onCancelAction={onCloseLogoutModal}
+        onCompleteAction={onLogoutAdmin}
+      />
 
       <main className="h-full w-full relative z-10 overflow-hidden">
         <div
@@ -79,19 +79,14 @@ const AdminPageContent = () => {
           style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
           {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <div className="p-10">
-            <Content context={{ adminConfig: ADMIN_CONFIG, userGroups }} />
-            {/* <AdminPageRoute context={{ adminConfig: ADMIN_CONFIG, userGroups }} /> */}
+          <div className="p-10 md:p-14">
+            <AdminPageRoute context={{ userGroups }} />
           </div>
         </div>
       </main>
     </div>
   );
 };
-
-const Content = memo((props: any) => {
-  return <AdminPageRoute {...props} />;
-});
 
 const AdminPage = () => {
   return <AdminPageContent />;

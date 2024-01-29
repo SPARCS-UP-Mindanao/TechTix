@@ -56,7 +56,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.11.0",
-    "react-router-dom": "^6.17.0",
+    "react-router-dom": "^6.21.3",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript-cookie": "^1.0.6",

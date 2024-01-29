@@ -36,7 +36,7 @@ interface EditorMenuOptionProps {
 }
 
 const EditorMenuOption = ({ editor, id: option, title, Icon, onClick }: EditorMenuOptionProps) => {
-  const optionId: [string, Object | undefined] = useMemo(() => {
+  const optionId: [string, object | undefined] = useMemo(() => {
     if (typeof option !== 'string') {
       const { id, ...rest } = option;
       if (!id) {
@@ -70,13 +70,13 @@ const LinkSchema = z.object({
 });
 
 const LinkOption = ({ editor }: LinkOptionProps) => {
-  const getCurrentContent = () => {
+  const getCurrentContent = useCallback(() => {
     const pos = editor.state.selection.$from.pos;
     const node = editor.state.doc.nodeAt(pos);
     const nodeContent = node?.textContent;
 
     return nodeContent;
-  };
+  }, [editor]);
 
   const linkElementClass = 'underline underline-offset-4 text-primary-400';
 
@@ -104,7 +104,7 @@ const LinkOption = ({ editor }: LinkOptionProps) => {
     editor.chain().focus().unsetLink().run();
   }, [editor]);
 
-  const clearLink = () => form.setValue('link', '');
+  const clearLink = useCallback(() => form.setValue('link', ''), [form]);
 
   useEffect(() => {
     if (currentLink) {
@@ -114,7 +114,7 @@ const LinkOption = ({ editor }: LinkOptionProps) => {
       clearLink();
       form.setValue('text', '');
     }
-  }, [currentLink]);
+  }, [currentLink, editor, form, clearLink, getCurrentContent]);
 
   return (
     <Popover>

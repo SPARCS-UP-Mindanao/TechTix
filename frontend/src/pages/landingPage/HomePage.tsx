@@ -72,7 +72,8 @@ const MakeYourOwnEvent = () => {
 };
 
 const HomePageComponent = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
   const { data: response, isFetching } = useApiQuery(getAllEvents());
   const location = useLocation();
   const initCount = 4;

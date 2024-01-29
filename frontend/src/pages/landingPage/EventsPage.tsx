@@ -58,7 +58,8 @@ const Header = () => {
 };
 
 const EventsPageComponent = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
   const { data: response, isFetching } = useApiQuery(getAllEvents());
 
   return (

@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
-import Modal from '@/components/Modal';
 import { RegisterUserInfo } from '@/model/registrations';
+import RegistrationModal from './RegistrationModal';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = [
@@ -172,28 +170,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const registrationInfo = row.original;
-      const [showModal, setShowModal] = useState(false);
-      return (
-        <Modal
-          modalTitle="User Info"
-          visible={showModal}
-          onOpenChange={setShowModal}
-          trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
-          modalFooter={
-            <>
-              <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
-                Cancel
-              </Button>
-              <Button onClick={() => console.log('delete')} variant="negative" type="submit" className="w-full">
-                Delete
-              </Button>
-            </>
-          }
-        >
-          <h4>{registrationInfo.registrationId}</h4>
-          {registrationInfo.gcashPayment && <FileViewerComponent objectKey={registrationInfo.gcashPayment} />}
-        </Modal>
-      );
+      return <RegistrationModal registrationInfo={registrationInfo} />;
     },
     enableHiding: getEnableHiding('actions')
   }

@@ -13,10 +13,10 @@ import { useFileUrl } from '@/hooks/useFileUrl';
 import Badge from '../Badge';
 
 interface ActionsDropdownProps {
-  setIsModalOpen: (open: boolean) => void;
+  setDeleteModalOpen: (open: boolean) => void;
 }
 
-const ActionsDropdown = ({ setIsModalOpen }: ActionsDropdownProps) => (
+const ActionsDropdown = ({ setDeleteModalOpen }: ActionsDropdownProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" className="h-8 w-8 p-0 self-end bg-card border group-hover:opacity-100">
@@ -26,10 +26,11 @@ const ActionsDropdown = ({ setIsModalOpen }: ActionsDropdownProps) => (
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuItem
+        id="delete-event"
         className="text-xs font-semibold text-negative"
         onClick={(e) => {
           e.stopPropagation();
-          setIsModalOpen(true);
+          setDeleteModalOpen(true);
         }}
       >
         Delete event
@@ -42,12 +43,12 @@ interface CardHeaderProps {
   event: Event;
   isDeleteEnabled: boolean;
   isDeletingEvent?: boolean;
-  setIsModalOpen: (open: boolean) => void;
+  setDeleteModalOpen: (open: boolean) => void;
   refetch?: () => void;
   onDeleteEvent?: () => Promise<void>;
 }
 
-const EventCardHeader: React.FC<CardHeaderProps> = memo(({ event, isDeleteEnabled, isDeletingEvent, setIsModalOpen }) => {
+const EventCardHeader: React.FC<CardHeaderProps> = memo(({ event, isDeleteEnabled, isDeletingEvent, setDeleteModalOpen }) => {
   const { fileUrl: imageUrl, isLoading } = useFileUrl(event.bannerLink!);
 
   return (
@@ -55,7 +56,7 @@ const EventCardHeader: React.FC<CardHeaderProps> = memo(({ event, isDeleteEnable
       {isLoading && <Skeleton className="w-full h-full" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
-          {!isDeletingEvent && !isLoading && <ActionsDropdown setIsModalOpen={setIsModalOpen} />}
+          {!isDeletingEvent && !isLoading && <ActionsDropdown setDeleteModalOpen={setDeleteModalOpen} />}
           {isDeletingEvent && (
             <Badge variant="negative" loading={isDeletingEvent} className="h-6 self-end">
               Deleting
@@ -128,6 +129,7 @@ const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled 
           alertModalTitle="Delete Event"
           alertModalDescription="Are you sure you want to delete this event?"
           visible={isModalOpen}
+          confirmVariant="negative"
           onOpenChange={setIsModalOpen}
           onCancelAction={closeModal}
           onCompleteAction={deleteEventTrigger}
@@ -142,7 +144,7 @@ const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled 
         )}
         onClick={onClick}
       >
-        <EventCardHeader event={event} isDeletingEvent={isDeletingEvent} isDeleteEnabled={isDeleteEnabled} setIsModalOpen={setIsModalOpen} />
+        <EventCardHeader event={event} isDeletingEvent={isDeletingEvent} isDeleteEnabled={isDeleteEnabled} setDeleteModalOpen={setIsModalOpen} />
         <EventCardFooter event={event} />
       </CardContainer>
     </>

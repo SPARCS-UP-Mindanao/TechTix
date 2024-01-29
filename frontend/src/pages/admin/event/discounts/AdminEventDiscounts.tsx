@@ -41,15 +41,14 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
         modalTitle="Create Discount"
         trigger={<Button disabled={disabled}>Create Discount</Button>}
         modalFooter={
-          isInfoModalOpen ? (
-            <Button onClick={handleClose} className="w-full">
-              Close
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={handleClose}>
+              Cancel
             </Button>
-          ) : (
-            <Button onClick={handleSubmit} type="submit" className="w-full">
-              Submit
+            <Button loading={form.formState.isSubmitting} onClick={handleSubmit} type="submit">
+              Create
             </Button>
-          )
+          </div>
         }
         visible={isModalOpen}
         onOpenChange={setIsModalOpen}
@@ -133,14 +132,10 @@ const AdminEventDiscounts: FC = () => {
 
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
 
-  if (!eventId) {
-    return <h1>Event not found</h1>;
-  }
-
   return (
     <section className="flex flex-col gap-5 items-center">
       <h1>Discounts</h1>
-      <CreateDiscountModal disabled={isFetching} eventId={eventId} refetch={refetch} />
+      <CreateDiscountModal disabled={isFetching} eventId={eventId!} refetch={refetch} />
       <DiscountTables discounts={response?.data} isFetching={isFetching} />
     </section>
   );

@@ -18,7 +18,7 @@ const AdminEventInfo: FC = () => {
   return (
     <section>
       <div className="flex flex-col gap-3 items-center justify-center w-full">
-        <h1>{event.name}</h1>
+        <h1>Event Info</h1>
         <p className="text-muted-foreground">Manage the information that will be displayed on the event.</p>
 
         <div className="flex md:flex-row flex-col gap-2">

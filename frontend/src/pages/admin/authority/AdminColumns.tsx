@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import moment from 'moment';
-import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
 import { Admin } from '@/model/admin';
-import { useDeleteAdmin } from '@/hooks/useDeleteAdmin';
+import DeleteAdminModal from './DeleteAdminModal';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = [
@@ -117,33 +115,7 @@ export const adminColumns: (refetch: () => void) => ColumnDef<Admin>[] = (refetc
     id: 'actions',
     cell: ({ row }) => {
       const adminInfo = row.original;
-      const [showModal, setShowModal] = useState(false);
-      const { onDeleteAdmin, isDeletingAdmin } = useDeleteAdmin(adminInfo.entryId!);
-
-      const deleteAdmin = async () => {
-        await onDeleteAdmin();
-        refetch();
-      };
-
-      return (
-        <div className="flex items-center justify-center">
-          <AlertModal
-            trigger={
-              <Button role="button" loading={isDeletingAdmin} variant="negative" className="">
-                Delete
-              </Button>
-            }
-            alertModalTitle="Delete Admin"
-            alertModalDescription="Are you sure you want to delete this admin?"
-            visible={showModal}
-            confirmText="Delete"
-            confirmVariant="negative"
-            onOpenChange={setShowModal}
-            onCompleteAction={deleteAdmin}
-            onCancelAction={() => setShowModal(false)}
-          />
-        </div>
-      );
+      return <DeleteAdminModal adminInfo={adminInfo} refetch={refetch} />;
     },
     enableHiding: getEnableHiding('actions')
   }

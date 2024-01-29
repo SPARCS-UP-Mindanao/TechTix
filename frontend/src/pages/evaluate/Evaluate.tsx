@@ -14,7 +14,7 @@ import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationF
 import { useMetaData } from '@/hooks/useMetaData';
 import QuestionBuilder from '../evaluate/QuestionBuilder';
 import CertificateClaim from './CertificateClaim';
-import EvaluateFormSkeleton from './EvalauteFormSkeleton';
+import EvaluateFormSkeleton from './EvaluateFormSkeleton';
 import EventInformation from './EventInformation';
 import PageHeader from './PageHeader';
 import Stepper from './Stepper';
@@ -25,6 +25,7 @@ type EvaluateSteps = (typeof EVALUATE_STEPS)[number];
 const EVALUATIONS_FORM_STEPS = ['Evaluation_1', 'Evaluation_2'];
 
 const Evaluate = () => {
+  const setMetaData = useMetaData();
   const [currentStep, setCurrentStep] = useState<EvaluateSteps>(EVALUATE_STEPS[0]);
   const eventId = useParams().eventId!;
   const { data: eventResponse, isFetching } = useApiQuery(getEvent(eventId!));
@@ -98,7 +99,7 @@ const Evaluate = () => {
 
   const eventInfo = eventResponse.data;
 
-  useMetaData({
+  setMetaData({
     title: eventInfo.name,
     iconUrl: eventInfo.logoUrl
   });

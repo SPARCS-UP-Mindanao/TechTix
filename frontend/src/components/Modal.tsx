@@ -3,7 +3,7 @@ import Icon from '@/components/Icon';
 import { cn } from '@/utils/classes';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 
-const Dialog = DialogPrimitive.Root;
+const Dialog = ({ ...props }: DialogPrimitive.DialogProps) => <DialogPrimitive.Root {...props} />;
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
@@ -24,8 +24,12 @@ const DialogOverlay = React.forwardRef<React.ElementRef<typeof DialogPrimitive.O
 );
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Content>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>>(
-  ({ className, children, ...props }, ref) => (
+interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+  closable: boolean;
+}
+
+const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Content>, DialogContentProps>(
+  ({ className, closable, children, ...props }, ref) => (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
@@ -37,10 +41,12 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <Icon name="X" className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        {closable && (
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <Icon name="X" className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   )
@@ -79,14 +85,28 @@ interface ModalProps extends React.ComponentPropsWithoutRef<typeof DialogPrimiti
   modalFooter?: React.ReactNode;
   defaultOpen?: boolean;
   visible?: boolean;
+  closable?: boolean;
+  modal?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-const Modal = ({ modalTitle, modalDescription, trigger, children, modalFooter, defaultOpen = false, visible = false, onOpenChange, ...props }: ModalProps) => {
+const Modal = ({
+  modalTitle,
+  modalDescription,
+  trigger,
+  children,
+  modalFooter,
+  defaultOpen = false,
+  visible = false,
+  closable = true,
+  modal = true,
+  onOpenChange,
+  ...props
+}: ModalProps) => {
   return (
-    <Dialog defaultOpen={defaultOpen} open={visible} onOpenChange={onOpenChange}>
+    <Dialog defaultOpen={defaultOpen} open={visible} onOpenChange={onOpenChange} modal={modal}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent {...props}>
+      <DialogContent closable={closable} {...props}>
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
           <DialogDescription>{modalDescription}</DialogDescription>

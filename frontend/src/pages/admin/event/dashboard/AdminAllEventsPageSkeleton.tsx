@@ -28,7 +28,6 @@ const AdminAllEventsPageSkeleton = () => {
           <EventCardSkeleton />
           <EventCardSkeleton />
           <EventCardSkeleton />
-          <EventCardSkeleton />
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { createDiscount } from '@/api/discounts';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { Discount } from '@/model/discount';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const DiscountFormSchema = z.object({
@@ -21,16 +22,21 @@ const DiscountFormSchema = z.object({
 export type DiscountFormValues = z.infer<typeof DiscountFormSchema>;
 
 export const useDiscountForm = (eventId: string, setFormResponse: (discounts: Discount[]) => void) => {
+  const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
   const form = useForm<DiscountFormValues>({
     mode: 'onChange',
-    resolver: zodResolver(DiscountFormSchema)
+    resolver: zodResolver(DiscountFormSchema),
+    defaultValues: {
+      discountPercentage: 0,
+      quantity: 0,
+      organizationName: ''
+    }
   });
 
   const submit = form.handleSubmit(async (values) => {
-    const { queryFn: discount } = createDiscount(values, eventId);
     try {
-      const response = await discount();
+      const response = await api.execute(createDiscount(values, eventId));
       if (response.status === 200) {
         successToast({
           title: 'Discount Created Successfully',

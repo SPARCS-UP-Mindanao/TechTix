@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { FormProvider } from 'react-hook-form';
+import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import DatePicker from '@/components/DatePicker';
@@ -9,6 +10,7 @@ import Input from '@/components/Input';
 import RichTextEditor from '@/components/RichContent/RichTextEditor';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
+import { isEmpty } from '@/utils/functions';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
@@ -20,13 +22,14 @@ const AdminEventForm: FC<Props> = ({ event }) => {
   const { form, submit, cancel } = useAdminEventForm({ event });
   const { setValue, getValues } = form;
   const paidEvent = getValues('payedEvent');
-  const { isSubmitting, isDirty } = form.formState;
-  console.log(form.formState);
+  const { isSubmitting, dirtyFields } = form.formState;
+  const isFormClean = isEmpty(dirtyFields);
 
   const handleSubmit = async () => await submit();
 
   return (
     <FormProvider {...form}>
+      <BlockNavigateModal condition={!isFormClean} />
       <main className="w-full flex flex-wrap gap-y-2">
         <FormItem name="name">
           {({ field }) => (
@@ -91,7 +94,9 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               )}
             </FormItem>
 
-            <div className="md:max-w-[50%]" />
+            <div className="md:max-w-[50%]">
+              <pre> </pre>
+            </div>
             <FormItem name="gcashName">
               {({ field }) => (
                 <div className="space-y-2 w-full px-2 md:max-w-[50%]">
@@ -129,7 +134,9 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                 </div>
               )}
             </FormItem>
-            <div className="md:max-w-[50%]" />
+            <div className="md:max-w-[50%]">
+              <pre> </pre>
+            </div>
           </>
         )}
 
@@ -139,7 +146,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               <>
                 <div className="space-y-2 w-full px-2 md:max-w-[50%]">
                   <FormLabel>Status</FormLabel>
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select an Event Status" />
                     </SelectTrigger>
@@ -156,7 +163,9 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                   </Select>
                   <FormError />
                 </div>
-                <div className="md:max-w-[50%]" />
+                <div className="md:max-w-[50%]">
+                  <pre> </pre>
+                </div>
               </>
             )}
           </FormItem>
@@ -243,7 +252,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           <Button icon="X" variant="ghost" onClick={cancel}>
             Cancel
           </Button>
-          <Button icon="Save" disabled={!isDirty} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
+          <Button icon="Save" disabled={isFormClean} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
             Save
           </Button>
         </div>

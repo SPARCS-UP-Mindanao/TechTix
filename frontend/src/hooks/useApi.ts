@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { createApiReturn } from '@/api/utils/createApi';
 import { ApiContext } from '@/context/QueryClientContext';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 
 interface QueryOptions {
   active?: boolean;

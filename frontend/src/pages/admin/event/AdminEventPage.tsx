@@ -1,4 +1,5 @@
 import { Outlet as AdminEventRoute, useParams } from 'react-router-dom';
+import { TECHTIX_72 } from '@/assets/techtix';
 import { getEvent } from '@/api/events';
 import { useApiQuery } from '@/hooks/useApi';
 
@@ -10,8 +11,8 @@ const AdminEventPageContent = () => {
   if (isFetching) {
     return (
       // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
+      <div className="flex justify-center pt-40">
+        <img className="animate animate-pulse" src={TECHTIX_72} />
       </div>
     );
   }
@@ -19,7 +20,8 @@ const AdminEventPageContent = () => {
   if (!response || (response && !response.data)) {
     return (
       // TODO: Add event not found page
-      <div>
+      <div className="pt-20 flex flex-col w-full items-center">
+        <h1>404</h1>
         <h1>Event not found</h1>
       </div>
     );
@@ -27,7 +29,12 @@ const AdminEventPageContent = () => {
 
   const event = response.data;
 
-  return <AdminEventRoute context={event} />;
+  return (
+    <div>
+      <h4 className="mb-8">{event.name}</h4>
+      <AdminEventRoute context={event} />
+    </div>
+  );
 };
 
 const AdminEventPage = () => {
