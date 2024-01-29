@@ -4,8 +4,8 @@ import { z } from 'zod';
 import { postEvaluation } from '@/api/evaluations';
 import { QuestionConfigItem } from '@/model/evaluations';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useApi } from './useApi';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ClaimCertificateFormSchema = z.object({
   email: z.string().email({
