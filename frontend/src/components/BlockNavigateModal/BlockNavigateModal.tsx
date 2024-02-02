@@ -3,16 +3,20 @@ import AlertModal from '@/components/AlertModal';
 import { useBlockNavigateModal } from './useBlockNavigateModal';
 
 interface Props {
+  title?: string;
+  description?: string;
   condition: boolean;
+  onOk?: () => void;
+  onCancel?: () => void;
 }
 
-const BlockNavigateModal: FC<Props> = ({ condition }) => {
-  const { visible, onOpenChange, onCompleteAction, onCancelAction } = useBlockNavigateModal(condition);
+const BlockNavigateModal: FC<Props> = ({ title, description, condition, onOk, onCancel }) => {
+  const { visible, onOpenChange, onCompleteAction, onCancelAction } = useBlockNavigateModal({ condition, onOk, onCancel });
 
   return (
     <AlertModal
-      alertModalTitle="Are you sure you want to leave this page?"
-      alertModalDescription="Leaving the page may result in unfinished actions or unsaved data. Are you sure you want to leave?"
+      alertModalTitle={title || 'Are you sure you want to leave this page?'}
+      alertModalDescription={description || 'Leaving the page may result in unfinished actions or unsaved data. Are you sure you want to leave?'}
       visible={visible}
       confirmVariant="negative"
       onCompleteAction={onCompleteAction}

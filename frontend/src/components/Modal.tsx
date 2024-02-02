@@ -103,8 +103,14 @@ const Modal = ({
   onOpenChange,
   ...props
 }: ModalProps) => {
+  const getOnOpenChange = () => {
+    if (onOpenChange && !closable && visible) {
+      return;
+    }
+    return onOpenChange;
+  };
   return (
-    <Dialog defaultOpen={defaultOpen} open={visible} onOpenChange={onOpenChange} modal={modal}>
+    <Dialog defaultOpen={defaultOpen} open={visible} onOpenChange={getOnOpenChange()} modal={modal}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent closable={closable} {...props}>
         <DialogHeader>

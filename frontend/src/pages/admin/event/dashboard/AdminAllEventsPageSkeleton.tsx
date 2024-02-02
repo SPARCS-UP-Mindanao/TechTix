@@ -11,7 +11,7 @@ const AdminAllEventsPageSkeleton = () => {
       <div className="space-y-4">
         <Skeleton className="w-60 h-5" />
 
-        <div className="flex gap-x-4 gap-y-4 flex-wrap">
+        <div className="flex flex-wrap justify-center sm:justify-normal px-7 sm:px-0 gap-x-4 gap-y-4">
           <EventCardSkeleton />
           <EventCardSkeleton />
           <EventCardSkeleton />
@@ -23,7 +23,7 @@ const AdminAllEventsPageSkeleton = () => {
       <div className="space-y-4">
         <Skeleton className="w-60 h-5" />
 
-        <div className="flex gap-x-4 gap-y-4 flex-wrap">
+        <div className="flex flex-wrap justify-center sm:justify-normal px-7 sm:px-0 gap-x-4 gap-y-4">
           <EventCardSkeleton />
           <EventCardSkeleton />
           <EventCardSkeleton />

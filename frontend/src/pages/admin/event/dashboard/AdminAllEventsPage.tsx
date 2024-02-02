@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion';
@@ -36,7 +36,7 @@ interface DashboardProps {
   refetch: () => void;
 }
 
-const DashboardContent: FC<DashboardProps> = memo(({ events, refetch }) => {
+const DashboardContent: FC<DashboardProps> = ({ events, refetch }) => {
   const navigate = useNavigate();
   const viewEvent = (eventId?: string) => () => navigate(`${eventId}/`);
 
@@ -79,7 +79,7 @@ const DashboardContent: FC<DashboardProps> = memo(({ events, refetch }) => {
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="flex gap-x-4 gap-y-4 flex-wrap">
+              <div className="flex flex-wrap justify-center sm:justify-normal px-7 sm:px-0 gap-x-4 gap-y-4">
                 {category.events.map((event) => (
                   <EventCard key={event.eventId} event={event} refetch={refetch} onClick={viewEvent(event.eventId)} />
                 ))}
@@ -90,7 +90,7 @@ const DashboardContent: FC<DashboardProps> = memo(({ events, refetch }) => {
       </Accordion>
     </div>
   );
-});
+};
 
 const AdminAllEventsPage = () => {
   return <AdminAllEvents />;

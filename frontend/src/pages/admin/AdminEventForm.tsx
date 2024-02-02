@@ -10,6 +10,7 @@ import Input from '@/components/Input';
 import RichTextEditor from '@/components/RichContent/RichTextEditor';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP, Event } from '@/model/events';
+import { cn } from '@/utils/classes';
 import { isEmpty } from '@/utils/functions';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
@@ -17,12 +18,29 @@ interface Props {
   event?: Event;
 }
 
+interface AdminEventFormItemProps {
+  halfSpace?: boolean;
+  children: React.ReactNode;
+}
+
+const AdminEventFormItem: FC<AdminEventFormItemProps> = ({ halfSpace = false, children }) => {
+  return <div className={cn('space-y-2 w-full px-2', halfSpace && 'md:w-1/2')}>{children}</div>;
+};
+
+const AdminEventFormSpacer: FC = () => {
+  return (
+    <div className="md:max-w-[50%]">
+      <pre> </pre>
+    </div>
+  );
+};
+
 const AdminEventForm: FC<Props> = ({ event }) => {
   const eventId = event?.eventId;
   const { form, submit, cancel } = useAdminEventForm({ event });
-  const { setValue, getValues } = form;
+  const { setValue, getValues, formState } = form;
   const paidEvent = getValues('payedEvent');
-  const { isSubmitting, dirtyFields } = form.formState;
+  const { isSubmitting, dirtyFields } = formState;
   const isFormClean = isEmpty(dirtyFields);
 
   const handleSubmit = async () => await submit();
@@ -33,93 +51,92 @@ const AdminEventForm: FC<Props> = ({ event }) => {
       <main className="w-full flex flex-wrap gap-y-2">
         <FormItem name="name">
           {({ field }) => (
-            <div className="space-y-2 w-full px-2">
+            <AdminEventFormItem>
               <FormLabel>Event Name</FormLabel>
-              <Input type="text" className="" {...field} />
+              <Input type="text" {...field} />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
 
         <FormItem name="description">
           {({ field: { value, onChange } }) => (
-            <div className="space-y-2 w-full px-2">
+            <AdminEventFormItem>
               <FormLabel>Description</FormLabel>
               <RichTextEditor content={value} setContent={onChange} placeholder="Describe your event" />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
 
         <FormItem name="email">
           {({ field }) => (
-            <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+            <AdminEventFormItem halfSpace>
               <FormLabel>Email</FormLabel>
-              <Input type="email" className="" {...field} />
+              <Input type="email" {...field} />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
 
         <FormItem name="venue">
           {({ field }) => (
-            <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+            <AdminEventFormItem halfSpace>
               <FormLabel>Venue</FormLabel>
-              <Input type="text" className="" {...field} />
+              <Input type="text" {...field} />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
 
         <FormItem name="payedEvent">
           {({ field }) => (
-            <div className="space-y-2 w-full px-2">
+            <AdminEventFormItem>
               <div className="flex flex-row gap-2">
                 <FormLabel>Is this a paid event?</FormLabel>
                 <Checkbox id="isPayedEvent" checked={field.value} onCheckedChange={field.onChange} />
               </div>
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
+
         {paidEvent && (
           <>
             <FormItem name="price">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>Price</FormLabel>
-                  <Input type="number" className="" {...field} />
+                  <Input type="number" {...field} />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
 
-            <div className="md:max-w-[50%]">
-              <pre> </pre>
-            </div>
+            <AdminEventFormSpacer />
             <FormItem name="gcashName">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>GCash Name</FormLabel>
-                  <Input type="text" className="" {...field} />
+                  <Input type="text" {...field} />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="gcashNumber">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>GCash Number</FormLabel>
-                  <Input type="text" className="" {...field} />
+                  <Input type="text" {...field} />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="gcashQRCode">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>GCash QR Code</FormLabel>
                   <FileUpload
                     entryId={eventId!}
@@ -131,12 +148,10 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     {...field}
                   />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
-            <div className="md:max-w-[50%]">
-              <pre> </pre>
-            </div>
+            <AdminEventFormSpacer />
           </>
         )}
 
@@ -144,7 +159,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           <FormItem name="status">
             {({ field }) => (
               <>
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>Status</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
@@ -162,10 +177,8 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     </SelectContent>
                   </Select>
                   <FormError />
-                </div>
-                <div className="md:max-w-[50%]">
-                  <pre> </pre>
-                </div>
+                </AdminEventFormItem>
+                <AdminEventFormSpacer />
               </>
             )}
           </FormItem>
@@ -173,28 +186,29 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <FormItem name="startDate">
           {({ field: { value, onChange } }) => (
-            <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+            <AdminEventFormItem halfSpace>
               <FormLabel>Event Start Date</FormLabel>
               <DatePicker value={value} onChange={onChange} includeTime />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
 
         <FormItem name="endDate">
           {({ field: { value, onChange } }) => (
-            <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+            <AdminEventFormItem halfSpace>
               <FormLabel>Event End Date</FormLabel>
               <DatePicker value={value} onChange={onChange} includeTime />
               <FormError />
-            </div>
+            </AdminEventFormItem>
           )}
         </FormItem>
+
         {event && (
           <>
             <FormItem name="bannerLink">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>Event Banner</FormLabel>
                   <FileUpload
                     entryId={eventId!}
@@ -206,13 +220,13 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     {...field}
                   />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="logoLink">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>Event Logo</FormLabel>
                   <FileUpload
                     entryId={eventId!}
@@ -224,13 +238,13 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     {...field}
                   />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="certificateTemplate">
               {({ field }) => (
-                <div className="space-y-2 w-full px-2 md:max-w-[50%]">
+                <AdminEventFormItem halfSpace>
                   <FormLabel>Event Certificate Template</FormLabel>
                   <FileUpload
                     entryId={eventId!}
@@ -242,7 +256,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     {...field}
                   />
                   <FormError />
-                </div>
+                </AdminEventFormItem>
               )}
             </FormItem>
           </>

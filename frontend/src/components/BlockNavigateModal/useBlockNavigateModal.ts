@@ -13,7 +13,13 @@ interface BlockerFunctionParams {
   historyAction: Action;
 }
 
-export const useBlockNavigateModal = (condition: boolean) => {
+interface useBlockNavigateParams {
+  condition: boolean;
+  onOk?: () => void;
+  onCancel?: () => void;
+}
+
+export const useBlockNavigateModal = ({ condition, onOk, onCancel }: useBlockNavigateParams) => {
   const [showModal, setShowModal] = useState(false);
   const onOpenChange = useCallback((open: boolean) => setShowModal(open), [setShowModal]);
 
@@ -22,18 +28,20 @@ export const useBlockNavigateModal = (condition: boolean) => {
       return false;
     }
 
-    return currentLocation.pathname !== nextLocation.pathname;
+    return condition || currentLocation.pathname !== nextLocation.pathname;
   };
 
   const blocker = useBlocker(blockerFunction);
   const onCompleteAction = () => {
     if (blocker.state === 'blocked') {
+      onOk && onOk();
       blocker.proceed();
     }
   };
 
   const onCancelAction = () => {
     if (blocker.state === 'blocked') {
+      onCancel && onCancel();
       blocker.reset();
     }
   };

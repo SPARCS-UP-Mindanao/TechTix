@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { createDiscount } from '@/api/discounts';
@@ -21,9 +22,11 @@ const DiscountFormSchema = z.object({
 
 export type DiscountFormValues = z.infer<typeof DiscountFormSchema>;
 
-export const useDiscountForm = (eventId: string, setFormResponse: (discounts: Discount[]) => void) => {
-  const api = useApi();
+export const useDiscountForm = (eventId: string) => {
+  const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [showDiscountCodes, setShowDiscountCodes] = useState(false);
   const { successToast, errorToast } = useNotifyToast();
+  const api = useApi();
   const form = useForm<DiscountFormValues>({
     mode: 'onChange',
     resolver: zodResolver(DiscountFormSchema),
@@ -42,25 +45,27 @@ export const useDiscountForm = (eventId: string, setFormResponse: (discounts: Di
           title: 'Discount Created Successfully',
           description: `Discount Created for ${values.organizationName}`
         });
-        setFormResponse(response.data);
+        setDiscounts(response.data);
+        setShowDiscountCodes(true);
       } else {
         errorToast({
           title: 'Error in Creating Discount',
           description: 'An error occurred while creating discount. Please try again.'
         });
       }
-      return response;
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({
         title: 'Error in logging in',
         description: errorData.message || errorData.detail[0].msg
       });
-      return e;
     }
   });
 
   return {
+    discounts,
+    showDiscountCodes,
+    setShowDiscountCodes,
     form,
     submit
   };

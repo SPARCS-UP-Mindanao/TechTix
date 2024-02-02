@@ -12,7 +12,7 @@ const AdminEventeEvaluations: FC = () => {
 
   return (
     <section className="flex flex-col items-center">
-      <h1>Evaluations</h1>
+      <h2>Evaluations</h2>
       <DataTable columns={evaluationColumns} data={response?.data} loading={isFetching} noDataText="No Evaluations" />
     </section>
   );
