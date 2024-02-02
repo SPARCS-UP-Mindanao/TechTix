@@ -68,11 +68,7 @@ function TableContent<TData>({ table, colCount, data, loading, noDataText }: Tab
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            data-state={row.getIsSelected() && 'selected'}
-            className="even:bg-primary-200 even:dark:bg-neutrals-800 hover:bg-primary-100 hover:dark:bg-neutrals-400"
-          >
+          <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
             ))}
