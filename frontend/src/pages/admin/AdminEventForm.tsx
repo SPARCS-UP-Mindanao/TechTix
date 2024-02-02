@@ -263,7 +263,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         )}
 
         <div className="w-full flex justify-end space-x-2">
-          <Button icon="X" variant="ghost" onClick={cancel}>
+          <Button icon="X" disabled={isSubmitting} variant="ghost" onClick={cancel}>
             Cancel
           </Button>
           <Button icon="Save" disabled={isFormClean} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">

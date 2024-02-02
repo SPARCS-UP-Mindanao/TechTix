@@ -122,7 +122,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
 
   const footer = (
     <div className="flex space-x-2">
-      <Button variant="ghost" onClick={handleClose}>
+      <Button variant="ghost" onClick={handleClose} disabled={form.formState.isSubmitting}>
         {showDiscountCodes ? 'Close' : 'Cancel'}
       </Button>
       {successButton()}

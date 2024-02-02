@@ -17,11 +17,11 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
       onOpenChange={setShowModal}
       trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
       modalFooter={
-        <div className="flex flex-end gap-x-4">
-          <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
+        <div className="flex justify-end gap-x-2">
+          <Button onClick={() => setShowModal(false)} variant="ghost">
             Cancel
           </Button>
-          <Button onClick={() => setShowModal(false)} variant="negative" type="submit" className="w-full">
+          <Button onClick={() => setShowModal(false)} variant="negative" type="submit">
             Delete
           </Button>
         </div>

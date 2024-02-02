@@ -25,6 +25,7 @@ interface InviteAdmintModalProps {
 const InviteAdminModal: FC<InviteAdmintModalProps> = ({ disabled, refetch }) => {
   const { form, submit, isModalOpen, isSubmitting, setIsModalOpen } = useAdminForm(refetch);
 
+  const handleClose = () => setIsModalOpen(false);
   const handleSubmit = async () => submit();
 
   return (
@@ -36,9 +37,14 @@ const InviteAdminModal: FC<InviteAdmintModalProps> = ({ disabled, refetch }) => 
         </Button>
       }
       modalFooter={
-        <Button onClick={handleSubmit} loading={isSubmitting} type="submit" className="w-full" variant="primaryGradient">
-          Submit
-        </Button>
+        <div className="flex items-center justify-end space-x-2">
+          <Button onClick={handleClose} disabled={isSubmitting} variant="ghost">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} loading={isSubmitting} type="submit" variant="primaryGradient">
+            Submit
+          </Button>
+        </div>
       }
       visible={isModalOpen}
       onOpenChange={setIsModalOpen}
