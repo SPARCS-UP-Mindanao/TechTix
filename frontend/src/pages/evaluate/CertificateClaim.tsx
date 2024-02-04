@@ -69,11 +69,11 @@ const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemp
           </div>
           <div className="flex flex-col pt-3 w-[91vw] space-y-3  max-w-2xl ">
             <Button onClick={downloadImage} variant="secondaryGradient" className="py-3 px-6">
-              <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
+              <Icon name="Download" className="mr-2 h-4 w-4" />
               Download Image
             </Button>
             <Button onClick={downloadPDF} variant="primaryGradient" className="py-3 px-6">
-              <Icon name="DownloadSimple" className="mr-2 h-4 w-4" />
+              <Icon name="Download" className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
             {/* <Button onClick={shareCertificate} variant="primaryGradient" className="py-3 px-6">

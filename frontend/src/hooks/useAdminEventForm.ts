@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { updateEvent, createEvent, getEvent } from '@/api/events';
+import { updateEvent, createEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { Event } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -48,22 +50,21 @@ export const EventFormSchema = z.object({
 export type EventFormValues = z.infer<typeof EventFormSchema>;
 
 interface EventFormProps {
-  eventId?: string;
-  refetch?: () => void;
-  setCreateEventOpen?: (value: boolean) => void;
+  event?: Event;
 }
 
-export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: EventFormProps) => {
+export const useAdminEventForm = ({ event }: EventFormProps) => {
+  const navigate = useNavigate();
+  const eventId = event?.eventId;
+  const mode = eventId ? 'edit' : 'create';
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const form = useForm<EventFormValues>({
     mode: 'onChange',
     resolver: zodResolver(EventFormSchema),
     defaultValues: async () => {
-      if (eventId) {
-        const response = await api.execute(getEvent(eventId));
-        const { data } = response;
-        return data;
+      if (event) {
+        return event;
       }
 
       return {
@@ -90,33 +91,23 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
       const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent(values)));
 
       if (response.status === 200) {
-        const successTitle = eventId ? 'Event updated' : 'Event created';
-        const successMessage = eventId ? 'Event updated successfully' : 'Event created successfully';
+        const successTitle = mode === 'edit' ? 'Event updated' : 'Event created';
+        const successMessage = mode === 'edit' ? 'Event updated successfully' : 'Event created successfully';
         successToast({
           title: successTitle,
           description: successMessage
         });
 
-        form.reset();
-        refetch && refetch();
+        if (mode === 'create') {
+          const { eventId: newEventId } = response.data;
+          navigate(`/admin/events/${newEventId}`);
+        }
 
-        // Fetch the event details after successful submission
-        if (eventId) {
-          const { queryFn: getEventDetails } = getEvent(eventId);
-          const { data: eventData } = await getEventDetails();
-
-          // Set the form values with the fetched event data
-          Object.keys(eventData).forEach((key) => {
-            const eventKey = key as keyof EventFormValues;
-            if (eventData[eventKey] !== undefined) {
-              form.setValue(eventKey, eventData[eventKey]);
-            }
-          });
-        } else if (setCreateEventOpen) {
-          setCreateEventOpen(false);
+        if (mode === 'edit') {
+          form.reset(values);
         }
       } else {
-        const toastMessage = eventId ? 'Error in updating an event' : 'Error in creating an event';
+        const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
         errorToast({
           title: toastMessage,
           description: response.errorData.message || 'An error occurred while submitting. Please try again.'
@@ -131,8 +122,17 @@ export const useAdminEventForm = ({ eventId, refetch, setCreateEventOpen }: Even
     }
   });
 
+  const cancel = () => {
+    if (eventId) {
+      form.reset();
+    } else {
+      navigate('/admin/events');
+    }
+  };
+
   return {
     form,
-    submit
+    submit,
+    cancel
   };
 };

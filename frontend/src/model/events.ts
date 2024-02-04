@@ -50,6 +50,24 @@ export const EVENT_STATUSES = [
   }
 ];
 
+export const EVENT_UPLOAD_TYPES = {
+  BANNER: 'banner',
+  LOGO: 'logo',
+  CERTIFICATE_TEMPLATE: 'certificateTemplate',
+  PROOF_OF_PAYMENT: 'proofOfPayment',
+  GCASH_QR: 'gcashQRCode'
+};
+
+export const EVENT_OBJECT_KEY_MAPS = {
+  BANNER: 'bannerLink',
+  LOGO: 'logoLink',
+  CERTIFICATE_TEMPLATE: 'certificateTemplate',
+  PROOF_OF_PAYMENT: 'proofOfPayment',
+  GCASH_QR: 'gcashQRCode'
+};
+
+export type UploadType = keyof typeof EVENT_UPLOAD_TYPE;
+
 export const enum EVENT_UPLOAD_TYPE {
   BANNER = 'banner',
   LOGO = 'logo',

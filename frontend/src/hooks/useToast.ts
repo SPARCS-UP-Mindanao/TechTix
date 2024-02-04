@@ -1,5 +1,6 @@
 // Inspired by react-hot-toast library
 import * as React from 'react';
+import { IconName } from '@/components/Icon';
 import type { ToastActionElement, ToastProps } from '@/components/Toast/Toast';
 
 const TOAST_LIMIT = 5;
@@ -9,7 +10,7 @@ type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  icon?: string;
+  icon?: IconName;
   iconClassname?: string;
   action?: ToastActionElement;
 };
@@ -134,7 +135,7 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, 'id'>;
+type Toast = ToasterToast;
 
 function toast({ ...props }: Toast) {
   const id = genId();

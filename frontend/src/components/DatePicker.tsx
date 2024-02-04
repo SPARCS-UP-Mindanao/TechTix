@@ -6,7 +6,6 @@ import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/Popover';
 import { cn } from '@/utils/classes';
-import { isValidDate } from '@/utils/functions';
 
 interface DatePickerProps {
   value: string;
@@ -16,46 +15,30 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, className, includeTime = false, onChange }: DatePickerProps) => {
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [time, setTime] = React.useState<string | undefined>(undefined);
-  const [newDateValue, setNewDateValue] = React.useState<string | undefined>(undefined);
+  const initialDate = value ? new Date(value) : new Date();
+  const initialTime = includeTime && value ? moment(value).format('HH:mm') : moment().format('HH:mm');
+  const newDateValue = moment(initialDate);
 
-  React.useEffect(() => {
-    const initialDate = isValidDate(value) ? new Date(value) : undefined;
-    const initialTime = includeTime && initialDate ? initialDate.getHours() + ':' + initialDate.getMinutes() : '00:00';
-    setDate(initialDate);
-    setTime(initialTime);
-  }, [value]);
+  const [date, setDate] = React.useState<Date | undefined>(initialDate);
+  const [time, setTime] = React.useState<string>(initialTime);
 
-  React.useEffect(() => {
-    if (!date) {
-      return;
-    }
+  const updateValue = () => {
+    const newValue = moment(`${moment(date).format('YYYY-MM-DD')} ${moment(time, 'HH:mm').format('HH:mm')}`).toISOString();
+    onChange(newValue);
+  };
 
-    if (includeTime && !time) {
-      return;
-    }
-
-    const newTime = moment(time, 'HH:mm');
-    const newDate = includeTime
-      ? moment(date)
-          .set({
-            hour: newTime.hour(),
-            minute: newTime.minute()
-          })
-          .toISOString()
-      : moment(date).toISOString();
-
-    onChange(newDate);
-    setNewDateValue(newDate);
-  }, [date, onChange, time, includeTime]);
+  const onChangeDate = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    updateValue();
+  };
 
   const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value);
+    updateValue();
   };
 
   const getContent = () => {
-    if (!date || !newDateValue) {
+    if (!value) {
       return includeTime ? 'Pick a time and date' : 'Pick a date';
     }
 
@@ -73,12 +56,12 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
             className
           )}
         >
-          <Icon name="CalendarBlank" className="mr-2 h-4 w-4" />
+          <Icon name="Calendar" className="mr-2 h-4 w-4" />
           {getContent()}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto py-2">
-        <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+        <Calendar mode="single" selected={date} onSelect={onChangeDate} initialFocus />
         {includeTime && <Input value={time} onChange={onChangeTime} type="time" />}
       </PopoverContent>
     </Popover>

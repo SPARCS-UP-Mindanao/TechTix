@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { claimCertificate } from '@/api/evaluations';
 import { ClaimCertificateResponse } from '@/api/evaluations';
+import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -23,6 +24,7 @@ export type ClaimCertificateFormSchema = z.infer<typeof ClaimCertificateSchema>;
 
 export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUATE_STEPS */ }: ClaimCertificateFormProps) => {
   const { errorToast } = useNotifyToast();
+  const api = useApi();
   const [data, setData] = useState<ClaimCertificateResponse | null>(null);
   const [isClaimCertificateLoading, setisClaimCertificateLoading] = useState(false);
 
@@ -37,9 +39,7 @@ export const useCheckEmailForm = ({ eventId, setCurrentStep, nextStep /* EVALUAT
   const checkEmail = claimCertificateForm.handleSubmit(async (values) => {
     try {
       setisClaimCertificateLoading(true);
-      const { queryFn: checkEmail } = claimCertificate(values.email, eventId);
-      const response = await checkEmail();
-
+      const response = await api.execute(claimCertificate(values.email, eventId));
       // TO FIX: Ensure data arrives
       if (response.status === 200) {
         if (!response.data?.isFirstClaim) {

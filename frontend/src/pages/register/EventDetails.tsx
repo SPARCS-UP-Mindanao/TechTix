@@ -1,6 +1,6 @@
 import moment from 'moment';
 import Icon from '@/components/Icon';
-import RichTextContent from '@/components/RichTextContent';
+import RichTextContent from '@/components/RichContent/RichTextContent';
 import Separator from '@/components/Separator';
 import { Event } from '@/model/events';
 

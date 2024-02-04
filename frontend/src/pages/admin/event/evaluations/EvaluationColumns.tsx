@@ -1,28 +1,14 @@
-import { useState } from 'react';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
-import Modal from '@/components/Modal';
-import { Evaluation, EvaluationListOut } from '@/model/evaluations';
-import { questionToDisplayMap } from '@/pages/evaluate/questionsConfig';
+import { UserEvaluation } from '@/model/evaluations';
+import EvaluationInfoModal from './EvaluationInfoModal';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = ['registration', 'evaluationList'];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
-const displayAnswers = (evaluation: Evaluation) => {
-  const { questionType } = evaluation;
-  switch (questionType) {
-    case 'text':
-      return <span>{evaluation.answer}</span>;
-    case 'multiple_choice':
-      return <span>{evaluation.answerScale}</span>;
-    case 'boolean':
-      return <span>{evaluation.booleanAnswer ? 'Yes' : 'No'}</span>;
-  }
-};
-
-export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
+export const evaluationColumns: ColumnDef<UserEvaluation>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -57,7 +43,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Last Name
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -73,7 +59,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -98,28 +84,7 @@ export const evaluationColumns: ColumnDef<EvaluationListOut>[] = [
       const registrationInfo = row.original;
       const fullName = registrationInfo.registration.firstName + ' ' + registrationInfo.registration.lastName;
       const evaluations = registrationInfo.evaluationList;
-
-      const [showModal, setShowModal] = useState(false);
-      return (
-        <Modal
-          modalTitle={fullName + ' Evaluations'}
-          visible={showModal}
-          onOpenChange={setShowModal}
-          trigger={<Button variant="ghost" size="icon" icon="DotsThree" />}
-        >
-          <div className="flex flex-col gap-5">
-            {evaluations.map((evaluation: Evaluation) => {
-              const { question } = evaluation;
-              return (
-                <div key={question} className="flex flex-col w-full gap-1">
-                  <p className="font-bold">{questionToDisplayMap.get(question!)}</p>
-                  <p className="p-2 rounded-sm bg-input">{displayAnswers(evaluation)}</p>
-                </div>
-              );
-            })}
-          </div>
-        </Modal>
-      );
+      return <EvaluationInfoModal fullName={fullName} evaluations={evaluations} />;
     },
     enableHiding: getEnableHiding('actions')
   }

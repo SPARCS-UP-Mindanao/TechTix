@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { postEvaluation } from '@/api/evaluations';
 import { QuestionConfigItem } from '@/model/evaluations';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const ClaimCertificateFormSchema = z.object({
@@ -65,7 +66,8 @@ export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObj
   return z.object(schema);
 };
 
-export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string, registrationId: string) => {
+export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string, registrationId?: string) => {
+  const api = useApi();
   const { errorToast } = useNotifyToast();
   const [postEvalSuccess, setPostEvalSuccess] = useState(false);
   const form = useForm({
@@ -84,10 +86,8 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
     )
   });
 
-  // To add onSubmit function
   const submitEvaluation = form.handleSubmit(async (values) => {
-    const { queryFn: postEvaluationData } = postEvaluation(eventId, registrationId, values);
-    const response = await postEvaluationData();
+    const response = await api.execute(postEvaluation(eventId, registrationId!, values));
     try {
       if (response.status === 200) {
         setPostEvalSuccess(true);

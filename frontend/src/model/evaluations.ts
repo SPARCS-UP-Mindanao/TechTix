@@ -1,4 +1,4 @@
-import { RegisterUserInfo } from './registrations';
+import { Registration } from './registrations';
 
 const questionTypes = [
   'text_short',
@@ -32,7 +32,7 @@ export interface Evaluation {
   updateDate?: string;
 }
 
-export interface EvaluationListOut {
+export interface UserEvaluation {
   evaluationList: Evaluation[];
-  registration: RegisterUserInfo;
+  registration: Registration;
 }

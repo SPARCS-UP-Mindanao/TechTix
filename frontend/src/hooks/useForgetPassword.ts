@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { resetPassword, sendCodeForForgotPassword } from '@/api/auth';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { ResetModalSteps } from '@/pages/admin/login/LoginForm';
+import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -23,9 +24,10 @@ const ForgetPasswordSchema = z.object({
 export type ForgetPasswordForm = z.infer<typeof ForgetPasswordSchema>;
 
 export const useForgetPassword = (setStep: Dispatch<SetStateAction<ResetModalSteps>>) => {
-  const [showModal, setShowModal] = useState(false);
   const { successToast, errorToast } = useNotifyToast();
+  const [showModal, setShowModal] = useState(false);
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
+  const api = useApi();
 
   const form = useForm<ForgetPasswordForm>({
     mode: 'onChange',
@@ -46,10 +48,9 @@ export const useForgetPassword = (setStep: Dispatch<SetStateAction<ResetModalSte
 
   const email = form.watch('email');
   const sendCodeToEmail = async () => {
-    const { queryFn } = sendCodeForForgotPassword(email);
     try {
       setIsEmailSubmitting(true);
-      const response = await queryFn();
+      const response = await api.execute(sendCodeForForgotPassword(email));
       if (response.status === 200) {
         setStep('submit');
       }
@@ -64,10 +65,9 @@ export const useForgetPassword = (setStep: Dispatch<SetStateAction<ResetModalSte
     }
   };
 
-  const submit = form.handleSubmit(async (data) => {
-    const { queryFn } = resetPassword(data.email, data.confirmationCode, data.newPassword);
+  const submit = form.handleSubmit(async ({ email, confirmationCode, newPassword }) => {
     try {
-      const response = await queryFn();
+      const response = await api.execute(resetPassword(email, confirmationCode, newPassword));
       if (response.status === 200) {
         setShowModal(false);
         successToast({

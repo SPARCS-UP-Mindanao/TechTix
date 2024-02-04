@@ -4,6 +4,7 @@ import AdminPage from '@/pages/admin/AdminPage';
 import AdminAuthorityPage from '@/pages/admin/authority/AdminAuthorityPage';
 import AdminEventPage from '@/pages/admin/event/AdminEventPage';
 import AdminAllEventsPage from '@/pages/admin/event/dashboard/AdminAllEventsPage';
+import CreateEventPage from '@/pages/admin/event/dashboard/CreateEventPage';
 import AdminEventDiscountsPage from '@/pages/admin/event/discounts/AdminEventDiscounts';
 import AdminEventeEvaluationsPage from '@/pages/admin/event/evaluations/AdminEventEvaluations';
 import AdminEventInfoPage from '@/pages/admin/event/info/AdminEventInfo';
@@ -11,8 +12,8 @@ import AdminEventRegistrationsPage from '@/pages/admin/event/registrations/Admin
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import EvaluatePage from '@/pages/evaluate/EvaluatePage';
-import EventsPage from '@/pages/landingPage/EventsPage';
-import HomePage from '@/pages/landingPage/HomePage';
+// import EventsPage from '@/pages/landingPage/EventsPage';
+// import HomePage from '@/pages/landingPage/HomePage';
 import RegisterPage from '@/pages/register/RegisterPage';
 
 export const routes = createBrowserRouter([
@@ -56,6 +57,10 @@ export const routes = createBrowserRouter([
       {
         path: 'events',
         element: AdminAllEventsPage()
+      },
+      {
+        path: 'events/create',
+        element: CreateEventPage()
       },
       {
         path: 'events/:eventId',

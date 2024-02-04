@@ -12,8 +12,8 @@ export interface EventDto {
   bannerUrl: string;
   logoUrl: string;
   logoLink: string;
-  autoConfirm: true;
-  payedEvent: true;
+  autoConfirm: boolean;
+  payedEvent: boolean;
   price: number;
   certificateTemplate: string;
   status: EventStatus;
@@ -32,7 +32,8 @@ export interface PresignedUrl {
 }
 
 const mapEventDtoToEvent = (event: EventDto): Event => ({
-  ...event
+  ...event,
+  payedEvent: event.payedEvent ?? false
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
@@ -55,11 +56,12 @@ export const getAdminEvents = (adminId: string) =>
   });
 
 export const createEvent = (event: Event) =>
-  createApi({
+  createApi<EventDto, Event>({
     method: 'post',
     authorize: true,
     url: '/events',
-    body: { ...event }
+    body: { ...event },
+    output: mapEventDtoToEvent
   });
 
 export const getEvent = (entryId: string) =>

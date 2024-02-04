@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
-import Modal from '@/components/Modal';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
+import RegistrationModal from './RegistrationModal';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = [
@@ -24,7 +22,7 @@ const showableHeaders: readonly string[] = [
 ];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
-export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
+export const registrationColumns: ColumnDef<Registration>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -54,7 +52,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Last Name
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -66,7 +64,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -83,7 +81,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Career Status
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -95,7 +93,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Years of Experience
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -107,7 +105,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Organization
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -119,7 +117,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Title
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -132,7 +130,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Date Registered
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -172,28 +170,7 @@ export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const registrationInfo = row.original;
-      const [showModal, setShowModal] = useState(false);
-      return (
-        <Modal
-          modalTitle="User Info"
-          visible={showModal}
-          onOpenChange={setShowModal}
-          trigger={<Button variant="ghost" size="icon" icon="DotsThree" />}
-          modalFooter={
-            <>
-              <Button onClick={() => setShowModal(false)} variant="outline" type="submit" className="w-full">
-                Cancel
-              </Button>
-              <Button onClick={() => console.log('delete')} variant="negative" type="submit" className="w-full">
-                Delete
-              </Button>
-            </>
-          }
-        >
-          <h4>{registrationInfo.registrationId}</h4>
-          {registrationInfo.gcashPayment && <FileViewerComponent objectKey={registrationInfo.gcashPayment} />}
-        </Modal>
-      );
+      return <RegistrationModal registrationInfo={registrationInfo} />;
     },
     enableHiding: getEnableHiding('actions')
   }

@@ -1,12 +1,10 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import notFound from '@/assets/not-found.png';
 import Button from '@/components/Button';
 // import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/DropdownMenu';
 import Input from '@/components/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Table';
 import { cn } from '@/utils/classes';
-import Icon from './Icon';
-import Skeleton from './Skeleton';
 import TableSkeleton from './TableSkeleton';
 import {
   ColumnDef,
@@ -31,35 +29,53 @@ interface TableContentProps<TData> {
 }
 
 function TableContent<TData>({ table, colCount, data, loading, noDataText }: TableContentProps<TData>) {
-  console.log(colCount);
-
   if (loading) {
     return <TableSkeleton colCount={colCount} rowCount={5} />;
   }
 
   if (!table || data.length === 0) {
     return (
-      <tr>
-        <td colSpan={colCount}>
-          <div className="flex flex-col justify-center items-center p-10 space-y-4">
-            <img src={notFound} alt="" className="w-16" />
-            <p>{noDataText || 'No data'}</p>
-          </div>
-        </td>
-      </tr>
+      <>
+        <TableHeader>
+          <TableRow>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <tr>
+            <td colSpan={colCount}>
+              <div className="flex flex-col justify-center items-center p-10 space-y-4">
+                <img src={notFound} alt="" className="w-16" />
+                <p>{noDataText || 'No data'}</p>
+              </div>
+            </td>
+          </tr>
+        </TableBody>
+      </>
     );
   }
 
   return (
-    <TableBody>
-      {table.getRowModel().rows.map((row) => (
-        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="even:bg-primary-100 even:dark:bg-neutrals-950">
-          {row.getVisibleCells().map((cell) => (
-            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </TableBody>
+    <>
+      <TableHeader>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows.map((row) => (
+          <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </>
   );
 }
 
@@ -75,7 +91,7 @@ export function DataTable<TData, TValue>({ columns, data, noDataText, loading = 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const tableData = data || [];
+  const tableData = useMemo(() => data || [], [data]);
 
   const table = useReactTable({
     data: tableData,
@@ -95,7 +111,6 @@ export function DataTable<TData, TValue>({ columns, data, noDataText, loading = 
       rowSelection
     }
   });
-  table.getVisibleFlatColumns;
   return (
     <div className="w-full">
       {/* <DropdownMenu>
@@ -124,52 +139,33 @@ export function DataTable<TData, TValue>({ columns, data, noDataText, loading = 
       </DropdownMenu> */}
       <div className="flex items-center py-4 justify-between">
         <Input
+          autoComplete="off"
+          type="search"
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) => table.getColumn('email')?.setFilterValue(event.target.value)}
-          className="max-w-[160px]"
+          className={cn('max-w-[160px]', !tableData.length && 'hidden')}
         />
         <p className={cn((loading || !tableData.length) && 'hidden')}>
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </p>
       </div>
+
       <div className="rounded-md border">
         <Table className="overflow-hidden">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          {/* {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )} */}
           <TableContent data={tableData} colCount={columns.length} table={table} loading={loading} noDataText={noDataText} />
         </Table>
 
-        <div className="flex items-center justify-end p-4 gap-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
+        {!!tableData.length && (
+          <div className="flex items-center justify-end p-4 gap-2">
+            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+              Previous
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

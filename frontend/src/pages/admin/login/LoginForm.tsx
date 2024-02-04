@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import { FormProvider } from 'react-hook-form';
@@ -48,7 +48,7 @@ const ResetPasswordModal = () => {
       modalDescription={getModalDescription()}
       visible={showModal}
       onOpenChange={toggleModal}
-      modalFooter={<ModalFooter />}
+      modalFooter={ModalFooter()}
       trigger={
         <Button variant="link" className="text-foreground">
           Forgot Password?
@@ -107,6 +107,11 @@ const ResetPasswordModal = () => {
 
 const LoginForm = () => {
   const { form, submit, isSubmitting } = useAdminLoginForm();
+  const onEnterKey = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      submit();
+    }
+  };
   const isAuthenticated = useIsAuthenticated();
 
   if (isAuthenticated()) {
@@ -114,36 +119,38 @@ const LoginForm = () => {
   }
 
   return (
-    <>
-      <FormProvider {...form}>
-        <FormItem name="email">
-          {({ field }) => (
-            <div className="space-y-2">
-              <FormLabel>Email</FormLabel>
-              <Input type="email" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
+    <FormProvider {...form}>
+      <form onKeyDown={onEnterKey}>
+        <div className="space-y-8">
+          <FormItem name="email">
+            {({ field }) => (
+              <div className="space-y-2">
+                <FormLabel>Email</FormLabel>
+                <Input type="email" {...field} />
+                <FormError />
+              </div>
+            )}
+          </FormItem>
 
-        <FormItem name="password">
-          {({ field }) => (
-            <div className="flex flex-col items-start space-y-2">
-              <FormLabel>Password</FormLabel>
-              <Input type="password" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
+          <FormItem name="password">
+            {({ field }) => (
+              <div className="flex flex-col items-start space-y-2">
+                <FormLabel>Password</FormLabel>
+                <Input type="password" {...field} />
+                <FormError />
+              </div>
+            )}
+          </FormItem>
+        </div>
 
-        <div className="w-full flex justify-between">
+        <div className="flex justify-between">
           <ResetPasswordModal />
           <Button onClick={submit} className="w-full min-w-min max-w-[20%]" loading={isSubmitting}>
             Submit
           </Button>
         </div>
-      </FormProvider>
-    </>
+      </form>
+    </FormProvider>
   );
 };
 
