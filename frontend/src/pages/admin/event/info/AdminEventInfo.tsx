@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Button from '@/components/Button';
 import { Event } from '@/model/events';
-import AdminEventForm from '../../AdminEventForm';
+import AdminEventForm from '../AdminEventForm';
 
 const AdminEventInfo: FC = () => {
   const event = useOutletContext<Event>();

@@ -1,4 +1,4 @@
-import AdminEventForm from '../../AdminEventForm';
+import AdminEventForm from '../AdminEventForm';
 
 const CreateEventContent = () => (
   <div className="space-y-4">

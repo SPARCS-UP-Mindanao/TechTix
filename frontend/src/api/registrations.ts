@@ -1,5 +1,5 @@
 import { createApi } from '@/api/utils/createApi';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
 
 interface RegistrationDto {
   firstName: string;
@@ -23,39 +23,22 @@ interface RegistrationDto {
   gcashPaymentUrl: string | null;
 }
 
-const mapRegistrationDtoToRegistration = (registration: RegistrationDto): RegisterUserInfo => ({
-  firstName: registration.firstName,
-  lastName: registration.lastName,
-  contactNumber: registration.contactNumber,
-  careerStatus: registration.careerStatus,
-  yearsOfExperience: registration.yearsOfExperience,
-  organization: registration.organization,
-  title: registration.title,
-  certificateClaimed: registration.certificateClaimed,
-  email: registration.email,
-  eventId: registration.eventId,
-  registrationId: registration.registrationId,
-  createDate: registration.createDate,
-  paymentId: registration.paymentId,
-  discountCode: registration.discountCode,
-  amountPaid: registration.amountPaid,
-  referenceNumber: registration.referenceNumber,
-  gcashPayment: registration.gcashPayment,
-  gcashPaymentUrl: registration.gcashPaymentUrl
+const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
+  ...registration
 });
 
-const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): RegisterUserInfo[] =>
+const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): Registration[] =>
   registrations.map((registration) => mapRegistrationDtoToRegistration(registration));
 
-export const registerUserInEvent = (userInfo: RegisterUserInfo) =>
-  createApi<RegisterUserInfo>({
+export const registerUserInEvent = (userInfo: Registration) =>
+  createApi<Registration>({
     method: 'post',
     url: '/registrations',
     body: { ...userInfo }
   });
 
 export const getAllRegistrations = () =>
-  createApi<RegistrationDto[], RegisterUserInfo[]>({
+  createApi<RegistrationDto[], Registration[]>({
     method: 'get',
     authorize: true,
     url: '/registrations',
@@ -63,7 +46,7 @@ export const getAllRegistrations = () =>
   });
 
 export const getEventRegistrations = (eventId: string) =>
-  createApi<RegistrationDto[], RegisterUserInfo[]>({
+  createApi<RegistrationDto[], Registration[]>({
     method: 'get',
     authorize: true,
     url: '/registrations',
@@ -72,7 +55,7 @@ export const getEventRegistrations = (eventId: string) =>
   });
 
 export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
-  createApi<RegisterUserInfo[]>({
+  createApi<Registration[]>({
     method: 'get',
     authorize: true,
     url: `/registrations/${email}/email`,
@@ -80,7 +63,7 @@ export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
   });
 
 export const getSpecificRegistration = (eventId: string, registrationId: string) =>
-  createApi<RegistrationDto, RegisterUserInfo>({
+  createApi<RegistrationDto, Registration>({
     method: 'get',
     authorize: true,
     url: `/registrations/${registrationId}`,
@@ -88,8 +71,8 @@ export const getSpecificRegistration = (eventId: string, registrationId: string)
     output: mapRegistrationDtoToRegistration
   });
 
-export const updateRegistration = (eventId: string, registrationId: string, userInfo: RegisterUserInfo) =>
-  createApi<RegisterUserInfo>({
+export const updateRegistration = (eventId: string, registrationId: string, userInfo: Registration) =>
+  createApi<Registration>({
     method: 'put',
     authorize: true,
     url: `/registrations/${registrationId}`,
@@ -98,7 +81,7 @@ export const updateRegistration = (eventId: string, registrationId: string, user
   });
 
 export const deleteRegistration = (eventId: string, registrationId: string) =>
-  createApi<RegisterUserInfo>({
+  createApi<Registration>({
     method: 'delete',
     authorize: true,
     url: `/registrations/${registrationId}`,

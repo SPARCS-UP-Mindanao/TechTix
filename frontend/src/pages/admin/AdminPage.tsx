@@ -9,9 +9,9 @@ import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useApiQuery } from '@/hooks/useApi';
 import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
-import AdminSideBar from './AdminSideBar';
-import AdminSideBarTrigger from './AdminSideBarTrigger';
-import { getAdminRouteConfig } from './getAdminRouteConfig';
+import AdminSideBar from './sidebar/AdminSideBar';
+import AdminSideBarTrigger from './sidebar/AdminSideBarTrigger';
+import { getAdminRouteConfig } from './sidebar/getAdminRouteConfig';
 
 const AdminPageContent = () => {
   const setMetaData = useMetaData();

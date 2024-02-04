@@ -8,7 +8,7 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import Tooltip from '@/components/Tooltip';
 import { getAllDiscounts } from '@/api/discounts';
-import { Discount, DiscountOrganization } from '@/model/discount';
+import { Discount, OrganizationDiscount } from '@/model/discount';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
@@ -50,7 +50,7 @@ interface DiscountCodeListProps {
   discounts: Discount[];
 }
 
-const copyDiscountCodes = (organization: DiscountOrganization | null, discounts?: Discount[]) => {
+const copyDiscountCodes = (organization: OrganizationDiscount | null, discounts?: Discount[]) => {
   if (organization && !discounts) {
     const discountCodes = organization.discounts.reduce((acc, discount) => {
       return `${acc}${discount.entryId}${discount.claimed ? ` (Claimed)` : ''}\n`;
@@ -154,7 +154,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
 };
 
 interface DiscountHeaderProps {
-  organization: DiscountOrganization;
+  organization: OrganizationDiscount;
 }
 
 const DiscountHeader: FC<DiscountHeaderProps> = ({ organization }) => {
@@ -169,7 +169,7 @@ const DiscountHeader: FC<DiscountHeaderProps> = ({ organization }) => {
 };
 
 interface DiscountTablesProps {
-  organizations?: DiscountOrganization[];
+  organizations?: OrganizationDiscount[];
   isFetching: boolean;
 }
 

@@ -2,7 +2,7 @@ import moment from 'moment';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
 import RegistrationModal from './RegistrationModal';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -22,7 +22,7 @@ const showableHeaders: readonly string[] = [
 ];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
-export const registrationColumns: ColumnDef<RegisterUserInfo>[] = [
+export const registrationColumns: ColumnDef<Registration>[] = [
   {
     id: 'select',
     header: ({ table }) => (

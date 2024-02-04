@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import Button from '@/components/Button';
 import FileViewerComponent from '@/components/FileViewerComponent';
 import Modal from '@/components/Modal';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
 
 interface Props {
-  registrationInfo: RegisterUserInfo;
+  registrationInfo: Registration;
 }
 
 const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {

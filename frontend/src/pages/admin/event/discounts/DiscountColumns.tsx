@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
 import { Discount } from '@/model/discount';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
 import { formatPercentage } from '@/utils/functions';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -85,7 +85,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
     },
     enableHiding: getEnableHiding('email'),
     cell: ({ row }) => {
-      const registration: RegisterUserInfo = row.getValue('registration');
+      const registration: Registration = row.getValue('registration');
       return registration && registration.email ? registration.email : 'N/A';
     }
   },
@@ -101,7 +101,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
     },
     enableHiding: getEnableHiding('registration'),
     cell: ({ row }) => {
-      const registration: RegisterUserInfo = row.getValue('registration');
+      const registration: Registration = row.getValue('registration');
       return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
     }
   }
