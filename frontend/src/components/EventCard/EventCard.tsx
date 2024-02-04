@@ -1,4 +1,4 @@
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import moment from 'moment';
 import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
@@ -48,7 +48,7 @@ interface CardHeaderProps {
   onDeleteEvent?: () => Promise<void>;
 }
 
-const EventCardHeader: React.FC<CardHeaderProps> = memo(({ event, isDeleteEnabled, isDeletingEvent, setDeleteModalOpen }) => {
+const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, isDeletingEvent, setDeleteModalOpen }) => {
   const { fileUrl: imageUrl, isLoading } = useFileUrl(event.bannerLink!);
 
   return (
@@ -66,7 +66,7 @@ const EventCardHeader: React.FC<CardHeaderProps> = memo(({ event, isDeleteEnable
       )}
     </div>
   );
-});
+};
 
 interface CardFooterProps {
   event: Event;
