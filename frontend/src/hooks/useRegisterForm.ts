@@ -4,6 +4,7 @@ import { registerUserInEvent } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const RegisterFormSchema = z.object({
@@ -64,6 +65,7 @@ export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
 export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
+  const api = useApi();
   const form = useForm<RegisterFormValues>({
     mode: 'onChange',
     resolver: zodResolver(RegisterFormSchema),
@@ -80,13 +82,14 @@ export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) 
   });
 
   const submit = form.handleSubmit(async (values) => {
-    const { queryFn: register } = registerUserInEvent({
-      eventId: entryId,
-      certificateClaimed: false,
-      ...values
-    });
     try {
-      const response = await register();
+      const response = await api.execute(
+        registerUserInEvent({
+          eventId: entryId,
+          certificateClaimed: false,
+          ...values
+        })
+      );
       if (response.status === 200) {
         successToast({
           title: 'Register Info',
