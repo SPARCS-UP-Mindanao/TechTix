@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { FormProvider } from 'react-hook-form';
+import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
@@ -263,9 +264,24 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         )}
 
         <div className="w-full flex justify-end space-x-2">
-          <Button icon="X" disabled={isSubmitting} variant="ghost" onClick={cancel}>
-            Cancel
-          </Button>
+          {event ? (
+            <AlertModal
+              alertModalTitle="Are you sure you want to discard all changes?"
+              alertModalDescription="Discarding all changes may result in data loss."
+              confirmVariant="negative"
+              onCompleteAction={cancel}
+              trigger={
+                <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost">
+                  Discard changes
+                </Button>
+              }
+            />
+          ) : (
+            <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost" onClick={cancel}>
+              Cancel
+            </Button>
+          )}
+
           <Button icon="Save" disabled={isFormClean} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
             Save
           </Button>

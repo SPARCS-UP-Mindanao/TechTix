@@ -122,7 +122,7 @@ interface AlertDialogProps extends React.HTMLAttributes<HTMLDivElement> {
   confirmVariant?: VariantProps<typeof buttonVariants>['variant'];
   isLoading?: boolean;
   onClose?: () => void;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   onCancelAction?: () => void;
   onCompleteAction: () => void;
 }
@@ -131,7 +131,7 @@ const AlertModal = ({
   alertModalTitle,
   alertModalDescription,
   trigger,
-  visible = false,
+  visible,
   defaultOpen = false,
   cancelText,
   confirmText,
@@ -144,7 +144,7 @@ const AlertModal = ({
   onCompleteAction
 }: AlertDialogProps) => {
   const noLoading = isLoading === undefined;
-  const defaultOnCancelAction = () => onOpenChange(false);
+  const defaultOnCancelAction = () => onOpenChange && onOpenChange(false);
   const onComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!noLoading) {
       e.preventDefault();
