@@ -29,37 +29,35 @@ const EventInformation: FC<Props> = ({
   };
 
   return (
-    <>
-      <div className="w-full">
-        <h1 className="text-lg">{event.name}</h1>
-        <div className="w-full mt-3.5 space-y-1.5 items-start">
-          <div className="flex">
-            <Icon name="Clock" className="w-6 h-6" />
-            <span className="text-sm font-raleway font-medium text-left leading-5 ml-1">{getDate()}</span>
-          </div>
-          <div className="flex">
-            <Icon name="MapPin" className="w-6 h-6" />
-            <p className="text-sm font-raleway font-medium text-left leading-5 ml-1">{event.venue}</p>
-          </div>
+    <div>
+      <h1 className="text-lg">{event.name}</h1>
+      <div className="w-full mt-3.5 space-y-1.5 items-start">
+        <div className="flex items-center space-x-2">
+          <Icon name="Clock" />
+          <p className="text-sm">{getDate()}</p>
         </div>
-        <Separator className="my-4" />
-        <div className="flex flex-col items-center w-full">
-          <p className="font-raleway font-semibold text-lg leading-5 tracking-tight mb-6 text-center">Claim your certificate by evaluating the event</p>
-          <FormProvider {...claimCertificateForm}>
-            <FormItem name="email">
-              {({ field }) => (
-                <div className="flex flex-col items-start space-y-2 w-full">
-                  <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your Email</FormLabel>
-                  <Input type="email" placeholder="Email" {...field} />
-                  <FormDescription>Please enter the email address you used when registering for the event</FormDescription>
-                  <FormError />
-                </div>
-              )}
-            </FormItem>
-          </FormProvider>
+        <div className="flex items-center space-x-2">
+          <Icon name="MapPin" />
+          <p className="text-sm">{event.venue}</p>
         </div>
       </div>
-    </>
+      <Separator className="my-4" />
+      <div className="flex flex-col items-center w-full">
+        <p className="font-raleway font-semibold text-lg leading-5 tracking-tight mb-6 text-center">Claim your certificate by evaluating the event</p>
+        <FormProvider {...claimCertificateForm}>
+          <FormItem name="email">
+            {({ field }) => (
+              <div className="flex flex-col items-start space-y-2 w-full">
+                <FormLabel className="font-raleway text-neutral-50 font-medium leading-5 tracking-tight">Enter your Email</FormLabel>
+                <Input type="email" placeholder="Email" {...field} />
+                <FormDescription>Please enter the email address you used when registering for the event</FormDescription>
+                <FormError />
+              </div>
+            )}
+          </FormItem>
+        </FormProvider>
+      </div>
+    </div>
   );
 };
 
