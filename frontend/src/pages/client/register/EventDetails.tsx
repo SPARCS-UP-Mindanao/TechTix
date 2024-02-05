@@ -21,14 +21,14 @@ const EventDetails = ({ event }: Props) => {
       <header className="text-left space-y-4">
         <h1 className="text-lg ">{event.name}</h1>
         <div className="space-y-1">
-          <div className="flex">
-            <Icon name="Clock" className="mr-1" />
-            <p className="">{getDate()}</p>
+          <div className="flex items-center space-x-2">
+            <Icon name="Clock" />
+            <p className="text-sm">{getDate()}</p>
           </div>
 
-          <div className="flex">
-            <Icon name="MapPin" size={20} className="mr-1" />
-            <p className="flex text-sm">{event.venue}</p>
+          <div className="flex items-center space-x-2">
+            <Icon name="MapPin" />
+            <p className="text-sm">{event.venue}</p>
           </div>
         </div>
       </header>
