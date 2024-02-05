@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import Button from '@/components/Button';
 import Modal from '@/components/Modal';
 import { Evaluation } from '@/model/evaluations';
-import { questionToDisplayMap } from '@/pages/evaluate/questionsConfig';
+import { questionToDisplayMap } from '@/pages/client/evaluate/questionsConfig';
 
 const displayAnswers = (evaluation: Evaluation) => {
   const { questionType } = evaluation;

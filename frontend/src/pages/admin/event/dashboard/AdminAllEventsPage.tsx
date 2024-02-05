@@ -96,4 +96,6 @@ const AdminAllEventsPage = () => {
   return <AdminAllEvents />;
 };
 
+export const Component = AdminAllEventsPage;
+
 export default AdminAllEventsPage;

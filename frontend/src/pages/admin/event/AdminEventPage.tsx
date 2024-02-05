@@ -41,4 +41,6 @@ const AdminEventPage = () => {
   return <AdminEventPageContent />;
 };
 
+export const Component = AdminEventPage;
+
 export default AdminEventPage;

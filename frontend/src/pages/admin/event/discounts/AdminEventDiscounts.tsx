@@ -208,4 +208,6 @@ const AdminEventDiscountsPage = () => {
   return <AdminEventDiscounts />;
 };
 
+export const Component = AdminEventDiscountsPage;
+
 export default AdminEventDiscountsPage;

@@ -138,4 +138,6 @@ const AdminAuthorityPage = () => {
   return <AdminAuthority />;
 };
 
+export const Component = AdminAuthorityPage;
+
 export default AdminAuthorityPage;

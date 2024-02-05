@@ -15,4 +15,6 @@ const CreateEventPage = () => {
   return <CreateEventContent />;
 };
 
+export const Component = CreateEventPage;
+
 export default CreateEventPage;
