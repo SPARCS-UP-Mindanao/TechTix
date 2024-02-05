@@ -12,11 +12,11 @@ import { useApiQuery } from '@/hooks/useApi';
 import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
 import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationForm';
 import { useMetaData } from '@/hooks/useMetaData';
-import QuestionBuilder from '../evaluate/QuestionBuilder';
 import CertificateClaim from './CertificateClaim';
 import EvaluateFormSkeleton from './EvaluateFormSkeleton';
 import EventInformation from './EventInformation';
 import PageHeader from './PageHeader';
+import QuestionBuilder from './QuestionBuilder';
 import Stepper from './Stepper';
 import { question1, question2 } from './questionsConfig';
 

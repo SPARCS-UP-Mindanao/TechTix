@@ -107,4 +107,6 @@ const HomePage = () => {
   return <HomePageComponent />;
 };
 
+export const Component = HomePage;
+
 export default HomePage;

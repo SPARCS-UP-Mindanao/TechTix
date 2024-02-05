@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import Button from '@/components/Button';
 import Sheet from '@/components/Sheet';
+import { Toaster } from '@/components/Toast/Toaster';
 import { getAllEvents } from '@/api/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useMetaData } from '@/hooks/useMetaData';
@@ -77,7 +78,14 @@ const EventsPageComponent = () => {
 };
 
 const EventsPage = () => {
-  return <EventsPageComponent />;
+  return (
+    <>
+      <EventsPageComponent />
+      <Toaster />
+    </>
+  );
 };
+
+export const Component = EventsPage;
 
 export default EventsPage;

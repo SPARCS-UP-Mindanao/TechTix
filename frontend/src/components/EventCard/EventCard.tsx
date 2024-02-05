@@ -1,9 +1,7 @@
-import { FC, useState } from 'react';
+import { FC, Suspense, lazy, useState } from 'react';
 import moment from 'moment';
 import AlertModal from '@/components/AlertModal';
-import Button from '@/components/Button';
 import { CardContainer, CardFooter } from '@/components/Card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/DropdownMenu';
 import Icon from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import { Event } from '@/model/events';
@@ -12,32 +10,7 @@ import { useDeleteEvent } from '@/hooks/useDeleteEvent';
 import { useFileUrl } from '@/hooks/useFileUrl';
 import Badge from '../Badge';
 
-interface ActionsDropdownProps {
-  setDeleteModalOpen: (open: boolean) => void;
-}
-
-const ActionsDropdown = ({ setDeleteModalOpen }: ActionsDropdownProps) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="h-8 w-8 p-0 self-end bg-card border group-hover:opacity-100">
-        <span className="sr-only">Open menu</span>
-        <Icon name="MoreVertical" className="h-4 w-4" />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem
-        id="delete-event"
-        className="text-xs font-semibold text-negative"
-        onClick={(e) => {
-          e.stopPropagation();
-          setDeleteModalOpen(true);
-        }}
-      >
-        Delete event
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+const ActionsDropdown = lazy(() => import('./ActionsDropdown'));
 
 interface CardHeaderProps {
   event: Event;
@@ -56,7 +29,11 @@ const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, is
       {isLoading && <Skeleton className="w-full h-full" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
-          {!isDeletingEvent && !isLoading && <ActionsDropdown setDeleteModalOpen={setDeleteModalOpen} />}
+          {!isDeletingEvent && !isLoading && (
+            <Suspense fallback={null}>
+              <ActionsDropdown setDeleteModalOpen={setDeleteModalOpen} />
+            </Suspense>
+          )}
           {isDeletingEvent && (
             <Badge variant="negative" loading={isDeletingEvent} className="h-6 self-end">
               Deleting

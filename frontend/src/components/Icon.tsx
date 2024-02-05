@@ -16,7 +16,7 @@ interface IconProps extends LucideProps {
 const Icon = ({ name, color, size, className, ...props }: IconProps) => {
   const LucideIcon = icons[name as IconName];
 
-  return <LucideIcon name={name} color={color} size={size || 18} className={className} {...props} />;
+  return <LucideIcon name={name} color={color} size={size || 16} className={className} {...props} />;
 };
 
 export default Icon;

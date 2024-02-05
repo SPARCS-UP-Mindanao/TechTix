@@ -4,6 +4,7 @@ import { useIsAuthenticated } from 'react-auth-kit';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
+import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { useAdminLoginForm } from '@/hooks/useAdminLoginForm';
@@ -18,16 +19,21 @@ const ResetPasswordModal = () => {
 
   const ModalFooter = () => {
     return (
-      <div className="w-full flex justify-center">
+      <div className="flex justify-end gap-4">
         {step === 'email' && (
           <Button onClick={async () => await sendCodeToEmail()} disabled={sendCodeDisabled} loading={isEmailSubmitting}>
             Send code
           </Button>
         )}
         {step === 'submit' && (
-          <Button onClick={resetPassword} disabled={!isFormValid} loading={isFormSubmitting}>
-            Reset Password
-          </Button>
+          <>
+            <Button variant="ghost" onClick={() => setStep('email')}>
+              Back
+            </Button>
+            <Button onClick={resetPassword} disabled={!isFormValid} loading={isFormSubmitting}>
+              Reset Password
+            </Button>
+          </>
         )}
       </div>
     );
@@ -47,10 +53,11 @@ const ResetPasswordModal = () => {
       modalTitle="Reset Password"
       modalDescription={getModalDescription()}
       visible={showModal}
+      closable={step === 'email'}
       onOpenChange={toggleModal}
       modalFooter={ModalFooter()}
       trigger={
-        <Button variant="link" className="text-foreground">
+        <Button variant="link" className="text-foreground p-0">
           Forgot Password?
         </Button>
       }
@@ -107,6 +114,7 @@ const ResetPasswordModal = () => {
 
 const LoginForm = () => {
   const { form, submit, isSubmitting } = useAdminLoginForm();
+  const [showPassword, setShowPassword] = useState(false);
   const onEnterKey = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       submit();
@@ -118,13 +126,15 @@ const LoginForm = () => {
     return <Navigate to="/admin/events" />;
   }
 
+  const onShowPassword = () => setShowPassword((prev) => !prev);
+
   return (
     <FormProvider {...form}>
       <form onKeyDown={onEnterKey}>
         <div className="space-y-8">
           <FormItem name="email">
             {({ field }) => (
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <FormLabel>Email</FormLabel>
                 <Input type="email" {...field} />
                 <FormError />
@@ -136,7 +146,14 @@ const LoginForm = () => {
             {({ field }) => (
               <div className="flex flex-col items-start space-y-2">
                 <FormLabel>Password</FormLabel>
-                <Input type="password" {...field} />
+                <div className="w-full inline-flex items-center">
+                  <Input type={showPassword ? 'text' : 'password'} {...field} className="pr-8" />
+                  <Icon
+                    name={showPassword ? 'EyeOff' : 'Eye'}
+                    className="ml-[-2rem] cursor-pointer hover:text-muted-foreground transition-colors"
+                    onClick={onShowPassword}
+                  />
+                </div>
                 <FormError />
               </div>
             )}

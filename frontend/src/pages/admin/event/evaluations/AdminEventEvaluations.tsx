@@ -22,4 +22,6 @@ const AdminEventeEvaluationsPage = () => {
   return <AdminEventeEvaluations />;
 };
 
+export const Component = AdminEventeEvaluationsPage;
+
 export default AdminEventeEvaluationsPage;

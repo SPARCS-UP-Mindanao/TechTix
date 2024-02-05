@@ -4,6 +4,7 @@ import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
 import ErrorPage from '@/components/ErrorPage';
 import Skeleton from '@/components/Skeleton';
+import { Toaster } from '@/components/Toast/Toaster';
 import { getCurrentUser } from '@/api/auth';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useApiQuery } from '@/hooks/useApi';
@@ -89,7 +90,14 @@ const AdminPageContent = () => {
 };
 
 const AdminPage = () => {
-  return <AdminPageContent />;
+  return (
+    <>
+      <AdminPageContent />
+      <Toaster />
+    </>
+  );
 };
+
+export const Component = AdminPage;
 
 export default AdminPage;

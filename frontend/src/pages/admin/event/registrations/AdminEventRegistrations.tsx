@@ -22,4 +22,6 @@ const AdminEventRegistrationsPage = () => {
   return <AdminEventRegistrations />;
 };
 
+export const Component = AdminEventRegistrationsPage;
+
 export default AdminEventRegistrationsPage;
