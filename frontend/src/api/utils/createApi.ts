@@ -28,7 +28,7 @@ export interface CustomAxiosError extends Omit<AxiosResponse, 'data'> {
 }
 
 const createQueryKey = (url: string, body?: SearchParams) => [url, body];
-export type ApiService = 'auth' | 'events';
+export type ApiService = 'auth' | 'events' | 'payments';
 interface createApiProps<D, T = D> {
   method?: 'get' | 'post' | 'delete' | 'patch' | 'put';
   authorize?: boolean;
@@ -47,7 +47,12 @@ export function createApi<D, T = D>(
   staleTime?: number,
   cacheTime?: number
 ) {
-  const baseURL = apiService === 'events' ? import.meta.env.VITE_API_EVENTS_BASE_URL : import.meta.env.VITE_API_AUTH_BASE_URL;
+  const urlMap = new Map<string, string>();
+  urlMap.set('events', import.meta.env.VITE_API_EVENTS_BASE_URL);
+  urlMap.set('auth', import.meta.env.VITE_API_AUTH_BASE_URL);
+  urlMap.set('payments', import.meta.env.VITE_API_PAYMENT_BASE_URL);
+  const baseURL = urlMap.get(apiService);
+
   const api = axios.create();
   const queryFn = async (signal?: AbortSignal) => {
     const accessToken = getCookie('_auth')!;
