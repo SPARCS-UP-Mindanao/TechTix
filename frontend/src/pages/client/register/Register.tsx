@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
+import { ulid } from 'ulid';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
 import FileViewerComponent from '@/components/FileViewerComponent';
@@ -8,10 +9,13 @@ import Icon from '@/components/Icon';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
+import { createEwalletPaymentRequest, initiateDirectDebitPayment } from '@/api/payments';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Pricing } from '@/model/discount';
 import { Event } from '@/model/events';
-import { isEmpty } from '@/utils/functions';
+import { DirectDebitChannelCode, eWalletChannelCode, PaymentMethod } from '@/model/payments';
+import { RegistrationFormFields } from '@/model/registrations';
+import { isEmpty, getPathFromUrl } from '@/utils/functions';
 import { useApiQuery, useApi } from '@/hooks/useApi';
 import { useMetaData } from '@/hooks/useMetaData';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -21,22 +25,24 @@ import RegisterForm1 from './RegisterForm1';
 import RegisterForm2 from './RegisterForm2';
 import RegisterForm3 from './RegisterForm3';
 import RegisterFormLoading from './RegisterFormSkeleton';
+import RegisterFormSubmittingSkeleton from './RegisterFormSubmittingSkeleton';
 import Stepper from './Stepper';
 import Success from './Success';
 import Summary from './Summary';
 
 // TODO: Add success page
-let REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'];
+let REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Payment', 'Summary', 'Submitting', 'Success'];
 type RegisterSteps = (typeof REGISTER_STEPS)[number];
-let REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
+let REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Payment', 'Summary'];
 
 const getStepTitle = (step: RegisterSteps) => {
   const map: Record<RegisterSteps, string> = {
     EventDetails: 'Register',
     UserBio: 'Personal Information',
     PersonalInfo: 'Professional Information',
-    GCash: 'GCash Payment',
+    Payment: 'Payment',
     Summary: 'Summary',
+    Submitting: 'Submitting',
     Success: 'Registration Successful!'
   };
 
@@ -49,23 +55,142 @@ type RegisterFieldMap = Partial<Record<RegisterSteps, RegisterField[]>>;
 const REGISTER_STEPS_FIELD: RegisterFieldMap = {
   UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
   PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience'],
-  GCash: ['gcashPayment', 'referenceNumber']
+  Payment: ['gcashPayment', 'referenceNumber']
 };
 
 const Register = () => {
   const setMetaData = useMetaData();
   const { successToast, errorToast } = useNotifyToast();
   const { eventId } = useParams();
-  const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
+  const [searchParams] = useSearchParams();
+  const api = useApi();
+  const currentUrl = window.location.href;
+
   const navigateOnSuccess = () => setCurrentStep('Success');
-  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { setValue, getValues } = form;
-  const [receiptUrl, setReceiptUrl] = useState<string>('');
-  const api = useApi();
+
+  const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
+  const [paymentChannel, setPaymentChannel] = useState<eWalletChannelCode | DirectDebitChannelCode>();
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
+  const [isLoading, setIsLoading] = useState(false);
 
+  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
+
+  const saveFormState = () => {
+    const formState = getValues();
+    localStorage.setItem('formState', JSON.stringify(formState));
+    localStorage.setItem('pricing', JSON.stringify(pricing));
+  };
+
+  const restoreFormState = () => {
+    const savedState = localStorage.getItem('formState');
+    if (savedState) {
+      const formState = JSON.parse(savedState);
+      // Loop through the saved state and use setValue to update each field
+      Object.keys(formState).forEach((key) => {
+        setValue(key as RegistrationFormFields, formState[key]);
+      });
+    }
+
+    if (localStorage.getItem('pricing')) {
+      setPricing(JSON.parse(localStorage.getItem('pricing') as string));
+    }
+  };
+
+  const deleteFormState = () => {
+    localStorage.removeItem('formState');
+    localStorage.removeItem('pricing');
+    localStorage.removeItem('referenceNumber');
+  };
+
+  const eWalletPaymentRequest = async () => {
+    saveFormState();
+
+    const referenceId = ulid();
+    const baseUrlPath = getPathFromUrl(currentUrl);
+
+    setIsLoading(true);
+
+    try {
+      const response = await api.execute(
+        createEwalletPaymentRequest({
+          amount: pricing.total,
+          channel_code: paymentChannel as eWalletChannelCode,
+          failure_return_url: `${baseUrlPath}?step=Payment`,
+          success_return_url: `${baseUrlPath}?step=Submitting`,
+          cancel_return_url: `${baseUrlPath}?step=Payment`,
+          reference_id: referenceId
+        })
+      );
+
+      if (response.status === 200) {
+        localStorage.setItem('referenceNumber', response.data.reference_id);
+        window.location.href = response.data.payment_url;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    setIsLoading(false);
+  };
+
+  const directDebitPaymentRequest = async () => {
+    saveFormState();
+    const baseUrlPath = getPathFromUrl(currentUrl);
+
+    setIsLoading(true);
+    const response = await api.execute(
+      initiateDirectDebitPayment({
+        channel_code: paymentChannel as DirectDebitChannelCode,
+        email: getValues('email'),
+        given_names: getValues('firstName'),
+        surname: getValues('lastName'),
+        failure_return_url: `${baseUrlPath}?step=Summary`,
+        success_return_url: `${baseUrlPath}?step=Submitting`,
+        amount: pricing.total
+      })
+    );
+
+    if (response.status === 200) {
+      localStorage.setItem('referenceNumber', response.data.reference_id);
+      window.location.href = response.data.payment_url;
+    }
+
+    setIsLoading(false);
+  };
+
+  const submitPaymentForm = async () => {
+    if (eventInfo && !eventInfo.payedEvent) {
+      setIsLoading(true);
+      await submit();
+      setIsLoading(false);
+      return;
+    }
+
+    if (paymentMethod == 'DEBIT') {
+      await directDebitPaymentRequest();
+    } else if (paymentMethod == 'EWALLET') {
+      await eWalletPaymentRequest();
+    }
+  };
+
+  const successPayment = async () => {
+    setIsLoading(true);
+    restoreFormState();
+    await submit();
+    deleteFormState();
+    setIsLoading(false);
+  };
+
+  const reloadPage = () => {
+    const baseUrlPath = getPathFromUrl(currentUrl);
+    window.location.href = baseUrlPath;
+  };
+
+  // USE EFFECTS
   useEffect(() => {
     if (isFetching || !response || (response && !response.data)) {
       return;
@@ -88,6 +213,23 @@ const Register = () => {
   useEffect(() => {
     setValue('amountPaid', pricing.total);
   }, [eventInfo]);
+
+  useEffect(() => {
+    const step = searchParams.get('step');
+    if (!step) {
+      return;
+    }
+
+    setCurrentStep(step as RegisterSteps);
+    if (step === 'Submitting') {
+      successPayment();
+    }
+
+    const formState = localStorage.getItem('formState');
+    if (!formState) {
+      reloadPage();
+    }
+  }, [searchParams]);
 
   if (isFetching) {
     return <RegisterFormLoading />;
@@ -141,6 +283,7 @@ const Register = () => {
     }
 
     try {
+      setIsLoading(true);
       const response = await api.query(getDiscount(currentDiscountCode, eventId));
       const discountCode = response.data;
       if (response.status === 200) {
@@ -149,6 +292,7 @@ const Register = () => {
             title: 'Discount Code Already Claimed',
             description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
           });
+          setIsLoading(false);
           return;
         }
         const price = eventInfo.price * (1 - discountCode.discountPercentage);
@@ -167,10 +311,45 @@ const Register = () => {
           title: 'Invalid Discount Code',
           description: 'The discount code you entered is invalid. Please enter a different discount code.'
         });
+        setIsLoading(false);
         return;
       }
     } catch (error) {
       console.error(error);
+    }
+    setIsLoading(false);
+  };
+
+  const checkDiscount = async (currentDiscountCode: string, eventId: string) => {
+    setIsLoading(true);
+    const response = await api.query(getDiscount(currentDiscountCode, eventId));
+    setIsLoading(false);
+
+    const discountCode = response.data;
+    if (response.status === 200) {
+      const price = eventInfo.price * (1 - discountCode.discountPercentage);
+      setPricing({
+        price: eventInfo.price,
+        discount: discountCode.discountPercentage,
+        total: price
+      });
+      setValue('amountPaid', price);
+
+      if (discountCode.claimed) {
+        const errorMessage = 'Discount Code Already Claimed';
+        errorToast({
+          title: errorMessage,
+          description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
+        });
+        throw new Error(errorMessage);
+      }
+    } else if (response.status === 404) {
+      const errorMessage = 'Invalid Discount Code';
+      errorToast({
+        title: errorMessage,
+        description: 'The discount code you entered is invalid. Please enter a different discount code.'
+      });
+      throw new Error(errorMessage);
     }
   };
 
@@ -187,50 +366,35 @@ const Register = () => {
     const { eventId } = eventInfo;
     if (currentStep == 'UserBio' && eventId && currentEmail) {
       try {
+        setIsLoading(true);
         const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));
         if (response.status === 200) {
           errorToast({
             title: 'Email already registered',
             description: 'The email you entered has already been used. Please enter a different email.'
           });
+          setIsLoading(false);
           return;
         }
       } catch (error) {
         console.error(error);
       }
+      setIsLoading(false);
     }
 
-    const currentDiscountCode = getValues('discountCode');
-    if (currentStep == 'GCash' && currentDiscountCode && eventId) {
+    if (currentStep == 'Payment' && eventId) {
       try {
-        const response = await api.query(getDiscount(currentDiscountCode, eventId));
-        const discountCode = response.data;
-        if (response.status === 200) {
-          const price = eventInfo.price * (1 - discountCode.discountPercentage);
-          setPricing({
-            price: eventInfo.price,
-            discount: discountCode.discountPercentage,
-            total: price
-          });
-          setValue('amountPaid', price);
-
-          if (discountCode.claimed) {
-            errorToast({
-              title: 'Discount Code Already Claimed',
-              description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
-            });
-            return;
-          }
-        } else if (response.status === 404) {
-          errorToast({
-            title: 'Invalid Discount Code',
-            description: 'The discount code you entered is invalid. Please enter a different discount code.'
-          });
-          return;
+        const currentDiscountCode = getValues('discountCode');
+        if (currentDiscountCode) {
+          setIsLoading(true);
+          await checkDiscount(currentDiscountCode, eventId);
         }
       } catch (error) {
         console.error(error);
+        setIsLoading(false);
+        return;
       }
+      setIsLoading(false);
     }
 
     if (isEmpty(fieldsToCheck)) {
@@ -254,11 +418,10 @@ const Register = () => {
 
   const showStepper = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) !== REGISTER_STEPS.length - 1;
   const showRegisterButton = REGISTER_STEPS.indexOf(currentStep) === 0;
-  const showNextButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
+  const showNextButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 3;
   const showPrevButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 1;
-  const showSubmitButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 2;
+  const showSubmitButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 3;
   const showReloadButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 1;
-  const reloadPage = () => window.location.reload();
 
   return (
     <section className="flex flex-col items-center px-4">
@@ -277,48 +440,51 @@ const Register = () => {
               {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && (
+              {currentStep === 'Payment' && (
                 <RegisterForm3
-                  setValue={setValue}
-                  receiptUrl={receiptUrl}
-                  setReceiptUrl={setReceiptUrl}
+                  setPaymentChannel={setPaymentChannel}
+                  setPaymentMethod={setPaymentMethod}
                   pricing={pricing}
                   checkDiscountCode={checkDiscountCode}
-                  event={eventInfo}
                 />
               )}
             </div>
-            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} event={eventInfo} />}
+            {currentStep === 'Summary' && <Summary event={eventInfo} pricing={pricing} />}
+            {currentStep === 'Submitting' && <RegisterFormSubmittingSkeleton />}
             {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
             {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 
             <div className="flex w-full justify-around my-6">
-              {showRegisterButton && (
-                <Button onClick={nextStep} variant={'primaryGradient'} className="py-6 px-20">
-                  Register
-                </Button>
-              )}
-              {showPrevButton && (
-                <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
-                  <Icon name="ChevronLeft" />
-                  Back
-                </Button>
-              )}
-              {showNextButton && (
-                <Button onClick={nextStep} className="py-6 sm:px-16">
-                  Next
-                  <Icon name="ChevronRight" />
-                </Button>
-              )}
-              {showSubmitButton && (
-                <Button onClick={submit} type="submit" className="py-6 sm:px-16">
-                  Submit
-                </Button>
-              )}
-              {showReloadButton && (
-                <Button onClick={reloadPage} className="py-6 sm:px-16">
-                  Sign up another person
-                </Button>
+              {currentStep !== 'Submitting' && (
+                <>
+                  {showRegisterButton && (
+                    <Button loading={isLoading} onClick={nextStep} variant={'primaryGradient'} className="py-6 px-20">
+                      Register
+                    </Button>
+                  )}
+                  {showPrevButton && (
+                    <Button onClick={prevStep} loading={isLoading} variant={'outline'} className="py-6 sm:px-16">
+                      <Icon name="ChevronLeft" />
+                      Back
+                    </Button>
+                  )}
+                  {showNextButton && (
+                    <Button onClick={nextStep} loading={isLoading} className="py-6 sm:px-16">
+                      Next
+                      <Icon name="ChevronRight" />
+                    </Button>
+                  )}
+                  {showSubmitButton && (
+                    <Button onClick={submitPaymentForm} loading={isLoading} type="submit" className="py-6 sm:px-16">
+                      Submit
+                    </Button>
+                  )}
+                  {showReloadButton && (
+                    <Button onClick={reloadPage} className="py-6 sm:px-16">
+                      Sign up another person
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </main>

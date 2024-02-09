@@ -1,24 +1,18 @@
 import Button from '@/components/Button';
-import FileUpload from '@/components/FileUpload';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Pricing } from '@/model/discount';
-import { EVENT_UPLOAD_TYPE, EVENT_OBJECT_KEY_MAP } from '@/model/events';
-import { Event } from '@/model/events';
+import { PaymentMethod, eWalletChannelCode, DirectDebitChannelCode } from '@/model/payments';
 import { formatMoney, formatPercentage } from '@/utils/functions';
+import PaymentGateways from '@/pages/register/PaymentGateways';
 
 interface RegisterForm3Props {
-  setValue: any;
-  receiptUrl: string;
-  setReceiptUrl: (value: string) => void;
+  setPaymentChannel: (val: eWalletChannelCode | DirectDebitChannelCode) => void;
+  setPaymentMethod: (val: PaymentMethod) => void;
   checkDiscountCode: () => void;
   pricing: Pricing;
-  event: Event;
 }
-const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode, pricing, event }: RegisterForm3Props) => {
-  const generateSessionId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
+const RegisterForm3 = ({ setPaymentChannel, setPaymentMethod, checkDiscountCode, pricing }: RegisterForm3Props) => {
   return (
     <>
       <FormItem name="discountCode">
@@ -36,6 +30,10 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
         )}
       </FormItem>
       <hr />
+
+      <PaymentGateways setPaymentChannel={setPaymentChannel} setPaymentMethod={setPaymentMethod} />
+
+      <hr />
       <div className="flex flex-col items-start gap-5">
         <div className="flex flex-col gap-5 w-full">
           <div className="grid grid-cols-2 gap-5">
@@ -46,43 +44,8 @@ const RegisterForm3 = ({ setValue, receiptUrl, setReceiptUrl, checkDiscountCode,
             <h4>Total</h4>
             <p>{formatMoney(pricing.total, 'PHP')}</p>
           </div>
-          <hr />
-          <div className="flex flex-col gap-1">
-            <h4>Gcash Information</h4>
-            <p>{event.gcashName}</p>
-            <p>{event.gcashNumber}</p>
-          </div>
         </div>
-        <FileViewerComponent objectKey={event.gcashQRCode} className="max-w-md object-cover" alt="No Image Uploaded" />
       </div>
-      <hr />
-      <FormItem name="referenceNumber">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Gcash Payment Reference Number</FormLabel>
-            <Input type="text" placeholder="Enter Payment Reference Number" className="" {...field} />
-            <FormError />
-          </div>
-        )}
-      </FormItem>
-      <FormItem name="gcashPayment">
-        {({ field }) => (
-          <div className="flex flex-col gap-3">
-            <FormLabel>Gcash Receipt Screenshot</FormLabel>
-            <FileUpload
-              entryId={generateSessionId()}
-              uploadType={EVENT_UPLOAD_TYPE.PROOF_OF_PAYMENT}
-              originalImage={receiptUrl}
-              setObjectKeyValue={(value: string) => {
-                setValue(EVENT_OBJECT_KEY_MAP.GCASH_PAYMENT, value);
-              }}
-              setFileUrl={setReceiptUrl}
-              {...field}
-            />
-            <FormError />
-          </div>
-        )}
-      </FormItem>
     </>
   );
 };

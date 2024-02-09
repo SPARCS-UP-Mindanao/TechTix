@@ -1,12 +1,4 @@
-import {
-  TransactionDetails,
-  EWalletPaymentIn,
-  GetTransactionDetailsOut,
-  PaymentRequestOut,
-  CreateDirectDebitPaymentMethodIn,
-  CreateDirectDebitPaymentMethodOut,
-  DirectDebitPaymentIn
-} from '@/model/payments';
+import { TransactionDetails, EWalletPaymentIn, GetTransactionDetailsOut, PaymentRequestOut, DirectDebitPaymentIn } from '@/model/payments';
 import { createApi } from './utils/createApi';
 
 export const getTransactionDetails = (transactionDetails: TransactionDetails) =>
@@ -17,7 +9,7 @@ export const getTransactionDetails = (transactionDetails: TransactionDetails) =>
     body: { ...transactionDetails }
   });
 
-export const createPaymentRequest = (paymentDetails: EWalletPaymentIn) =>
+export const createEwalletPaymentRequest = (paymentDetails: EWalletPaymentIn) =>
   createApi<PaymentRequestOut>({
     method: 'post',
     apiService: 'payments',
@@ -29,14 +21,6 @@ export const initiateDirectDebitPayment = (paymentDetails: DirectDebitPaymentIn)
   createApi<PaymentRequestOut>({
     method: 'post',
     apiService: 'payments',
-    url: '/direct-debit/payment_method',
+    url: '/direct_debit/payment_request',
     body: { ...paymentDetails }
-  });
-
-export const createDirectDebitPaymentMethod = (paymentMethodDetails: CreateDirectDebitPaymentMethodIn) =>
-  createApi<CreateDirectDebitPaymentMethodOut>({
-    method: 'post',
-    apiService: 'payments',
-    url: '/direct-debit/payment_request',
-    body: { ...paymentMethodDetails }
   });
