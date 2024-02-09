@@ -58,6 +58,9 @@ const Summary = ({ event, pricing }: SummaryProps) => {
             </>
           )}
 
+          <span className="font-bold">Transaction Fee</span>
+          <span>{formatMoney(pricing.transactionFees, 'PHP')}</span>
+
           <span className="font-bold">Total</span>
           <span>{formatMoney(pricing.total, 'PHP')}</span>
         </div>

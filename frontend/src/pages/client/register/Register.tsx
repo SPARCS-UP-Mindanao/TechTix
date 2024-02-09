@@ -9,7 +9,7 @@ import Icon from '@/components/Icon';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
-import { createEwalletPaymentRequest, initiateDirectDebitPayment } from '@/api/payments';
+import { createEwalletPaymentRequest, initiateDirectDebitPayment, getTransactionDetails } from '@/api/payments';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Pricing } from '@/model/discount';
 import { Event } from '@/model/events';
@@ -71,11 +71,12 @@ const Register = () => {
   const { setValue, getValues } = form;
 
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
-  const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
+  const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0, transactionFees: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
   const [paymentChannel, setPaymentChannel] = useState<eWalletChannelCode | DirectDebitChannelCode>();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
   const [isLoading, setIsLoading] = useState(false);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
 
   const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
 
@@ -170,9 +171,9 @@ const Register = () => {
       return;
     }
 
-    if (paymentMethod == 'DEBIT') {
+    if (paymentMethod == 'DIRECT_DEBIT') {
       await directDebitPaymentRequest();
-    } else if (paymentMethod == 'EWALLET') {
+    } else if (paymentMethod == 'E_WALLET') {
       await eWalletPaymentRequest();
     }
   };
@@ -190,6 +191,45 @@ const Register = () => {
     window.location.href = baseUrlPath;
   };
 
+  const recalculatePricing = async () => {
+    if (!eventInfo) return;
+
+    const discountedPrice = eventInfo.price * (1 - discountPercentage);
+    let transactionFees = 0;
+    let total = discountedPrice;
+
+    if (paymentMethod && paymentChannel) {
+      try {
+        setIsLoading(true);
+        const response = await api.query(
+          getTransactionDetails({
+            payment_channel: paymentChannel as string,
+            payment_method: paymentMethod as string,
+            ticket_price: discountedPrice
+          })
+        );
+
+        if (response.status === 200) {
+          transactionFees = response.data.transaction_fee;
+          total = response.data.total_price;
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+      }
+    }
+
+    setPricing({
+      price: discountedPrice,
+      discount: discountPercentage,
+      total: total,
+      transactionFees: transactionFees
+    });
+    setValue('amountPaid', total);
+  };
+
   // USE EFFECTS
   useEffect(() => {
     if (isFetching || !response || (response && !response.data)) {
@@ -201,7 +241,8 @@ const Register = () => {
     setPricing({
       price: price,
       discount: 0,
-      total: price
+      total: price,
+      transactionFees: 0
     });
 
     if (!eventData.payedEvent) {
@@ -213,6 +254,10 @@ const Register = () => {
   useEffect(() => {
     setValue('amountPaid', pricing.total);
   }, [eventInfo]);
+
+  useEffect(() => {
+    recalculatePricing();
+  }, [paymentChannel, paymentMethod, discountPercentage]);
 
   useEffect(() => {
     const step = searchParams.get('step');
@@ -295,13 +340,7 @@ const Register = () => {
           setIsLoading(false);
           return;
         }
-        const price = eventInfo.price * (1 - discountCode.discountPercentage);
-        setPricing({
-          price: eventInfo.price,
-          discount: discountCode.discountPercentage,
-          total: price
-        });
-        setValue('amountPaid', price);
+        setDiscountPercentage(discountCode.discountPercentage);
         successToast({
           title: 'Valid Discount Code',
           description: 'The discount code you entered is valid. Please proceed to the next step.'
@@ -327,13 +366,7 @@ const Register = () => {
 
     const discountCode = response.data;
     if (response.status === 200) {
-      const price = eventInfo.price * (1 - discountCode.discountPercentage);
-      setPricing({
-        price: eventInfo.price,
-        discount: discountCode.discountPercentage,
-        total: price
-      });
-      setValue('amountPaid', price);
+      setDiscountPercentage(discountCode.discountPercentage);
 
       if (discountCode.claimed) {
         const errorMessage = 'Discount Code Already Claimed';
@@ -370,7 +403,7 @@ const Register = () => {
         const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));
         if (response.status === 200) {
           errorToast({
-            title: 'Email already registered',
+            title: 'Emailalready registered',
             description: 'The email you entered has already been used. Please enter a different email.'
           });
           setIsLoading(false);

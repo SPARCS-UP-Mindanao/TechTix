@@ -8,12 +8,12 @@ interface PaymentGatewaysProps {
 function PaymentGateways({ setPaymentChannel, setPaymentMethod }: PaymentGatewaysProps) {
   const eWalletPaymentRequest = (channel: eWalletChannelCode | DirectDebitChannelCode) => {
     setPaymentChannel(channel);
-    setPaymentMethod('EWALLET');
+    setPaymentMethod('E_WALLET');
   };
 
   const directDebitPaymentMethod = (channel: DirectDebitChannelCode) => {
     setPaymentChannel(channel);
-    setPaymentMethod('DEBIT');
+    setPaymentMethod('DIRECT_DEBIT');
   };
 
   return (

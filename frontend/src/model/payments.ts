@@ -10,7 +10,7 @@ export interface TransactionDetails {
   payment_channel: string;
 }
 
-export type PaymentMethod = 'DEBIT' | 'EWALLET';
+export type PaymentMethod = 'DIRECT_DEBIT' | 'E_WALLET';
 
 export type eWalletChannelCode = 'GCASH' | 'PAYMAYA';
 
