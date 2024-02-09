@@ -71,7 +71,7 @@ const Register = () => {
   const { setValue, getValues } = form;
 
   const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
-  const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0, transactionFees: 0 });
+  const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0, transactionFees: 0, discountedPrice: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
   const [paymentChannel, setPaymentChannel] = useState<eWalletChannelCode | DirectDebitChannelCode>();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
@@ -222,8 +222,9 @@ const Register = () => {
     }
 
     setPricing({
-      price: discountedPrice,
+      price: eventInfo.price,
       discount: discountPercentage,
+      discountedPrice: discountedPrice,
       total: total,
       transactionFees: transactionFees
     });
@@ -242,7 +243,8 @@ const Register = () => {
       price: price,
       discount: 0,
       total: price,
-      transactionFees: 0
+      transactionFees: 0,
+      discountedPrice: 0
     });
 
     if (!eventData.payedEvent) {

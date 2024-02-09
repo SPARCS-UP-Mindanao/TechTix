@@ -41,6 +41,8 @@ const RegisterForm3 = ({ setPaymentChannel, setPaymentMethod, checkDiscountCode,
             <p>{formatMoney(pricing.price, 'PHP')}</p>
             <h4>Discount</h4>
             <p>{pricing.discount == 0 ? 'None' : <span>-{formatPercentage(pricing.discount)}</span>}</p>
+            <h4>Discounted Price</h4>
+            <p>{formatMoney(pricing.discountedPrice, 'PHP')}</p>
             <h4>Transaction Fee</h4>
             <p>{formatMoney(pricing.transactionFees, 'PHP')}</p>
             <h4>Total</h4>

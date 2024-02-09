@@ -55,6 +55,9 @@ const Summary = ({ event, pricing }: SummaryProps) => {
 
               <span className="font-bold">Discount</span>
               <span>{pricing.discount == 0 ? 'None' : <span>-{formatPercentage(pricing.discount)}</span>}</span>
+
+              <span className="font-bold">Discounted Price</span>
+              <span>{formatMoney(pricing.discountedPrice, 'PHP')}</span>
             </>
           )}
 

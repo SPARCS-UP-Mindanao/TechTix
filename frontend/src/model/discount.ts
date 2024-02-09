@@ -25,4 +25,5 @@ export interface Pricing {
   discount: number;
   transactionFees: number;
   total: number;
+  discountedPrice: number;
 }
