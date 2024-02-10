@@ -61,7 +61,6 @@ const Register = () => {
   const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { setValue, getValues } = form;
-  const [receiptUrl, setReceiptUrl] = useState<string>('');
   const api = useApi();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
@@ -277,18 +276,9 @@ const Register = () => {
               {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && (
-                <RegisterForm3
-                  setValue={setValue}
-                  receiptUrl={receiptUrl}
-                  setReceiptUrl={setReceiptUrl}
-                  pricing={pricing}
-                  checkDiscountCode={checkDiscountCode}
-                  event={eventInfo}
-                />
-              )}
+              {currentStep === 'GCash' && <RegisterForm3 pricing={pricing} checkDiscountCode={checkDiscountCode} event={eventInfo} />}
             </div>
-            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} event={eventInfo} />}
+            {currentStep === 'Summary' && <Summary event={eventInfo} />}
             {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
             {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 
