@@ -7,7 +7,8 @@ import {
   FieldPath,
   FieldValues,
   UseFormStateReturn,
-  useFormContext
+  useFormContext,
+  useFormState
 } from 'react-hook-form';
 import Label from '@/components/Label';
 import { cn } from '@/utils/classes';
@@ -40,7 +41,8 @@ interface FormItemProps<TFieldValues extends FieldValues, TName extends FieldPat
 }
 
 export const FormItem = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({ name, children }: FormItemProps<TFieldValues, TName>) => {
-  const { control, getFieldState, formState } = useFormContext();
+  const { control, getFieldState } = useFormContext();
+  const formState = useFormState();
   const id = React.useId();
   const formItemId = `${id}-form-item`;
   const formDescriptionId = `${id}-form-item-description`;

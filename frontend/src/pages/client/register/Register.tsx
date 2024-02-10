@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
+import ImageViewer from '@/components/ImageViewer';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
@@ -61,7 +61,6 @@ const Register = () => {
   const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
   const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { setValue, getValues } = form;
-  const [receiptUrl, setReceiptUrl] = useState<string>('');
   const api = useApi();
   const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
   const [eventInfo, setEventInfo] = useState<Event | undefined>();
@@ -263,9 +262,9 @@ const Register = () => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
-        <FileViewerComponent objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
+        <ImageViewer objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
         <div className="flex w-full justify-center relative overflow-hidden">
-          <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
+          <ImageViewer objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
         </div>
 
@@ -277,18 +276,9 @@ const Register = () => {
               {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep === 'UserBio' && <RegisterForm1 />}
               {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && (
-                <RegisterForm3
-                  setValue={setValue}
-                  receiptUrl={receiptUrl}
-                  setReceiptUrl={setReceiptUrl}
-                  pricing={pricing}
-                  checkDiscountCode={checkDiscountCode}
-                  event={eventInfo}
-                />
-              )}
+              {currentStep === 'GCash' && <RegisterForm3 pricing={pricing} checkDiscountCode={checkDiscountCode} event={eventInfo} />}
             </div>
-            {currentStep === 'Summary' && <Summary receiptUrl={receiptUrl} event={eventInfo} />}
+            {currentStep === 'Summary' && <Summary event={eventInfo} />}
             {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
             {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
 

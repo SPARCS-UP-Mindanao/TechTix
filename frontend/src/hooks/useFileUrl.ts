@@ -9,14 +9,18 @@ const s3Client = new S3Client({
   }
 });
 
-export const useFileUrl = (key: string) => {
+export const useFileUrl = (key?: string | null) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
 
   const getFile = async (): Promise<void> => {
+    if (!key) {
+      return;
+    }
+
     const params: GetObjectAclCommandInput = {
       Bucket: import.meta.env.VITE_S3_BUCKET!,
-      Key: key
+      Key: key ?? undefined
     };
 
     try {
@@ -32,10 +36,6 @@ export const useFileUrl = (key: string) => {
   };
 
   useEffect(() => {
-    if (!key) {
-      return;
-    }
-
     getFile();
     return () => {
       if (fileUrl) {
