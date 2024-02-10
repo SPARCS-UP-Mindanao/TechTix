@@ -61,8 +61,8 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto py-2">
-        <Calendar mode="single" selected={date} onSelect={onChangeDate} initialFocus />
-        {includeTime && <Input value={time} onChange={onChangeTime} type="time" />}
+        <Calendar mode="single" selected={initialDate} defaultMonth={initialDate} onSelect={onChangeDate} initialFocus />
+        {includeTime && <Input value={initialTime} onChange={onChangeTime} type="time" />}
       </PopoverContent>
     </Popover>
   );

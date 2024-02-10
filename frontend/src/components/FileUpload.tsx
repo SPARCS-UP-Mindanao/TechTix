@@ -1,114 +1,56 @@
-import { ChangeEvent, useState } from 'react';
-import { getPresignedUrl } from '@/api/events';
-import { useApi } from '@/hooks/useApi';
-import { useNotifyToast } from '@/hooks/useNotifyToast';
-import FileViewerComponent from './FileViewerComponent';
+import { forwardRef, useMemo } from 'react';
+import { useFileUpload } from '@/hooks/useFileUpload';
+import { CardContainer, CardFooter, CardHeader } from './Card';
+import ImageViewer from './ImageViewer';
 import Input from './Input';
 import Label from './Label';
 import Progress from './Progress';
-import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 interface FileUploadProps {
-  entryId: string;
+  eventId: string;
   uploadType: string;
-  setObjectKeyValue: (value: string) => void;
-  setFileUrl?: (value: string) => void;
-  originalImage?: string | null;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-const FileUpload = ({ entryId, uploadType, setObjectKeyValue, setFileUrl, originalImage }: FileUploadProps) => {
-  const { successToast, errorToast } = useNotifyToast();
-  const api = useApi();
-  const [image, setImage] = useState<string>(originalImage || '');
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState('No file chosen');
-  const [isRawPhoto, setIsRawPhoto] = useState(false);
+const extractImagePath = (path: string) => {
+  const name = path.split('/').pop();
+  return name;
+};
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) {
-      return;
+const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ eventId, uploadType, value, onChange }, ref) => {
+  const { uploadProgress, isUploading, onFileChange } = useFileUpload(eventId, uploadType, onChange);
+  const label = useMemo(() => {
+    if (!value) {
+      return 'No file uploaded';
     }
 
-    setIsLoading(true);
-    const selectedFileObj = e.target.files[0];
-    setSelectedFile(selectedFileObj.name);
-    if (selectedFileObj) {
-      await uploadFile(selectedFileObj);
-    }
-    setIsLoading(false);
-    setUploadProgress(0);
-  };
+    return extractImagePath(value) ?? 'Unknown file';
+  }, [value]);
 
-  const getPresignedUrlTrigger = async (entryId: string, fileName: string, fileType: string) => {
-    const response = await api.execute(getPresignedUrl(entryId, fileName, fileType));
-    return response.data;
-  };
-
-  const uploadFile = async (file: File) => {
-    console.log(file);
-
-    const s3Client = new S3Client({
-      region: 'ap-southeast-1',
-      credentials: {
-        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
-        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!
-      }
-    });
-    const { objectKey } = await getPresignedUrlTrigger(entryId, file.name, uploadType);
-
-    // Function to upload a file to S3
-    const uploadParams: PutObjectCommandInput = {
-      Bucket: import.meta.env.VITE_S3_BUCKET!,
-      Key: objectKey,
-      Body: file
-    };
-
-    try {
-      const command = new PutObjectCommand(uploadParams);
-      await s3Client.send(command);
-      setUploadProgress(100);
-
-      successToast({
-        title: 'File Upload Success',
-        description: 'File uploaded successfully'
-      });
-      setObjectKeyValue(objectKey);
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-      setIsRawPhoto(true);
-      setFileUrl && setFileUrl(imageUrl);
-    } catch (err) {
-      console.error('Error', err);
-      errorToast({
-        title: 'File Upload Failed',
-        description: `File upload failed`
-      });
-    }
-  };
+  if (isUploading) {
+    return <Progress className="w-full max-w-md" value={uploadProgress} />;
+  }
 
   return (
-    <>
-      {isRawPhoto ? (
-        <img src={image} className="h-40 w-fit" alt="No Image Uploaded" />
-      ) : (
-        image && <FileViewerComponent objectKey={image} className="h-40 w-fit" alt="No Image Uploaded" />
-      )}
-      {isLoading ? (
-        <Progress className="w-full max-w-md" value={uploadProgress} />
-      ) : (
-        <div className="flex flex-wrap gap-2 items-center w-full">
-          <Input id={`upload-custom-${uploadType}`} onChange={handleFileChange} type="file" accept="image/*" className="hidden" />
-          <Label
-            htmlFor={`upload-custom-${uploadType}`}
-            className="block text-sm mr-4 py-2 px-4 rounded-md bg-input border border-border transition-colors hover:cursor-pointer hover:bg-accent"
-          >
-            Choose file
-          </Label>
-          <Label className="text-sm line-clamp-1 break-all w-1/2">{selectedFile}</Label>
-        </div>
-      )}
-    </>
+    <CardContainer className="p-0 border-none shadow-none">
+      <CardHeader className="items-center">
+        <ImageViewer objectKey={value} className="h-40 w-min object-cover" alt="" />
+      </CardHeader>
+      <CardFooter className="flex flex-wrap px-0 pb-2 gap-2 items-center w-full">
+        <Input id={`upload-custom-${uploadType}`} ref={ref} onChange={onFileChange} type="file" accept="image/*" className="hidden" />
+        <Label
+          role="button"
+          htmlFor={`upload-custom-${uploadType}`}
+          aria-disabled={isUploading}
+          className="text-sm py-2 px-4 rounded-md bg-input border border-border transition-colors hover:cursor-pointer hover:bg-accent"
+        >
+          Choose file
+        </Label>
+        <Label className="text-sm line-clamp-1 break-all w-1/2">{label}</Label>
+      </CardFooter>
+    </CardContainer>
   );
-};
+});
+
 export default FileUpload;
