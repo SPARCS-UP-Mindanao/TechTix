@@ -22,6 +22,8 @@ class EventUploadField(str, Enum):
     LOGO = 'logoLink'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
 
+
 class RegistrationType(str, Enum):
     TECHTIX = 'TechTix'
     REDIRECT = 'redirect'
+    
