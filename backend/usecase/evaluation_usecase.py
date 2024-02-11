@@ -9,9 +9,11 @@ from model.evaluations.evaluation import (
     EvaluationPatch,
 )
 from model.registrations.registration import RegistrationPatch, RegistrationPreviewOut
+from model.events.events_constants import RegistrationType
 from repository.evaluations_repository import EvaluationRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
+from usecase.event_usecase import EventUsecase
 from starlette.responses import JSONResponse
 
 
@@ -24,6 +26,12 @@ class EvaluationUsecase:
     def create_evaluation(self, evaluation_list_in: EvaluationListIn) -> Union[JSONResponse, List[EvaluationOut]]:
         event_id = evaluation_list_in.eventId
         registration_id = evaluation_list_in.registrationId
+        
+        # NOTE: next three lines copy pasted a lot, should this be a helper or nah kay mubo ra
+        event = EventUsecase.get_event(event_id)    # NOTE: am i doing this right, i don't wanna add another param but di pud ko sure if fetching the whole thing is the best move?
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: Evaluation should not be created for REDIRECT registrationType'})
+
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -58,6 +66,11 @@ class EvaluationUsecase:
         question: str,
         evaluation_in: EvaluationPatch,
     ) -> Union[JSONResponse, EvaluationOut]:
+
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No evaluation to update for REDIRECT registrationType'})
+
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -86,6 +99,10 @@ class EvaluationUsecase:
         return EvaluationOut(**evaluation_data)
 
     def get_evaluation(self, event_id: str, registration_id: str, question: str) -> Union[JSONResponse, EvaluationOut]:
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No evaluations for REDIRECT registrationType'})
+
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -103,6 +120,10 @@ class EvaluationUsecase:
         self, event_id: str = None, registration_id: str = None, question: str = None
     ) -> Union[JSONResponse, List[EvaluationListOut]]:
         if event_id:
+            event = EventUsecase.get_event(event_id)
+            if event.registrationType == RegistrationType.REDIRECT:
+                return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No evaluations for REDIRECT registrationType'})
+                
             status, _, message = self.__events_repository.query_events(event_id=event_id)
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
@@ -138,6 +159,10 @@ class EvaluationUsecase:
         return evaluations_return
 
     def get_evaluations_by_question(self, event_id: str, question: str) -> Union[JSONResponse, List[EvaluationOut]]:
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No evaluations for REDIRECT registrationType'})
+            
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})

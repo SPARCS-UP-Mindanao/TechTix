@@ -10,9 +10,11 @@ from model.discount.discount import (
     DiscountOrganization,
     DiscountOut,
 )
+from model.events.events_constants import RegistrationType
 from repository.discount_repository import DiscountsRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
+from usecase.event_usecase import EventUsecase
 from starlette.responses import JSONResponse
 from utils.utils import Utils
 
@@ -24,6 +26,10 @@ class DiscountUsecase:
         self.__registrations_repository = RegistrationsRepository()
 
     def get_discount(self, event_id: str, entry_id: str) -> DiscountOut:
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No discounts for REDIRECT registrationType'})
+
         status, discount, message = self.__discounts_repository.query_discounts(event_id=event_id, discount_id=entry_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -48,6 +54,10 @@ class DiscountUsecase:
         return discount_out
 
     def get_discount_list(self, event_id: str) -> List[DiscountOrganization]:
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No discounts for REDIRECT registrationType'})
+
         status, discounts, message = self.__discounts_repository.query_discounts(
             event_id=event_id,
         )
@@ -84,6 +94,10 @@ class DiscountUsecase:
         ]
 
     def claim_discount(self, event_id: str, entry_id: str, registration_id: str):
+        event = EventUsecase.get_event(event_id)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: No discounts for REDIRECT registrationType'})
+
         status, discount_entry, message = self.__discounts_repository.query_discounts(
             discount_id=entry_id, event_id=event_id
         )
@@ -116,7 +130,12 @@ class DiscountUsecase:
         return DiscountOut(**discount_data)
 
     def create_discounts(self, discount_in: DiscountIn) -> Union[JSONResponse, List[DiscountOut]]:
+        event = EventUsecase.get_event(DiscountIn.eventId)
+        if event.registrationType == RegistrationType.REDIRECT:
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Error: Discounts should not be created for REDIRECT registrationType'})
+
         status, _, __ = self.__events_repository.query_events(discount_in.eventId)
+
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': 'Event does not exist'})
 
