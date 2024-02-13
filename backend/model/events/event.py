@@ -53,6 +53,7 @@ class Event(Model):
     payedEvent = BooleanAttribute(null=True)
     price = NumberAttribute(null=True)
     certificateTemplate = UnicodeAttribute(null=True)
+    isApprovalFlow = BooleanAttribute(null=True)
 
     gcashQRCode = UnicodeAttribute(null=True)
     gcashName = UnicodeAttribute(null=True)
@@ -77,6 +78,7 @@ class EventIn(BaseModel):
     bannerLink: str = Field(None, title='Banner Link')
     logoLink: str = Field(None, title='Poster Link')
     certificateTemplate: str = Field(None, title='Certificate Template')
+    isApprovalFlow: bool = Field(None, title='Approval Flow')
 
     gcashQRCode: str = Field(None, title='GCash QR Code')
     gcashName: str = Field(None, title='Gcash Name')

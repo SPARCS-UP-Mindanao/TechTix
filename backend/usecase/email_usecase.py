@@ -10,6 +10,7 @@ from constants.common_constants import EmailType
 from model.email.email import EmailIn
 from model.events.event import Event
 from model.registrations.registration import Registration
+from model.preregistrations.preregistration import PreRegistration
 from utils.logger import logger
 
 
@@ -78,6 +79,25 @@ class EmailUsecase:
             eventId=event.eventId,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
+        return self.send_email(email_in=email_in)
+
+    def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
+        subject = f'{event.name} Pre-Registration'
+        body = [
+            f'Your pre-registration was received and will be reviewed.'
+        ]
+        salutation = f'Good day {preregistration.firstName},'
+        regards = ['Best,']
+        email_in = EmailIn(
+            to=[preregistration.email],
+            subject=subject,
+            body=body,
+            salutation=salutation,
+            regards=regards,
+            emailType=EmailType.PREREGISTRATION_EMAIL,
+            eventId=event.eventId,
+        )
+        logger.info(f'Sending pre-registration email to {preregistration.email}')
         return self.send_email(email_in=email_in)
 
     def send_event_completion_email(
