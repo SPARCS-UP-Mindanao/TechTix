@@ -49,11 +49,7 @@ export const EventFormSchema = z.object({
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;
 
-interface EventFormProps {
-  event?: Event;
-}
-
-export const useAdminEventForm = ({ event }: EventFormProps) => {
+export const useAdminEventForm = (event?: Event) => {
   const navigate = useNavigate();
   const eventId = event?.eventId;
   const mode = eventId ? 'edit' : 'create';

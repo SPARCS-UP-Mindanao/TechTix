@@ -4,8 +4,8 @@ import { FormProvider } from 'react-hook-form';
 import { ulid } from 'ulid';
 import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
+import ImageViewer from '@/components/ImageViewer';
 import Separator from '@/components/Separator';
 import { getDiscount } from '@/api/discounts';
 import { getEvent } from '@/api/events';
@@ -461,9 +461,9 @@ const Register = () => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
-        <FileViewerComponent objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
+        <ImageViewer objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
         <div className="flex w-full justify-center relative overflow-hidden">
-          <FileViewerComponent objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
+          <ImageViewer objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
         </div>
 

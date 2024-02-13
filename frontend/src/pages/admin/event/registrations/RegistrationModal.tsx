@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@/components/Button';
-import FileViewerComponent from '@/components/FileViewerComponent';
+import ImageViewer from '@/components/ImageViewer';
 import Modal from '@/components/Modal';
 import { Registration } from '@/model/registrations';
 
@@ -28,7 +28,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
       }
     >
       <h4>{registrationInfo.registrationId}</h4>
-      {registrationInfo.gcashPayment && <FileViewerComponent objectKey={registrationInfo.gcashPayment} />}
+      {registrationInfo.gcashPayment && <ImageViewer objectKey={registrationInfo.gcashPayment} />}
     </Modal>
   );
 };
