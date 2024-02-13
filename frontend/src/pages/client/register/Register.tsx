@@ -164,7 +164,7 @@ const Register = () => {
   };
 
   const submitPaymentForm = async () => {
-    if (eventInfo && !eventInfo.payedEvent) {
+    if ((eventInfo && !eventInfo.payedEvent) || pricing.total <= 0) {
       setIsLoading(true);
       await submit();
       setIsLoading(false);
@@ -198,7 +198,7 @@ const Register = () => {
     let transactionFees = 0;
     let total = discountedPrice;
 
-    if (paymentMethod && paymentChannel) {
+    if (paymentMethod && paymentChannel && discountedPrice > 0) {
       try {
         setIsLoading(true);
         const response = await api.query(
