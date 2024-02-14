@@ -40,6 +40,16 @@ interface createApiProps<D, T = D> {
   output?: (dto: D) => T;
 }
 
+const getUrl = (apiService: ApiService) => {
+  const map: Record<ApiService, string> = {
+    events: import.meta.env.VITE_API_EVENTS_BASE_URL,
+    auth: import.meta.env.VITE_API_AUTH_BASE_URL,
+    payments: import.meta.env.VITE_API_PAYMENT_BASE_URL
+  };
+
+  return map[apiService];
+};
+
 export type GenericReturn<T> = AxiosResponse<T> & CustomAxiosError;
 
 export function createApi<D, T = D>(
@@ -47,11 +57,7 @@ export function createApi<D, T = D>(
   staleTime?: number,
   cacheTime?: number
 ) {
-  const urlMap = new Map<string, string>();
-  urlMap.set('events', import.meta.env.VITE_API_EVENTS_BASE_URL);
-  urlMap.set('auth', import.meta.env.VITE_API_AUTH_BASE_URL);
-  urlMap.set('payments', import.meta.env.VITE_API_PAYMENT_BASE_URL);
-  const baseURL = urlMap.get(apiService);
+  const baseURL = getUrl(apiService);
 
   const api = axios.create();
   const queryFn = async (signal?: AbortSignal) => {
