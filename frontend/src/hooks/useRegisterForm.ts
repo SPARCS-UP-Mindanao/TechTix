@@ -98,7 +98,6 @@ export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) 
     }
   });
 
-  console.log(form.formState.errors);
   const submit = form.handleSubmit(async (values) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { discountPercentage, transactionFee, paymentChannel, paymentMethod, discountedPrice, total, ...registrationInfo } = values;
