@@ -1,8 +1,10 @@
+import { FC } from 'react';
+
 interface SuccessProps {
   eventName: string;
 }
 
-const Success = ({ eventName }: SuccessProps) => {
+const SuccessStep: FC<SuccessProps> = ({ eventName }) => {
   return (
     <div className="text-center pt-8 space-y-4">
       <p>Thank you for signing up for {eventName}. See you there!</p>
@@ -11,4 +13,4 @@ const Success = ({ eventName }: SuccessProps) => {
   );
 };
 
-export default Success;
+export default SuccessStep;

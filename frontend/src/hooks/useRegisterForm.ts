@@ -2,8 +2,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { registerUserInEvent } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { PaymentChannel, PaymentMethod } from '@/model/payments';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { RegisterStepId } from '@/pages/client/register/Steps';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -37,22 +39,13 @@ const RegisterFormSchema = z.object({
   title: z.string().min(1, {
     message: 'Please enter your title'
   }),
-  gcashPayment: z
-    .string()
-    .min(1, {
-      message: 'Please submit a screenshot of your Gcash payment'
-    })
-    .nullish(),
-  referenceNumber: z
-    .string()
-    .min(1, {
-      message: 'Please enter your Gcash reference number'
-    })
-    .refine((value) => value.length === 13, {
-      message: 'Please enter a valid Gcash reference number'
-    })
-    .nullish(),
   discountCode: z.string().optional(),
+  discountPercentage: z.number().optional(),
+  transactionFee: z.number().optional().nullish(),
+  paymentMethod: z.custom<PaymentMethod | null>().optional(),
+  paymentChannel: z.custom<PaymentChannel | null>().optional(),
+  discountedPrice: z.number().optional(),
+  total: z.number().optional(),
   amountPaid: z
     .number()
     .min(0, {
@@ -63,31 +56,58 @@ const RegisterFormSchema = z.object({
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
+export type RegisterField = keyof RegisterFormValues;
+
+type RegisterFieldMap = Partial<Record<RegisterStepId, RegisterField[]>>;
+
+export const REGISTER_STEPS_FIELD: RegisterFieldMap = {
+  UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
+  PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience']
+};
+
 export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const form = useForm<RegisterFormValues>({
     mode: 'onChange',
     resolver: zodResolver(RegisterFormSchema),
-    defaultValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-      contactNumber: '',
-      careerStatus: '',
-      yearsOfExperience: '',
-      organization: '',
-      title: ''
+    defaultValues: async () => {
+      const savedState = localStorage.getItem('formState');
+      if (savedState) {
+        const formState = JSON.parse(savedState);
+        return formState;
+      }
+
+      return {
+        email: '',
+        firstName: '',
+        lastName: '',
+        contactNumber: '',
+        careerStatus: '',
+        yearsOfExperience: '',
+        organization: '',
+        title: '',
+        discountCode: '',
+        discountPercentage: 0,
+        transactionFee: null,
+        paymentMethod: null,
+        paymentChannel: null,
+        discountedPrice: 0,
+        total: 0
+      };
     }
   });
 
+  console.log(form.formState.errors);
   const submit = form.handleSubmit(async (values) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { discountPercentage, transactionFee, paymentChannel, paymentMethod, discountedPrice, total, ...registrationInfo } = values;
     try {
       const response = await api.execute(
         registerUserInEvent({
           eventId: entryId,
           certificateClaimed: false,
-          ...values
+          ...registrationInfo
         })
       );
       if (response.status === 200) {

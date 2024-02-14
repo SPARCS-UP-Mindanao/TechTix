@@ -1,7 +1,7 @@
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 
-const RegisterForm1 = () => {
+const UserBioStep = () => {
   return (
     <>
       <FormItem name="firstName">
@@ -47,4 +47,4 @@ const RegisterForm1 = () => {
   );
 };
 
-export default RegisterForm1;
+export default UserBioStep;
