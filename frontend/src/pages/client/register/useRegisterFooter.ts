@@ -18,6 +18,8 @@ export const useRegisterFooter = (
   fieldsToCheck: RegisterField[],
   setCurrentStep: (step: RegisterStep) => void
 ) => {
+  console.log(baseUrl);
+
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { errorToast } = useNotifyToast();
