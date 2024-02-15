@@ -19,7 +19,7 @@ class CommonConstants:
 
     LATEST_VERSION = 'latestVersion'
     ENTRY_STATUS = 'entryStatus'
-    createDate = 'createDate'
+    CREATE_DATE = 'createDate'
     UPDATE_DATE = 'updateDate'
     CREATED_BY = 'createdBy'
     UPDATED_BY = 'updatedBy'
@@ -36,7 +36,7 @@ class CommonConstants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENTRY_ID,
-        createDate,
+        CREATE_DATE,
         UPDATE_DATE,
         CREATED_BY,
         UPDATED_BY,
@@ -56,4 +56,3 @@ class AcceptanceStatus(str, Enum):
     PENDING = 'PENDING'
     ACCEPTED = 'ACCEPTED'
     REJECTED = 'REJECTED'
-
