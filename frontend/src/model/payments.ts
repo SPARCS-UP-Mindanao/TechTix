@@ -20,26 +20,26 @@ export type PaymentChannel = eWalletChannelCode | DirectDebitChannelCode;
 
 interface PaymentIn {
   amount: number;
-  success_return_url: string;
-  failure_return_url: string;
-  cancel_return_url?: string;
+  successReturnUrl: string;
+  failureReturnUrl: string;
+  cancelReturnUrl?: string;
 }
 
 export interface EWalletPaymentIn extends PaymentIn {
-  reference_id: string;
-  channel_code: eWalletChannelCode;
+  referenceId: string;
+  channelCode: eWalletChannelCode;
 }
 
 export interface DirectDebitPaymentIn extends PaymentIn {
   email: string;
-  given_names: string;
+  givenNames: string;
   surname: string;
-  channel_code: DirectDebitChannelCode;
+  channelCode: DirectDebitChannelCode;
 }
 
 export interface PaymentRequestOut {
-  create_date: string;
-  payment_url: string;
-  payment_request_id: string;
-  reference_id: string;
+  createDate: string;
+  paymentUrl: string;
+  paymentRequestId: string;
+  referenceId: string;
 }

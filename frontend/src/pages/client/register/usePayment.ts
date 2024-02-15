@@ -24,18 +24,18 @@ export const usePayment = (baseUrlPath: string) => {
       setIsRequestingPayment(true);
       const response = await api.execute(
         createEwalletPaymentRequest({
-          reference_id: referenceId,
+          referenceId: referenceId,
           amount: total,
-          channel_code: paymentChannel,
-          failure_return_url: `${baseUrlPath}?step=Payment`,
-          success_return_url: `${baseUrlPath}?step=Success`,
-          cancel_return_url: `${baseUrlPath}?step=Payment`
+          channelCode: paymentChannel,
+          failureReturnUrl: `${baseUrlPath}?step=Payment`,
+          successReturnUrl: `${baseUrlPath}?step=Success`,
+          cancelReturnUrl: `${baseUrlPath}?step=Payment`
         })
       );
 
       if (response.status === 200) {
-        localStorage.setItem('referenceId', JSON.stringify(response.data.reference_id));
-        window.location.href = response.data.payment_url;
+        localStorage.setItem('referenceId', JSON.stringify(response.data.referenceId));
+        window.location.href = response.data.paymentUrl;
       }
     } catch (error) {
       errorToast({
@@ -57,18 +57,18 @@ export const usePayment = (baseUrlPath: string) => {
       const response = await api.execute(
         initiateDirectDebitPayment({
           email,
-          given_names: firstName,
+          givenNames: firstName,
           surname: lastName,
           amount: total,
-          channel_code: paymentChannel,
-          failure_return_url: `${baseUrlPath}?step=Payment`,
-          success_return_url: `${baseUrlPath}?step=Success`
+          channelCode: paymentChannel,
+          failureReturnUrl: `${baseUrlPath}?step=Payment`,
+          successReturnUrl: `${baseUrlPath}?step=Success`
         })
       );
 
       if (response.status === 200) {
-        localStorage.setItem('referenceId', JSON.stringify(response.data.reference_id));
-        window.location.href = response.data.payment_url;
+        localStorage.setItem('referenceId', JSON.stringify(response.data.referenceId));
+        window.location.href = response.data.paymentUrl;
       }
     } catch (error) {
       errorToast({
