@@ -1,3 +1,17 @@
+export type RegistrationFormFields =
+  | 'email'
+  | 'firstName'
+  | 'lastName'
+  | 'contactNumber'
+  | 'careerStatus'
+  | 'yearsOfExperience'
+  | 'organization'
+  | 'title'
+  | 'gcashPayment'
+  | 'referenceNumber'
+  | 'discountCode'
+  | 'amountPaid';
+
 export interface Registration {
   firstName: string;
   lastName: string;

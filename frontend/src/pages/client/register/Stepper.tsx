@@ -1,13 +1,17 @@
 import { cn } from '@/utils/classes';
+import { RegisterStep } from './Steps';
 import * as Slider from '@radix-ui/react-slider';
 
 interface StepperProps {
-  steps: string[];
-  currentStep: string;
+  steps: RegisterStep[];
+  currentStep: RegisterStep;
 }
+
 const Stepper = ({ steps, currentStep }: StepperProps) => {
-  const interval = 100 / (steps.length - 1);
-  const arrayOfValues = steps.map((_, index) => index * interval);
+  const visibleSteps = steps.filter((step) => step.title && step.id !== 'Success');
+  const interval = 100 / (visibleSteps.length - 1);
+  const arrayOfValues = visibleSteps.map((_, index) => index * interval);
+
   return (
     <div className="my-8">
       <Slider.Root
@@ -19,13 +23,13 @@ const Stepper = ({ steps, currentStep }: StepperProps) => {
         <Slider.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary">
           <Slider.Range className="absolute h-full bg-primary px-1" />
         </Slider.Track>
-        {steps.map((step, index) => (
+        {visibleSteps.map((step, index) => (
           <Slider.Thumb
             className={cn(
               'flex items-center justify-center h-8 w-8 rounded-full font-subjectivity bg-neutrals-200 text-primary transition-colors disabled:pointer-events-none',
-              step === currentStep && 'bg-primary text-neutral-200'
+              step.id === currentStep.id && 'bg-primary text-neutral-200'
             )}
-            key={step}
+            key={step.id}
           >
             {index + 1}
           </Slider.Thumb>

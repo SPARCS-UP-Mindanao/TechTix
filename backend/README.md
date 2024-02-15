@@ -97,6 +97,19 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    serverless deploy --stage 'dev' --aws-profile 'sparcs' --verbose
    ```
 
+## Format Checking
+We now use Pre-commit for enforcing code formatting and linting. It runs our formatting libraries before the code is committed. This ensures that the code is always formatted and linted before it is added to the codebase.
+
+To install pre-commit, run the following command:
+```shell
+pip install pre-commit
+```
+
+To manually run pre-commit, run the following command:
+```shell
+pre-commit run --all-files
+```
+
 ## Resources
 
 - [FastAPI](https://fastapi.tiangolo.com/)

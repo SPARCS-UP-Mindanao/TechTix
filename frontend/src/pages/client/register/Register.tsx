@@ -1,100 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
-import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
-import Icon from '@/components/Icon';
 import ImageViewer from '@/components/ImageViewer';
 import Separator from '@/components/Separator';
-import { getDiscount } from '@/api/discounts';
-import { getEvent } from '@/api/events';
-import { getEventRegistrationWithEmail } from '@/api/registrations';
-import { Pricing } from '@/model/discount';
-import { Event } from '@/model/events';
-import { isEmpty } from '@/utils/functions';
-import { useApiQuery, useApi } from '@/hooks/useApi';
-import { useMetaData } from '@/hooks/useMetaData';
-import { useNotifyToast } from '@/hooks/useNotifyToast';
-import { RegisterFormValues, useRegisterForm } from '@/hooks/useRegisterForm';
+import { REGISTER_STEPS_FIELD, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
-import RegisterForm1 from './RegisterForm1';
-import RegisterForm2 from './RegisterForm2';
-import RegisterForm3 from './RegisterForm3';
+import RegisterFooter from './RegisterFooter';
 import RegisterFormLoading from './RegisterFormSkeleton';
+import RegisterFormSubmittingSkeleton from './RegisterFormSubmittingSkeleton';
 import Stepper from './Stepper';
-import Success from './Success';
-import Summary from './Summary';
-
-// TODO: Add success page
-let REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'GCash', 'Summary', 'Success'];
-type RegisterSteps = (typeof REGISTER_STEPS)[number];
-let REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'GCash', 'Summary'];
-
-const getStepTitle = (step: RegisterSteps) => {
-  const map: Record<RegisterSteps, string> = {
-    EventDetails: 'Register',
-    UserBio: 'Personal Information',
-    PersonalInfo: 'Professional Information',
-    GCash: 'GCash Payment',
-    Summary: 'Summary',
-    Success: 'Registration Successful!'
-  };
-
-  return map[step];
-};
-
-type RegisterField = keyof RegisterFormValues;
-type RegisterFieldMap = Partial<Record<RegisterSteps, RegisterField[]>>;
-
-const REGISTER_STEPS_FIELD: RegisterFieldMap = {
-  UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
-  PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience'],
-  GCash: ['gcashPayment', 'referenceNumber']
-};
+import { RegisterStep, RegisterSteps, RegisterStepsWithPayment, STEP_EVENT_DETAILS, STEP_SUCCESS } from './Steps';
+import PaymentStep from './steps/PaymentStep';
+import PersonalInfoStep from './steps/PersonalInfoStep';
+import SuccessStep from './steps/SuccessStep';
+import SummaryStep from './steps/SummaryStep';
+import UserBioStep from './steps/UserBioStep';
+import { useRegisterPage } from './useRegisterPage';
+import { useSuccess } from './useSuccess';
 
 const Register = () => {
-  const setMetaData = useMetaData();
-  const { successToast, errorToast } = useNotifyToast();
   const { eventId } = useParams();
-  const [currentStep, setCurrentStep] = useState<RegisterSteps>(REGISTER_STEPS[0]);
-  const navigateOnSuccess = () => setCurrentStep('Success');
-  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
+
+  const navigateOnSuccess = () => setCurrentStep(STEP_SUCCESS);
   const { form, submit } = useRegisterForm(eventId!, navigateOnSuccess);
-  const { setValue, getValues } = form;
-  const api = useApi();
-  const [pricing, setPricing] = useState<Pricing>({ price: 0, discount: 0, total: 0 });
-  const [eventInfo, setEventInfo] = useState<Event | undefined>();
+  const submitForm = async () => await submit();
 
-  useEffect(() => {
-    if (isFetching || !response || (response && !response.data)) {
-      return;
-    }
-    const eventData = response.data;
-    setEventInfo(eventData);
-    const { price } = eventData;
-    setPricing({
-      price: price,
-      discount: 0,
-      total: price
-    });
+  const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
 
-    if (!eventData.payedEvent) {
-      REGISTER_STEPS = ['EventDetails', 'UserBio', 'PersonalInfo', 'Summary', 'Success'];
-      REGISTER_STEPS_DISPLAY = ['UserBio', 'PersonalInfo', 'Summary'];
-    }
-  }, [response]);
+  const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
 
-  useEffect(() => {
-    setValue('amountPaid', pricing.total);
-  }, [eventInfo]);
+  const { isSuccessLoading } = useSuccess(currentStep, submitForm);
 
   if (isFetching) {
     return <RegisterFormLoading />;
   }
 
-  if (!response || (response && !response.data && response.errorData) || !eventInfo) {
+  if (!response || (response && !response.data && response.errorData)) {
     return <ErrorPage error={response} />;
   }
+
+  const eventInfo = response.data;
 
   if (eventInfo.status === 'draft') {
     return <ErrorPage />;
@@ -118,146 +64,13 @@ const Register = () => {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
-  setMetaData({
-    title: eventInfo.name,
-    iconUrl: eventInfo.logoUrl
-  });
+  if (isSuccessLoading) {
+    return <RegisterFormSubmittingSkeleton />;
+  }
 
-  const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep] || [];
-  const scrollToView = () => {
-    const viewportHeight = window.innerHeight;
-    const scrollAmount = viewportHeight * 0.2;
-    window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
-  };
-  const checkDiscountCode = async () => {
-    const currentDiscountCode = getValues('discountCode');
-    if (!eventId || !currentDiscountCode) {
-      errorToast({
-        title: 'Discount Code is Empty',
-        description: 'The discount code you entered is empty. Please enter a valid discount code.'
-      });
-      return;
-    }
-
-    try {
-      const response = await api.query(getDiscount(currentDiscountCode, eventId));
-      const discountCode = response.data;
-      if (response.status === 200) {
-        if (discountCode.claimed) {
-          errorToast({
-            title: 'Discount Code Already Claimed',
-            description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
-          });
-          return;
-        }
-        const price = eventInfo.price * (1 - discountCode.discountPercentage);
-        setPricing({
-          price: eventInfo.price,
-          discount: discountCode.discountPercentage,
-          total: price
-        });
-        setValue('amountPaid', price);
-        successToast({
-          title: 'Valid Discount Code',
-          description: 'The discount code you entered is valid. Please proceed to the next step.'
-        });
-      } else if (response.status === 404) {
-        errorToast({
-          title: 'Invalid Discount Code',
-          description: 'The discount code you entered is invalid. Please enter a different discount code.'
-        });
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const nextStep = async () => {
-    const moveToNextStep = () => {
-      const currentIndex = REGISTER_STEPS.indexOf(currentStep);
-      if (currentIndex < REGISTER_STEPS.length - 1) {
-        setCurrentStep(REGISTER_STEPS[currentIndex + 1]);
-        scrollToView();
-      }
-    };
-
-    const currentEmail = getValues('email');
-    const { eventId } = eventInfo;
-    if (currentStep == 'UserBio' && eventId && currentEmail) {
-      try {
-        const response = await api.query(getEventRegistrationWithEmail(eventId, currentEmail));
-        if (response.status === 200) {
-          errorToast({
-            title: 'Email already registered',
-            description: 'The email you entered has already been used. Please enter a different email.'
-          });
-          return;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    const currentDiscountCode = getValues('discountCode');
-    if (currentStep == 'GCash' && currentDiscountCode && eventId) {
-      try {
-        const response = await api.query(getDiscount(currentDiscountCode, eventId));
-        const discountCode = response.data;
-        if (response.status === 200) {
-          const price = eventInfo.price * (1 - discountCode.discountPercentage);
-          setPricing({
-            price: eventInfo.price,
-            discount: discountCode.discountPercentage,
-            total: price
-          });
-          setValue('amountPaid', price);
-
-          if (discountCode.claimed) {
-            errorToast({
-              title: 'Discount Code Already Claimed',
-              description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
-            });
-            return;
-          }
-        } else if (response.status === 404) {
-          errorToast({
-            title: 'Invalid Discount Code',
-            description: 'The discount code you entered is invalid. Please enter a different discount code.'
-          });
-          return;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    if (isEmpty(fieldsToCheck)) {
-      moveToNextStep();
-    } else {
-      await form.trigger(fieldsToCheck).then((isValid) => {
-        if (isValid) {
-          moveToNextStep();
-          scrollToView();
-        }
-      });
-    }
-  };
-
-  const prevStep = () => {
-    const currentIndex = REGISTER_STEPS.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(REGISTER_STEPS[currentIndex - 1]);
-    }
-  };
-
-  const showStepper = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) !== REGISTER_STEPS.length - 1;
-  const showRegisterButton = REGISTER_STEPS.indexOf(currentStep) === 0;
-  const showNextButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 2;
-  const showPrevButton = REGISTER_STEPS.indexOf(currentStep) !== 0 && REGISTER_STEPS.indexOf(currentStep) < REGISTER_STEPS.length - 1;
-  const showSubmitButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 2;
-  const showReloadButton = REGISTER_STEPS.indexOf(currentStep) === REGISTER_STEPS.length - 1;
-  const reloadPage = () => window.location.reload();
+  const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep.id] || [];
+  const STEPS = eventInfo.payedEvent ? RegisterStepsWithPayment : RegisterSteps;
+  const showStepper = currentStep.id !== 'EventDetails' && currentStep.id !== 'Success';
 
   return (
     <section className="flex flex-col items-center px-4">
@@ -270,47 +83,21 @@ const Register = () => {
 
         <FormProvider {...form}>
           <main className="w-full">
-            {currentStep !== 'EventDetails' && <h1 className="text-xl text-center">{getStepTitle(currentStep)}</h1>}
-            {showStepper && <Stepper steps={REGISTER_STEPS_DISPLAY} currentStep={currentStep} />}
-            <div className="space-y-4">
-              {currentStep === 'EventDetails' && <EventDetails event={eventInfo} />}
-              {currentStep === 'UserBio' && <RegisterForm1 />}
-              {currentStep === 'PersonalInfo' && <RegisterForm2 />}
-              {currentStep === 'GCash' && <RegisterForm3 pricing={pricing} checkDiscountCode={checkDiscountCode} event={eventInfo} />}
-            </div>
-            {currentStep === 'Summary' && <Summary event={eventInfo} />}
-            {currentStep === 'Success' && <Success eventName={eventInfo.name} />}
-            {currentStep !== 'EventDetails' && currentStep !== 'Success' && <Separator className="my-4" />}
+            {currentStep.id !== 'EventDetails' && <h1 className="text-xl text-center">{currentStep.title}</h1>}
+            {showStepper && <Stepper steps={STEPS} currentStep={currentStep} />}
 
-            <div className="flex w-full justify-around my-6">
-              {showRegisterButton && (
-                <Button onClick={nextStep} variant={'primaryGradient'} className="py-6 px-20">
-                  Register
-                </Button>
-              )}
-              {showPrevButton && (
-                <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
-                  <Icon name="ChevronLeft" />
-                  Back
-                </Button>
-              )}
-              {showNextButton && (
-                <Button onClick={nextStep} className="py-6 sm:px-16">
-                  Next
-                  <Icon name="ChevronRight" />
-                </Button>
-              )}
-              {showSubmitButton && (
-                <Button onClick={submit} type="submit" className="py-6 sm:px-16">
-                  Submit
-                </Button>
-              )}
-              {showReloadButton && (
-                <Button onClick={reloadPage} className="py-6 sm:px-16">
-                  Sign up another person
-                </Button>
-              )}
+            <div className="space-y-4">
+              {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
+              {currentStep.id === 'UserBio' && <UserBioStep />}
+              {currentStep.id === 'PersonalInfo' && <PersonalInfoStep />}
+              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} />}
             </div>
+
+            {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
+            {currentStep.id === 'Success' && <SuccessStep eventName={eventInfo.name} />}
+            {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4" />}
+
+            <RegisterFooter event={eventInfo} steps={STEPS} currentStep={currentStep} fieldsToCheck={fieldsToCheck} setCurrentStep={setCurrentStep} />
           </main>
         </FormProvider>
       </div>

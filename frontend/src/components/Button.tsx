@@ -43,14 +43,31 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   asChild?: boolean;
   loading?: boolean;
   icon?: IconName;
+  iconPlacement?: 'left' | 'right';
   iconClassname?: string;
   isExternal?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, children, icon, iconClassname, asChild = false, loading = false, disabled = false, isExternal = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      children,
+      icon,
+      iconClassname,
+      iconPlacement = 'left',
+      asChild = false,
+      loading = false,
+      disabled = false,
+      isExternal = false,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'button';
-    const iconStyles = cn('flex-shrink-0', size !== 'icon' && 'mr-3', iconClassname, loading && 'animate-spin');
+    const iconStyles = cn('flex-shrink-0', size !== 'icon' && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'), iconClassname, loading && 'animate-spin');
 
     const getButtonContent = () => {
       if (icon) {
@@ -65,13 +82,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <>
           {loading && <Loader2 className={iconStyles} />}
           {children}
-          {isExternal && <ExternalLink className="ml-2 h-4 w-4" />}
+          {isExternal && <ExternalLink className="h-4 w-4" />}
         </>
       );
     };
 
     return (
-      <Comp className={cn(buttonVariants({ variant, size, loading, className }))} ref={ref} disabled={disabled || loading} {...props}>
+      <Comp
+        className={cn(buttonVariants({ variant, size, loading, className }), iconPlacement === 'right' && 'flex-row-reverse')}
+        ref={ref}
+        disabled={disabled || loading}
+        {...props}
+      >
         {getButtonContent()}
       </Comp>
     );
