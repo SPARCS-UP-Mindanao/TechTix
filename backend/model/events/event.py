@@ -58,6 +58,10 @@ class Event(Model):
     gcashName = UnicodeAttribute(null=True)
     gcashNumber = UnicodeAttribute(null=True)
 
+    isLimitedSlot = BooleanAttribute(default=False)
+    registrationCount = NumberAttribute(default=0)
+    maximumSlots = NumberAttribute(null=True)
+
     eventIdIndex = EventIdIndex()
 
 
@@ -81,6 +85,10 @@ class EventIn(BaseModel):
     gcashQRCode: str = Field(None, title='GCash QR Code')
     gcashName: str = Field(None, title='Gcash Name')
     gcashNumber: str = Field(None, title='Gcash Number')
+
+    isLimitedSlot: bool = Field(None, title='Is Limited Slot')
+    registrationCount: int = Field(None, title='Registration Count')
+    maximumSlots: int = Field(None, title='Maximum Slots')
 
     status: Optional[EventStatus] = Field(None, title='Event Status')
 

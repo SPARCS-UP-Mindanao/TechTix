@@ -70,6 +70,14 @@ class RegistrationUsecase:
                 content={'message': f'Registration with email {email} already exists'},
             )
 
+        # check if registration count in event is full
+        future_registrations = event.registrationCount
+        if event.isLimitedSlot and future_registrations >= event.maximumSlots:
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
+            )
+
         registration_id = ulid.ulid()
         discount_code = registration_in.discountCode
         if discount_code:
@@ -88,6 +96,10 @@ class RegistrationUsecase:
         ) = self.__registrations_repository.store_registration(
             registration_in=registration_in, registration_id=registration_id
         )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
