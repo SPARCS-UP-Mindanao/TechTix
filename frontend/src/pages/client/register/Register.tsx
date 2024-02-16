@@ -60,7 +60,7 @@ const Register = () => {
     );
   }
 
-  if (eventInfo.payedEvent && eventInfo.status === 'completed') {
+  if (eventInfo.paidEvent && eventInfo.status === 'completed') {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
@@ -69,7 +69,7 @@ const Register = () => {
   }
 
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep.id] || [];
-  const STEPS = eventInfo.payedEvent ? RegisterStepsWithPayment : RegisterSteps;
+  const STEPS = eventInfo.paidEvent ? RegisterStepsWithPayment : RegisterSteps;
   const showStepper = currentStep.id !== 'EventDetails' && currentStep.id !== 'Success';
 
   return (

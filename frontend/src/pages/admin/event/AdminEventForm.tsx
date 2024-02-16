@@ -40,7 +40,8 @@ const AdminEventFormSpacer: FC = () => {
 const AdminEventForm: FC<Props> = ({ event }) => {
   const eventId = event?.eventId;
   const { form, submit, cancel } = useAdminEventForm(event);
-  const paidEvent = useWatch({ name: 'payedEvent', control: form.control });
+  const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
+  const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
   const { isSubmitting, dirtyFields } = useFormState({ control: form.control });
   const isFormClean = isEmpty(dirtyFields);
 
@@ -92,12 +93,12 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <Separator className="my-4" />
 
-        <FormItem name="payedEvent">
+        <FormItem name="paidEvent">
           {({ field }) => (
             <AdminEventFormItem halfSpace>
               <div className="flex flex-row gap-2">
                 <FormLabel>Is this a paid event?</FormLabel>
-                <Switch id="isPayedEvent" checked={field.value} onCheckedChange={field.onChange} />
+                <Switch id="isPaidEvent" checked={field.value} onCheckedChange={field.onChange} />
               </div>
               <FormError />
             </AdminEventFormItem>
@@ -109,6 +110,32 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             {({ field }) => (
               <AdminEventFormItem halfSpace>
                 <FormLabel>Price</FormLabel>
+                <Input type="number" {...field} />
+                <FormError />
+              </AdminEventFormItem>
+            )}
+          </FormItem>
+        )}
+
+        <Separator className="my-4" />
+
+        <FormItem name="isLimitedSlot">
+          {({ field }) => (
+            <AdminEventFormItem halfSpace>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Are slots limited?</FormLabel>
+                <Switch id="isLimitedSlot" checked={field.value} onCheckedChange={field.onChange} />
+              </div>
+              <FormError />
+            </AdminEventFormItem>
+          )}
+        </FormItem>
+
+        {isLimitedSlot && (
+          <FormItem name="maximumSlots">
+            {({ field }) => (
+              <AdminEventFormItem halfSpace>
+                <FormLabel>Maximum Slots</FormLabel>
                 <Input type="number" {...field} />
                 <FormError />
               </AdminEventFormItem>

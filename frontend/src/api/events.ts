@@ -13,11 +13,14 @@ export interface EventDto {
   logoUrl: string;
   logoLink: string;
   autoConfirm: boolean;
-  payedEvent: boolean;
+  paidEvent: boolean;
   price: number;
   certificateTemplate: string;
   status: EventStatus;
   eventId: string;
+  isLimitedSlot?: boolean;
+  registrationCount?: number;
+  maximumSlots?: number;
   createDate: string;
   updateDate: string;
   createdBy: string;
@@ -33,7 +36,7 @@ export interface PresignedUrl {
 
 const mapEventDtoToEvent = (event: EventDto): Event => ({
   ...event,
-  payedEvent: event.payedEvent ?? false
+  paidEvent: event.paidEvent ?? false
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
