@@ -29,7 +29,7 @@ export const EventFormSchema = z.object({
   venue: z.string().min(1, {
     message: 'Please enter the event venue'
   }),
-  payedEvent: z.boolean(),
+  paidEvent: z.boolean(),
   price: z.coerce.number().min(0, {
     message: 'Please enter the event price'
   }),
@@ -45,6 +45,13 @@ export const EventFormSchema = z.object({
     .string()
     .refine(isValidContactNumber, {
       message: 'Please enter a valid PH contact number'
+    })
+    .nullish(),
+  isLimitedSlot: z.boolean().nullish(),
+  maximumSlots: z.coerce
+    .number()
+    .min(0, {
+      message: 'Please enter a valid slot count'
     })
     .nullish()
 });
@@ -73,9 +80,10 @@ export const useAdminEventForm = (event?: Event) => {
         endDate: '',
         venue: '',
         autoConfirm: false,
-        payedEvent: false,
+        paidEvent: false,
         price: 0,
-        status: 'draft'
+        status: 'draft',
+        maximumSlots: 0
       };
     }
   });

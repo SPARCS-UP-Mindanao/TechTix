@@ -140,7 +140,7 @@ export const useRegisterFooter = (
   };
 
   const onSubmitForm = async () => {
-    if (!event.payedEvent || total === 0) {
+    if (!event.paidEvent || total === 0) {
       setCurrentStep(STEP_SUCCESS);
     }
 

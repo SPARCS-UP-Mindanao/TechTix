@@ -8,7 +8,7 @@ export interface Event {
   bannerLink?: string | null;
   logoLink?: string | null;
   autoConfirm?: boolean;
-  payedEvent: boolean;
+  paidEvent: boolean;
   price: number;
   certificateTemplate?: string | null;
   gcashQRCode?: string | null;
@@ -16,6 +16,9 @@ export interface Event {
   gcashNumber?: string | null;
   status: EventStatus;
   eventId?: string;
+  isLimitedSlot?: boolean | null;
+  registrationCount?: number | null;
+  maximumSlots?: number | null;
   createDate?: string;
   updateDate?: string;
   createdBy?: string;

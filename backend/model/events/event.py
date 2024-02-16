@@ -50,7 +50,7 @@ class Event(Model):
     bannerLink = UnicodeAttribute(null=True)
     logoLink = UnicodeAttribute(null=True)
     autoConfirm = BooleanAttribute(null=True)
-    payedEvent = BooleanAttribute(null=True)
+    paidEvent = BooleanAttribute(null=True)
     price = NumberAttribute(null=True)
     certificateTemplate = UnicodeAttribute(null=True)
 
@@ -76,7 +76,7 @@ class EventIn(BaseModel):
     endDate: datetime = Field(None, title='Date')
     venue: str = Field(None, title='Venue')
     autoConfirm: bool = Field(None, title='Auto Confirm')
-    payedEvent: bool = Field(None, title='Payed Event')
+    paidEvent: bool = Field(None, title='Paid Event')
     price: float = Field(None, title='Price')
     bannerLink: str = Field(None, title='Banner Link')
     logoLink: str = Field(None, title='Poster Link')

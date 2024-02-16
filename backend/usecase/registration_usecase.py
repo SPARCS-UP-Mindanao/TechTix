@@ -50,7 +50,7 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         # Check if the event is still open
-        if event.payedEvent and event.status != EventStatus.OPEN.value:
+        if event.paidEvent and event.status != EventStatus.OPEN.value:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': 'Event is not open for registration'},
