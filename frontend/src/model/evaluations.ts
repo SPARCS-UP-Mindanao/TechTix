@@ -7,7 +7,8 @@ const questionTypes = [
   'multiple_choice',
   'multiple_choice_dropdown',
   'multiple_answers',
-  'slider'
+  'slider',
+  'radio_buttons'
 ] as const;
 
 export interface QuestionConfigItem {

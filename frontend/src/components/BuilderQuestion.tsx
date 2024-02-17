@@ -87,6 +87,19 @@ const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPa
           </div>
         </div>
       );
+    case 'radio_buttons':
+      return (
+        <RadioGroup onValueChange={field.onChange} {...field} disabled={disabled} defaultValue="1">
+          <div className="flex justify-between px-2">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="flex flex-col items-center gap-2">
+                <span key={index}>{index + 1}</span>
+                <RadioGroupItem value={String(index + 1)} id={String(index + 1)} />
+              </div>
+            ))}
+          </div>
+        </RadioGroup>
+      );
   }
 };
 
