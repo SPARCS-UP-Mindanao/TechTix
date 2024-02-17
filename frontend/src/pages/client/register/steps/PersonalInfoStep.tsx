@@ -2,7 +2,7 @@ import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select';
 
-const RegisterForm2 = () => {
+const PersonalInfoStep = () => {
   return (
     <>
       <FormItem name="careerStatus">
@@ -67,4 +67,4 @@ const RegisterForm2 = () => {
   );
 };
 
-export default RegisterForm2;
+export default PersonalInfoStep;

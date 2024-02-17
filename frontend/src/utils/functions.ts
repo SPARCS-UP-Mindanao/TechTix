@@ -87,3 +87,13 @@ export const isValidContactNumber = (value: string) => {
   const phoneNumberPattern = /^\d{11}$/;
   return phoneNumberPattern.test(value);
 };
+
+export const getPathFromUrl = (url: string) => {
+  return url.split('?')[0];
+};
+
+export const baseUrl = getPathFromUrl(window.location.href);
+
+export const reloadPage = () => {
+  window.location.href = baseUrl;
+};

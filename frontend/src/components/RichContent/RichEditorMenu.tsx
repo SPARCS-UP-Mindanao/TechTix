@@ -164,7 +164,7 @@ interface RichEditorMenuProps {
 
 const RichEditorMenu = ({ editor }: RichEditorMenuProps) => {
   return (
-    <menu className="flex flex-wrap gap-x-8">
+    <menu className="flex flex-wrap gap-x-8 gap-y-2">
       <div>
         <EditorMenuOption editor={editor} id="bold" title="Bold" Icon={Bold} onClick={() => editor.chain().focus().toggleBold().run()} />
         <EditorMenuOption editor={editor} id="italic" title="Italic" Icon={Italic} onClick={() => editor.chain().focus().toggleItalic().run()} />

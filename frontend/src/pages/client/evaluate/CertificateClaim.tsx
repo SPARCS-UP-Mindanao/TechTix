@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
-import FileViewerComponent from '@/components/FileViewerComponent';
 import Icon from '@/components/Icon';
+import ImageViewer from '@/components/ImageViewer';
 import Skeleton from '@/components/Skeleton';
 import { useFileUrl } from '@/hooks/useFileUrl';
 import shareToLinkedIn from './shareToLinkedIn';
@@ -52,13 +52,13 @@ const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemp
   return (
     <>
       <div className="flex flex-col items-center h-[calc(100vh-64px)]">
-        <FileViewerComponent objectKey={logoLink} className="w-12 h-auto rounded-full" />
+        <ImageViewer objectKey={logoLink} className="w-12 h-auto rounded-full" />
         <div className="flex flex-col justify-center h-full items-center">
           <p className="text-2xl font-bold font-subjectivity leading-6 text-center">Here's your Certificate!</p>
           <div className="my-5 w-[91vw] max-w-2xl ">
             {certificateTemplateKey ? (
               <div>
-                <FileViewerComponent
+                <ImageViewer
                   objectKey={certificateTemplateKey}
                   className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full"
                 />

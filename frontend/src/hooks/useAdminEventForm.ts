@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { updateEvent, createEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { Event } from '@/model/events';
+import { Event, EventStatus } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -33,7 +33,9 @@ export const EventFormSchema = z.object({
   price: z.coerce.number().min(0, {
     message: 'Please enter the event price'
   }),
-  status: z.enum(['draft', 'open', 'cancelled', 'closed', 'completed']),
+  status: z.custom<EventStatus>().refine((value) => !isEmpty(value), {
+    message: 'Please select the event status'
+  }),
   bannerLink: z.string().nullish(),
   logoLink: z.string().nullish(),
   certificateTemplate: z.string().nullish(),
@@ -49,11 +51,7 @@ export const EventFormSchema = z.object({
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;
 
-interface EventFormProps {
-  event?: Event;
-}
-
-export const useAdminEventForm = ({ event }: EventFormProps) => {
+export const useAdminEventForm = (event?: Event) => {
   const navigate = useNavigate();
   const eventId = event?.eventId;
   const mode = eventId ? 'edit' : 'create';

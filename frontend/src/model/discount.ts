@@ -23,5 +23,7 @@ export interface CreateDiscounts {
 export interface Pricing {
   price: number;
   discount: number;
+  transactionFees: number;
   total: number;
+  discountedPrice: number;
 }

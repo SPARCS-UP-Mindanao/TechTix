@@ -26,7 +26,7 @@ const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, is
 
   return (
     <div className="h-1/2 group-hover:opacity-70 transition" style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}>
-      {isLoading && <Skeleton className="w-full h-full" />}
+      {isLoading && <Skeleton className="w-full h-full rounded-b-none" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
           {!isDeletingEvent && !isLoading && (

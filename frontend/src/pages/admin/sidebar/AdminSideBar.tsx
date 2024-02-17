@@ -56,6 +56,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
             (currentRouteSelected || selected) && 'text-primary-foreground bg-primary-700 md:text-primary-700 md:bg-primary-foreground pointer-events-none',
             !isSidebarOpen && 'justify-center'
           )}
+          title={optionName}
           onClick={onOptionSelect}
           variant="ghost"
           disabled={disabled}
