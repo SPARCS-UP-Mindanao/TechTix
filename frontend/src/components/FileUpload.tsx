@@ -1,5 +1,8 @@
 import { forwardRef, useMemo } from 'react';
-import { useFileUpload } from '@/hooks/useFileUpload';
+import { UseFormSetError, UseFormRegister, UseFormResetField } from 'react-hook-form';
+import { EVENT_UPLOAD_TYPE } from '@/model/events';
+import { EventFormValues } from '@/hooks/useAdminEventForm';
+import { useFileUpload, UploadInputType } from '@/hooks/useFileUpload';
 import { CardContainer, CardFooter, CardHeader } from './Card';
 import ImageViewer from './ImageViewer';
 import Input from './Input';
@@ -11,6 +14,9 @@ interface FileUploadProps {
   uploadType: string;
   value: string;
   onChange: (value: string) => void;
+  setError: UseFormSetError<UploadInputType>;
+  register: UseFormRegister<EventFormValues>;
+  resetField: UseFormResetField<EventFormValues>;
 }
 
 const extractImagePath = (path: string) => {
@@ -18,8 +24,10 @@ const extractImagePath = (path: string) => {
   return name;
 };
 
-const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ eventId, uploadType, value, onChange }, ref) => {
+const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ eventId, uploadType, value, onChange, setError, register }, ref) => {
   const { uploadProgress, isUploading, onFileChange } = useFileUpload(eventId, uploadType, onChange);
+  const uploadInputType = uploadType === EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE ? uploadType : uploadType + 'Link';
+
   const label = useMemo(() => {
     if (!value) {
       return 'No file uploaded';
@@ -38,7 +46,15 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ eventId, upl
         <ImageViewer objectKey={value} className="h-40 w-min object-cover" alt="" />
       </CardHeader>
       <CardFooter className="flex flex-wrap px-0 pb-2 gap-2 items-center w-full">
-        <Input id={`upload-custom-${uploadType}`} ref={ref} onChange={onFileChange} type="file" accept="image/*" className="hidden" />
+        <Input
+          {...register(uploadInputType as keyof UploadInputType)}
+          id={`upload-custom-${uploadType}`}
+          ref={ref}
+          onChange={(e) => onFileChange(e, setError, uploadInputType as keyof UploadInputType)}
+          type="file"
+          accept="image/*"
+          className="hidden"
+        />
         <Label
           role="button"
           htmlFor={`upload-custom-${uploadType}`}

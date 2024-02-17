@@ -1,8 +1,12 @@
 import { ChangeEvent, useState } from 'react';
+import { UseFormSetError } from 'react-hook-form';
 import { getPresignedUrl } from '@/api/events';
+import { EventFormValues } from './useAdminEventForm';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+
+export type UploadInputType = Pick<EventFormValues, 'bannerLink' | 'logoLink' | 'certificateTemplate'>;
 
 export const useFileUpload = (eventId: string, uploadType: string, onChange: (key: string) => void) => {
   const api = useApi();
@@ -15,13 +19,26 @@ export const useFileUpload = (eventId: string, uploadType: string, onChange: (ke
     return response.data;
   };
 
-  const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: ChangeEvent<HTMLInputElement>, setError: UseFormSetError<UploadInputType>, uploadInputType: keyof UploadInputType) => {
     if (!e.target.files) {
       return;
     }
 
-    setIsUploading(true);
     const selectedFileObj = e.target.files[0];
+
+    if (selectedFileObj.size > 1e7) {
+      errorToast({
+        title: 'File Upload Failed',
+        description: 'File size exceeds 10MB'
+      });
+      setError(uploadInputType, {
+        type: 'manual',
+        message: 'File size exceeds 10MB'
+      });
+      return;
+    }
+
+    setIsUploading(true);
 
     await uploadFile(selectedFileObj);
 

@@ -82,8 +82,7 @@ export const useAdminEventForm = (event?: Event) => {
         autoConfirm: false,
         paidEvent: false,
         price: 0,
-        status: 'draft',
-        maximumSlots: 0
+        status: 'draft'
       };
     }
   });
