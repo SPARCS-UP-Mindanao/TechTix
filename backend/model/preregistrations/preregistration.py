@@ -62,8 +62,7 @@ class PreRegistration(Model):
     certificateImgObjectKey = UnicodeAttribute(null=True)
     certificatePdfObjectKey = UnicodeAttribute(null=True)
     preRegistrationEmailSent = BooleanAttribute(default=False)
-    confirmationEmailSent = BooleanAttribute(default=False)
-    evaluationEmailSent = BooleanAttribute(default=False)
+    acceptanceEmailSent = BooleanAttribute(default=False)
     certificateGenerated = BooleanAttribute(default=False)
     acceptanceStatus = UnicodeAttribute(null=True)
     

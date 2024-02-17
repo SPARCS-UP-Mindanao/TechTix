@@ -4,6 +4,7 @@ from typing import List, Union
 
 import ulid
 from model.events.events_constants import EventStatus
+from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
@@ -30,6 +31,9 @@ class PreRegistrationUsecase:
     def __init__(self):
         self.__preregistrations_repository = PreRegistrationsRepository()
         self.__events_repository = EventsRepository()
+        self.__email_usecase = EmailUsecase()
+        self.__discount_usecase = DiscountUsecase()
+        self.__file_s3_usecase = FileS3Usecase()
 
     def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
         """
@@ -50,7 +54,7 @@ class PreRegistrationUsecase:
         if not event.isApprovalFlow:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={'message': 'Event is not open for pre-registration blah'},
+                content={'message': 'Event is not open for pre-registration'},
             )
 
         # Check if the pre-registration with the same email already exists
@@ -85,7 +89,7 @@ class PreRegistrationUsecase:
             self.__email_usecase.send_preregistration_creation_email(preregistration=preregistration, event=event)
 
         preregistration_out = PreRegistrationOut(**preregistration_data)
-        return self.collect_pre_signed_url(preregistration_out)
+        return preregistration_out
 
     def update_preregistration(
         self, event_id: str, preregistration_id: str, preregistration_in: PreRegistrationPatch
@@ -101,7 +105,7 @@ class PreRegistrationUsecase:
             Union[JSONResponse, PreRegistrationOut]: If successful, returns the updated pre-registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        status, _, message = self.__events_repository.query_events(event_id=event_id)
+        status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -123,9 +127,13 @@ class PreRegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        if update_preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED and not update_preregistration.acceptanceEmailSent:
+            self.__email_usecase.send_preregistration_acceptance_email(preregistration=update_preregistration, event=event)
+
         preregistration_data = self.__convert_data_entry_to_dict(update_preregistration)
         preregistration_out = PreRegistrationOut(**preregistration_data)
-        return self.collect_pre_signed_url(preregistration_out)
+
+        return preregistration_out
 
     def get_preregistration(self, event_id: str, preregistration_id: str) -> Union[JSONResponse, PreRegistrationOut]:
         """
@@ -153,7 +161,7 @@ class PreRegistrationUsecase:
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
         preregistration_out = PreRegistrationOut(**preregistration_data)
 
-        return self.collect_pre_signed_url(preregistration_out)
+        return preregistration_out
 
     def get_preregistrations(self, event_id: str = None) -> Union[JSONResponse, List[PreRegistrationOut]]:
 
@@ -181,6 +189,19 @@ class PreRegistrationUsecase:
             return JSONResponse(status_code=status, content={'messsage': message})
 
         return [
-            self.collect_pre_signed_url(PreRegistrationOut(**self.__convert_data_entry_to_dict(preregistration)))
+            PreRegistrationOut(**self.__convert_data_entry_to_dict(preregistration))
             for preregistration in preregistrations
         ]
+
+    @staticmethod
+    def __convert_data_entry_to_dict(data_entry):
+        """
+        Converts a data entry to a dictionary.
+
+        Args:
+            data_entry: The data entry to be converted.
+
+        Returns:
+            dict: A dictionary representation of the data entry.
+        """
+        return json.loads(data_entry.to_json())

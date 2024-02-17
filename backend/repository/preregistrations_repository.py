@@ -230,7 +230,7 @@ class PreRegistrationsRepository:
                 updated_data.update(
                     updateDate=self.current_date,
                 )
-                actions = [getattr(PReRegistration, k).set(v) for k, v in updated_data.items()]
+                actions = [getattr(PreRegistration, k).set(v) for k, v in updated_data.items()]
                 transaction.update(preregistration_entry, actions=actions)
 
             preregistration_entry.refresh()
