@@ -89,8 +89,8 @@ const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPa
       );
     case 'radio_buttons':
       return (
-        <RadioGroup onValueChange={field.onChange} {...field} disabled={disabled} defaultValue="1">
-          <div className="flex justify-between px-2">
+        <RadioGroup onValueChange={field.onChange} {...field} disabled={disabled}>
+          <div className="flex justify-between px-2 mb-1">
             {[...Array(5)].map((_, index) => (
               <div key={index} className="flex flex-col items-center gap-2">
                 <span key={index}>{index + 1}</span>

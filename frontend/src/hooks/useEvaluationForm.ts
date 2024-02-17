@@ -58,6 +58,12 @@ export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObj
               }))
             : (acc[question.name] = z.string().optional());
         }
+      } else if (question.questionType === 'radio_buttons') {
+        {
+          question.required
+            ? (acc[question.name] = z.string().min(1, { message: 'This field is required' }).max(5))
+            : (acc[question.name] = z.string().min(1).max(5).optional());
+        }
       }
       return acc;
     },
