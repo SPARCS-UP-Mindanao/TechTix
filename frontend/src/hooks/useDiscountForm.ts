@@ -9,9 +9,14 @@ import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const DiscountFormSchema = z.object({
-  discountPercentage: z.coerce.number().min(0, {
-    message: 'Please enter a valid percentage'
-  }),
+  discountPercentage: z.coerce
+    .number()
+    .min(0, {
+      message: 'Please enter a valid percentage'
+    })
+    .max(100, {
+      message: 'Please enter a valid percentage'
+    }),
   quantity: z.coerce.number().min(0, {
     message: 'Please enter a valid quantity'
   }),
@@ -39,6 +44,7 @@ export const useDiscountForm = (eventId: string) => {
 
   const submit = form.handleSubmit(async (values) => {
     try {
+      values.discountPercentage = values.discountPercentage / 100;
       const response = await api.execute(createDiscount(values, eventId));
       if (response.status === 200) {
         successToast({
