@@ -97,6 +97,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
     setIsModalOpen(false);
     setShowDiscountCodes(false);
     setIsCopyClicked(false);
+    form.reset();
     await refetch();
   };
 
