@@ -1,12 +1,35 @@
 import { ChangeEvent, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { getPresignedUrl } from '@/api/events';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
-export const useFileUpload = (eventId: string, uploadType: string, onChange: (key: string) => void) => {
+const MAX_FILE_UPLOAD_SIZE = 1e7; // 10MB
+
+const isExtensionAllowed = (fileName: string) => {
+  const extensionDot = fileName.lastIndexOf('.');
+  const fileExtension = fileName.slice(extensionDot + 1).toLowerCase();
+
+  switch (fileExtension) {
+    case 'png':
+    case 'jpg':
+    case 'jpeg':
+    case 'svg':
+    case 'webp':
+    case 'ico':
+    case 'tiff':
+      return true;
+
+    default:
+      return false;
+  }
+};
+
+export const useFileUpload = (eventId: string, uploadType: string, onChange: (key: string) => void, name?: string) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
+  const formContext = useFormContext();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -19,12 +42,43 @@ export const useFileUpload = (eventId: string, uploadType: string, onChange: (ke
     if (!e.target.files) {
       return;
     }
+    const selectedFileObj = e.target.files[0];
+    const fileName = selectedFileObj.name;
+
+    if (!selectedFileObj) {
+      return;
+    }
+
+    if (!isExtensionAllowed(fileName)) {
+      errorToast({
+        title: 'File Upload Failed',
+        description: 'File type not allowed. Please upload a valid image format like PNG, JPG, JPEG, or SVG file.'
+      });
+      name &&
+        formContext &&
+        formContext.setError(name, {
+          type: 'manual',
+          message: 'File type not allowed. Please upload a valid image format like PNG, JPG, JPEG, or SVG file.'
+        });
+      return;
+    }
+
+    if (selectedFileObj.size > MAX_FILE_UPLOAD_SIZE) {
+      errorToast({
+        title: 'File Upload Failed',
+        description: 'File size is too large. Please upload a file smaller than 10MB.'
+      });
+      name &&
+        formContext &&
+        formContext.setError(name, {
+          type: 'manual',
+          message: 'File size is too large. Please upload a file smaller than 10MB.'
+        });
+      return;
+    }
 
     setIsUploading(true);
-    const selectedFileObj = e.target.files[0];
-
     await uploadFile(selectedFileObj);
-
     setIsUploading(false);
     setUploadProgress(0);
   };
@@ -62,7 +116,7 @@ export const useFileUpload = (eventId: string, uploadType: string, onChange: (ke
       console.error('Error', err);
       errorToast({
         title: 'File Upload Failed',
-        description: `File upload failed`
+        description: 'File upload failed. Please try again.'
       });
     }
   };
