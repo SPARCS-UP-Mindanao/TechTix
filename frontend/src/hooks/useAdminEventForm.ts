@@ -82,7 +82,8 @@ export const useAdminEventForm = (event?: Event) => {
         autoConfirm: false,
         paidEvent: false,
         price: 0,
-        status: 'draft'
+        status: 'draft',
+        maximumSlots: null
       };
     }
   });
@@ -130,6 +131,7 @@ export const useAdminEventForm = (event?: Event) => {
   const cancel = () => {
     if (eventId) {
       form.reset();
+      form.clearErrors();
     } else {
       navigate('/admin/events');
     }

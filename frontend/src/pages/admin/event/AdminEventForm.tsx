@@ -199,54 +199,30 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         {event && (
           <>
             <FormItem name="bannerLink">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Banner</FormLabel>
-                  <FileUpload
-                    eventId={eventId!}
-                    uploadType={EVENT_UPLOAD_TYPE.BANNER}
-                    value={value}
-                    onChange={onChange}
-                    setError={form.setError}
-                    register={form.register}
-                    resetField={form.resetField}
-                  />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="logoLink">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Logo</FormLabel>
-                  <FileUpload
-                    eventId={eventId!}
-                    uploadType={EVENT_UPLOAD_TYPE.LOGO}
-                    value={value}
-                    onChange={onChange}
-                    setError={form.setError}
-                    register={form.register}
-                    resetField={form.resetField}
-                  />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="certificateTemplate">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Certificate Template</FormLabel>
-                  <FileUpload
-                    eventId={eventId!}
-                    uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE}
-                    value={value}
-                    onChange={onChange}
-                    setError={form.setError}
-                    register={form.register}
-                    resetField={form.resetField}
-                  />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
