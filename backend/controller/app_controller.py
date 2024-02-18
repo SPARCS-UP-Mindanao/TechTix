@@ -3,6 +3,7 @@ def api_controller(app):
     from controller.discount_router import discount_router
     from controller.evaluation_router import evaluation_router
     from controller.event_router import event_router
+    from controller.faqs_controller import faqs_router
     from controller.registration_router import registration_router
 
     app.include_router(event_router, prefix='/events', tags=['Events'])
@@ -10,3 +11,4 @@ def api_controller(app):
     app.include_router(certificate_router, prefix='/certificates', tags=['Certificates'])
     app.include_router(evaluation_router, prefix='/evaluations', tags=['Evaluations'])
     app.include_router(discount_router, prefix='/discounts', tags=['Discounts'])
+    app.include_router(faqs_router, prefix='/faqs', tags=['FAQs'])
