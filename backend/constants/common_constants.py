@@ -43,6 +43,8 @@ class CommonConstants:
         LATEST_VERSION,
     ]
 
+    INVALID_URL_PATTERN = r'[:/?#@\[\]!$&\'()*+,;="<>%{}|\\^~`]|[\x00-\x1F\x7F-\xFF]'
+
 
 class EmailType(str, Enum):
     REGISTRATION_EMAIL = 'registrationEmail'
