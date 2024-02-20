@@ -26,7 +26,7 @@ class FAQsIn(BaseModel):
         extra = Extra.forbid
 
     faqs: List[FAQIn] = Field(..., title='FAQs')
-    isActive: bool = Field(..., title='Is Active')
+    isActive: bool = Field(None, title='Is Active')
 
 
 class FAQsOut(FAQsIn):
