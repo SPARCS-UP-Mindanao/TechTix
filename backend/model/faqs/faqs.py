@@ -3,14 +3,15 @@ from typing import List
 
 from model.entities import Entities
 from pydantic import BaseModel, Extra, Field
-from pynamodb.attributes import ListAttribute
+from pynamodb.attributes import ListAttribute, BooleanAttribute
 
 
 class FAQs(Entities, discriminator='FAQs'):
     # hk: FAQs
     # rk: v<version_number>#<entry_id>
     faqs = ListAttribute(null=True)
-
+    isActive = BooleanAttribute(null=True)
+ 
 class FAQIn(BaseModel):
     class Config:
         extra = Extra.forbid
@@ -24,6 +25,7 @@ class FAQsIn(BaseModel):
         extra = Extra.forbid
 
     faqs: List[FAQIn] = Field(..., title='FAQs')
+    isActive: bool = Field(..., title='Is Active')
 
 
 class FAQsOut(FAQsIn):
