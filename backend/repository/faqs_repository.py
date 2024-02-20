@@ -3,7 +3,7 @@ import os
 from copy import deepcopy
 from datetime import datetime
 from http import HTTPStatus
-from typing import List, Tuple
+from typing import Tuple
 
 from constants.common_constants import EntryStatus
 from model.faqs.faqs import FAQs, FAQsIn
@@ -97,7 +97,6 @@ class FAQsRepository:
         else:
             logging.info(f'[{self.core_obj}={event_id}] Fetch FAQs data successful')
             return HTTPStatus.OK, faqs_entries[0], None
-            
 
     def update_faqs(self, faqs_entry: FAQs, faqs_in: FAQsIn) -> Tuple[HTTPStatus, FAQs, str]:
         current_version = faqs_entry.latestVersion

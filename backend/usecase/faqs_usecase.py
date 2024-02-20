@@ -2,12 +2,9 @@ import json
 from http import HTTPStatus
 from typing import Union
 
-from model.faqs.faqs import (
-    FAQsIn,
-    FAQsOut,
-)
-from repository.faqs_repository import FAQsRepository
+from model.faqs.faqs import FAQsIn, FAQsOut
 from repository.events_repository import EventsRepository
+from repository.faqs_repository import FAQsRepository
 from starlette.responses import JSONResponse
 
 
@@ -26,7 +23,7 @@ class FAQsUsecase:
             faqs,
             _,
         ) = self.__faqs_repository.query_faq_entry(event_id=event_id)
-        
+
         if faqs:
             (
                 status,
