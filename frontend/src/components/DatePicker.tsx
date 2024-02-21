@@ -15,27 +15,22 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, className, includeTime = false, onChange }: DatePickerProps) => {
-  const initialDate = value ? new Date(value) : new Date();
-  const initialTime = includeTime && value ? moment(value).format('HH:mm') : moment().format('HH:mm');
-  const newDateValue = moment(initialDate);
+  const date = value ? new Date(value) : new Date();
+  const time = includeTime && value ? moment(value).format('HH:mm') : moment().format('HH:mm');
 
-  const [date, setDate] = React.useState<Date | undefined>(initialDate);
-  const [time, setTime] = React.useState<string>(initialTime);
+  type DateValue = {
+    date?: Date;
+    time?: string;
+  };
 
-  const updateValue = () => {
-    const newValue = moment(`${moment(date).format('YYYY-MM-DD')} ${moment(time, 'HH:mm').format('HH:mm')}`).toISOString();
+  const updateValue = ({ date: selectedDate, time: selectedTime }: DateValue) => {
+    const newValue = moment(`${moment(selectedDate ?? date).format('YYYY-MM-DD')} ${moment(selectedTime ?? time, 'HH:mm').format('HH:mm')}`).toISOString();
     onChange(newValue);
   };
 
-  const onChangeDate = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-    updateValue();
-  };
+  const onChangeDate = (date: Date | undefined) => updateValue({ date });
 
-  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value);
-    updateValue();
-  };
+  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => updateValue({ time: e.target.value });
 
   const getContent = () => {
     if (!value) {
@@ -43,7 +38,7 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
     }
 
     const format = includeTime && time ? 'MMM D YYYY hh:mm A' : 'MMM D YYYY';
-    return moment(newDateValue).format(format);
+    return moment(value).format(format);
   };
 
   return (
@@ -61,8 +56,8 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto py-2">
-        <Calendar mode="single" selected={initialDate} defaultMonth={initialDate} onSelect={onChangeDate} initialFocus />
-        {includeTime && <Input value={initialTime} onChange={onChangeTime} type="time" />}
+        <Calendar mode="single" selected={date} defaultMonth={date} onSelect={onChangeDate} initialFocus />
+        {includeTime && <Input value={time} onChange={onChangeTime} type="time" />}
       </PopoverContent>
     </Popover>
   );
