@@ -13,7 +13,6 @@ import Separator from '@/components/Separator';
 import Switch from '@/components/Switch';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, Event } from '@/model/events';
 import { cn } from '@/utils/classes';
-import { isEmpty } from '@/utils/functions';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
@@ -42,14 +41,13 @@ const AdminEventForm: FC<Props> = ({ event }) => {
   const { form, submit, cancel } = useAdminEventForm(event);
   const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
   const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
-  const { isSubmitting, dirtyFields } = useFormState({ control: form.control });
-  const isFormClean = isEmpty(dirtyFields);
+  const { isSubmitting, isDirty } = useFormState({ control: form.control });
 
   const handleSubmit = async () => await submit();
 
   return (
     <FormProvider {...form}>
-      <BlockNavigateModal condition={!isFormClean} />
+      <BlockNavigateModal condition={isDirty} />
       <main className="w-full flex flex-wrap gap-y-2">
         <FormItem name="name">
           {({ field: { value, onChange } }) => (
@@ -239,18 +237,18 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               confirmVariant="negative"
               onCompleteAction={cancel}
               trigger={
-                <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost">
+                <Button icon="X" disabled={isSubmitting || (event && !isDirty)} variant="ghost">
                   Discard changes
                 </Button>
               }
             />
           ) : (
-            <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost" onClick={cancel}>
+            <Button icon="X" disabled={isSubmitting || (event && !isDirty)} variant="ghost" onClick={cancel}>
               Cancel
             </Button>
           )}
 
-          <Button icon="Save" disabled={isFormClean} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
+          <Button icon="Save" disabled={!isDirty} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
             Save
           </Button>
         </div>
