@@ -28,7 +28,7 @@ export const useBlockNavigateModal = ({ condition, onOk, onCancel }: useBlockNav
       return false;
     }
 
-    return condition || currentLocation.pathname !== nextLocation.pathname;
+    return condition && currentLocation.pathname !== nextLocation.pathname;
   };
 
   const blocker = useBlocker(blockerFunction);
@@ -48,11 +48,15 @@ export const useBlockNavigateModal = ({ condition, onOk, onCancel }: useBlockNav
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
+      if (!condition) {
+        blocker.proceed();
+        return;
+      }
       onOpenChange(true);
     } else {
       onOpenChange(false);
     }
-  }, [blocker, onOpenChange]);
+  }, [blocker, condition, onOpenChange]);
 
   return {
     visible: showModal,

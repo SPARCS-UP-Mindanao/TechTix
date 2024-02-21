@@ -16,9 +16,9 @@ export interface Event {
   gcashNumber?: string | null;
   status: EventStatus;
   eventId?: string;
-  isLimitedSlot?: boolean | null;
-  registrationCount?: number | null;
-  maximumSlots?: number | null;
+  isLimitedSlot: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
   createDate?: string;
   updateDate?: string;
   createdBy?: string;

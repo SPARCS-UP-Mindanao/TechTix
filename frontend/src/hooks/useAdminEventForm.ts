@@ -47,13 +47,13 @@ export const EventFormSchema = z.object({
       message: 'Please enter a valid PH contact number'
     })
     .nullish(),
-  isLimitedSlot: z.boolean().nullish(),
-  maximumSlots: z.coerce
+  isLimitedSlot: z.boolean(),
+  maximumSlots: z
     .number()
     .min(0, {
       message: 'Please enter a valid slot count'
     })
-    .nullish()
+    .nullable()
 });
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;
@@ -81,6 +81,7 @@ export const useAdminEventForm = (event?: Event) => {
         venue: '',
         autoConfirm: false,
         paidEvent: false,
+        isLimitedSlot: false,
         price: 0,
         status: 'draft',
         maximumSlots: null
@@ -88,13 +89,17 @@ export const useAdminEventForm = (event?: Event) => {
     }
   });
 
+  const onInvalid = () =>
+    //TODO : Fix toast duplicaton
+    errorToast({
+      id: 'form-error',
+      title: 'Form error',
+      description: 'Please fill in all the required fields'
+    });
+
   const submit = form.handleSubmit(async (values) => {
     try {
-      if (!isEmpty(form.formState.errors)) {
-        throw new Error('Please fill in all the required fields');
-      }
-
-      const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent(values)));
+      const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent({ ...values, registrationCount: 0 })));
 
       if (response.status === 200) {
         const successTitle = mode === 'edit' ? 'Event updated' : 'Event created';
@@ -105,6 +110,8 @@ export const useAdminEventForm = (event?: Event) => {
         });
 
         if (mode === 'create') {
+          form.reset();
+          console.log('Form reset');
           const { eventId: newEventId } = response.data;
           navigate(`/admin/events/${newEventId}`);
         }
@@ -126,7 +133,7 @@ export const useAdminEventForm = (event?: Event) => {
         description: errorData.message || errorData.detail[0].msg
       });
     }
-  });
+  }, onInvalid);
 
   const cancel = () => {
     if (eventId) {

@@ -46,6 +46,15 @@ const Register = () => {
     return <ErrorPage />;
   }
 
+  if (eventInfo.maximumSlots && eventInfo.maximumSlots === eventInfo.registrationCount) {
+    return (
+      <ErrorPage
+        errorTitle="Slots are full"
+        message={`Thank you for your interest but ${eventInfo.name} has already reached its maximum slots for participants.`}
+      />
+    );
+  }
+
   if (eventInfo.status === 'closed') {
     return <ErrorPage errorTitle="Sold Out" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
@@ -60,7 +69,7 @@ const Register = () => {
     );
   }
 
-  if (eventInfo.paidEvent && eventInfo.status === 'completed') {
+  if (eventInfo.status === 'completed') {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
   }
 
