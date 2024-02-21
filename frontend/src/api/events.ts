@@ -18,9 +18,9 @@ export interface EventDto {
   certificateTemplate: string;
   status: EventStatus;
   eventId: string;
-  isLimitedSlot?: boolean;
-  registrationCount?: number;
-  maximumSlots?: number;
+  isLimitedSlot: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
   createDate: string;
   updateDate: string;
   createdBy: string;
@@ -34,12 +34,22 @@ export interface PresignedUrl {
   objectKey: string;
 }
 
+interface EventRegCountStatus {
+  registrationCount: number;
+  maximumSlots: number | null;
+}
+
 const mapEventDtoToEvent = (event: EventDto): Event => ({
   ...event,
   paidEvent: event.paidEvent ?? false
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
+
+const mapEventsDtoToEventRegCountStatus = (event: EventDto): EventRegCountStatus => ({
+  registrationCount: event.registrationCount,
+  maximumSlots: event.maximumSlots
+});
 
 export const getAllEvents = () => {
   return createApi<EventDto[], Event[]>({
@@ -97,4 +107,12 @@ export const getPresignedUrl = (entryId: string, fileName: string, uploadType: s
     authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
     body: { fileName }
+  });
+
+export const getEventRegCountStatus = (entryId: string) =>
+  createApi<EventDto, EventRegCountStatus>({
+    method: 'get',
+    authorize: true,
+    url: `/events/${entryId}`,
+    output: mapEventsDtoToEventRegCountStatus
   });

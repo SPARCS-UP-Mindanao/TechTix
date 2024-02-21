@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
+import { getEventRegCountStatus } from '@/api/events';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Event } from '@/model/events';
 import { baseUrl, isEmpty, reloadPage } from '@/utils/functions';
@@ -78,6 +79,21 @@ export const useRegisterFooter = (
     }
   };
 
+  const checkRegistrationCount = async () => {
+    const response = await api.execute(getEventRegCountStatus(eventId!));
+    if (response.status !== 200) {
+      throw new Error('Registration count check failed');
+    }
+
+    const { registrationCount, maximumSlots } = response.data;
+
+    if (maximumSlots && maximumSlots === registrationCount) {
+      return true;
+    }
+
+    return false;
+  };
+
   const onNextStep = async () => {
     const moveToNextStep = () => {
       if (currentIndex < steps.length - 1) {
@@ -142,6 +158,15 @@ export const useRegisterFooter = (
   const onSubmitForm = async () => {
     if (!event.paidEvent || total === 0) {
       setCurrentStep(STEP_SUCCESS);
+    }
+
+    if (event.maximumSlots) {
+      const isEventFull = await checkRegistrationCount();
+
+      if (isEventFull) {
+        reloadPage();
+        return;
+      }
     }
 
     try {

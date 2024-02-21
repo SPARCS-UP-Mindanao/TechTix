@@ -4,7 +4,7 @@ import { IconName } from '@/components/Icon';
 import type { ToastActionElement, ToastProps } from '@/components/Toast/Toast';
 
 const TOAST_LIMIT = 5;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_REMOVE_DELAY = 5000;
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -138,7 +138,7 @@ function dispatch(action: Action) {
 type Toast = ToasterToast;
 
 function toast({ ...props }: Toast) {
-  const id = genId();
+  const id = props.id ?? genId();
 
   const update = (props: ToasterToast) =>
     dispatch({

@@ -1,3 +1,5 @@
+import { EventFormValues } from '@/hooks/useAdminEventForm';
+
 export interface Event {
   name: string;
   description: string;
@@ -16,9 +18,9 @@ export interface Event {
   gcashNumber?: string | null;
   status: EventStatus;
   eventId?: string;
-  isLimitedSlot?: boolean | null;
-  registrationCount?: number | null;
-  maximumSlots?: number | null;
+  isLimitedSlot: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
   createDate?: string;
   updateDate?: string;
   createdBy?: string;
@@ -86,3 +88,45 @@ export const enum EVENT_OBJECT_KEY_MAP {
   GCASH_PAYMENT = 'gcashPayment',
   GCASH_QR = 'gcashQRCode'
 }
+
+export const mapEventToFormValues = (event: Event): EventFormValues => ({
+  name: event.name,
+  description: event.description,
+  email: event.email,
+  startDate: event.startDate,
+  endDate: event.endDate,
+  venue: event.venue,
+  paidEvent: event.paidEvent,
+  price: event.price,
+  status: event.status,
+  bannerLink: event.bannerLink || undefined,
+  logoLink: event.logoLink || undefined,
+  certificateTemplate: event.certificateTemplate || undefined,
+  gcashQRCode: event.gcashQRCode || undefined,
+  gcashName: event.gcashName || undefined,
+  gcashNumber: event.gcashNumber || undefined,
+  isLimitedSlot: event.isLimitedSlot,
+  maximumSlots: event.maximumSlots || undefined
+});
+
+export const mapCreateEventValues = (values: EventFormValues): Event => ({
+  name: values.name,
+  description: values.description,
+  email: values.email,
+  startDate: values.startDate,
+  endDate: values.endDate,
+  venue: values.venue,
+  autoConfirm: false,
+  paidEvent: values.paidEvent,
+  price: values.paidEvent ? values.price : 0,
+  status: values.status,
+  maximumSlots: values.maximumSlots || null,
+  isLimitedSlot: values.isLimitedSlot,
+  registrationCount: 0,
+  bannerLink: values.bannerLink || null,
+  logoLink: values.logoLink || null,
+  certificateTemplate: values.certificateTemplate || null,
+  gcashQRCode: values.gcashQRCode || null,
+  gcashName: values.gcashName || null,
+  gcashNumber: values.gcashNumber || null
+});
