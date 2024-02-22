@@ -1,5 +1,6 @@
+import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventStatus } from '@/model/events';
+import { Event, EventFAQs, EventStatus, FAQ } from '@/model/events';
 
 export interface EventDto {
   name: string;
@@ -39,9 +40,31 @@ interface EventRegCountStatus {
   maximumSlots: number | null;
 }
 
+export type EventFAQsDto = Omit<FAQ, 'id'>;
+
+export interface FAQDto {
+  faqs: EventFAQsDto[];
+  isActive: boolean;
+  entryId: string;
+  createDate: Date;
+  updateDate: Date;
+}
+
+export interface FAQUpdateValues {
+  faqs: EventFAQsDto[];
+  isActive: boolean;
+}
+
+const mapFAQsDtoToFAQ = (FAQDto: FAQDto): EventFAQs => {
+  const FAQsWithId = FAQDto.faqs.map((faq) => {
+    const generatedId = ulid();
+    return { ...faq, id: generatedId };
+  });
+  return { isActive: FAQDto.isActive, faqs: FAQsWithId };
+};
+
 const mapEventDtoToEvent = (event: EventDto): Event => ({
-  ...event,
-  paidEvent: event.paidEvent ?? false
+  ...event
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
@@ -115,4 +138,20 @@ export const getEventRegCountStatus = (entryId: string) =>
     authorize: true,
     url: `/events/${entryId}`,
     output: mapEventsDtoToEventRegCountStatus
+  });
+
+export const getFAQs = (entryId: string) =>
+  createApi<FAQDto, EventFAQs>({
+    method: 'get',
+    authorize: true,
+    url: `/faqs/${entryId}`,
+    output: mapFAQsDtoToFAQ
+  });
+
+export const updateFAQs = (entryId: string, faqs: FAQUpdateValues) =>
+  createApi<FAQDto>({
+    method: 'patch',
+    authorize: true,
+    url: `/faqs/${entryId}`,
+    body: { ...faqs }
   });
