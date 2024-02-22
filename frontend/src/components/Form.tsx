@@ -114,7 +114,7 @@ const FormError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
     fieldState: { error },
     formMessageId
   } = useFormField();
-  const body = error ? String(error?.message) : children;
+  const body = error && error?.message ? String(error?.message) : children;
 
   const getError = () => {
     if (!body) {
