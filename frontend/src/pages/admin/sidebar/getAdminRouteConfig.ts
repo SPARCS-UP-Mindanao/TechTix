@@ -61,6 +61,13 @@ export const getAdminRouteConfig = ({ eventId = '', userGroups, setLogoutOpen }:
     location: 'upper'
   },
   {
+    optionName: 'FAQs',
+    iconName: 'HelpCircle',
+    visible: !!eventId,
+    route: `/admin/events/${eventId}/faqs`,
+    location: 'upper'
+  },
+  {
     optionName: 'Admins',
     iconName: 'Users',
     visible: userGroups && userGroups.includes('super_admin'),

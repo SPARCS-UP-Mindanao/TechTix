@@ -1,4 +1,6 @@
+import { FAQUpdateValues } from '@/api/events';
 import { EventFormValues } from '@/hooks/useAdminEventForm';
+import { FAQsFormValues } from '@/hooks/useFAQsForm';
 
 export interface Event {
   name: string;
@@ -89,6 +91,17 @@ export const enum EVENT_OBJECT_KEY_MAP {
   GCASH_QR = 'gcashQRCode'
 }
 
+export type EventFAQs = {
+  isActive: boolean;
+  faqs: FAQ[];
+};
+
+export type FAQ = {
+  id: string;
+  question: string;
+  answer: string;
+};
+
 export const mapEventToFormValues = (event: Event): EventFormValues => ({
   name: event.name,
   description: event.description,
@@ -130,3 +143,12 @@ export const mapCreateEventValues = (values: EventFormValues): Event => ({
   gcashName: values.gcashName || null,
   gcashNumber: values.gcashNumber || null
 });
+
+export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {
+  const faqsWithNoId =
+    value.faqs?.map((faq) => ({
+      question: faq.question,
+      answer: faq.answer
+    })) ?? [];
+  return { ...value, faqs: faqsWithNoId };
+};

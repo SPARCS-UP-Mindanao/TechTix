@@ -6,6 +6,7 @@ import ImageViewer from '@/components/ImageViewer';
 import Separator from '@/components/Separator';
 import { REGISTER_STEPS_FIELD, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
+import FAQs from './FAQs';
 import RegisterFooter from './RegisterFooter';
 import RegisterFormLoading from './RegisterFormSkeleton';
 import RegisterFormSubmittingSkeleton from './RegisterFormSubmittingSkeleton';
@@ -80,6 +81,7 @@ const Register = () => {
   const fieldsToCheck: RegisterField[] = REGISTER_STEPS_FIELD[currentStep.id] || [];
   const STEPS = eventInfo.paidEvent ? RegisterStepsWithPayment : RegisterSteps;
   const showStepper = currentStep.id !== 'EventDetails' && currentStep.id !== 'Success';
+  const showFAQs = currentStep.id === 'EventDetails';
 
   return (
     <section className="flex flex-col items-center px-4">
@@ -107,6 +109,8 @@ const Register = () => {
             {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4" />}
 
             <RegisterFooter event={eventInfo} steps={STEPS} currentStep={currentStep} fieldsToCheck={fieldsToCheck} setCurrentStep={setCurrentStep} />
+
+            {showFAQs && <FAQs />}
           </main>
         </FormProvider>
       </div>

@@ -41,7 +41,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
   const { form, submit, cancel } = useAdminEventForm(event);
   const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
   const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
-  const { isSubmitting, isDirty } = useFormState({ control: form.control });
+  const { isSubmitting, isDirty } = useFormState(form);
 
   const isPaidAndHasRegistrants = event ? event.paidEvent && !!event.registrationCount : false;
 
