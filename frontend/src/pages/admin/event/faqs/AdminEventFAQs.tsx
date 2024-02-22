@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { FormProvider, useFormState, useWatch } from 'react-hook-form';
+import AlertModal from '@/components/AlertModal';
+import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
 import { FormError, FormItem, FormLabel } from '@/components/Form';
 import Switch from '@/components/Switch';
@@ -58,6 +60,7 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
 
   return (
     <FormProvider {...form}>
+      <BlockNavigateModal condition={isDirty} />
       <main className="w-full flex flex-col space-y-6">
         <FormItem name="isActive">
           {({ field: { value, onChange } }) => (
@@ -128,9 +131,17 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
         )}
 
         <footer className="flex justify-end space-x-4">
-          <Button disabled={!isDirty || isSubmitting} icon="X" onClick={onDiscardChanges} variant="ghost">
-            Discard Changes
-          </Button>
+          <AlertModal
+            alertModalTitle="Are you sure you want to discard all changes?"
+            alertModalDescription="Discarding all changes may result in data loss."
+            confirmVariant="negative"
+            onCompleteAction={onDiscardChanges}
+            trigger={
+              <Button icon="X" disabled={isSubmitting || (event && !isDirty)} variant="ghost">
+                Discard changes
+              </Button>
+            }
+          />
           <Button loading={isSubmitting} disabled={!isDirty || isSubmitting} icon="Save" type="submit" onClick={onSubmit}>
             Save
           </Button>
