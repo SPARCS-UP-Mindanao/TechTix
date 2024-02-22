@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { FormProvider, useFormState, useWatch } from 'react-hook-form';
+import { FormProvider, useFormState } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
@@ -56,8 +56,6 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
   const disableMoveUp = (index: number) => index === 0 || isSubmitting;
   const disableMoveDown = (index: number) => index === faqs.length - 1 || isSubmitting;
 
-  const isFAQsActive = useWatch({ name: 'isActive', control: form.control });
-
   return (
     <FormProvider {...form}>
       <BlockNavigateModal condition={isDirty} />
@@ -71,64 +69,60 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
           )}
         </FormItem>
 
-        {isFAQsActive && (
-          <>
-            <ol className="list-outside list-decimal space-y-6">
-              {faqs.map((faq, index) => {
-                return (
-                  <li key={faq.id} className="space-y-2">
-                    <div className="space-y-2 w-full">
-                      <FormItem name={`faqs.${index}.question`}>
-                        {({ field: { value, onChange } }) => (
-                          <div>
-                            <FormLabel>Question</FormLabel>
-                            <Textarea disabled={isSubmitting} value={value} onChange={onChange} />
-                            <FormError />
-                          </div>
-                        )}
-                      </FormItem>
-
-                      <FormItem name={`faqs.${index}.answer`}>
-                        {({ field: { value, onChange } }) => (
-                          <div>
-                            <FormLabel>Answer</FormLabel>
-                            <Textarea disabled={isSubmitting} value={value} onChange={onChange} />
-                            <FormError />
-                          </div>
-                        )}
-                      </FormItem>
-                    </div>
-
-                    <div className="flex items-center">
-                      <div className="mr-auto">
-                        <Button title="Move FAQ Up" variant="ghost" icon="ChevronUp" disabled={disableMoveUp(index)} onClick={() => onMoveQuestionUp(index)} />
-                        <Button
-                          title="Move FAQ Down"
-                          variant="ghost"
-                          icon="ChevronDown"
-                          disabled={disableMoveDown(index)}
-                          onClick={() => onMoveQuestionDown(index)}
-                        />
+        <ol className="list-outside list-decimal space-y-6">
+          {faqs.map((faq, index) => {
+            return (
+              <li key={faq.id} className="space-y-2">
+                <div className="space-y-2 w-full">
+                  <FormItem name={`faqs.${index}.question`}>
+                    {({ field: { value, onChange } }) => (
+                      <div>
+                        <FormLabel>Question</FormLabel>
+                        <Textarea disabled={isSubmitting} value={value} onChange={onChange} />
+                        <FormError />
                       </div>
-                      <Button
-                        title="Delete FAQ"
-                        variant="ghost"
-                        icon="Trash"
-                        disabled={isSubmitting}
-                        className="text-negative"
-                        onClick={() => onRemoveFAQ(index)}
-                      />
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-            <Button icon="PlusCircle" disabled={isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
-              Add FAQ
-            </Button>
-            <FormItem name="faqs">{() => <FormError />}</FormItem>
-          </>
-        )}
+                    )}
+                  </FormItem>
+
+                  <FormItem name={`faqs.${index}.answer`}>
+                    {({ field: { value, onChange } }) => (
+                      <div>
+                        <FormLabel>Answer</FormLabel>
+                        <Textarea disabled={isSubmitting} value={value} onChange={onChange} />
+                        <FormError />
+                      </div>
+                    )}
+                  </FormItem>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="mr-auto">
+                    <Button title="Move FAQ Up" variant="ghost" icon="ChevronUp" disabled={disableMoveUp(index)} onClick={() => onMoveQuestionUp(index)} />
+                    <Button
+                      title="Move FAQ Down"
+                      variant="ghost"
+                      icon="ChevronDown"
+                      disabled={disableMoveDown(index)}
+                      onClick={() => onMoveQuestionDown(index)}
+                    />
+                  </div>
+                  <Button
+                    title="Delete FAQ"
+                    variant="ghost"
+                    icon="Trash"
+                    disabled={isSubmitting}
+                    className="text-negative"
+                    onClick={() => onRemoveFAQ(index)}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+        <Button icon="PlusCircle" disabled={isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
+          Add FAQ
+        </Button>
+        <FormItem name="faqs">{() => <FormError />}</FormItem>
 
         <footer className="flex justify-end space-x-4">
           <AlertModal
