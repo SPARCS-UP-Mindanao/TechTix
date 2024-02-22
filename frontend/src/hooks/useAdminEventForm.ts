@@ -135,6 +135,8 @@ export const useAdminEventForm = (event?: Event) => {
     });
 
   const submit = form.handleSubmit(async (values) => {
+    const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
+
     try {
       const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent(mapCreateEventValues(values))));
 
@@ -157,7 +159,6 @@ export const useAdminEventForm = (event?: Event) => {
           form.reset(values);
         }
       } else {
-        const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
         errorToast({
           title: toastMessage,
           description: response.errorData.message || 'An error occurred while submitting. Please try again.'
@@ -166,7 +167,7 @@ export const useAdminEventForm = (event?: Event) => {
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({
-        title: 'Error in logging in',
+        title: toastMessage,
         description: errorData.message || errorData.detail[0].msg
       });
     }
