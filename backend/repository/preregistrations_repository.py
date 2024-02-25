@@ -9,7 +9,6 @@ from constants.common_constants import EntryStatus
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
-    DeleteError,
     PutError,
     PynamoDBConnectionError,
     QueryError,
@@ -81,7 +80,6 @@ class PreRegistrationsRepository:
         else:
             logging.info(f'[{self.core_obj} = {preregistration_id}]: Successfully saved pre-registration strategy form')
             return HTTPStatus.OK, preregistration_entry, None
-
 
     def query_preregistrations(
         self, event_id: str = None, preregistration_id: str = None

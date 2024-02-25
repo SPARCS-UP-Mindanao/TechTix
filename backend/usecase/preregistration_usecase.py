@@ -3,13 +3,12 @@ from http import HTTPStatus
 from typing import List, Union
 
 import ulid
-from model.events.events_constants import EventStatus
-from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
     PreRegistrationPatch,
 )
+from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
@@ -25,7 +24,7 @@ class PreRegistrationUsecase:
     This class provides methods for creating, updating, retrieving, listing, and deleting pre-registration entries.
 
     Attributes:
-        preregistrations_repository (PreRegistrationsRepository): An instance of the PreRegistrationsRepository used for data access. 
+        preregistrations_repository (PreRegistrationsRepository): An instance of the PreRegistrationsRepository used for data access.
     """
 
     def __init__(self):
@@ -113,7 +112,9 @@ class PreRegistrationUsecase:
             status,
             preregistration,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations(event_id=event_id, preregistration_id=preregistration_id)
+        ) = self.__preregistrations_repository.query_preregistrations(
+            event_id=event_id, preregistration_id=preregistration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -127,8 +128,13 @@ class PreRegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if update_preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED and not update_preregistration.acceptanceEmailSent:
-            self.__email_usecase.send_preregistration_acceptance_email(preregistration=update_preregistration, event=event)
+        if (
+            update_preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED
+            and not update_preregistration.acceptanceEmailSent
+        ):
+            self.__email_usecase.send_preregistration_acceptance_email(
+                preregistration=update_preregistration, event=event
+            )
 
         preregistration_data = self.__convert_data_entry_to_dict(update_preregistration)
         preregistration_out = PreRegistrationOut(**preregistration_data)
@@ -164,21 +170,20 @@ class PreRegistrationUsecase:
         return preregistration_out
 
     def get_preregistrations(self, event_id: str = None) -> Union[JSONResponse, List[PreRegistrationOut]]:
-
         """
         Retrieves a list of pre-registration preregistration_entries.
 
-        Args: 
+        Args:
             event_id (str,optional): If provided, only retrieves pre-registration entries for the specified event.
                 If not provided, retrieves all pre-registration entries.
 
         Returns:
             Union[JSONResponse, List[PreRegistrationOut]]: If successful, returns a list of pre-registration entries.
-                If unsuccessful, returns a JSONResponse with an error message. 
+                If unsuccessful, returns a JSONResponse with an error message.
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message':message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,

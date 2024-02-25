@@ -4,7 +4,7 @@ from typing import Optional
 
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
+from pynamodb.attributes import BooleanAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
 from pynamodb.models import Model
 
@@ -65,7 +65,7 @@ class PreRegistration(Model):
     acceptanceEmailSent = BooleanAttribute(default=False)
     certificateGenerated = BooleanAttribute(default=False)
     acceptanceStatus = UnicodeAttribute(null=True)
-    
+
 
 class PreRegistrationPatch(BaseModel):
     class Config:
@@ -110,4 +110,3 @@ class PreRegistrationPreviewOut(BaseModel):
     lastName: str = Field(None, title='Last Name')
     contactNumber: str = Field(None, title='Contact Number')
     email: EmailStr = Field(None, title='Email')
- 

@@ -1,4 +1,3 @@
-from http import HTTPStatus
 from typing import List
 
 from constants.common_constants import CommonConstants
@@ -31,7 +30,7 @@ preregistration_router = APIRouter()
     response_model_exclude_unset=True,
     include_in_schema=False,
 )
-def get_preregistration(
+def get_preregistrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """
