@@ -8,7 +8,7 @@ from urllib.parse import unquote_plus
 
 from constants.common_constants import CommonConstants
 from model.events.event import EventIn, EventOut
-from model.events.events_constants import EventStatus
+from model.events.events_constants import EventStatus 
 from repository.events_repository import EventsRepository
 from repository.faqs_repository import FAQsRepository
 from repository.registrations_repository import RegistrationsRepository
