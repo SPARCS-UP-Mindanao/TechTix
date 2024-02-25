@@ -28,7 +28,7 @@ const CreateDiscoutFormItems = () => (
     <FormItem name="discountPercentage">
       {({ field }) => (
         <div className="flex flex-col space-y-2">
-          <FormLabel>Discount Percentage</FormLabel>
+          <FormLabel>Discount Percentage (%)</FormLabel>
           <Input type="number" {...field} />
           <FormError />
         </div>
@@ -97,6 +97,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
     setIsModalOpen(false);
     setShowDiscountCodes(false);
     setIsCopyClicked(false);
+    form.reset();
     await refetch();
   };
 

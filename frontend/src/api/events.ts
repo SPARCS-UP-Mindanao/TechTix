@@ -1,5 +1,6 @@
+import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventStatus } from '@/model/events';
+import { Event, EventFAQs, EventStatus, FAQ } from '@/model/events';
 
 export interface EventDto {
   name: string;
@@ -13,11 +14,14 @@ export interface EventDto {
   logoUrl: string;
   logoLink: string;
   autoConfirm: boolean;
-  payedEvent: boolean;
+  paidEvent: boolean;
   price: number;
   certificateTemplate: string;
   status: EventStatus;
   eventId: string;
+  isLimitedSlot: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
   createDate: string;
   updateDate: string;
   createdBy: string;
@@ -31,12 +35,44 @@ export interface PresignedUrl {
   objectKey: string;
 }
 
+interface EventRegCountStatus {
+  registrationCount: number;
+  maximumSlots: number | null;
+}
+
+export type EventFAQsDto = Omit<FAQ, 'id'>;
+
+export interface FAQDto {
+  faqs: EventFAQsDto[];
+  isActive: boolean;
+  entryId: string;
+  createDate: Date;
+  updateDate: Date;
+}
+
+export interface FAQUpdateValues {
+  faqs: EventFAQsDto[];
+  isActive: boolean;
+}
+
+const mapFAQsDtoToFAQ = (FAQDto: FAQDto): EventFAQs => {
+  const FAQsWithId = FAQDto.faqs.map((faq) => {
+    const generatedId = ulid();
+    return { ...faq, id: generatedId };
+  });
+  return { isActive: FAQDto.isActive, faqs: FAQsWithId };
+};
+
 const mapEventDtoToEvent = (event: EventDto): Event => ({
-  ...event,
-  payedEvent: event.payedEvent ?? false
+  ...event
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
+
+const mapEventsDtoToEventRegCountStatus = (event: EventDto): EventRegCountStatus => ({
+  registrationCount: event.registrationCount,
+  maximumSlots: event.maximumSlots
+});
 
 export const getAllEvents = () => {
   return createApi<EventDto[], Event[]>({
@@ -94,4 +130,28 @@ export const getPresignedUrl = (entryId: string, fileName: string, uploadType: s
     authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
     body: { fileName }
+  });
+
+export const getEventRegCountStatus = (entryId: string) =>
+  createApi<EventDto, EventRegCountStatus>({
+    method: 'get',
+    authorize: true,
+    url: `/events/${entryId}`,
+    output: mapEventsDtoToEventRegCountStatus
+  });
+
+export const getFAQs = (entryId: string) =>
+  createApi<FAQDto, EventFAQs>({
+    method: 'get',
+    authorize: true,
+    url: `/faqs/${entryId}`,
+    output: mapFAQsDtoToFAQ
+  });
+
+export const updateFAQs = (entryId: string, faqs: FAQUpdateValues) =>
+  createApi<FAQDto>({
+    method: 'patch',
+    authorize: true,
+    url: `/faqs/${entryId}`,
+    body: { ...faqs }
   });

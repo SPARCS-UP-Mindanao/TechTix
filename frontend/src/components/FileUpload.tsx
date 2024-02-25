@@ -7,6 +7,7 @@ import Label from './Label';
 import Progress from './Progress';
 
 interface FileUploadProps {
+  name?: string;
   eventId: string;
   uploadType: string;
   value: string;
@@ -18,8 +19,8 @@ const extractImagePath = (path: string) => {
   return name;
 };
 
-const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ eventId, uploadType, value, onChange }, ref) => {
-  const { uploadProgress, isUploading, onFileChange } = useFileUpload(eventId, uploadType, onChange);
+const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ name, eventId, uploadType, value, onChange }, ref) => {
+  const { uploadProgress, isUploading, onFileChange } = useFileUpload(eventId, uploadType, onChange, name);
   const label = useMemo(() => {
     if (!value) {
       return 'No file uploaded';

@@ -67,7 +67,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const Comp = asChild ? Slot : 'button';
-    const iconStyles = cn('flex-shrink-0', size !== 'icon' && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'), iconClassname, loading && 'animate-spin');
+    const iconStyles = cn(
+      'flex-shrink-0',
+      size !== 'icon' && children && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'),
+      iconClassname,
+      loading && 'animate-spin'
+    );
 
     const getButtonContent = () => {
       if (icon) {

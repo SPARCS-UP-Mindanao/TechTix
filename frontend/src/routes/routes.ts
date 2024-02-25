@@ -69,6 +69,10 @@ export const routes = createBrowserRouter([
             lazy: () => import('@/pages/admin/event/registrations/AdminEventRegistrations')
           },
           {
+            path: 'faqs',
+            lazy: () => import('@/pages/admin/event/faqs/AdminEventFAQs')
+          },
+          {
             path: '*',
             element: ErrorPage({})
           }

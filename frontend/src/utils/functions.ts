@@ -80,7 +80,7 @@ export const formatPercentage = (float: number) => {
 };
 
 export const isValidContactNumber = (value: string) => {
-  if (value.trim() == '') {
+  if (value.trim() === '') {
     return true;
   }
 

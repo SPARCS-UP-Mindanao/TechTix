@@ -13,7 +13,6 @@ import Separator from '@/components/Separator';
 import Switch from '@/components/Switch';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, Event } from '@/model/events';
 import { cn } from '@/utils/classes';
-import { isEmpty } from '@/utils/functions';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
@@ -40,15 +39,17 @@ const AdminEventFormSpacer: FC = () => {
 const AdminEventForm: FC<Props> = ({ event }) => {
   const eventId = event?.eventId;
   const { form, submit, cancel } = useAdminEventForm(event);
-  const paidEvent = useWatch({ name: 'payedEvent', control: form.control });
-  const { isSubmitting, dirtyFields } = useFormState({ control: form.control });
-  const isFormClean = isEmpty(dirtyFields);
+  const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
+  const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
+  const { isSubmitting, isDirty } = useFormState(form);
+
+  const isPaidAndHasRegistrants = event ? event.paidEvent && !!event.registrationCount : false;
 
   const handleSubmit = async () => await submit();
 
   return (
     <FormProvider {...form}>
-      <BlockNavigateModal condition={!isFormClean} />
+      <BlockNavigateModal condition={isDirty} />
       <main className="w-full flex flex-wrap gap-y-2">
         <FormItem name="name">
           {({ field: { value, onChange } }) => (
@@ -92,12 +93,12 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <Separator className="my-4" />
 
-        <FormItem name="payedEvent">
+        <FormItem name="paidEvent">
           {({ field }) => (
             <AdminEventFormItem halfSpace>
               <div className="flex flex-row gap-2">
                 <FormLabel>Is this a paid event?</FormLabel>
-                <Switch id="isPayedEvent" checked={field.value} onCheckedChange={field.onChange} />
+                <Switch id="isPaidEvent" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || isPaidAndHasRegistrants} />
               </div>
               <FormError />
             </AdminEventFormItem>
@@ -109,7 +110,34 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             {({ field }) => (
               <AdminEventFormItem halfSpace>
                 <FormLabel>Price</FormLabel>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} disabled={isSubmitting || isPaidAndHasRegistrants} />
+                <FormError />
+              </AdminEventFormItem>
+            )}
+          </FormItem>
+        )}
+
+        <Separator className="my-4" />
+
+        <FormItem name="isLimitedSlot">
+          {({ field }) => (
+            <AdminEventFormItem halfSpace>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Are slots limited?</FormLabel>
+                <Switch id="isLimitedSlot" checked={field.value} onCheckedChange={field.onChange} />
+              </div>
+              <FormError />
+            </AdminEventFormItem>
+          )}
+        </FormItem>
+
+        {isLimitedSlot && (
+          <FormItem name="maximumSlots">
+            {({ field: { value, onChange } }) => (
+              <AdminEventFormItem halfSpace>
+                <FormLabel>Maximum Slots</FormLabel>
+                {/* use this onChange when form fields are numbers */}
+                <Input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} />
                 <FormError />
               </AdminEventFormItem>
             )}
@@ -172,30 +200,30 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         {event && (
           <>
             <FormItem name="bannerLink">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Banner</FormLabel>
-                  <FileUpload eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="logoLink">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Logo</FormLabel>
-                  <FileUpload eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
             </FormItem>
 
             <FormItem name="certificateTemplate">
-              {({ field: { value, onChange } }) => (
+              {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Certificate Template</FormLabel>
-                  <FileUpload eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
@@ -212,18 +240,18 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               confirmVariant="negative"
               onCompleteAction={cancel}
               trigger={
-                <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost">
+                <Button icon="X" disabled={isSubmitting || (event && !isDirty)} variant="ghost">
                   Discard changes
                 </Button>
               }
             />
           ) : (
-            <Button icon="X" disabled={isSubmitting || (event && isFormClean)} variant="ghost" onClick={cancel}>
+            <Button icon="X" disabled={isSubmitting || (event && !isDirty)} variant="ghost" onClick={cancel}>
               Cancel
             </Button>
           )}
 
-          <Button icon="Save" disabled={isFormClean} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
+          <Button icon="Save" disabled={!isDirty} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
             Save
           </Button>
         </div>

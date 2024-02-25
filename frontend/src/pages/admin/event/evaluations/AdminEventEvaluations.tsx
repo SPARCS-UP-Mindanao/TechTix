@@ -6,7 +6,7 @@ import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { evaluationColumns } from './EvaluationColumns';
 
-const AdminEventeEvaluations: FC = () => {
+const AdminEventEvaluations: FC = () => {
   const { eventId } = useOutletContext<Event>();
   const { data: response, isFetching } = useApiQuery(getEvaluations(eventId!));
 
@@ -18,10 +18,10 @@ const AdminEventeEvaluations: FC = () => {
   );
 };
 
-const AdminEventeEvaluationsPage = () => {
-  return <AdminEventeEvaluations />;
+const AdminEventEvaluationsPage = () => {
+  return <AdminEventEvaluations />;
 };
 
-export const Component = AdminEventeEvaluationsPage;
+export const Component = AdminEventEvaluationsPage;
 
-export default AdminEventeEvaluationsPage;
+export default AdminEventEvaluationsPage;

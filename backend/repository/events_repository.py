@@ -237,3 +237,24 @@ class EventsRepository:
             logging.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    def append_event_registration_count(self, event_entry: Event, append_count: int = 1):
+        """
+        Adds the registrationCount attribute of the event_entry by append_count
+
+        :param event_entry: Event
+        :param append_count: int
+        :return: HTTPStatus, str
+        """
+        try:
+            event_entry.update(actions=[Event.registrationCount.add(append_count)])
+            event_entry.save()
+
+        except PutError as e:
+            message = f'Failed to append event registration count: {str(e)}'
+            logging.error(f'[{event_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message
+
+        else:
+            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
