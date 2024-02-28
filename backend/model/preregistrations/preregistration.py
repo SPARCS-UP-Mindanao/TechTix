@@ -81,6 +81,7 @@ class PreRegistrationPatch(BaseModel):
     certificateClaimed: bool = Field(None, title='Certificate Claimed')
     certificateImgObjectKey: str = Field(None, title='Certificate Image Object Key')
     certificatePdfObjectKey: str = Field(None, title='Certificate PDF Object Key')
+    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
     certificateGenerated: bool = Field(None, title='Certificate Generated')
     acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
 

@@ -3,12 +3,12 @@ from http import HTTPStatus
 from typing import List, Union
 
 import ulid
+from model.events.events_constants import EventStatus
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
     PreRegistrationPatch,
 )
-from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
@@ -49,8 +49,9 @@ class PreRegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        is_preregistration = event.status == EventStatus.PRE_REGISTRATION.value
         # Check if the event is open for pre-registration
-        if not event.isApprovalFlow and not event.status == EventStatus.PRE_REGISTRATION.value:
+        if not (event.isApprovalFlow and is_preregistration):
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': 'Event is not open for pre-registration'},
@@ -145,6 +146,23 @@ class PreRegistrationUsecase:
             Union[JSONResponse, PreRegistrationOut]: If found, returns the requested preregistration entry.
                 If not found, returns a JSONResponse with an error message.
         """
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        (
+            status,
+            preregistration,
+            message,
+        ) = self.__preregistrations_repository.query_preregistrations(
+            event_id=event_id, preregistration_id=preregistration_id
+        )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        preregistration_data = self.__convert_data_entry_to_dict(preregistration)
+        preregistration_out = PreRegistrationOut(**preregistration_data)
+        return self.collect_pre_signed_url(preregistration_out)
 
     def get_preregistration_by_email(self, event_id: str, email: str) -> PreRegistrationOut:
         (
@@ -189,24 +207,6 @@ class PreRegistrationUsecase:
             PreRegistrationOut(**self.__convert_data_entry_to_dict(preregistration))
             for preregistration in preregistrations
         ]
-
-    def batch_job(self, event_id: str):
-        preregistrations = self.get_preregistrations(event_id=event_id)
-
-        for preregistration in preregistrations:
-            if (
-                preregistration.acceptanceStatus == acceptanceStatus.ACCEPTED.value
-                and not preregistration.acceptanceEmailSent
-            ):
-                self.__email_usecase.send_preregistration_acceptance_email(
-                    preregistration=preregistration, event=event
-                )
-            else: 
-                self.__email_usecase.send_preregistration_rejection_email(
-                    preregistration=preregistration, event=event
-                )
-
-        logger.info('Batch job complete.')
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
