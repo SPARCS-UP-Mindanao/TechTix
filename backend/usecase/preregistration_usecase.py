@@ -8,7 +8,7 @@ from model.preregistrations.preregistration import (
     PreRegistrationOut,
     PreRegistrationPatch,
 )
-from model.preregistrations.preregistrations_constants import AcceptanceStatus
+from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
@@ -49,8 +49,8 @@ class PreRegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        # Check if the event is still open
-        if not event.isApprovalFlow:
+        # Check if the event is open for pre-registration
+        if not event.isApprovalFlow and not event.status == EventStatus.PRE_REGISTRATION.value:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': 'Event is not open for pre-registration'},
@@ -128,14 +128,6 @@ class PreRegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if (
-            update_preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED
-            and not update_preregistration.acceptanceEmailSent
-        ):
-            self.__email_usecase.send_preregistration_acceptance_email(
-                preregistration=update_preregistration, event=event
-            )
-
         preregistration_data = self.__convert_data_entry_to_dict(update_preregistration)
         preregistration_out = PreRegistrationOut(**preregistration_data)
 
@@ -197,6 +189,24 @@ class PreRegistrationUsecase:
             PreRegistrationOut(**self.__convert_data_entry_to_dict(preregistration))
             for preregistration in preregistrations
         ]
+
+    def batch_job(self, event_id: str):
+        preregistrations = self.get_preregistrations(event_id=event_id)
+
+        for preregistration in preregistrations:
+            if (
+                preregistration.acceptanceStatus == acceptanceStatus.ACCEPTED.value
+                and not preregistration.acceptanceEmailSent
+            ):
+                self.__email_usecase.send_preregistration_acceptance_email(
+                    preregistration=preregistration, event=event
+                )
+            else: 
+                self.__email_usecase.send_preregistration_rejection_email(
+                    preregistration=preregistration, event=event
+                )
+
+        logger.info('Batch job complete.')
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):

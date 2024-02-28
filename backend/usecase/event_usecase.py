@@ -15,6 +15,7 @@ from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
+from usecase.preregistration_usecase import PreRegistrationUsecase
 from utils.logger import logger
 from utils.utils import Utils
 
@@ -24,6 +25,7 @@ class EventUsecase:
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
+        self.__preregistration_usecase = PreRegistrationUsecase()
         self.__registration_repository = RegistrationsRepository()
         self.__faqs_repository = FAQsRepository()
 
@@ -67,6 +69,9 @@ class EventUsecase:
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if original_status != EventStatus.PRE_REGISTRATION.value and update_event == EventStatus.PRE_REGISTRATION.value:
+            self. __preregistration_usecase.batch_job(event_id=update_event.eventId)
 
         if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             logger.info(f'Send Thank You Email Triggered for event: {event_id}')

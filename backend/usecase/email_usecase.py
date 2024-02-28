@@ -118,6 +118,25 @@ class EmailUsecase:
         logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
         return self.send_email(email_in=email_in)
 
+    def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event):
+        subject = f'{event.name} Pre-Registration Rejected'
+        body = [
+            'We are sorry to tell you that your pre-registration has been rejected.'
+        ]
+        salutation = f'Good day {preregistration.firstName},'
+        regards = ['Best,']
+        email_in = EmailIn(
+            to=[preregistration.email],
+            subject=subject,
+            body=body,
+            salutation=salutation,
+            regards=regards,
+            emailType=EmailType.PREREGISTRATION_EMAIL,
+            eventId=event.eventId,
+        )
+        logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
+        return self.send_email(email_in=email_in)
+
     def send_event_completion_email(
         self,
         event_id: str,
