@@ -12,9 +12,9 @@ from model.registrations.registration import (
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
-from usecase.event_usecase import EventUsecase
 from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
+from usecase.event_usecase import EventUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 
 
@@ -47,7 +47,7 @@ class RegistrationUsecase:
                 If unsuccessful, returns a JSONResponse with an error message.
         """
 
-        event = EventUsecase.get_event(registration_in.eventId)        
+        event = EventUsecase.get_event(registration_in.eventId)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'Registrations should not be created for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
@@ -120,7 +120,7 @@ class RegistrationUsecase:
             Union[JSONResponse, RegistrationOut]: If successful, returns the updated registration entry.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        event = EventUsecase.get_event(event_id)        
+        event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'No registrations for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
@@ -173,7 +173,7 @@ class RegistrationUsecase:
                 If not found, returns a JSONResponse with an error message.
         """
 
-        event = EventUsecase.get_event(event_id)        
+        event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'No registrations for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
@@ -200,7 +200,7 @@ class RegistrationUsecase:
             registrations,
             message,
         ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
-        event = EventUsecase.get_event(event_id)        
+        event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'No registrations for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
@@ -226,7 +226,7 @@ class RegistrationUsecase:
             Union[JSONResponse, List[RegistrationOut]]: If successful, returns a list of registration entries.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        event = EventUsecase.get_event(event_id)        
+        event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'No registrations for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
@@ -260,7 +260,7 @@ class RegistrationUsecase:
             Union[None, JSONResponse]: If deleted successfully, returns None.
                 If unsuccessful, returns a JSONResponse with an error message.
         """
-        event = EventUsecase.get_event(event_id)        
+        event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'No registrations for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})

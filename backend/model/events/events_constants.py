@@ -26,4 +26,3 @@ class EventUploadField(str, Enum):
 class RegistrationType(str, Enum):
     TECHTIX = 'TechTix'
     REDIRECT = 'redirect'
-    

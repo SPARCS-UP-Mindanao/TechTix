@@ -4,7 +4,12 @@ from typing import Optional
 
 from model.events.events_constants import EventStatus, RegistrationType
 from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute, EnumAttribute
+from pynamodb.attributes import (
+    BooleanAttribute,
+    EnumAttribute,
+    NumberAttribute,
+    UnicodeAttribute,
+)
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
 from pynamodb.models import Model
 

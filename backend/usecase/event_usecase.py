@@ -6,7 +6,7 @@ from typing import List, Union
 from urllib.parse import unquote_plus
 
 from model.events.event import EventIn, EventOut
-from model.events.events_constants import EventStatus 
+from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse

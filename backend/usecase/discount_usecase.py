@@ -14,8 +14,8 @@ from model.events.events_constants import RegistrationType
 from repository.discount_repository import DiscountsRepository
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
-from usecase.event_usecase import EventUsecase
 from starlette.responses import JSONResponse
+from usecase.event_usecase import EventUsecase
 from utils.utils import Utils
 
 
