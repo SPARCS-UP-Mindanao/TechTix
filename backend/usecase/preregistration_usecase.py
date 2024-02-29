@@ -161,8 +161,7 @@ class PreRegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
-        preregistration_out = PreRegistrationOut(**preregistration_data)
-        return self.collect_pre_signed_url(preregistration_out)
+        return PreRegistrationOut(**preregistration_data)
 
     def get_preregistration_by_email(self, event_id: str, email: str) -> PreRegistrationOut:
         (

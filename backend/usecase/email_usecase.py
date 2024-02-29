@@ -2,16 +2,17 @@ import json
 import os
 from datetime import datetime
 from http import HTTPStatus
-from typing import Tuple
+from typing import List, Tuple
 
 import ulid
 from boto3 import client as boto3_client
 from constants.common_constants import EmailType
 from model.email.email import EmailIn
 from model.events.event import Event
-from model.preregistrations.preregistration import PreRegistration
+from model.preregistrations.preregistration import PreRegistration, PreRegistrationIn
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
+from repository.preregistrations_repository import PreRegistrationsRepository
 from utils.logger import logger
 
 
@@ -19,6 +20,7 @@ class EmailUsecase:
     def __init__(self) -> None:
         self.__sqs_client = boto3_client('sqs', region_name=os.getenv('REGION', 'ap-southeast-1'))
         self.__sqs_url = os.getenv('EMAIL_QUEUE')
+        self.__preregistration_repository = PreRegistrationsRepository()
 
     def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
         message = None
@@ -82,21 +84,21 @@ class EmailUsecase:
         logger.info(f'Sending registration confirmation email to {registration.email}')
         return self.send_email(email_in=email_in)
 
-    def send_accept_reject_status_email(self, event_id: str):
-        from usecase.event_usecase import EventUsecase
-        from usecase.preregistration_usecase import PreRegistrationUsecase
-
-        preregistrations = PreRegistrationUsecase().get_preregistrations(event_id=event_id)
-        event = EventUsecase().get_event(event_id=event_id)
-
+    def send_accept_reject_status_email(self, preregistrations: List[PreRegistration], event: Event):
         for preregistration in preregistrations:
-            if (
-                preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
-                and not preregistration.acceptanceEmailSent
-            ):
+            email_sent = preregistration.acceptanceEmailSent
+            if email_sent:
+                return
+
+            should_send_acceptance = preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
+            if should_send_acceptance:
                 self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
             else:
                 self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
+
+            self.__preregistration_repository.update_preregistration(
+                preregistration_entry=preregistration, preregistration_in=PreRegistrationIn(acceptanceEmailSent=True)
+            )
 
     def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
         subject = f'{event.name} Pre-Registration'

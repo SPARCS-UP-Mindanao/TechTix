@@ -11,6 +11,7 @@ from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
 from repository.faqs_repository import FAQsRepository
+from repository.preregistrations_repository import PreRegistrationsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
@@ -24,6 +25,7 @@ class EventUsecase:
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__registration_repository = RegistrationsRepository()
+        self.__preregistration_repository = PreRegistrationsRepository()
         self.__faqs_repository = FAQsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
@@ -67,9 +69,14 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        if update_event.isApprovalFlow:
-            if original_status == EventStatus.PRE_REGISTRATION.value and update_event.status == EventStatus.OPEN.value:
-                self.__email_usecase.send_accept_reject_status_email(event_id=update_event.eventId)
+        should_send_accept_reject_emails = (
+            update_event.isApprovalFlow
+            and original_status == EventStatus.PRE_REGISTRATION.value
+            and update_event.status == EventStatus.OPEN.value
+        )
+        if should_send_accept_reject_emails:
+            preregistrations = self.__preregistration_repository.query_preregistrations(event_id=update_event.eventId)
+            self.__email_usecase.send_accept_reject_status_email(preregistrations=preregistrations, event=event)
 
         if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             event_id = update_event.eventId

@@ -167,7 +167,7 @@ class PreRegistrationsRepository:
         try:
             filter_condition = PreRegistration.entryStatus.__eq__(EntryStatus.ACTIVE.value)
             if exclude_preregistration_id:
-                filter_condition &= PreRegistration.preregistrationId != exclude_preregistration_id
+                filter_condition &= PreRegistration.preRegistrationId != exclude_preregistration_id
 
             preregistration_entries = list(
                 PreRegistration.emailLSI.query(
