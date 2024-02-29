@@ -104,3 +104,39 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+
+  PreRegistrations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.preregistrations}
+      AttributeDefinitions:
+        - AttributeName: hashKey
+          AttributeType: S
+        - AttributeName: rangeKey
+          AttributeType: S
+        - AttributeName: preRegistrationId
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: hashKey
+          KeyType: HASH
+        - AttributeName: rangeKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: PreRegistrationIdIndex
+          KeySchema:
+            - AttributeName: preRegistrationId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      LocalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: hashKey
+              KeyType: HASH
+            - AttributeName: email
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL

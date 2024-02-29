@@ -9,6 +9,8 @@ from boto3 import client as boto3_client
 from constants.common_constants import EmailType
 from model.email.email import EmailIn
 from model.events.event import Event
+from model.preregistrations.preregistration import PreRegistration
+from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
 from utils.logger import logger
 
@@ -78,6 +80,91 @@ class EmailUsecase:
             eventId=event.eventId,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
+        return self.send_email(email_in=email_in)
+
+    def send_accept_reject_status_email(self, event_id: str):
+        from usecase.event_usecase import EventUsecase
+        from usecase.preregistration_usecase import PreRegistrationUsecase
+
+        preregistrations = PreRegistrationUsecase().get_preregistrations(event_id=event_id)
+        event = EventUsecase().get_event(event_id=event_id)
+
+        for preregistration in preregistrations:
+            if (
+                preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
+                and not preregistration.acceptanceEmailSent
+            ):
+                self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
+            else:
+                self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
+
+    def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
+        subject = f'{event.name} Pre-Registration'
+        body = ['Your pre-registration was received and will be reviewed.']
+        salutation = f'Good day {preregistration.firstName},'
+        regards = ['Best,']
+        email_in = EmailIn(
+            to=[preregistration.email],
+            subject=subject,
+            body=body,
+            salutation=salutation,
+            regards=regards,
+            emailType=EmailType.PREREGISTRATION_EMAIL,
+            eventId=event.eventId,
+        )
+        logger.info(f'Sending pre-registration email to {preregistration.email}')
+        return self.send_email(email_in=email_in)
+
+    def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event):
+        subject = f'{event.name} Pre-Registration Accepted'
+        body = [
+            'We are glad to tell you that your pre-registration has been accepted.',
+            f'Registration link: https://techtix.app/{preregistration.eventId}/registration',
+        ]
+        salutation = f'Good day {preregistration.firstName},'
+        regards = ['Best,']
+        email_in = EmailIn(
+            to=[preregistration.email],
+            subject=subject,
+            body=body,
+            salutation=salutation,
+            regards=regards,
+            emailType=EmailType.PREREGISTRATION_EMAIL,
+            eventId=event.eventId,
+        )
+        logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
+        return self.send_email(email_in=email_in)
+
+    def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event):
+        subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
+        body = [
+            f'Dear {preregistration.firstName}',
+            '',
+            'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
+            '',
+            'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
+            '',
+            'Despite this setback, we want to extend a heartfelt invitation to you for our next event at Sparcs. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
+            '',
+            'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us.',
+            '',
+            'Thank you for your understanding.',
+            '',
+            'Warm regards,',
+            'Your Sparcs Team',
+        ]
+        salutation = f'Good day {preregistration.firstName},'
+        regards = ['Best,']
+        email_in = EmailIn(
+            to=[preregistration.email],
+            subject=subject,
+            body=body,
+            salutation=salutation,
+            regards=regards,
+            emailType=EmailType.PREREGISTRATION_EMAIL,
+            eventId=event.eventId,
+        )
+        logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
         return self.send_email(email_in=email_in)
 
     def send_event_completion_email(

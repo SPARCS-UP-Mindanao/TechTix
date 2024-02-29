@@ -3,8 +3,10 @@ from http import HTTPStatus
 from typing import List, Union
 
 import ulid
+from model.events.event import Event
 from model.events.events_constants import EventStatus
 from model.registrations.registration import (
+    PreRegistrationToRegistrationIn,
     RegistrationIn,
     RegistrationOut,
     RegistrationPatch,
@@ -15,6 +17,7 @@ from starlette.responses import JSONResponse
 from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
+from usecase.preregistration_usecase import PreRegistrationUsecase
 
 
 class RegistrationUsecase:
@@ -33,6 +36,7 @@ class RegistrationUsecase:
         self.__email_usecase = EmailUsecase()
         self.__discount_usecase = DiscountUsecase()
         self.__file_s3_usecase = FileS3Usecase()
+        self.__preregistration_usecase = PreRegistrationUsecase()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """
@@ -48,6 +52,9 @@ class RegistrationUsecase:
         status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if event.isApprovalFlow:
+            return self.create_registration_approval_flow(event=event, registration_in=registration_in)
 
         # Check if the event is still open
         if event.paidEvent and event.status != EventStatus.OPEN.value:
@@ -100,6 +107,47 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        registration_data = self.__convert_data_entry_to_dict(registration)
+
+        if not registration.registrationEmailSent:
+            self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
+
+        registration_out = RegistrationOut(**registration_data)
+        return self.collect_pre_signed_url(registration_out)
+
+    def create_registration_approval_flow(
+        self, event: Event, registration_in: RegistrationIn
+    ) -> Union[JSONResponse, RegistrationOut]:
+        event_id = registration_in.eventId
+        email = registration_in.email
+        preregistration = self.__preregistration_usecase.get_preregistration_by_email(event_id=event_id, email=email)
+
+        if not preregistration:
+            return JSONResponse(
+                status_code=HTTPStatus.CONFLICT,
+                content={'message': 'Email does not exist in pre-registration'},
+            )
+
+        registration_data = preregistration.dict()
+        registration_data_in = PreRegistrationToRegistrationIn(
+            **registration_data,
+            discountCode=registration_in.discountCode,
+            referenceNumber=registration_in.referenceNumber,
+            amountPaid=registration_in.amountPaid,
+        )
+
+        registration_id = preregistration.preRegistrationId
+        (
+            status,
+            registration,
+            message,
+        ) = self.__registrations_repository.store_registration(
+            registration_in=registration_data_in,
+            registration_id=registration_id,
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

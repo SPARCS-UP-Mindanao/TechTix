@@ -15,7 +15,6 @@ from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
-from utils.logger import logger
 from utils.utils import Utils
 
 
@@ -68,8 +67,11 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        if update_event.isApprovalFlow:
+            if original_status == EventStatus.PRE_REGISTRATION.value and update_event.status == EventStatus.OPEN.value:
+                self.__email_usecase.send_accept_reject_status_email(event_id=update_event.eventId)
+
         if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
-            logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.eventId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
             (
