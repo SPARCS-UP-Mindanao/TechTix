@@ -1,7 +1,7 @@
 import { createApi } from '@/api/utils/createApi';
 import { Registration } from '@/model/registrations';
 
-interface RegistrationDto {
+export interface RegistrationDto {
   firstName: string;
   lastName: string;
   contactNumber: string;

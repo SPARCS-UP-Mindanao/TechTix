@@ -1,16 +1,5 @@
-export type RegistrationFormFields =
-  | 'email'
-  | 'firstName'
-  | 'lastName'
-  | 'contactNumber'
-  | 'careerStatus'
-  | 'yearsOfExperience'
-  | 'organization'
-  | 'title'
-  | 'gcashPayment'
-  | 'referenceNumber'
-  | 'discountCode'
-  | 'amountPaid';
+import { RegisterFormValues } from '@/hooks/useRegisterForm';
+import { PreRegistration } from './preregistrations';
 
 export interface Registration {
   firstName: string;
@@ -32,3 +21,27 @@ export interface Registration {
   gcashPayment?: string | null;
   gcashPaymentUrl?: string | null;
 }
+
+export const mapRegistrationToFormValues = (registration: Registration | PreRegistration): RegisterFormValues => ({
+  email: registration.email,
+  firstName: registration.firstName,
+  lastName: registration.lastName,
+  contactNumber: registration.contactNumber,
+  careerStatus: registration.careerStatus,
+  yearsOfExperience: registration.yearsOfExperience,
+  organization: registration.organization,
+  title: registration.title
+});
+
+export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string): Registration => ({
+  email: registration.email,
+  firstName: registration.firstName,
+  lastName: registration.lastName,
+  contactNumber: registration.contactNumber,
+  careerStatus: registration.careerStatus,
+  yearsOfExperience: registration.yearsOfExperience,
+  organization: registration.organization,
+  title: registration.title,
+  eventId: eventId,
+  certificateClaimed: false
+});
