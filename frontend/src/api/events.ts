@@ -20,6 +20,7 @@ export interface EventDto {
   status: EventStatus;
   eventId: string;
   isLimitedSlot: boolean;
+  isApprovalFlow: boolean;
   registrationCount: number;
   maximumSlots: number | null;
   createDate: string;
@@ -74,13 +75,12 @@ const mapEventsDtoToEventRegCountStatus = (event: EventDto): EventRegCountStatus
   maximumSlots: event.maximumSlots
 });
 
-export const getAllEvents = () => {
-  return createApi<EventDto[], Event[]>({
+export const getAllEvents = () =>
+  createApi<EventDto[], Event[]>({
     method: 'get',
     url: '/events',
     output: mapEventsDtoToEvent
   });
-};
 
 export const getAdminEvents = (adminId: string) =>
   createApi({
@@ -91,7 +91,7 @@ export const getAdminEvents = (adminId: string) =>
     output: mapEventsDtoToEvent
   });
 
-export const createEvent = (event: Event) =>
+export const createEvent = (event: Omit<Event, 'eventId'>) =>
   createApi<EventDto, Event>({
     method: 'post',
     authorize: true,

@@ -83,7 +83,7 @@ interface EventCardProps {
 }
 
 const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled = true, refetch, onClick }) => {
-  const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId!);
+  const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => setIsModalOpen(false);
 

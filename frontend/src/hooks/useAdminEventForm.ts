@@ -49,6 +49,7 @@ const EventFormSchema = z
       })
       .optional(),
     isLimitedSlot: z.boolean(),
+    isApprovalFlow: z.boolean(),
     maximumSlots: z.number().optional()
   })
   .refine(
@@ -120,6 +121,7 @@ export const useAdminEventForm = (event?: Event) => {
         autoConfirm: false,
         paidEvent: false,
         isLimitedSlot: false,
+        isApprovalFlow: false,
         price: 0,
         status: 'draft'
       };

@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { ulid } from 'ulid';
 import { z } from 'zod';
 import { updateFAQs } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { removeFAQIds } from '@/model/events';
+import { Event, removeFAQIds } from '@/model/events';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +50,7 @@ type FAQ = z.infer<typeof FAQSchema>;
 export const useFAQsForm = (eventFAQs: FAQsFormValues) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
-  const { eventId } = useParams();
+  const { eventId } = useOutletContext<Event>();
   const form = useForm<FAQsFormValues>({
     mode: 'onChange',
     resolver: zodResolver(FAQsFormSchema),
@@ -71,7 +71,7 @@ export const useFAQsForm = (eventFAQs: FAQsFormValues) => {
 
   const submit = form.handleSubmit(async (values) => {
     try {
-      const response = await api.execute(updateFAQs(eventId!, removeFAQIds(values)));
+      const response = await api.execute(updateFAQs(eventId, removeFAQIds(values)));
       if (response.status === 200) {
         successToast({
           title: 'FAQs updated successfully',
