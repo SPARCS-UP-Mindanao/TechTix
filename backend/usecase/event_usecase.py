@@ -70,13 +70,14 @@ class EventUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         should_send_accept_reject_emails = (
-            update_event.isApprovalFlow
-            and original_status == EventStatus.PRE_REGISTRATION.value
+            original_event.isApprovalFlow
+            and original_status != EventStatus.OPEN.value
             and update_event.status == EventStatus.OPEN.value
         )
         if should_send_accept_reject_emails:
-            preregistrations = self.__preregistration_repository.query_preregistrations(event_id=update_event.eventId)
-            self.__email_usecase.send_accept_reject_status_email(preregistrations=preregistrations, event=event)
+            _, preregistrations, _ = self.__preregistration_repository.query_preregistrations(event_id=event_id)
+            if preregistrations:
+                self.__email_usecase.send_accept_reject_status_email(preregistrations=preregistrations, event=event)
 
         if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
             event_id = update_event.eventId
