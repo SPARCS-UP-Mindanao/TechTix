@@ -146,13 +146,27 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <Separator className="my-4" />
 
+        <FormItem name="isApprovalFlow">
+          {({ field }) => (
+            <AdminEventFormItem>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Will this event follow a pre-registration flow?</FormLabel>
+                <Switch id="isApprovalFlow" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || !!eventId} />
+              </div>
+              <FormError />
+            </AdminEventFormItem>
+          )}
+        </FormItem>
+
+        <Separator className="my-4" />
+
         {event && (
           <FormItem name="status">
             {({ field: { value, onChange } }) => (
               <>
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Status</FormLabel>
-                  <Select value={value} onValueChange={onChange}>
+                  <Select value={value} onValueChange={onChange} disabled={isSubmitting}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select an Event Status" />
                     </SelectTrigger>
@@ -160,7 +174,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                       <SelectGroup>
                         <SelectLabel>Event Status</SelectLabel>
                         {EVENT_STATUSES.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
+                          <SelectItem key={item.value} value={item.value} disabled={item.value === 'preregistration' && !!eventId && !event?.isApprovalFlow}>
                             {item.label}
                           </SelectItem>
                         ))}
@@ -203,7 +217,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Banner</FormLabel>
-                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
@@ -213,7 +227,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Logo</FormLabel>
-                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
@@ -223,7 +237,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
               {({ field: { name, value, onChange } }) => (
                 <AdminEventFormItem halfSpace>
                   <FormLabel>Event Certificate Template</FormLabel>
-                  <FileUpload name={name} eventId={eventId!} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
+                  <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
                   <FormError />
                 </AdminEventFormItem>
               )}
