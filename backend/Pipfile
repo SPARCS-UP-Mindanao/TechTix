@@ -12,7 +12,7 @@ h11 = "==0.12.0"
 mangum = "==0.11.0"
 starlette = "==0.14.2"
 typing-extensions = "==3.10.0.0"
-pynamodb = "==5.2.1"
+pynamodb = "==6.0.0"
 ulid = "==1.1"
 fastapi-cloudauth = "==0.4.3"
 lambda-warmer-py = "==0.6.0"
@@ -31,7 +31,7 @@ moto = "==3.1.1"
 pylint = "==2.13.8"
 pylint-pydantic = "==0.1.8"
 httpx = "==0.23.3"
-ruff = "*"
+ruff = "==0.0.47
 
 [requires]
 python_version = "3.8"
