@@ -2,16 +2,23 @@ import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import ImageViewer from '@/components/ImageViewer';
 import Skeleton from '@/components/Skeleton';
+import { getSpecificRegistration } from '@/api/registrations';
+import { useApiQuery } from '@/hooks/useApi';
 import { useFileUrl } from '@/hooks/useFileUrl';
 import shareToLinkedIn from './shareToLinkedIn';
 
 interface CertificateClaimProps {
   logoLink: string | undefined | null;
-  certificateTemplateKey: string | undefined;
-  certificatePDFTemplateKey: string | undefined;
+  registrationId: string;
+  eventId: string;
 }
 
-const CertificateClaim = ({ logoLink, certificateTemplateKey, certificatePDFTemplateKey }: CertificateClaimProps) => {
+const CertificateClaim = ({ logoLink, registrationId, eventId }: CertificateClaimProps) => {
+  const { data: registrationResponse } = useApiQuery(getSpecificRegistration(eventId, registrationId));
+
+  const certificateTemplateKey = registrationResponse?.data.certificateImgObjectKey;
+  const certificatePDFTemplateKey = registrationResponse?.data.certificatePdfObjectKey;
+
   const imageNameImg = `${decodeURIComponent(certificateTemplateKey?.split('/').pop() ?? '')}`;
   const imageNamePdf = `${decodeURIComponent(certificatePDFTemplateKey?.split('/').pop() ?? '')}`;
   const { fileUrl: certificateImgDataURL } = useFileUrl(certificateTemplateKey!);

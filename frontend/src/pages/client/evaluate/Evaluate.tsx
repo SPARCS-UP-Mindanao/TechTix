@@ -76,7 +76,7 @@ const Evaluate = () => {
     EVALUATE_STEPS
   });
 
-  const { form, submitEvaluation, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId!);
+  const { form, submitEvaluation, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId);
 
   const prevStep = () => {
     const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
@@ -106,17 +106,6 @@ const Evaluate = () => {
 
   if (postEvalSuccess) {
     nextStep();
-  }
-
-  let cachedCertificate;
-  if (certificateResponse && eventInfo && eventInfo?.logoLink) {
-    cachedCertificate = (
-      <CertificateClaim
-        logoLink={eventInfo?.logoLink}
-        certificateTemplateKey={certificateResponse?.certificateTemplateKey}
-        certificatePDFTemplateKey={certificateResponse?.certificatePDFTemplateKey}
-      />
-    );
   }
 
   const showEvaluateButton = EVALUATE_STEPS.indexOf(currentStep) === 0;
@@ -158,7 +147,9 @@ const Evaluate = () => {
 
             {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && <Separator className="my-4" />}
 
-            {currentStep === 'ClaimCertificate' && cachedCertificate}
+            {currentStep === 'ClaimCertificate' && eventInfo && eventInfo?.logoLink && certificateResponse?.registrationId && (
+              <CertificateClaim eventId={eventId} logoLink={eventInfo?.logoLink} registrationId={certificateResponse?.registrationId} />
+            )}
 
             <div className="flex w-full justify-around my-6">
               {showEvaluateButton && (
