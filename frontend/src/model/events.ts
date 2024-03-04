@@ -111,6 +111,10 @@ export type FAQ = {
   answer: string;
 };
 
+export interface EventWithRefetchEvent extends Event {
+  refetchEvent: () => void;
+}
+
 export const mapEventToFormValues = (event: Event): EventFormValues => ({
   name: event.name,
   description: event.description,
@@ -128,11 +132,34 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   gcashName: event.gcashName || undefined,
   gcashNumber: event.gcashNumber || undefined,
   isLimitedSlot: event.isLimitedSlot,
-  isApprovalFlow: event.isApprovalFlow,
+  isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined
 });
 
-export const mapCreateEventValues = (values: EventFormValues) => ({
+export interface CreateEvent {
+  name: string;
+  description: string;
+  email: string;
+  startDate: string;
+  endDate: string;
+  venue: string;
+  autoConfirm: boolean;
+  paidEvent: boolean;
+  price: number;
+  bannerLink: string | null;
+  logoLink: string | null;
+  certificateTemplate: string | null;
+  isLimitedSlot: boolean;
+  gcashQRCode: string | null;
+  gcashName: string | null;
+  gcashNumber: string | null;
+  isApprovalFlow: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
+  status: EventStatus;
+}
+
+export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   name: values.name,
   description: values.description,
   email: values.email,

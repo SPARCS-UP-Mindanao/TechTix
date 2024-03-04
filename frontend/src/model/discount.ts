@@ -14,7 +14,7 @@ export interface OrganizationDiscount {
   discounts: Discount[];
 }
 
-export interface CreateDiscounts {
+export interface CreateDiscount {
   discountPercentage: number;
   quantity: number;
   organizationName: string;
