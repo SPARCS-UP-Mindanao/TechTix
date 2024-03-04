@@ -21,6 +21,8 @@ interface RegistrationDto {
   referenceNumber: string | null;
   gcashPayment: string | null;
   gcashPaymentUrl: string | null;
+  certificateImgObjectKey: string | null;
+  certificatePdfObjectKey: string | null;
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
