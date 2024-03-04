@@ -57,6 +57,16 @@ app:
             - "*"
     - Effect: Allow
       Action:
+        - "dynamodb:*"
+      Resource:
+        - { "Fn::GetAtt": [PreRegistrations, Arn] }
+        - "Fn::Join":
+          - "/"
+          - - "Fn::GetAtt": [ PreRegistrations, Arn ]
+            - "index"
+            - "*"
+    - Effect: Allow
+      Action:
         - ssm:GetParameter
       Resource:
         - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
