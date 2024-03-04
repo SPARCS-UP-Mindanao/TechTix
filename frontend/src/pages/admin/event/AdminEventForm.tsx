@@ -5,36 +5,18 @@ import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateMod
 import Button from '@/components/Button';
 import DatePicker from '@/components/DatePicker';
 import FileUpload from '@/components/FileUpload';
-import { FormItem, FormLabel, FormError } from '@/components/Form';
+import { FormItem, FormLabel, FormError, FormItemContainer, FormItemSpacer } from '@/components/Form';
 import Input from '@/components/Input';
 import RichTextEditor from '@/components/RichContent/RichTextEditor';
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue, SelectTrigger } from '@/components/Select';
 import Separator from '@/components/Separator';
 import Switch from '@/components/Switch';
 import { EVENT_STATUSES, EVENT_UPLOAD_TYPE, Event } from '@/model/events';
-import { cn } from '@/utils/classes';
 import { useAdminEventForm } from '@/hooks/useAdminEventForm';
 
 interface Props {
   event?: Event;
 }
-
-interface AdminEventFormItemProps {
-  halfSpace?: boolean;
-  children: React.ReactNode;
-}
-
-const AdminEventFormItem: FC<AdminEventFormItemProps> = ({ halfSpace = false, children }) => {
-  return <div className={cn('space-y-2 w-full px-2', halfSpace && 'md:w-1/2')}>{children}</div>;
-};
-
-const AdminEventFormSpacer: FC = () => {
-  return (
-    <div className="md:max-w-[50%]">
-      <pre> </pre>
-    </div>
-  );
-};
 
 const AdminEventForm: FC<Props> = ({ event }) => {
   const eventId = event?.eventId;
@@ -53,41 +35,41 @@ const AdminEventForm: FC<Props> = ({ event }) => {
       <main className="w-full flex flex-wrap gap-y-2">
         <FormItem name="name">
           {({ field: { value, onChange } }) => (
-            <AdminEventFormItem>
+            <FormItemContainer>
               <FormLabel>Event Name</FormLabel>
               <Input type="text" value={value} onChange={onChange} />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         <FormItem name="description">
           {({ field: { value, onChange } }) => (
-            <AdminEventFormItem>
+            <FormItemContainer>
               <FormLabel>Description</FormLabel>
               <RichTextEditor content={value} setContent={onChange} placeholder="Describe your event" />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         <FormItem name="email">
           {({ field }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <FormLabel>Email</FormLabel>
               <Input type="email" {...field} />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         <FormItem name="venue">
           {({ field }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <FormLabel>Venue</FormLabel>
               <Input type="text" {...field} />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
@@ -95,24 +77,24 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <FormItem name="paidEvent">
           {({ field }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <div className="flex flex-row gap-2">
                 <FormLabel>Is this a paid event?</FormLabel>
                 <Switch id="isPaidEvent" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || isPaidAndHasRegistrants} />
               </div>
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         {paidEvent && (
           <FormItem name="price">
             {({ field }) => (
-              <AdminEventFormItem halfSpace>
+              <FormItemContainer halfSpace>
                 <FormLabel>Price</FormLabel>
                 <Input type="number" {...field} disabled={isSubmitting || isPaidAndHasRegistrants} />
                 <FormError />
-              </AdminEventFormItem>
+              </FormItemContainer>
             )}
           </FormItem>
         )}
@@ -121,25 +103,25 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <FormItem name="isLimitedSlot">
           {({ field }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <div className="flex flex-row gap-2">
                 <FormLabel>Are slots limited?</FormLabel>
                 <Switch id="isLimitedSlot" checked={field.value} onCheckedChange={field.onChange} />
               </div>
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         {isLimitedSlot && (
           <FormItem name="maximumSlots">
             {({ field: { value, onChange } }) => (
-              <AdminEventFormItem halfSpace>
+              <FormItemContainer halfSpace>
                 <FormLabel>Maximum Slots</FormLabel>
                 {/* use this onChange when form fields are numbers */}
                 <Input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} />
                 <FormError />
-              </AdminEventFormItem>
+              </FormItemContainer>
             )}
           </FormItem>
         )}
@@ -148,13 +130,13 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <FormItem name="isApprovalFlow">
           {({ field }) => (
-            <AdminEventFormItem>
+            <FormItemContainer>
               <div className="flex flex-row gap-2">
                 <FormLabel>Will this event follow a pre-registration flow?</FormLabel>
                 <Switch id="isApprovalFlow" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || !!eventId} />
               </div>
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
@@ -164,7 +146,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           <FormItem name="status">
             {({ field: { value, onChange } }) => (
               <>
-                <AdminEventFormItem halfSpace>
+                <FormItemContainer halfSpace>
                   <FormLabel>Status</FormLabel>
                   <Select value={value} onValueChange={onChange} disabled={isSubmitting}>
                     <SelectTrigger className="w-[180px]">
@@ -182,8 +164,8 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                     </SelectContent>
                   </Select>
                   <FormError />
-                </AdminEventFormItem>
-                <AdminEventFormSpacer />
+                </FormItemContainer>
+                <FormItemSpacer />
               </>
             )}
           </FormItem>
@@ -191,21 +173,21 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <FormItem name="startDate">
           {({ field: { value, onChange } }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <FormLabel>Event Start Date</FormLabel>
               <DatePicker value={value} onChange={onChange} includeTime />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
         <FormItem name="endDate">
           {({ field: { value, onChange } }) => (
-            <AdminEventFormItem halfSpace>
+            <FormItemContainer halfSpace>
               <FormLabel>Event End Date</FormLabel>
               <DatePicker value={value} onChange={onChange} includeTime />
               <FormError />
-            </AdminEventFormItem>
+            </FormItemContainer>
           )}
         </FormItem>
 
@@ -215,31 +197,31 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           <>
             <FormItem name="bannerLink">
               {({ field: { name, value, onChange } }) => (
-                <AdminEventFormItem halfSpace>
+                <FormItemContainer halfSpace>
                   <FormLabel>Event Banner</FormLabel>
                   <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.BANNER} value={value} onChange={onChange} />
                   <FormError />
-                </AdminEventFormItem>
+                </FormItemContainer>
               )}
             </FormItem>
 
             <FormItem name="logoLink">
               {({ field: { name, value, onChange } }) => (
-                <AdminEventFormItem halfSpace>
+                <FormItemContainer halfSpace>
                   <FormLabel>Event Logo</FormLabel>
                   <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.LOGO} value={value} onChange={onChange} />
                   <FormError />
-                </AdminEventFormItem>
+                </FormItemContainer>
               )}
             </FormItem>
 
             <FormItem name="certificateTemplate">
               {({ field: { name, value, onChange } }) => (
-                <AdminEventFormItem halfSpace>
+                <FormItemContainer halfSpace>
                   <FormLabel>Event Certificate Template</FormLabel>
                   <FileUpload name={name} eventId={event.eventId} uploadType={EVENT_UPLOAD_TYPE.CERTIFICATE_TEMPLATE} value={value} onChange={onChange} />
                   <FormError />
-                </AdminEventFormItem>
+                </FormItemContainer>
               )}
             </FormItem>
             <Separator className="my-4" />
