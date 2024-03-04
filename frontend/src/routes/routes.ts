@@ -15,6 +15,10 @@ export const routes = createBrowserRouter([
     lazy: () => import('@/pages/client/ClientPage'),
     children: [
       {
+        path: 'preregister',
+        lazy: () => import('@/pages/client/preregister/PreRegisterPage')
+      },
+      {
         path: 'register',
         lazy: () => import('@/pages/client/register/RegisterPage')
       },

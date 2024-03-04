@@ -19,7 +19,7 @@ const FAQs: FC = () => {
   //     );
   //   }
 
-  if (!response || (response && response.data && !response.data.isActive) || !response.data.faqs.length) {
+  if (!response || (response && response?.data && !response?.data?.isActive) || !response?.data?.faqs.length) {
     return <></>;
   }
 
