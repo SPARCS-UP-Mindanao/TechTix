@@ -109,6 +109,9 @@
     --negative: var(--negative-800);
     --negative-foreground: var(--primary-50);
 
+    --positive: var(--positive-800);
+    --positive-foreground: var(--primary-50);
+
     --border: var(--neutrals-300);
     --input: var(--primary-0);
     --ring: 222.2 84% 4.9%;
@@ -174,6 +177,9 @@
 
     --negative: var(--negative-500);
     --negative-foreground: var(--primary-50);
+
+    --positive: var(--positive-500);
+    --positive-foreground: var(--primary-50);
 
     --border: var(--neutrals-700);
     --input: var(--neutrals-900);
