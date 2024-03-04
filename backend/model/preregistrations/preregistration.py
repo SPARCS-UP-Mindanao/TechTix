@@ -51,7 +51,6 @@ class PreRegistration(Model):
 
     emailLSI = EmailLSI()
 
-    certificateClaimed = BooleanAttribute(null=True)
     firstName = UnicodeAttribute(null=True)
     lastName = UnicodeAttribute(null=True)
     contactNumber = UnicodeAttribute(null=True)
@@ -59,17 +58,14 @@ class PreRegistration(Model):
     yearsOfExperience = UnicodeAttribute(null=True)
     organization = UnicodeAttribute(null=True)
     title = UnicodeAttribute(null=True)
-    certificateImgObjectKey = UnicodeAttribute(null=True)
-    certificatePdfObjectKey = UnicodeAttribute(null=True)
     preRegistrationEmailSent = BooleanAttribute(default=False)
     acceptanceEmailSent = BooleanAttribute(default=False)
-    certificateGenerated = BooleanAttribute(default=False)
     acceptanceStatus = UnicodeAttribute(null=True)
 
 
-class PreRegistrationPatch(BaseModel):
+class PreRegistrationaDataIn(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     firstName: str = Field(None, title='First Name')
     lastName: str = Field(None, title='Last Name')
@@ -78,15 +74,17 @@ class PreRegistrationPatch(BaseModel):
     yearsOfExperience: str = Field(None, title='Years of Experience')
     organization: str = Field(None, title='Organization')
     title: str = Field(None, title='Title')
-    certificateClaimed: bool = Field(None, title='Certificate Claimed')
-    certificateImgObjectKey: str = Field(None, title='Certificate Image Object Key')
-    certificatePdfObjectKey: str = Field(None, title='Certificate PDF Object Key')
-    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
-    certificateGenerated: bool = Field(None, title='Certificate Generated')
+
+
+class PreRegistrationPatch(PreRegistrationaDataIn):
+    class Config:
+        extra = Extra.forbid
+
     acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
+    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
 
 
-class PreRegistrationIn(PreRegistrationPatch):
+class PreRegistrationIn(PreRegistrationaDataIn):
     class Config:
         extra = Extra.forbid
 
@@ -99,6 +97,8 @@ class PreRegistrationOut(PreRegistrationIn):
         extra = Extra.ignore
 
     preRegistrationId: str = Field(..., title='ID')
+    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
+    acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
     createDate: datetime = Field(..., title='Created At')
     updateDate: datetime = Field(..., title='Updated At')
 

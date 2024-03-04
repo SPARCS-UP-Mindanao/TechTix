@@ -9,7 +9,7 @@ from boto3 import client as boto3_client
 from constants.common_constants import EmailType
 from model.email.email import EmailIn
 from model.events.event import Event
-from model.preregistrations.preregistration import PreRegistration, PreRegistrationIn
+from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
 from repository.preregistrations_repository import PreRegistrationsRepository
@@ -90,19 +90,27 @@ class EmailUsecase:
             if email_sent:
                 return
 
-            should_send_acceptance = preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
+            should_send_acceptance = (
+                preregistration.acceptanceStatus and preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
+            )
             if should_send_acceptance:
                 self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
+                logger.info(f'Acceptance email sent to {preregistration.email} for event {event.eventId}')
             else:
                 self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
+                logger.info(f'Rejection email sent to {preregistration.email} for event {event.eventId}')
 
             self.__preregistration_repository.update_preregistration(
-                preregistration_entry=preregistration, preregistration_in=PreRegistrationIn(acceptanceEmailSent=True)
+                preregistration_entry=preregistration, preregistration_in=PreRegistrationPatch(acceptanceEmailSent=True)
             )
 
     def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
-        subject = f'{event.name} Pre-Registration'
-        body = ['Your pre-registration was received and will be reviewed.']
+        subject = f'Welcome to {event.name} Pre-Registration!'
+        body = [
+            'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
+            'Stay tuned for updates, and in the meantime, feel free to check out more details on our social media channels or reach out with any questions. We’re here to help!',
+        ]
+
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']
         email_in = EmailIn(
@@ -118,12 +126,13 @@ class EmailUsecase:
         return self.send_email(email_in=email_in)
 
     def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event):
-        subject = f'{event.name} Pre-Registration Accepted'
-        body = [
-            'We are glad to tell you that your pre-registration has been accepted.',
-            f'Registration link: https://techtix.app/{preregistration.eventId}/registration',
-        ]
+        subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
+        body = [
+            f'Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can’t wait to share it with you.',
+            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/registration',
+            'If you have any questions or need assistance, we’re here for you. Let’s make this event unforgettable!',
+        ]
         regards = ['Best,']
         email_in = EmailIn(
             to=[preregistration.email],

@@ -20,6 +20,8 @@ export interface Registration {
   referenceNumber?: string | null;
   gcashPayment?: string | null;
   gcashPaymentUrl?: string | null;
+  certificateImgObjectKey?: string | null;
+  certificatePdfObjectKey?: string | null;
 }
 
 export const mapRegistrationToFormValues = (registration: Registration | PreRegistration): RegisterFormValues => ({

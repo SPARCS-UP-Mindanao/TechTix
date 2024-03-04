@@ -6,7 +6,11 @@ from typing import List, Tuple
 
 import ulid
 from constants.common_constants import EntryStatus
-from model.preregistrations.preregistration import PreRegistration, PreRegistrationIn
+from model.preregistrations.preregistration import (
+    PreRegistration,
+    PreRegistrationIn,
+    PreRegistrationPatch,
+)
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -202,7 +206,7 @@ class PreRegistrationsRepository:
             return HTTPStatus.OK, preregistration_entries, None
 
     def update_preregistration(
-        self, preregistration_entry: PreRegistration, preregistration_in: PreRegistrationIn
+        self, preregistration_entry: PreRegistration, preregistration_in: PreRegistrationPatch
     ) -> Tuple[HTTPStatus, PreRegistration, str]:
         """
         Update a pre-registration record in the database.
