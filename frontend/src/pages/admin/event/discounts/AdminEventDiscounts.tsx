@@ -197,8 +197,13 @@ const AdminEventDiscounts: FC = () => {
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
 
   return (
-    <section className="flex flex-col gap-5 items-center">
-      <h2>Discounts</h2>
+    <section className="flex flex-col gap-6 items-center">
+      <div className="inline-flex justify-center items-center space-x-4">
+        <h2>Discounts</h2>
+        <Tooltip toolTipContent="Refresh discounts" side="right">
+          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+        </Tooltip>
+      </div>
       <CreateDiscountModal disabled={isFetching} eventId={eventId!} refetch={refetch} />
       <DiscountTables organizations={response?.data} isFetching={isFetching} />
     </section>

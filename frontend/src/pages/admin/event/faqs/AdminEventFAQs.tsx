@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { FormProvider, useFormState } from 'react-hook-form';
+import { FormProvider, useFormState, useWatch } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
@@ -45,6 +45,8 @@ interface FAQsFormProps {
 const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
   const { form, faqs, addFAQ, removeFAQ, moveFAQ, submit } = useFAQsForm(eventFAQs);
   const { isSubmitting, isDirty } = useFormState(form);
+
+  const isFAQEnabled = useWatch({ control: form.control, name: 'isActive' });
 
   const onAddFAQ = () => addFAQ({ question: '', answer: '' });
   const onMoveQuestionUp = (index: number) => moveFAQ(index, index - 1);
@@ -119,7 +121,7 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
             );
           })}
         </ol>
-        <Button icon="PlusCircle" disabled={isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
+        <Button icon="PlusCircle" disabled={!isFAQEnabled || isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
           Add FAQ
         </Button>
         <FormItem name="faqs">{() => <FormError />}</FormItem>

@@ -8,9 +8,14 @@ const AdminEventInfo: FC = () => {
   const event = useOutletContext<Event>();
   const { eventId } = event;
 
+  const redirectToPreRegistration = () => {
+    window.open(`/${eventId}/preregister`, '_blank');
+  };
+
   const redirectToRegistration = () => {
     window.open(`/${eventId}/register`, '_blank');
   };
+
   const redirectToEvaluation = () => {
     window.open(`/${eventId}/evaluate`, '_blank');
   };
@@ -22,10 +27,15 @@ const AdminEventInfo: FC = () => {
         <p className="text-muted-foreground">Manage the information that will be displayed on the event.</p>
 
         <div className="flex md:flex-row flex-col gap-2">
-          <Button onClick={redirectToRegistration} isExternal>
+          {event.isApprovalFlow && (
+            <Button icon="ExternalLink" iconPlacement="right" disabled={event.status !== 'preregistration'} onClick={redirectToPreRegistration}>
+              Event Pre-Registration
+            </Button>
+          )}
+          <Button icon="ExternalLink" iconPlacement="right" disabled={event.status !== 'open'} onClick={redirectToRegistration}>
             Event Registration
           </Button>
-          <Button onClick={redirectToEvaluation} isExternal>
+          <Button icon="ExternalLink" iconPlacement="right" disabled={event.status !== 'completed'} onClick={redirectToEvaluation}>
             Event Evaluation
           </Button>
         </div>
