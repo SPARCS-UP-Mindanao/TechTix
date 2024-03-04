@@ -12,6 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-50 shadow hover:bg-primary-600',
         negative: 'bg-negative text-negative-foreground shadow-sm hover:bg-negative-600',
+        positive: 'bg-positive text-positive-foreground shadow-sm hover:bg-positive-600',
         outline: 'border border-border text-primary bg-input shadow-sm hover:border-primary-600 hover:text-primary-600',
         secondaryPink: 'bg-secondary text-primary-50 shadow-sm hover:bg-secondary-pink-600',
         secondaryOrange: 'bg-secondary-orange text-primary-50 shadow-sm hover:bg-secondary-orange-600',

@@ -12,6 +12,7 @@ const badgeVariants = cva(
         secondaryPink: 'border-transparent bg-secondary-pink text-secondary-foreground hover:bg-secondary-pink-700',
         secondaryOrange: 'border-transparent bg-secondary-orange text-secondary-foreground hover:bg-secondary-orange-700',
         negative: 'border-transparent bg-negative text-negative-foreground shadow hover:bg-negative-900 dark:hover:bg-negative-700',
+        positive: 'border-transparent bg-positive text-positive-foreground shadow hover:bg-positive-600',
         outline: 'text-foreground border-primary text-primary'
       }
     },
