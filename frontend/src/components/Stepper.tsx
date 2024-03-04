@@ -1,16 +1,26 @@
 import { cn } from '@/utils/classes';
-import { RegisterStep } from './Steps';
 import * as Slider from '@radix-ui/react-slider';
 
-interface StepperProps {
-  steps: RegisterStep[];
-  currentStep: RegisterStep;
+export interface Step {
+  id: string;
+  title?: string;
+  description?: string;
 }
 
-const Stepper = ({ steps, currentStep }: StepperProps) => {
-  const visibleSteps = steps.filter((step) => step.title && step.id !== 'Success');
+interface StepperProps<T extends Step> {
+  steps: T[];
+  currentStep: T;
+  stepsToExclude?: T[];
+}
+
+const Stepper = <T extends Step>({ steps, currentStep, stepsToExclude }: StepperProps<T>) => {
+  const visibleSteps = steps.filter((step) => step.title && stepsToExclude?.some((excludeStep) => excludeStep.id !== step.id));
   const interval = 100 / (visibleSteps.length - 1);
   const arrayOfValues = visibleSteps.map((_, index) => index * interval);
+
+  if (visibleSteps.length < 2) {
+    return <div className="whitespace-pre my-8"> </div>;
+  }
 
   return (
     <div className="my-8">
