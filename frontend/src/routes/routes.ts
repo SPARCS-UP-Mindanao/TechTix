@@ -2,14 +2,14 @@ import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
 
 export const routes = createBrowserRouter([
-  {
-    path: '',
-    lazy: () => import('@/pages/landingPage/HomePage')
-  },
-  {
-    path: '/events',
-    lazy: () => import('@/pages/landingPage/EventsPage')
-  },
+  // {
+  //   path: '',
+  //   lazy: () => import('@/pages/landingPage/HomePage')
+  // },
+  // {
+  //   path: '/events',
+  //   lazy: () => import('@/pages/landingPage/EventsPage')
+  // },
   {
     path: '/:eventId',
     lazy: () => import('@/pages/client/ClientPage'),
