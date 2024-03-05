@@ -189,15 +189,6 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        discount_code = registration_in.discountCode
-        claimed_discount = self.__discount_usecase.claim_discount(
-            entry_id=discount_code,
-            registration_id=registration.registrationId,
-            event_id=event_id,
-        )
-        if isinstance(claimed_discount, JSONResponse):
-            return claimed_discount
-
         (
             status,
             update_registration,
