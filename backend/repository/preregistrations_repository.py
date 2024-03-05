@@ -11,6 +11,7 @@ from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationPatch,
 )
+from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -64,6 +65,7 @@ class PreRegistrationsRepository:
                 updateDate=self.current_date,
                 entryStatus=EntryStatus.ACTIVE.value,
                 preRegistrationId=preregistration_id,
+                acceptanceStatus=AcceptanceStatus.PENDING.value,
                 **data,
             )
             preregistration_entry.certificateGenerated = False

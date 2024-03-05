@@ -151,7 +151,7 @@ class EmailUsecase:
         body = [
             f'Dear {preregistration.firstName}',
             '',
-            'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
+            f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
             '',
             'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
             '',

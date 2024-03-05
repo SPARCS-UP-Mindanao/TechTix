@@ -12,9 +12,7 @@ from model.preregistrations.preregistration import (
 from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
-from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
-from usecase.file_s3_usecase import FileS3Usecase
 
 
 class PreRegistrationUsecase:
@@ -31,8 +29,6 @@ class PreRegistrationUsecase:
         self.__preregistrations_repository = PreRegistrationsRepository()
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
-        self.__discount_usecase = DiscountUsecase()
-        self.__file_s3_usecase = FileS3Usecase()
 
     def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
         """
