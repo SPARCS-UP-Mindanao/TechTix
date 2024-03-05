@@ -93,7 +93,7 @@ class PreRegistrationToRegistrationIn(RegistrationDataIn):
 
 class RegistrationPatch(RegistrationDataIn):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
 
 class RegistrationIn(RegistrationPatch):
