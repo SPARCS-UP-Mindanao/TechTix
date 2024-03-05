@@ -134,7 +134,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
         <ImageViewer objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
-        <div className="flex w-full max-h-64 justify-center relative overflow-hidden">
+        <div className="flex w-full justify-center relative overflow-hidden">
           <ImageViewer objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
         </div>
