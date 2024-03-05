@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
 import { Discount } from '@/model/discount';
-import { RegisterUserInfo } from '@/model/registrations';
+import { Registration } from '@/model/registrations';
 import { formatPercentage } from '@/utils/functions';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -26,7 +26,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Discout Code
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -38,7 +38,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Is Claimed?
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -50,7 +50,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Date Registered
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -63,7 +63,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Discount Percentage
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -79,13 +79,13 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email Claimer
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     enableHiding: getEnableHiding('email'),
     cell: ({ row }) => {
-      const registration: RegisterUserInfo = row.getValue('registration');
+      const registration: Registration = row.getValue('registration');
       return registration && registration.email ? registration.email : 'N/A';
     }
   },
@@ -95,13 +95,13 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Name of Claimer
-          <Icon name="ArrowsDownUp" className="ml-2 h-4 w-4" />
+          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     enableHiding: getEnableHiding('registration'),
     cell: ({ row }) => {
-      const registration: RegisterUserInfo = row.getValue('registration');
+      const registration: Registration = row.getValue('registration');
       return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
     }
   }

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
+import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { useAdminLoginForm } from '@/hooks/useAdminLoginForm';
@@ -18,16 +19,21 @@ const ResetPasswordModal = () => {
 
   const ModalFooter = () => {
     return (
-      <div className="w-full flex justify-center">
+      <div className="flex justify-end gap-4">
         {step === 'email' && (
           <Button onClick={async () => await sendCodeToEmail()} disabled={sendCodeDisabled} loading={isEmailSubmitting}>
             Send code
           </Button>
         )}
         {step === 'submit' && (
-          <Button onClick={resetPassword} disabled={!isFormValid} loading={isFormSubmitting}>
-            Reset Password
-          </Button>
+          <>
+            <Button variant="ghost" onClick={() => setStep('email')}>
+              Back
+            </Button>
+            <Button onClick={resetPassword} disabled={!isFormValid} loading={isFormSubmitting}>
+              Reset Password
+            </Button>
+          </>
         )}
       </div>
     );
@@ -47,10 +53,11 @@ const ResetPasswordModal = () => {
       modalTitle="Reset Password"
       modalDescription={getModalDescription()}
       visible={showModal}
+      closable={step === 'email'}
       onOpenChange={toggleModal}
-      modalFooter={<ModalFooter />}
+      modalFooter={ModalFooter()}
       trigger={
-        <Button variant="link" className="text-foreground">
+        <Button variant="link" className="text-foreground p-0">
           Forgot Password?
         </Button>
       }
@@ -107,43 +114,60 @@ const ResetPasswordModal = () => {
 
 const LoginForm = () => {
   const { form, submit, isSubmitting } = useAdminLoginForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const onEnterKey = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      submit();
+    }
+  };
   const isAuthenticated = useIsAuthenticated();
 
   if (isAuthenticated()) {
     return <Navigate to="/admin/events" />;
   }
 
+  const onShowPassword = () => setShowPassword((prev) => !prev);
+
   return (
-    <>
-      <FormProvider {...form}>
-        <FormItem name="email">
-          {({ field }) => (
-            <div className="space-y-2">
-              <FormLabel>Email</FormLabel>
-              <Input type="email" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
+    <FormProvider {...form}>
+      <form onKeyDown={onEnterKey}>
+        <div className="space-y-8">
+          <FormItem name="email">
+            {({ field }) => (
+              <div className="space-y-4">
+                <FormLabel>Email</FormLabel>
+                <Input type="email" {...field} />
+                <FormError />
+              </div>
+            )}
+          </FormItem>
 
-        <FormItem name="password">
-          {({ field }) => (
-            <div className="flex flex-col items-start space-y-2">
-              <FormLabel>Password</FormLabel>
-              <Input type="password" {...field} />
-              <FormError />
-            </div>
-          )}
-        </FormItem>
+          <FormItem name="password">
+            {({ field }) => (
+              <div className="flex flex-col items-start space-y-2">
+                <FormLabel>Password</FormLabel>
+                <div className="w-full inline-flex items-center">
+                  <Input type={showPassword ? 'text' : 'password'} {...field} className="pr-8" />
+                  <Icon
+                    name={showPassword ? 'EyeOff' : 'Eye'}
+                    className="ml-[-2rem] cursor-pointer hover:text-muted-foreground transition-colors"
+                    onClick={onShowPassword}
+                  />
+                </div>
+                <FormError />
+              </div>
+            )}
+          </FormItem>
+        </div>
 
-        <div className="w-full flex justify-between">
+        <div className="flex justify-between">
           <ResetPasswordModal />
           <Button onClick={submit} className="w-full min-w-min max-w-[20%]" loading={isSubmitting}>
             Submit
           </Button>
         </div>
-      </FormProvider>
-    </>
+      </form>
+    </FormProvider>
   );
 };
 

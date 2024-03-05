@@ -1,24 +1,25 @@
 import { useState } from 'react';
-import { Outlet as AdminPageRoute, Navigate, useLocation, useParams } from 'react-router-dom';
+import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
 import { useIsAuthenticated } from 'react-auth-kit';
 import AlertModal from '@/components/AlertModal';
 import ErrorPage from '@/components/ErrorPage';
+import Skeleton from '@/components/Skeleton';
+import { Toaster } from '@/components/Toast/Toaster';
 import { getCurrentUser } from '@/api/auth';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useApiQuery } from '@/hooks/useApi';
 import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
-import AdminSideBar from './AdminSideBar';
-import AdminSideBarTrigger from './AdminSideBarTrigger';
-import { getAdminRouteConfig } from './getAdminRouteConfig';
+import AdminSideBar from './sidebar/AdminSideBar';
+import AdminSideBarTrigger from './sidebar/AdminSideBarTrigger';
+import { getAdminRouteConfig } from './sidebar/getAdminRouteConfig';
 
 const AdminPageContent = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
   const { data: response, isFetching } = useApiQuery(getCurrentUser());
   const [isSideBarOpen, setSideBarOpen] = useState(true);
-  const [isCreateEventOpen, setCreateEventOpen] = useState(false);
   const { eventId } = useParams();
-  const { pathname } = useLocation();
   const { md } = useLayout('md');
 
   const SIDEBAR_OFFSET = 25;
@@ -26,9 +27,8 @@ const AdminPageContent = () => {
   const collapsedSidebarWidth = 120;
 
   const toggleSidebar = () => setSideBarOpen(!isSideBarOpen);
-  const toggleCreateEvent = () => setCreateEventOpen(!isCreateEventOpen);
 
-  const { isLogoutOpen, setLogoutOpen, onLogoutAdmin } = useAdminLogout();
+  const { isLogoutOpen, setLogoutOpen, isLoggingOut, onLogoutAdmin } = useAdminLogout();
   const onCloseLogoutModal = () => setLogoutOpen(false);
 
   const isAuthenticated = useIsAuthenticated();
@@ -37,7 +37,7 @@ const AdminPageContent = () => {
   }
 
   if (isFetching) {
-    return <h1>Loading...</h1>;
+    return <Skeleton className="w-full h-full rounded-none" />;
   }
 
   if (!response || (response && !response.data && response.errorData)) {
@@ -49,9 +49,6 @@ const AdminPageContent = () => {
   const ADMIN_CONFIG = getAdminRouteConfig({
     userGroups: userGroups,
     eventId: eventId!,
-    pathname,
-    isCreateEventOpen,
-    toggleCreateEvent,
     setLogoutOpen
   });
 
@@ -60,28 +57,32 @@ const AdminPageContent = () => {
       <AdminSideBar
         tablet={md}
         isSidebarOpen={isSideBarOpen}
-        isCreateEventOpen={isCreateEventOpen}
         adminConfig={ADMIN_CONFIG}
         setSidebarOpen={setSideBarOpen}
         openSidebarWidth={openSidebarWidth}
         collapsedSidebarWidth={collapsedSidebarWidth}
       />
+
       <AlertModal
         alertModalTitle="Sign out"
         alertModalDescription="Are you sure you want to sign out?"
         visible={isLogoutOpen}
         confirmVariant="negative"
+        isLoading={isLoggingOut}
         onOpenChange={setLogoutOpen}
         onCancelAction={onCloseLogoutModal}
         onCompleteAction={onLogoutAdmin}
       />
+
       <main className="h-full w-full relative z-10 overflow-hidden">
         <div
           className="h-full max-h-full overflow-y-auto overflow-x-hidden bg-background rounded-none md:rounded-l-3xl"
           style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
           {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <AdminPageRoute context={{ isCreateEventOpen, setCreateEventOpen, adminConfig: ADMIN_CONFIG, userGroups }} />
+          <div className="p-10 px-4 md:p-14">
+            <AdminPageRoute context={{ userGroups }} />
+          </div>
         </div>
       </main>
     </div>
@@ -89,7 +90,14 @@ const AdminPageContent = () => {
 };
 
 const AdminPage = () => {
-  return <AdminPageContent />;
+  return (
+    <>
+      <AdminPageContent />
+      <Toaster />
+    </>
+  );
 };
+
+export const Component = AdminPage;
 
 export default AdminPage;

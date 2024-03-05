@@ -8,6 +8,7 @@ custom:
   events: ${self:custom.stage}-${self:custom.projectName}
   bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
+  preregistrations: ${self:custom.stage}-${self:custom.projectName}-preregistrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   frontendUrl: https://techtix.app
   emailQueue:
@@ -50,6 +51,7 @@ provider:
     FRONTEND_URL: ${self:custom.frontendUrl}
     ENTITIES_TABLE: ${self:custom.entities}
     REGISTRATIONS_TABLE: ${self:custom.registrations}
+    PREREGISTRATIONS_TABLE: ${self:custom.preregistrations}
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EVENTS_TABLE: ${self:custom.events}
     EMAIL_QUEUE: ${self:custom.emailQueue}

@@ -6,97 +6,146 @@ import { DataTable } from '@/components/DataTable';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
+import Tooltip from '@/components/Tooltip';
 import { getAllDiscounts } from '@/api/discounts';
-import { Discount } from '@/model/discount';
+import { Discount, OrganizationDiscount } from '@/model/discount';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
 
+const CreateDiscoutFormItems = () => (
+  <>
+    <FormItem name="organizationName">
+      {({ field }) => (
+        <div className="flex flex-col space-y-2">
+          <FormLabel>Discount Recipient</FormLabel>
+          <Input type="text" {...field} />
+          <FormError />
+        </div>
+      )}
+    </FormItem>
+    <FormItem name="discountPercentage">
+      {({ field }) => (
+        <div className="flex flex-col space-y-2">
+          <FormLabel>Discount Percentage (%)</FormLabel>
+          <Input type="number" {...field} />
+          <FormError />
+        </div>
+      )}
+    </FormItem>
+    <FormItem name="quantity">
+      {({ field }) => (
+        <div className="flex flex-col space-y-2">
+          <FormLabel>Quantity</FormLabel>
+          <Input type="number" min="0" step="1" {...field} />
+          <FormError />
+        </div>
+      )}
+    </FormItem>
+  </>
+);
+
+interface DiscountCodeListProps {
+  discounts: Discount[];
+}
+
+const copyDiscountCodes = (organization: OrganizationDiscount | null, discounts?: Discount[]) => {
+  if (organization && !discounts) {
+    const discountCodes = organization.discounts.reduce((acc, discount) => {
+      return `${acc}${discount.entryId}${discount.claimed ? ` (Claimed)` : ''}\n`;
+    }, `Here are the discount codes for ${organization.organizationId}:\n\n`);
+
+    return navigator.clipboard.writeText(discountCodes);
+  } else if (discounts) {
+    const message = organization ? `Here are the discount codes for ${organization.organizationId}:\n\n` : 'Here are the discount codes:\n\n';
+    const discountCodes = discounts.reduce((acc, discount) => {
+      return `${acc}${discount.entryId}${discount.claimed ? ` (Claimed)` : ''}\n`;
+    }, message);
+    return navigator.clipboard.writeText(discountCodes);
+  }
+};
+
+const DiscountCodeList = ({ discounts }: DiscountCodeListProps) => {
+  return (
+    <div>
+      <ul>
+        {discounts.map((discount) => {
+          return (
+            <li key={discount.entryId} className="w-full">
+              {discount.entryId}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
 interface CreateDiscountModalProps {
   eventId: string;
+  disabled: boolean;
   refetch: () => void;
 }
-const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => {
-  const [discountResponse, setDiscountResponse] = useState<Discount[]>([]);
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const setFormResponse = (discounts: Discount[]) => {
-    setDiscountResponse(discounts);
-    setIsInfoModalOpen(true);
-  };
-  const { form, submit } = useDiscountForm(eventId, setFormResponse);
+  const [isCopyClicked, setIsCopyClicked] = useState(false);
+  const { form, submit, discounts, showDiscountCodes, setShowDiscountCodes } = useDiscountForm(eventId);
 
-  const handleSubmit = async () => {
-    await submit();
-  };
+  const handleSubmit = async () => await submit();
   const handleClose = async () => {
-    setIsInfoModalOpen(false);
     setIsModalOpen(false);
+    setShowDiscountCodes(false);
+    setIsCopyClicked(false);
+    form.reset();
     await refetch();
   };
+
+  const successButton = () => {
+    if (showDiscountCodes) {
+      const onClick = () => {
+        setIsCopyClicked(true);
+        copyDiscountCodes(null, discounts);
+      };
+      return (
+        <Button onClick={onClick} type="submit" icon={isCopyClicked ? 'Check' : 'Copy'}>
+          {isCopyClicked ? 'Copied to clipboard' : ' Copy discount codes'}
+        </Button>
+      );
+    }
+
+    return (
+      <Button loading={form.formState.isSubmitting} onClick={handleSubmit} type="submit">
+        Create
+      </Button>
+    );
+  };
+
+  const footer = (
+    <div className="flex space-x-2">
+      <Button variant="ghost" onClick={handleClose} disabled={form.formState.isSubmitting}>
+        {showDiscountCodes ? 'Close' : 'Cancel'}
+      </Button>
+      {successButton()}
+    </div>
+  );
 
   return (
     <div className="px-4">
       <Modal
         modalTitle="Create Discount"
-        trigger={<Button>Create Discount</Button>}
-        modalFooter={
-          isInfoModalOpen ? (
-            <Button onClick={handleClose} className="w-full">
-              Close
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} type="submit" className="w-full">
-              Submit
-            </Button>
-          )
-        }
+        trigger={<Button disabled={disabled}>Create Discount</Button>}
+        modalFooter={footer}
+        closable={!form.formState.isSubmitting && !showDiscountCodes}
         visible={isModalOpen}
         onOpenChange={setIsModalOpen}
       >
-        {isInfoModalOpen ? (
-          <div>
-            <ul>
-              {discountResponse.map((discount) => {
-                return (
-                  <li key={discount.entryId} className="w-full">
-                    {discount.entryId}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+        {showDiscountCodes ? (
+          <DiscountCodeList discounts={discounts} />
         ) : (
           <FormProvider {...form}>
             <main className="w-full">
-              <FormItem name="organizationName">
-                {({ field }) => (
-                  <div className="flex flex-col">
-                    <FormLabel>Discount Recipient</FormLabel>
-                    <Input type="text" className="" {...field} />
-                    <FormError />
-                  </div>
-                )}
-              </FormItem>
-              <FormItem name="discountPercentage">
-                {({ field }) => (
-                  <div className="flex flex-col">
-                    <FormLabel>Discount Percentage</FormLabel>
-                    <Input type="number" className="" {...field} />
-                    <FormError />
-                  </div>
-                )}
-              </FormItem>
-              <FormItem name="quantity">
-                {({ field }) => (
-                  <div className="flex flex-col">
-                    <FormLabel>Quantity</FormLabel>
-                    <Input type="number" min="0" step="1" className="" {...field} />
-                    <FormError />
-                  </div>
-                )}
-              </FormItem>
+              <CreateDiscoutFormItems />
             </main>
           </FormProvider>
         )}
@@ -105,49 +154,58 @@ const CreateDiscountModal = ({ eventId, refetch }: CreateDiscountModalProps) => 
   );
 };
 
+interface DiscountHeaderProps {
+  organization: OrganizationDiscount;
+}
+
+const DiscountHeader: FC<DiscountHeaderProps> = ({ organization }) => {
+  return (
+    <div className="inline-flex justify-center items-center">
+      <h3>{`Recipient: ${organization.organizationId}`}</h3>
+      <Tooltip toolTipContent="Copy discount codes" side="right">
+        <Button size="icon" icon="Copy" variant="ghost" className="ml-4" onClick={() => copyDiscountCodes(organization)} />
+      </Tooltip>
+    </div>
+  );
+};
+
+interface DiscountTablesProps {
+  organizations?: OrganizationDiscount[];
+  isFetching: boolean;
+}
+
+const DiscountTables = ({ organizations, isFetching }: DiscountTablesProps) => {
+  if (isFetching || !organizations) {
+    return <DataTable columns={discountColumns} data={[]} loading={isFetching} noDataText="No discounts" />;
+  }
+
+  return (
+    <>
+      {organizations.map((organization) => (
+        <div key={organization.organizationId} className="w-full">
+          <DiscountHeader organization={organization} />
+          <DataTable columns={discountColumns} data={organization.discounts} />
+        </div>
+      ))}
+    </>
+  );
+};
+
 const AdminEventDiscounts: FC = () => {
   const { eventId } = useOutletContext<Event>();
 
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
 
-  if (!eventId) {
-    return <h1>Event not found</h1>;
-  }
-
-  if (isFetching) {
-    return (
-      // TODO: Add skeleton page
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
-
-  if (!response || (response && !response.data)) {
-    return (
-      // TODO: Add event not found page
-      <div className="flex flex-col items-center">
-        <h1>No Discounts found</h1>
-      </div>
-    );
-  }
-
-  const eventDiscounts = response.data;
-
   return (
-    <section className="flex flex-col gap-5 items-center py-10">
-      <h1>Discounts</h1>
-      <CreateDiscountModal eventId={eventId} refetch={refetch} />
-      {eventDiscounts.map((discount) => {
-        return (
-          <div key={discount.organizationId} className="w-full">
-            <h3>
-              Recipient: <span>{discount.organizationId}</span>{' '}
-            </h3>
-            <DataTable columns={discountColumns} data={discount.discounts} />
-          </div>
-        );
-      })}
+    <section className="flex flex-col gap-6 items-center">
+      <div className="inline-flex justify-center items-center space-x-4">
+        <h2>Discounts</h2>
+        <Tooltip toolTipContent="Refresh discounts" side="right">
+          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+        </Tooltip>
+      </div>
+      <CreateDiscountModal disabled={isFetching} eventId={eventId!} refetch={refetch} />
+      <DiscountTables organizations={response?.data} isFetching={isFetching} />
     </section>
   );
 };
@@ -155,5 +213,7 @@ const AdminEventDiscounts: FC = () => {
 const AdminEventDiscountsPage = () => {
   return <AdminEventDiscounts />;
 };
+
+export const Component = AdminEventDiscountsPage;
 
 export default AdminEventDiscountsPage;

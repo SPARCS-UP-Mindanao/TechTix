@@ -50,7 +50,7 @@ const MenubarSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <Icon name="CaretRight" size={16} className="ml-auto h-4 w-4" />
+    <Icon name="ChevronRight" size={16} className="ml-auto h-4 w-4" />
   </MenubarPrimitive.SubTrigger>
 ));
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName;
@@ -144,7 +144,7 @@ const MenubarRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <Icon name="Circle" weight="fill" size={8} className="h-2 w-2" />
+        <Icon name="Circle" size={8} className="h-2 w-2" />
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}

@@ -9,21 +9,23 @@ const s3Client = new S3Client({
   }
 });
 
-// interface FileUrlProps {
-
-export const useFileUrl = (key: string) => {
+export const useFileUrl = (key?: string | null) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
 
-  const getFile = async (filename: string): Promise<void> => {
-    const getParams: GetObjectAclCommandInput = {
+  const getFile = async (): Promise<void> => {
+    if (!key) {
+      return;
+    }
+
+    const params: GetObjectAclCommandInput = {
       Bucket: import.meta.env.VITE_S3_BUCKET!,
-      Key: filename
+      Key: key ?? undefined
     };
 
     try {
       setLoading(true);
-      const { Body } = await s3Client.send(new GetObjectCommand(getParams));
+      const { Body } = await s3Client.send(new GetObjectCommand(params));
       const blob = await new Response(Body as ReadableStream).blob();
       setFileUrl(URL.createObjectURL(blob));
     } catch (error) {
@@ -34,11 +36,7 @@ export const useFileUrl = (key: string) => {
   };
 
   useEffect(() => {
-    if (!key) {
-      return;
-    }
-
-    getFile(key);
+    getFile();
     return () => {
       if (fileUrl) {
         URL.revokeObjectURL(fileUrl);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { VariantProps } from 'class-variance-authority';
-import { buttonVariants } from '@/components/Button';
+import Button, { buttonVariants } from '@/components/Button';
 import { cn } from '@/utils/classes';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 
@@ -77,7 +77,7 @@ const AlertDialogDescription = React.forwardRef<
 AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayName;
 
 interface AlertDialogActionProps extends React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>, VariantProps<typeof buttonVariants> {
-  onCompleteAction: () => void;
+  onCompleteAction: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const AlertDialogAction = React.forwardRef<React.ElementRef<typeof AlertDialogPrimitive.Action>, AlertDialogActionProps>(
@@ -120,7 +120,9 @@ interface AlertDialogProps extends React.HTMLAttributes<HTMLDivElement> {
   confirmText?: string;
   cancelVariant?: VariantProps<typeof buttonVariants>['variant'];
   confirmVariant?: VariantProps<typeof buttonVariants>['variant'];
-  onOpenChange: (open: boolean) => void;
+  isLoading?: boolean;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
   onCancelAction?: () => void;
   onCompleteAction: () => void;
 }
@@ -129,32 +131,40 @@ const AlertModal = ({
   alertModalTitle,
   alertModalDescription,
   trigger,
-  visible = false,
+  visible,
   defaultOpen = false,
   cancelText,
   confirmText,
   cancelVariant,
   confirmVariant,
+  isLoading,
+  onClose,
   onOpenChange,
   onCancelAction,
   onCompleteAction
 }: AlertDialogProps) => {
-  const defaultOnCancelAction = () => onOpenChange(false);
-
+  const noLoading = isLoading === undefined;
+  const defaultOnCancelAction = () => onOpenChange && onOpenChange(false);
+  const onComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!noLoading) {
+      e.preventDefault();
+    }
+    onCompleteAction();
+  };
   return (
     <AlertDialogContainer open={visible} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      <AlertDialogContent onClose={() => onOpenChange(false)}>
+      <AlertDialogContent onClose={noLoading || isLoading ? undefined : onClose || defaultOnCancelAction}>
         <AlertDialogHeader>
           <AlertDialogTitle>{alertModalTitle}</AlertDialogTitle>
           <AlertDialogDescription>{alertModalDescription}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant={cancelVariant} onCancelAction={onCancelAction || defaultOnCancelAction}>
+          <AlertDialogCancel disabled={isLoading} variant={cancelVariant} onCancelAction={onCancelAction || defaultOnCancelAction}>
             {cancelText ? cancelText : 'Cancel'}
           </AlertDialogCancel>
-          <AlertDialogAction variant={confirmVariant} onCompleteAction={onCompleteAction}>
-            {confirmText ? confirmText : 'Confirm'}
+          <AlertDialogAction variant={confirmVariant} onCompleteAction={onComplete} asChild>
+            <Button loading={isLoading}>{confirmText ? confirmText : 'Confirm'}</Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

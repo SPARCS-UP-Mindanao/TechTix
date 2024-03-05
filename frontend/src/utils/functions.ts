@@ -80,10 +80,20 @@ export const formatPercentage = (float: number) => {
 };
 
 export const isValidContactNumber = (value: string) => {
-  if (value.trim() == '') {
+  if (value.trim() === '') {
     return true;
   }
 
   const phoneNumberPattern = /^\d{11}$/;
   return phoneNumberPattern.test(value);
+};
+
+export const getPathFromUrl = (url: string) => {
+  return url.split('?')[0];
+};
+
+export const baseUrl = getPathFromUrl(window.location.href);
+
+export const reloadPage = () => {
+  window.location.href = baseUrl;
 };

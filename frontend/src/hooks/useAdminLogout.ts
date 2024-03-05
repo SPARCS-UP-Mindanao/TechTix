@@ -10,6 +10,7 @@ import { useNotifyToast } from './useNotifyToast';
 
 export const useAdminLogout = () => {
   const [isLogoutOpen, setLogoutOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { errorToast } = useNotifyToast();
   const api = useApi();
   const navigate = useNavigate();
@@ -18,8 +19,9 @@ export const useAdminLogout = () => {
   const onLogoutAdmin = async () => {
     try {
       const accessToken = getCookie('_auth')!;
+      setIsLoggingOut(true);
       const logoutResponse = await api.execute(logoutUser(accessToken));
-      if (logoutResponse.status === 200 || logoutResponse.status === 422) {
+      if (logoutResponse.status === 200 || logoutResponse.status === 400 || logoutResponse.status === 422) {
         signOut();
         removeCookie('_auth_user', cookieConfiguration);
         navigate('/admin/login');
@@ -31,8 +33,10 @@ export const useAdminLogout = () => {
         title: 'Retry logging out',
         description: 'An error occured. Please try logging out again'
       });
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
-  return { isLogoutOpen, setLogoutOpen, onLogoutAdmin };
+  return { isLogoutOpen, isLoggingOut, setLogoutOpen, onLogoutAdmin };
 };

@@ -1,33 +1,22 @@
-import { ComponentPropsWithRef } from 'react';
-import * as phosphorIcons from '@phosphor-icons/react';
+import { RefAttributes, SVGProps } from 'react';
+import { icons, LucideProps } from 'lucide-react';
 
-type IconWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
-interface IconProps extends ComponentPropsWithRef<'svg'> {
-  name: string;
-  alt?: string;
+type SVGAttributes = Partial<SVGProps<SVGSVGElement>>;
+export type IconComponentAttributes = RefAttributes<SVGSVGElement> & SVGAttributes;
+
+export type IconName = keyof typeof icons;
+
+interface IconProps extends LucideProps {
+  name: IconName;
   color?: string;
-  size?: string | number;
-  weight?: IconWeight;
-  mirrored?: boolean;
-}
-type Icon = React.ForwardRefExoticComponent<IconProps>;
-
-interface IconMap {
-  [key: string]: any;
+  size?: number;
+  className?: string | undefined;
 }
 
-const Icon = ({ name, color, size, weight, mirrored, className, ...props }: IconProps) => {
-  const icons: IconMap = phosphorIcons as IconMap;
+const Icon = ({ name, color, size, className, ...props }: IconProps) => {
+  const LucideIcon = icons[name as IconName];
 
-  if (!name || !(name in icons)) {
-    return;
-  }
-
-  const PhosphorIcon = icons[name];
-
-  return <PhosphorIcon name={name} color={color} size={size || 18} weight={weight || 'bold'} mirrored={mirrored} className={className} {...props} />;
+  return <LucideIcon name={name} color={color} size={size || 16} className={className} {...props} />;
 };
 
 export default Icon;
-
-// Check Icon List here: https://phosphoricons.com/

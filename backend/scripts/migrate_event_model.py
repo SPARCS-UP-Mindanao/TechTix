@@ -15,7 +15,7 @@ class EventOld(Entities, discriminator='Event'):
     bannerLink = UnicodeAttribute(null=True)
     logoLink = UnicodeAttribute(null=True)
     autoConfirm = BooleanAttribute(null=True)
-    payedEvent = BooleanAttribute(null=True)
+    paidEvent = BooleanAttribute(null=True)
     price = NumberAttribute(null=True)
     certificateTemplate = UnicodeAttribute(null=True)
 
@@ -53,7 +53,7 @@ def main():
                 bannerLink=old_event.bannerLink,
                 logoLink=old_event.logoLink,
                 autoConfirm=old_event.autoConfirm,
-                payedEvent=old_event.payedEvent,
+                paidEvent=old_event.paidEvent,
                 price=old_event.price,
                 certificateTemplate=old_event.certificateTemplate,
             )

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { updatePassword } from '@/api/auth';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const UpdatePasswordFormSchema = z.object({
@@ -19,6 +20,7 @@ const UpdatePasswordFormSchema = z.object({
 
 export const useAdminUpdatePasswordForm = (onSuccess: () => void) => {
   const { errorToast, successToast } = useNotifyToast();
+  const api = useApi();
 
   const form = useForm<z.infer<typeof UpdatePasswordFormSchema>>({
     resolver: zodResolver(UpdatePasswordFormSchema),
@@ -31,8 +33,7 @@ export const useAdminUpdatePasswordForm = (onSuccess: () => void) => {
 
   const submit = form.handleSubmit(async ({ email, prevPassword, newPassword }) => {
     try {
-      const { queryFn: updatePasword } = updatePassword(email, prevPassword, newPassword);
-      const response = await updatePasword();
+      const response = await api.execute(updatePassword(email, prevPassword, newPassword));
 
       if (response.status === 200) {
         successToast({

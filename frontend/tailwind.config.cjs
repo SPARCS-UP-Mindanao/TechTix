@@ -12,6 +12,9 @@ module.exports = {
       }
     },
     extend: {
+      screens: {
+        '3xl': '1600px'
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -80,7 +83,7 @@ module.exports = {
           950: 'hsl(var(--neutrals-950))'
         },
         positive: {
-          DEFAULT: 'hsl(var(--positive-500))',
+          DEFAULT: 'hsl(var(--positive))',
           50: 'hsl(var(--positive-50))',
           100: 'hsl(var(--positive-100))',
           200: 'hsl(var(--positive-200))',
@@ -91,7 +94,8 @@ module.exports = {
           700: 'hsl(var(--positive-700))',
           800: 'hsl(var(--positive-800))',
           900: 'hsl(var(--positive-900))',
-          950: 'hsl(var(--positive-950))'
+          950: 'hsl(var(--positive-950))',
+          foreground: 'hsl(var(--positive-foreground))'
         },
         warming: {
           DEFAULT: 'hsl(var(--warming-500))',

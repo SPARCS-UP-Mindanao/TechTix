@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import Icon from '@/components/Icon';
 import { cn } from '@/utils/classes';
+import Icon, { IconName } from './Icon';
 
 const alertVariants = cva(
   'relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground',
@@ -37,11 +37,11 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'negative';
   title?: string;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: IconName;
   closable?: boolean;
 }
 
-const Alert = ({ title, description, icon, className, children, variant = 'default', closable = false }: AlertProps) => {
+const Alert = ({ title, description, icon = 'Info', className, children, variant = 'default', closable = false }: AlertProps) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   const handleDelete = () => {
@@ -50,7 +50,7 @@ const Alert = ({ title, description, icon, className, children, variant = 'defau
 
   return (
     <AlertContainer variant={variant} className={className} ref={ref}>
-      {typeof icon === 'string' ? <Icon name={icon} className="h-4 w-4" /> : icon}
+      {icon && <Icon name={icon} className="h-4 w-4" />}
       <div>
         <div>
           {title && <AlertTitle>{title}</AlertTitle>}
@@ -58,8 +58,7 @@ const Alert = ({ title, description, icon, className, children, variant = 'defau
             <Icon
               name="X"
               onClick={handleDelete}
-              size={24}
-              className="absolute right-0 top-0 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 cursor-pointer"
+              className="w-4 h-4 absolute right-0 top-0 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 cursor-pointer"
             />
           )}
         </div>

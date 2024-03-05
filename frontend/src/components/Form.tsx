@@ -7,7 +7,8 @@ import {
   FieldPath,
   FieldValues,
   UseFormStateReturn,
-  useFormContext
+  useFormContext,
+  useFormState
 } from 'react-hook-form';
 import Label from '@/components/Label';
 import { cn } from '@/utils/classes';
@@ -40,7 +41,8 @@ interface FormItemProps<TFieldValues extends FieldValues, TName extends FieldPat
 }
 
 export const FormItem = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({ name, children }: FormItemProps<TFieldValues, TName>) => {
-  const { control, getFieldState, formState } = useFormContext();
+  const { control, getFieldState } = useFormContext();
+  const formState = useFormState();
   const id = React.useId();
   const formItemId = `${id}-form-item`;
   const formDescriptionId = `${id}-form-item-description`;
@@ -112,18 +114,45 @@ const FormError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
     fieldState: { error },
     formMessageId
   } = useFormField();
-  const body = error ? String(error?.message) : children;
+  const body = error && error?.message ? String(error?.message) : children;
 
-  if (!body) {
-    return <p className="text-[0.8rem] whitespace-pre"> </p>;
-  }
+  const getError = () => {
+    if (!body) {
+      return ' ';
+    }
+
+    return body;
+  };
 
   return (
-    <p ref={ref} id={formMessageId} className={cn('text-[0.8rem] text-left font-medium text-negative', className)} {...props}>
-      {body}
+    <p
+      id={formMessageId}
+      ref={ref}
+      className={cn('text-[0.8rem]', body && 'text-left font-medium text-negative', !body && 'whitespace-pre', className)}
+      {...props}
+    >
+      {getError()}
     </p>
   );
 });
 FormError.displayName = 'FormError';
 
-export { useFormField, FormLabel, FormDescription, FormError };
+interface FormItemContainerProps {
+  halfSpace?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}
+
+const FormItemContainer: React.FC<FormItemContainerProps> = ({ halfSpace = false, className, children }) => {
+  return <div className={cn('space-y-2 w-full px-2', halfSpace && 'md:w-1/2', className)}>{children}</div>;
+};
+
+const FormItemSpacer: React.FC = () => {
+  return (
+    <div className="hidden md:block md:max-w-[50%]">
+      <pre> </pre>
+    </div>
+  );
+};
+
+export { useFormField, FormLabel, FormDescription, FormError, FormItemContainer, FormItemSpacer };

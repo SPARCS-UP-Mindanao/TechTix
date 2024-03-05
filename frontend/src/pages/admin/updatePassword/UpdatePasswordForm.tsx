@@ -9,7 +9,8 @@ import { useMetaData } from '@/hooks/useMetaData';
 import { useAdminUpdatePasswordForm } from '@/hooks/userAdminUpdatePasswordForm';
 
 const UpdatePasswordForm = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
   const navigate = useNavigate();
   const successHandler = () => {
     removeCookie('_auth', cookieConfiguration);

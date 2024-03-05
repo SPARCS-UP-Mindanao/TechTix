@@ -1,18 +1,21 @@
 import json
 import os
+import re
 from copy import deepcopy
 from http import HTTPStatus
 from typing import List, Union
 from urllib.parse import unquote_plus
 
+from constants.common_constants import CommonConstants
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventStatus
 from repository.events_repository import EventsRepository
+from repository.faqs_repository import FAQsRepository
+from repository.preregistrations_repository import PreRegistrationsRepository
 from repository.registrations_repository import RegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
-from utils.logger import logger
 from utils.utils import Utils
 
 
@@ -22,9 +25,17 @@ class EventUsecase:
         self.__email_usecase = EmailUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__registration_repository = RegistrationsRepository()
+        self.__preregistration_repository = PreRegistrationsRepository()
+        self.__faqs_repository = FAQsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         slug = Utils.convert_to_slug(event_in.name)
+        if re.search(CommonConstants.INVALID_URL_PATTERN, slug):
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': f'Event has invalid name: {event_in.name}'},
+            )
+
         status, event, __ = self.__events_repository.query_events(slug)
         if status == HTTPStatus.OK:
             return JSONResponse(
@@ -58,8 +69,17 @@ class EventUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        should_send_accept_reject_emails = (
+            original_event.isApprovalFlow
+            and original_status != EventStatus.OPEN.value
+            and update_event.status == EventStatus.OPEN.value
+        )
+        if should_send_accept_reject_emails:
+            _, preregistrations, _ = self.__preregistration_repository.query_preregistrations(event_id=event_id)
+            if preregistrations:
+                self.__email_usecase.send_accept_reject_status_email(preregistrations=preregistrations, event=event)
+
         if original_status != EventStatus.COMPLETED.value and update_event.status == EventStatus.COMPLETED.value:
-            logger.info(f'Send Thank You Email Triggered for event: {event_id}')
             event_id = update_event.eventId
             claim_certificate_url = f'{os.getenv("FRONTEND_URL")}/{event_id}/evaluate'
             (
@@ -108,6 +128,12 @@ class EventUsecase:
         status, message = self.__events_repository.delete_event(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        _, faqs, _ = self.__faqs_repository.query_faq_entry(event_id)
+        if faqs:
+            status, message = self.__faqs_repository.delete_faqs(faqs_entry=faqs)
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
 
         return None
 

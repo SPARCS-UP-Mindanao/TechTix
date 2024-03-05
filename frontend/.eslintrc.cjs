@@ -9,9 +9,9 @@ module.exports = {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/no-explicit-any': 'off'
   },
-  verrides: [
+  overrides: [
     {
-      files: ['*.config.js'],
+      files: ['*.config.js', '*.cjs'],
       env: {
         node: true
       }

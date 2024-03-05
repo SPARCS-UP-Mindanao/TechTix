@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import logoTitleBorder from '@/assets/logos/techtix-border-logo-title.png';
 import Button from '@/components/Button';
 import Sheet from '@/components/Sheet';
+import { Toaster } from '@/components/Toast/Toaster';
+import { getAllEvents } from '@/api/events';
+import { useApiQuery } from '@/hooks/useApi';
 import { useMetaData } from '@/hooks/useMetaData';
 import EventCardList from '@/pages/landingPage/EventCardList';
 import Footer from './Footer';
@@ -56,14 +59,17 @@ const Header = () => {
 };
 
 const EventsPageComponent = () => {
-  useMetaData({});
+  const setMetaData = useMetaData();
+  setMetaData({});
+  const { data: response, isFetching } = useApiQuery(getAllEvents());
+
   return (
     <main className="flex flex-col h-full light">
       <Header />
       <div className="max-h-full overflow-auto">
         <section className="p-8 md:p-10 bg-white items-center">
           <h1 className="!text-primary-700 pl-0 md:p-6 self-start">Upcoming Events</h1>
-          <EventCardList />
+          <EventCardList allEvents={response?.data} isFetching={isFetching} />
         </section>
         <Footer />
       </div>
@@ -72,7 +78,14 @@ const EventsPageComponent = () => {
 };
 
 const EventsPage = () => {
-  return <EventsPageComponent />;
+  return (
+    <>
+      <EventsPageComponent />
+      <Toaster />
+    </>
+  );
 };
+
+export const Component = EventsPage;
 
 export default EventsPage;

@@ -1,4 +1,4 @@
-import { RegisterUserInfo } from './registrations';
+import { Registration } from './registrations';
 
 const questionTypes = [
   'text_short',
@@ -7,7 +7,8 @@ const questionTypes = [
   'multiple_choice',
   'multiple_choice_dropdown',
   'multiple_answers',
-  'slider'
+  'slider',
+  'radio_buttons'
 ] as const;
 
 export interface QuestionConfigItem {
@@ -32,7 +33,7 @@ export interface Evaluation {
   updateDate?: string;
 }
 
-export interface EvaluationListOut {
+export interface UserEvaluation {
   evaluationList: Evaluation[];
-  registration: RegisterUserInfo;
+  registration: Registration;
 }
