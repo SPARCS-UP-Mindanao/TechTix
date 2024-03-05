@@ -19,8 +19,9 @@ export interface Event {
   gcashName?: string | null;
   gcashNumber?: string | null;
   status: EventStatus;
-  eventId?: string;
+  eventId: string;
   isLimitedSlot: boolean;
+  isApprovalFlow: boolean;
   registrationCount: number;
   maximumSlots: number | null;
   createDate?: string;
@@ -32,12 +33,20 @@ export interface Event {
   certificateTemplateUrl?: string;
 }
 
-export type EventStatus = 'draft' | 'open' | 'cancelled' | 'closed' | 'completed';
+export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
+type EventStatusItem = {
+  value: EventStatus;
+  label: string;
+};
 
-export const EVENT_STATUSES = [
+export const EVENT_STATUSES: EventStatusItem[] = [
   {
     value: 'draft',
     label: 'Draft'
+  },
+  {
+    value: 'preregistration',
+    label: 'Pre-registration'
   },
   {
     value: 'open',
@@ -102,6 +111,10 @@ export type FAQ = {
   answer: string;
 };
 
+export interface EventWithRefetchEvent extends Event {
+  refetchEvent: () => void;
+}
+
 export const mapEventToFormValues = (event: Event): EventFormValues => ({
   name: event.name,
   description: event.description,
@@ -119,10 +132,34 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   gcashName: event.gcashName || undefined,
   gcashNumber: event.gcashNumber || undefined,
   isLimitedSlot: event.isLimitedSlot,
+  isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined
 });
 
-export const mapCreateEventValues = (values: EventFormValues): Event => ({
+export interface CreateEvent {
+  name: string;
+  description: string;
+  email: string;
+  startDate: string;
+  endDate: string;
+  venue: string;
+  autoConfirm: boolean;
+  paidEvent: boolean;
+  price: number;
+  bannerLink: string | null;
+  logoLink: string | null;
+  certificateTemplate: string | null;
+  isLimitedSlot: boolean;
+  gcashQRCode: string | null;
+  gcashName: string | null;
+  gcashNumber: string | null;
+  isApprovalFlow: boolean;
+  registrationCount: number;
+  maximumSlots: number | null;
+  status: EventStatus;
+}
+
+export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   name: values.name,
   description: values.description,
   email: values.email,
@@ -135,6 +172,7 @@ export const mapCreateEventValues = (values: EventFormValues): Event => ({
   status: values.status,
   maximumSlots: values.maximumSlots || null,
   isLimitedSlot: values.isLimitedSlot,
+  isApprovalFlow: values.isApprovalFlow,
   registrationCount: 0,
   bannerLink: values.bannerLink || null,
   logoLink: values.logoLink || null,

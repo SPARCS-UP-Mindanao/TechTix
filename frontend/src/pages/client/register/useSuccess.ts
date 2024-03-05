@@ -1,21 +1,25 @@
 import { useCallback } from 'react';
-import { RegisterStep } from './Steps';
+import { createQueryKey } from '@/api/utils/createApi';
+import { PreRegisterFormValues } from '@/hooks/useRegisterForm';
+import { RegisterStep } from './steps/RegistrationSteps';
 import { useQuery } from '@tanstack/react-query';
 
 const deleteFormState = () => localStorage.removeItem('formState');
 
-export const useSuccess = (currentStep: RegisterStep, submitForm: () => Promise<void>) => {
+export const useSuccess = (currentStep: RegisterStep, getValues: () => PreRegisterFormValues, submitForm: () => Promise<void>) => {
   const redirectToSuccess = useCallback(async () => {
     try {
       await submitForm();
       deleteFormState();
+      return 'Success';
     } catch (error) {
       console.error(error);
+      return 'Error';
     }
   }, [submitForm]);
 
   const { isFetching } = useQuery({
-    queryKey: ['submitForm'],
+    queryKey: createQueryKey('submitForm', getValues()),
     queryFn: async () => redirectToSuccess(),
     enabled: currentStep.id === 'Success',
     refetchOnWindowFocus: false,

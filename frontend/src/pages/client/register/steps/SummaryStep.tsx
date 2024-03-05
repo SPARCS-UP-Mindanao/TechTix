@@ -55,8 +55,8 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span>{title}</span>
         </div>
 
-        {event.paidEvent && <hr />}
-        {event.paidEvent && (
+        {event.paidEvent && event.status !== 'preregistration' && <hr />}
+        {event.paidEvent && event.status !== 'preregistration' && (
           <div className="grid grid-cols-2 gap-5">
             <span className="font-bold">Price:</span>
             <p>{formatMoney(event.price, 'PHP')}</p>

@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { updateEvent, createEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { Event, EventStatus, mapCreateEventValues, mapEventToFormValues } from '@/model/events';
+import { Event, EventStatus, EventWithRefetchEvent, mapCreateEventValues, mapEventToFormValues } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -49,6 +49,7 @@ const EventFormSchema = z
       })
       .optional(),
     isLimitedSlot: z.boolean(),
+    isApprovalFlow: z.boolean(),
     maximumSlots: z.number().optional()
   })
   .refine(
@@ -97,6 +98,8 @@ export type EventFormValues = z.infer<typeof EventFormSchema>;
 
 export const useAdminEventForm = (event?: Event) => {
   const formSchema = event ? extendRegisterFormSchema(event) : EventFormSchema;
+  const { refetchEvent } = useOutletContext<EventWithRefetchEvent>();
+
   const navigate = useNavigate();
   const eventId = event?.eventId;
   const mode = eventId ? 'edit' : 'create';
@@ -120,6 +123,7 @@ export const useAdminEventForm = (event?: Event) => {
         autoConfirm: false,
         paidEvent: false,
         isLimitedSlot: false,
+        isApprovalFlow: false,
         price: 0,
         status: 'draft'
       };
@@ -150,13 +154,13 @@ export const useAdminEventForm = (event?: Event) => {
 
         if (mode === 'create') {
           form.reset();
-          console.log('Form reset');
           const { eventId: newEventId } = response.data;
           navigate(`/admin/events/${newEventId}`);
         }
 
         if (mode === 'edit') {
           form.reset(values);
+          refetchEvent();
         }
       } else {
         errorToast({

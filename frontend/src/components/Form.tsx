@@ -137,4 +137,22 @@ const FormError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
 });
 FormError.displayName = 'FormError';
 
-export { useFormField, FormLabel, FormDescription, FormError };
+interface FormItemContainerProps {
+  halfSpace?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}
+
+const FormItemContainer: React.FC<FormItemContainerProps> = ({ halfSpace = false, className, children }) => {
+  return <div className={cn('space-y-2 w-full px-2', halfSpace && 'md:w-1/2', className)}>{children}</div>;
+};
+
+const FormItemSpacer: React.FC = () => {
+  return (
+    <div className="hidden md:block md:max-w-[50%]">
+      <pre> </pre>
+    </div>
+  );
+};
+
+export { useFormField, FormLabel, FormDescription, FormError, FormItemContainer, FormItemSpacer };

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import Icon, { IconName } from '@/components/Icon';
 import { cn } from '@/utils/classes';
 import { Slot } from '@radix-ui/react-slot';
@@ -12,6 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-50 shadow hover:bg-primary-600',
         negative: 'bg-negative text-negative-foreground shadow-sm hover:bg-negative-600',
+        positive: 'bg-positive text-positive-foreground shadow-sm hover:bg-positive-600',
         outline: 'border border-border text-primary bg-input shadow-sm hover:border-primary-600 hover:text-primary-600',
         secondaryPink: 'bg-secondary text-primary-50 shadow-sm hover:bg-secondary-pink-600',
         secondaryOrange: 'bg-secondary-orange text-primary-50 shadow-sm hover:bg-secondary-orange-600',
@@ -45,27 +46,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon?: IconName;
   iconPlacement?: 'left' | 'right';
   iconClassname?: string;
-  isExternal?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      children,
-      icon,
-      iconClassname,
-      iconPlacement = 'left',
-      asChild = false,
-      loading = false,
-      disabled = false,
-      isExternal = false,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, variant, size, children, icon, iconClassname, iconPlacement = 'left', asChild = false, loading = false, disabled = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     const iconStyles = cn(
       'flex-shrink-0',
@@ -87,7 +71,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <>
           {loading && <Loader2 className={iconStyles} />}
           {children}
-          {isExternal && <ExternalLink className="h-4 w-4" />}
         </>
       );
     };

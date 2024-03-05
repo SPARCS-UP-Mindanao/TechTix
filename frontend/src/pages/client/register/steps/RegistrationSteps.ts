@@ -1,9 +1,9 @@
+import { Step } from '@/components/Stepper';
+
 export type RegisterStepId = 'EventDetails' | 'UserBio' | 'PersonalInfo' | 'Summary' | 'Success' | 'Payment';
 
-export interface RegisterStep {
+export interface RegisterStep extends Step {
   id: RegisterStepId;
-  title?: string;
-  description?: string;
 }
 
 export const STEP_EVENT_DETAILS: RegisterStep = {
@@ -35,5 +35,13 @@ export const STEP_SUCCESS: RegisterStep = {
   title: 'Registration Successful!'
 };
 
+export const STEP_PREREGISTRATION_SUCCESS: RegisterStep = {
+  id: 'Success',
+  title: 'Preregistration Successful!'
+};
+
 export const RegisterSteps: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_SUMMARY, STEP_SUCCESS];
 export const RegisterStepsWithPayment: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_PAYMENT, STEP_SUMMARY, STEP_SUCCESS];
+
+export const PreRegistrationSteps: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_SUMMARY, STEP_PREREGISTRATION_SUCCESS];
+export const RegistrationStepsPaymentOnly: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS];

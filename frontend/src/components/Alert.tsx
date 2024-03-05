@@ -41,7 +41,7 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   closable?: boolean;
 }
 
-const Alert = ({ title, description, icon, className, children, variant = 'default', closable = false }: AlertProps) => {
+const Alert = ({ title, description, icon = 'Info', className, children, variant = 'default', closable = false }: AlertProps) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   const handleDelete = () => {

@@ -27,7 +27,7 @@ export interface CustomAxiosError extends Omit<AxiosResponse, 'data'> {
   errorData: ErrorResponse;
 }
 
-const createQueryKey = (url: string, body?: SearchParams) => [url, body];
+export const createQueryKey = (url: string, body?: SearchParams) => [url, body];
 export type ApiService = 'auth' | 'events' | 'payments';
 interface createApiProps<D, T = D> {
   method?: 'get' | 'post' | 'delete' | 'patch' | 'put';

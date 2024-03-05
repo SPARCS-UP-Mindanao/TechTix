@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
+import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Event } from '@/model/events';
+import { AcceptanceStatus, PreRegistration, mapPreRegistrationToFormValues } from '@/model/preregistrations';
 import { baseUrl, isEmpty, reloadPage } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '@/hooks/useRegisterForm';
-import { RegisterStep, STEP_SUCCESS } from './Steps';
 import { calculateTotalPrice } from './steps/PaymentStep';
+import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
 import { usePayment } from './usePayment';
 
 export const useRegisterFooter = (
@@ -22,21 +24,19 @@ export const useRegisterFooter = (
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { errorToast } = useNotifyToast();
-  const { trigger, setValue, getValues, watch } = useFormContext<RegisterFormValues>();
+  const { trigger, setValue, getValues, watch, reset } = useFormContext<RegisterFormValues>();
   const api = useApi();
   const { eventId } = useParams();
-  const currentEmail = watch('email');
-  const paymentChannel = watch('paymentChannel');
-  const paymentMethod = watch('paymentMethod');
-  const transactionFee = watch('transactionFee');
-  const discountPercentage = watch('discountPercentage');
-  const total = watch('total');
+  const watchedPaymentChannel = watch('paymentChannel');
+  const watchedPaymentMethod = watch('paymentMethod');
+  const watchedTransactionFee = watch('transactionFee');
+  const watchedPercentageDiscount = watch('discountPercentage');
 
   const { eWalletRequest, directDebitRequest } = usePayment(baseUrl);
 
   const currentIndex = steps.indexOf(currentStep);
 
-  const paymentButtonDisabled = isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
+  const paymentButtonDisabled = isEmpty(watchedPaymentChannel) || isEmpty(watchedPaymentMethod) || isEmpty(watchedTransactionFee);
 
   const scrollToView = () => {
     const viewportHeight = window.innerHeight;
@@ -45,13 +45,14 @@ export const useRegisterFooter = (
   };
 
   const validateEmail = async () => {
-    if (!currentEmail || currentStep.id !== 'UserBio') {
-      return true;
-    }
+    const email = getValues('email');
 
     try {
       setIsValidatingEmail(true);
-      const response = await api.execute(getEventRegistrationWithEmail(eventId!, currentEmail));
+      const response =
+        event.status === 'preregistration'
+          ? await api.execute(checkPreRegistration(eventId!, email))
+          : await api.execute(getEventRegistrationWithEmail(eventId!, email));
       switch (response.status) {
         case 200:
           errorToast({
@@ -94,6 +95,72 @@ export const useRegisterFooter = (
     return false;
   };
 
+  const checkAcceptanceStatus = (preRegistration: PreRegistration) => {
+    const getTitleAndDescription = (acceptanceStatus: AcceptanceStatus) => {
+      if (acceptanceStatus === 'REJECTED') {
+        return {
+          title: 'Your pre-registration was not accepted',
+          description: `We're sorry but your registration wasn't accepted. Please feel free to join our future events.`
+        };
+      }
+
+      if (acceptanceStatus === 'PENDING') {
+        return {
+          title: 'Your pre-registration is still being reviewed',
+          description: `Please wait while we review your pre-registration. We'll send you an email when it's approved.`
+        };
+      }
+
+      return {};
+    };
+
+    switch (preRegistration.acceptanceStatus) {
+      case 'ACCEPTED':
+        reset(mapPreRegistrationToFormValues(preRegistration));
+        return true;
+      default:
+        errorToast(getTitleAndDescription(preRegistration.acceptanceStatus));
+        return false;
+    }
+  };
+
+  const getAndSetPreRegistration = async () => {
+    const email = getValues('email');
+
+    try {
+      const response = await api.execute(checkPreRegistration(eventId!, email));
+      switch (response.status) {
+        case 200:
+          return checkAcceptanceStatus(response.data);
+
+        case 404:
+          errorToast({
+            title: 'Email not found',
+            description: 'The email you entered was not found. Please enter a different email.'
+          });
+          return false;
+
+        default:
+          errorToast({
+            title: 'Please try again',
+            description: 'There was an error. Please try again.'
+          });
+          return false;
+      }
+    } catch (error) {
+      errorToast({
+        title: 'Please try again',
+        description: 'There was an error. Please try again.'
+      });
+    }
+  };
+
+  const setPaymentTotal = () => {
+    const total = Number(calculateTotalPrice(event.price, watchedTransactionFee, watchedPercentageDiscount).toFixed(2));
+    setValue('total', total);
+  };
+
+  // If onNextStep is taking too long to load, add a loading state
   const onNextStep = async () => {
     const moveToNextStep = () => {
       if (currentIndex < steps.length - 1) {
@@ -119,7 +186,32 @@ export const useRegisterFooter = (
     }
   };
 
+  const onStartRegister = async () => {
+    if (event.isApprovalFlow && event.status === 'open') {
+      const isValid = await trigger(fieldsToCheck);
+      if (!isValid) {
+        return;
+      }
+
+      const hasPreRegistered = await getAndSetPreRegistration();
+      const hasRegistered = await validateEmail();
+      if (!hasPreRegistered || !hasRegistered) {
+        return;
+      }
+
+      setCurrentStep(STEP_PAYMENT);
+      return;
+    }
+
+    onNextStep();
+  };
+
   const onCheckEmailNextStep = async () => {
+    if (event.isApprovalFlow && event.status === 'open') {
+      onNextStep();
+      return;
+    }
+
     const isValid = await validateEmail();
     if (isValid) {
       onNextStep();
@@ -127,12 +219,11 @@ export const useRegisterFooter = (
   };
 
   const onSummaryStep = () => {
-    if (!transactionFee) {
+    if (!watchedTransactionFee) {
       return;
     }
 
-    const total = Number(calculateTotalPrice(event.price, transactionFee, discountPercentage).toFixed(2));
-    setValue('total', total);
+    setPaymentTotal();
     onNextStep();
   };
 
@@ -142,6 +233,7 @@ export const useRegisterFooter = (
   };
 
   const onRequestPayment = async () => {
+    const { paymentMethod, paymentChannel, total } = getValues();
     if (!paymentMethod || !paymentChannel || !total) {
       return;
     }
@@ -156,6 +248,12 @@ export const useRegisterFooter = (
   };
 
   const onSubmitForm = async () => {
+    const total = getValues('total');
+
+    if (event.isApprovalFlow && event.status === 'preregistration') {
+      setCurrentStep(STEP_SUCCESS);
+    }
+
     if (!event.paidEvent || total === 0) {
       setCurrentStep(STEP_SUCCESS);
     }
@@ -167,6 +265,10 @@ export const useRegisterFooter = (
         reloadPage();
         return;
       }
+    }
+
+    if (event.isApprovalFlow && event.status === 'open') {
+      setPaymentTotal();
     }
 
     try {
@@ -185,6 +287,7 @@ export const useRegisterFooter = (
     isFormSubmitting,
     onNextStep,
     onPrevStep,
+    onStartRegister,
     onCheckEmailNextStep,
     onSummaryStep,
     onSignUpOther: reloadPage,
