@@ -95,6 +95,8 @@ class RegistrationPatch(RegistrationDataIn):
     class Config:
         extra = Extra.ignore
 
+    certificateClaimed: bool = Field(None, title='Certificate Claimed')
+
 
 class RegistrationIn(RegistrationPatch):
     class Config:
@@ -116,7 +118,6 @@ class RegistrationOut(RegistrationIn):
     createDate: datetime = Field(..., title='Created At')
     updateDate: datetime = Field(..., title='Updated At')
     gcashPaymentUrl: str = Field(None, title='Gcash Payment Address')
-    certificateClaimed: bool = Field(None, title='Certificate Claimed')
     certificateImgObjectKey: str = Field(None, title='Certificate Image Object Key')
     certificatePdfObjectKey: str = Field(None, title='Certificate PDF Object Key')
     certificateGenerated: bool = Field(None, title='Certificate Generated')
