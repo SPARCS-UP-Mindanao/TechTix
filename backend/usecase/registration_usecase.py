@@ -125,11 +125,8 @@ class RegistrationUsecase:
         email = registration_in.email
         preregistration = self.__preregistration_usecase.get_preregistration_by_email(event_id=event_id, email=email)
 
-        if not preregistration:
-            return JSONResponse(
-                status_code=HTTPStatus.CONFLICT,
-                content={'message': 'Email does not exist in pre-registration'},
-            )
+        if isinstance(preregistration, JSONResponse):
+            return preregistration
 
         registration_data = preregistration.dict()
         registration_data_in = PreRegistrationToRegistrationIn(

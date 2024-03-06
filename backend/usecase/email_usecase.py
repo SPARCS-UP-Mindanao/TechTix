@@ -58,7 +58,7 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
-            emailType=EmailType.EVENT_CREATION_EMAIL,
+            emailType=EmailType.EVENT_CREATION_EMAIL.value,
             eventId=event.eventId,
         )
         return self.send_email(email_in=email_in)
@@ -78,7 +78,7 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
-            emailType=EmailType.REGISTRATION_EMAIL,
+            emailType=EmailType.REGISTRATION_EMAIL.value,
             eventId=event.eventId,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
@@ -86,9 +86,8 @@ class EmailUsecase:
 
     def send_accept_reject_status_email(self, preregistrations: List[PreRegistration], event: Event):
         for preregistration in preregistrations:
-            email_sent = preregistration.acceptanceEmailSent
-            if email_sent:
-                return
+            if preregistration.acceptanceEmailSent:
+                continue
 
             should_send_acceptance = (
                 preregistration.acceptanceStatus and preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
@@ -119,7 +118,7 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
-            emailType=EmailType.PREREGISTRATION_EMAIL,
+            emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
         )
         logger.info(f'Sending pre-registration email to {preregistration.email}')
@@ -140,7 +139,7 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
-            emailType=EmailType.PREREGISTRATION_EMAIL,
+            emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
         )
         logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
@@ -172,7 +171,7 @@ class EmailUsecase:
             body=body,
             salutation=salutation,
             regards=regards,
-            emailType=EmailType.PREREGISTRATION_EMAIL,
+            emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
         )
         logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
@@ -201,7 +200,7 @@ class EmailUsecase:
                 body=body,
                 salutation=salutation,
                 regards=regards,
-                emailType=EmailType.EVALUATION_EMAIL,
+                emailType=EmailType.EVALUATION_EMAIL.value,
                 eventId=event_id,
             )
             logger.info(f'Sending event completion email to {participant}')

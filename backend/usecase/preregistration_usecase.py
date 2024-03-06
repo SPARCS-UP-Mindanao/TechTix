@@ -170,9 +170,8 @@ class PreRegistrationUsecase:
 
         preregistration = preregistrations[0]
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
-        preregistration_out = PreRegistrationOut(**preregistration_data)
 
-        return preregistration_out
+        return PreRegistrationOut(**preregistration_data)
 
     def get_preregistrations(self, event_id: str = None) -> Union[JSONResponse, List[PreRegistrationOut]]:
         """
