@@ -1,4 +1,5 @@
 import { Registration } from '@/model/registrations';
+import { EventStatus } from './events';
 
 export interface Discount {
   entryId: string;
@@ -27,3 +28,5 @@ export interface Pricing {
   total: number;
   discountedPrice: number;
 }
+
+export const enabledDiscountStatus: EventStatus[] = ['draft', 'preregistration', 'open'];

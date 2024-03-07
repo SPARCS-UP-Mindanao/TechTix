@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Button from '@/components/Button';
 import { Event } from '@/model/events';
 import { RegisterField } from '@/hooks/useRegisterForm';
-import { RegisterStep } from './steps/RegistrationSteps';
+import { RegisterStep } from '../steps/RegistrationSteps';
 import { useRegisterFooter } from './useRegisterFooter';
 
 interface Props {

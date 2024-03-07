@@ -9,12 +9,12 @@ export interface Event {
   startDate: string;
   endDate: string;
   venue: string;
-  bannerLink?: string | null;
-  logoLink?: string | null;
   autoConfirm?: boolean;
   paidEvent: boolean;
   price: number;
-  certificateTemplate?: string | null;
+  bannerLink: string | null;
+  logoLink: string | null;
+  certificateTemplate: string | null;
   gcashQRCode?: string | null;
   gcashName?: string | null;
   gcashNumber?: string | null;

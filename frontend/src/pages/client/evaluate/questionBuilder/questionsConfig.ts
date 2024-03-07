@@ -1,6 +1,6 @@
 import { QuestionConfigItem } from '@/model/evaluations';
 
-export const question1: QuestionConfigItem[] = [
+export const EVALUTATION_QUESTIONS_1: QuestionConfigItem[] = [
   {
     name: 'overall_experience',
     questionType: 'radio_buttons',
@@ -38,7 +38,7 @@ export const question1: QuestionConfigItem[] = [
   }
 ];
 
-export const question2: QuestionConfigItem[] = [
+export const EVALUTATION_QUESTIONS_2: QuestionConfigItem[] = [
   {
     name: 'quality_of_speakers',
     questionType: 'radio_buttons',
@@ -76,7 +76,7 @@ export const question2: QuestionConfigItem[] = [
   }
 ];
 
-export const questionToDisplayMap = new Map([
+export const QUESTIONS = new Map([
   ['overall_experience', 'Please rate your overall experience of the event (5 being the highest).'],
   ['how_did_you_hear_about_the_event', 'How did you hear about the event?'],
   ['what_do_you_like_most_about_the_event', 'What do you like most about the event?'],

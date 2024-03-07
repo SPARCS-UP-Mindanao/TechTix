@@ -19,7 +19,6 @@ interface Props {
 }
 
 const AdminEventForm: FC<Props> = ({ event }) => {
-  const eventId = event?.eventId;
   const { form, submit, cancel } = useAdminEventForm(event);
   const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
   const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
@@ -115,11 +114,10 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         {isLimitedSlot && (
           <FormItem name="maximumSlots">
-            {({ field: { value, onChange } }) => (
+            {({ field }) => (
               <FormItemContainer halfSpace>
                 <FormLabel>Maximum Slots</FormLabel>
-                {/* use this onChange when form fields are numbers */}
-                <Input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} />
+                <Input type="number" {...field} />
                 <FormError />
               </FormItemContainer>
             )}
@@ -133,7 +131,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             <FormItemContainer>
               <div className="flex flex-row gap-2">
                 <FormLabel>Will this event follow a pre-registration flow?</FormLabel>
-                <Switch id="isApprovalFlow" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || !!eventId} />
+                <Switch id="isApprovalFlow" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
               </div>
               <FormError />
             </FormItemContainer>
@@ -150,13 +148,13 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                   <FormLabel>Status</FormLabel>
                   <Select value={value} onValueChange={onChange} disabled={isSubmitting}>
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select an Event Status" />
+                      <SelectValue placeholder="Select an event status" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Event Status</SelectLabel>
                         {EVENT_STATUSES.map((item) => (
-                          <SelectItem key={item.value} value={item.value} disabled={item.value === 'preregistration' && !!eventId && !event?.isApprovalFlow}>
+                          <SelectItem key={item.value} value={item.value} disabled={item.value === 'preregistration' && !event?.isApprovalFlow}>
                             {item.label}
                           </SelectItem>
                         ))}

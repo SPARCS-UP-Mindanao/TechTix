@@ -42,6 +42,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => <Icon name={row.original.claimed ? 'Check' : 'X'} />,
     enableHiding: getEnableHiding('claimed')
   },
   {
