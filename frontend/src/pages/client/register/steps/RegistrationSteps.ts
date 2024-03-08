@@ -43,5 +43,5 @@ export const STEP_PREREGISTRATION_SUCCESS: RegisterStep = {
 export const RegisterSteps: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_SUMMARY, STEP_SUCCESS];
 export const RegisterStepsWithPayment: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_PAYMENT, STEP_SUMMARY, STEP_SUCCESS];
 
-export const PreRegistrationSteps: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_SUMMARY, STEP_PREREGISTRATION_SUCCESS];
-export const RegistrationStepsPaymentOnly: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS];
+export const PreRegisterSteps: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_USER_BIO, STEP_PERSONAL_INFO, STEP_SUMMARY, STEP_PREREGISTRATION_SUCCESS];
+export const RegisterStepsPaymentOnly: RegisterStep[] = [STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS];

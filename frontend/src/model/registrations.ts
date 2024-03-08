@@ -21,10 +21,10 @@ export interface Registration {
   referenceNumber?: string | null;
   gcashPayment?: string | null;
   gcashPaymentUrl?: string | null;
-  certificateGenerated?: boolean;
-  certificateClaimed?: boolean;
-  certificateImgObjectKey?: string | null;
-  certificatePdfObjectKey?: string | null;
+  certificateGenerated: boolean;
+  certificateClaimed: boolean;
+  certificateImgObjectKey: string | null;
+  certificatePdfObjectKey: string | null;
 }
 
 export type RegisterMode = 'register' | 'preregister';
@@ -56,7 +56,10 @@ export const mapRegistrationToFormValues = (registration: Registration): Registe
   title: registration.title
 });
 
-export type CreateRegistration = Omit<Registration, 'type' | 'registrationId'>;
+export type CreateRegistration = Omit<
+  Registration,
+  'type' | 'registrationId' | 'certificateGenerated' | 'certificateClaimed' | 'certificateImgObjectKey' | 'certificatePdfObjectKey'
+>;
 
 export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string): CreateRegistration => ({
   email: registration.email,
@@ -67,7 +70,7 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   yearsOfExperience: registration.yearsOfExperience,
   organization: registration.organization,
   title: registration.title,
-  discountCode: registration.discountCode ?? '',
+  discountCode: registration.discountPercentage ? registration.discountCode : '',
   amountPaid: registration.total ?? null,
   eventId: eventId
 });

@@ -125,11 +125,8 @@ class RegistrationUsecase:
         email = registration_in.email
         preregistration = self.__preregistration_usecase.get_preregistration_by_email(event_id=event_id, email=email)
 
-        if not preregistration:
-            return JSONResponse(
-                status_code=HTTPStatus.CONFLICT,
-                content={'message': 'Email does not exist in pre-registration'},
-            )
+        if isinstance(preregistration, JSONResponse):
+            return preregistration
 
         registration_data = preregistration.dict()
         registration_data_in = PreRegistrationToRegistrationIn(
@@ -148,6 +145,10 @@ class RegistrationUsecase:
             registration_in=registration_data_in,
             registration_id=registration_id,
         )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -184,15 +185,6 @@ class RegistrationUsecase:
         ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
-
-        discount_code = registration_in.discountCode
-        claimed_discount = self.__discount_usecase.claim_discount(
-            entry_id=discount_code,
-            registration_id=registration.registrationId,
-            event_id=event_id,
-        )
-        if isinstance(claimed_discount, JSONResponse):
-            return claimed_discount
 
         (
             status,

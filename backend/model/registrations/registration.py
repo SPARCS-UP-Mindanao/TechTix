@@ -81,14 +81,6 @@ class RegistrationDataIn(BaseModel):
     yearsOfExperience: str = Field(None, title='Years of Experience')
     organization: str = Field(None, title='Organization')
     title: str = Field(None, title='Title')
-    certificateClaimed: bool = Field(None, title='Certificate Claimed')
-    discountCode: str = Field(None, title='Discount Code')
-    gcashPayment: str = Field(None, title='Gcash Payment')
-    referenceNumber: str = Field(None, title='Reference Number')
-    amountPaid: float = Field(None, title='Amount Paid')
-    certificateImgObjectKey: str = Field(None, title='Certificate Image Object Key')
-    certificatePdfObjectKey: str = Field(None, title='Certificate PDF Object Key')
-    certificateGenerated: bool = Field(None, title='Certificate Generated')
     eventId: str = Field(None, title='Event ID')
 
 
@@ -101,7 +93,9 @@ class PreRegistrationToRegistrationIn(RegistrationDataIn):
 
 class RegistrationPatch(RegistrationDataIn):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
+
+    certificateClaimed: bool = Field(None, title='Certificate Claimed')
 
 
 class RegistrationIn(RegistrationPatch):
@@ -109,6 +103,10 @@ class RegistrationIn(RegistrationPatch):
         extra = Extra.forbid
 
     email: EmailStr = Field(None, title='Email')
+    discountCode: str = Field(None, title='Discount Code')
+    gcashPayment: str = Field(None, title='Gcash Payment')
+    referenceNumber: str = Field(None, title='Reference Number')
+    amountPaid: float = Field(None, title='Amount Paid')
 
 
 class RegistrationOut(RegistrationIn):
@@ -120,6 +118,9 @@ class RegistrationOut(RegistrationIn):
     createDate: datetime = Field(..., title='Created At')
     updateDate: datetime = Field(..., title='Updated At')
     gcashPaymentUrl: str = Field(None, title='Gcash Payment Address')
+    certificateImgObjectKey: str = Field(None, title='Certificate Image Object Key')
+    certificatePdfObjectKey: str = Field(None, title='Certificate PDF Object Key')
+    certificateGenerated: bool = Field(None, title='Certificate Generated')
 
 
 class RegistrationPreviewOut(BaseModel):

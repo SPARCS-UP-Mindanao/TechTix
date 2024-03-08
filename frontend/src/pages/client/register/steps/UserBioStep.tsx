@@ -38,7 +38,7 @@ const UserBioStep = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Phone number</FormLabel>
-            <Input type="text" placeholder="09XXXXXXXXX" {...field} />
+            <Input type="text" placeholder="09XX XXX XXXX" {...field} />
             <FormError />
           </div>
         )}

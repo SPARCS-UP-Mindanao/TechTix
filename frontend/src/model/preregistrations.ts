@@ -7,7 +7,19 @@ export type AcceptanceStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 export interface PreRegistration
   extends Omit<
     Registration,
-    'certificateClaimed' | 'amountPaid' | 'paymentId' | 'registrationId' | 'referenceNumber' | 'gcashPayment' | 'gcashPaymentUrl' | 'discountCode' | 'type'
+    | 'certificateClaimed'
+    | 'amountPaid'
+    | 'paymentId'
+    | 'registrationId'
+    | 'referenceNumber'
+    | 'gcashPayment'
+    | 'gcashPaymentUrl'
+    | 'discountCode'
+    | 'type'
+    | 'certificateGenerated'
+    | 'certificateClaimed'
+    | 'certificateImgObjectKey'
+    | 'certificatePdfObjectKey'
   > {
   type: 'preregistration';
   acceptanceStatus: AcceptanceStatus;

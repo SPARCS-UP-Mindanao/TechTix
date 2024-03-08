@@ -3,25 +3,24 @@ import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import ErrorPage from '@/components/ErrorPage';
 import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
-import ImageViewer from '@/components/ImageViewer';
 import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import Stepper from '@/components/Stepper';
 import { RegisterMode } from '@/model/registrations';
-import { REGISTER_STEPS_FIELD, REGISTER_STEPS_FIELD_WITH_PREREGISTRATION, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
+import { REGISTER_FIELDS, REGISTER_FIELDS_WITH_PREREGISTRATION, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
+import EventHeader from './EventHeader';
 import FAQs from './FAQs';
-import RegisterFooter from './RegisterFooter';
 import RegisterFormLoading from './RegisterFormSkeleton';
-import RegisterFormSubmittingSkeleton from './RegisterFormSubmittingSkeleton';
+import RegisterFooter from './footer/RegisterFooter';
 import PaymentStep from './steps/PaymentStep';
 import PersonalInfoStep from './steps/PersonalInfoStep';
 import {
-  PreRegistrationSteps,
+  PreRegisterSteps,
   RegisterStep,
   RegisterSteps,
   RegisterStepsWithPayment,
-  RegistrationStepsPaymentOnly,
+  RegisterStepsPaymentOnly,
   STEP_EVENT_DETAILS,
   STEP_SUCCESS
 } from './steps/RegistrationSteps';
@@ -98,16 +97,16 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
   }
 
   if (isSuccessLoading) {
-    return <RegisterFormSubmittingSkeleton />;
+    return <RegisterFormLoading />;
   }
 
   const getSteps = () => {
     if (eventInfo.isApprovalFlow && eventInfo.status === 'preregistration') {
-      return PreRegistrationSteps;
+      return PreRegisterSteps;
     }
 
     if (eventInfo.isApprovalFlow && eventInfo.status === 'open') {
-      return RegistrationStepsPaymentOnly;
+      return RegisterStepsPaymentOnly;
     }
 
     if (eventInfo.paidEvent) {
@@ -119,10 +118,10 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   const getFieldsToCheck = () => {
     if (eventInfo.isApprovalFlow && eventInfo.status === 'open') {
-      return REGISTER_STEPS_FIELD_WITH_PREREGISTRATION;
+      return REGISTER_FIELDS_WITH_PREREGISTRATION;
     }
 
-    return REGISTER_STEPS_FIELD;
+    return REGISTER_FIELDS;
   };
 
   const fieldsToCheck: RegisterField[] = getFieldsToCheck()[currentStep.id] || [];
@@ -133,11 +132,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
   return (
     <section className="flex flex-col items-center px-4">
       <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
-        <ImageViewer objectKey={eventInfo.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
-        <div className="flex w-full justify-center relative overflow-hidden">
-          <ImageViewer objectKey={eventInfo.bannerLink} className="w-full max-w-md object-cover z-10" />
-          <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${eventInfo.bannerUrl})` }}></div>
-        </div>
+        <EventHeader event={eventInfo} />
 
         <FormProvider {...form}>
           <main className="w-full">
@@ -159,7 +154,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
             {currentStep.id === 'EventDetails' && eventInfo.isApprovalFlow && eventInfo.status === 'open' && (
               <FormItem name="email">
                 {({ field }) => (
-                  <FormItemContainer className="px-0 my-4">
+                  <FormItemContainer className="px-0 my-6">
                     <FormLabel>Email</FormLabel>
                     <Input type="email" {...field} />
                     <FormDescription>Enter the email address you used for pre-registering</FormDescription>

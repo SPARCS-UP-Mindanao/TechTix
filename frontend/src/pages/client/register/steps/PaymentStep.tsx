@@ -52,7 +52,7 @@ const PaymentStep = ({ eventPrice }: Props) => {
             <FormLabel optional>Discount Coupon</FormLabel>
             <div className="flex sm:flex-row flex-col gap-2 w-full items-center">
               <Input type="text" placeholder="Enter Discount Coupon Code" className="w-full sm:w-1/2" {...field} />
-              <Button className="w-full sm:w-1/2" onClick={validateDiscountCode} loading={isValidatingDiscountCode}>
+              <Button className="w-full sm:w-1/2" disabled={!field.value} onClick={validateDiscountCode} loading={isValidatingDiscountCode}>
                 Check Code
               </Button>
             </div>

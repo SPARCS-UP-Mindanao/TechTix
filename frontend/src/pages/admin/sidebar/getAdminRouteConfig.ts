@@ -18,7 +18,7 @@ interface Props {
   setLogoutOpen: (open: boolean) => void;
 }
 
-export const getAdminRouteConfig = ({ eventId = '', userGroups, setLogoutOpen }: Props): AdminRouteConfigProps[] => [
+export const getAdminRouteConfig = ({ eventId, userGroups, setLogoutOpen }: Props): AdminRouteConfigProps[] => [
   {
     optionName: 'Dashboard',
     iconName: 'Home',

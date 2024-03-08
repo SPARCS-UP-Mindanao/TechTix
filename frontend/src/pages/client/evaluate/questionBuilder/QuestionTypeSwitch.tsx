@@ -7,7 +7,7 @@ import Slider from '@/components/Slider';
 import { Textarea } from '@/components/TextArea';
 import { QuestionConfigItem } from '@/model/evaluations';
 
-const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
+const QuestionTypeSwitch = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
   question: QuestionConfigItem,
   field: ControllerRenderProps<FieldValues, TName>,
   disabled: boolean = false
@@ -103,4 +103,4 @@ const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPa
   }
 };
 
-export default BuilderQuestion;
+export default QuestionTypeSwitch;

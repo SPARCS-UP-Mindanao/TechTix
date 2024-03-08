@@ -26,7 +26,6 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
 
   const { form, onUpdate, onDelete, onApprove, onReject } = useEditRegistrationForm(eventId, registrationInfo);
   const { isSubmitting, isDirty } = useFormState({ control: form.control });
-  console.log(isSubmitting);
 
   const onCancel = () => {
     setAllowEdit(false);
@@ -43,24 +42,9 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
       trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
       className="md:max-w-[80%]"
       modalFooter={
-        <div className="mt-4 space-y-4 w-full">
-          <div>
-            <AlertModal
-              alertModalTitle="Are you sure you want to delete this registration?"
-              alertModalDescription="Deleting this registration is irreversible. This action cannot be undone."
-              visible={showDeleteModal}
-              isLoading={isSubmitting}
-              confirmVariant="negative"
-              onOpenChange={setShowDeleteModal}
-              onCompleteAction={onDelete}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={() => setShowModal(false)} variant="ghost">
-              Close
-            </Button>
-          </div>
-        </div>
+        <Button onClick={() => setShowModal(false)} variant="ghost">
+          Close
+        </Button>
       }
     >
       <div className="flex space-x-4 w-full">
@@ -211,6 +195,16 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
           )}
         </div>
       </main>
+
+      <AlertModal
+        alertModalTitle="Are you sure you want to delete this registration?"
+        alertModalDescription="Deleting this registration is irreversible. This action cannot be undone."
+        visible={showDeleteModal}
+        isLoading={isSubmitting}
+        confirmVariant="negative"
+        onOpenChange={setShowDeleteModal}
+        onCompleteAction={onDelete}
+      />
     </Modal>
   );
 };

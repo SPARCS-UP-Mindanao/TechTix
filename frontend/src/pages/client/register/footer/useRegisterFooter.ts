@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
 import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Event } from '@/model/events';
 import { AcceptanceStatus, PreRegistration, mapPreRegistrationToFormValues } from '@/model/preregistrations';
-import { baseUrl, isEmpty, reloadPage } from '@/utils/functions';
+import { baseUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '@/hooks/useRegisterForm';
-import { calculateTotalPrice } from './steps/PaymentStep';
-import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
-import { usePayment } from './usePayment';
+import { calculateTotalPrice } from '../steps/PaymentStep';
+import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS } from '../steps/RegistrationSteps';
+import { usePayment } from '../usePayment';
 
 export const useRegisterFooter = (
   event: Event,
@@ -26,7 +25,7 @@ export const useRegisterFooter = (
   const { errorToast } = useNotifyToast();
   const { trigger, setValue, getValues, watch, reset } = useFormContext<RegisterFormValues>();
   const api = useApi();
-  const { eventId } = useParams();
+  const { eventId } = event;
   const watchedPaymentChannel = watch('paymentChannel');
   const watchedPaymentMethod = watch('paymentMethod');
   const watchedTransactionFee = watch('transactionFee');
@@ -38,12 +37,6 @@ export const useRegisterFooter = (
 
   const paymentButtonDisabled = isEmpty(watchedPaymentChannel) || isEmpty(watchedPaymentMethod) || isEmpty(watchedTransactionFee);
 
-  const scrollToView = () => {
-    const viewportHeight = window.innerHeight;
-    const scrollAmount = viewportHeight * 0.2;
-    window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
-  };
-
   const validateEmail = async () => {
     const email = getValues('email');
 
@@ -51,8 +44,8 @@ export const useRegisterFooter = (
       setIsValidatingEmail(true);
       const response =
         event.status === 'preregistration'
-          ? await api.execute(checkPreRegistration(eventId!, email))
-          : await api.execute(getEventRegistrationWithEmail(eventId!, email));
+          ? await api.execute(checkPreRegistration(eventId, email))
+          : await api.execute(getEventRegistrationWithEmail(eventId, email));
       switch (response.status) {
         case 200:
           errorToast({
@@ -81,7 +74,7 @@ export const useRegisterFooter = (
   };
 
   const checkRegistrationCount = async () => {
-    const response = await api.execute(getEventRegCountStatus(eventId!));
+    const response = await api.execute(getEventRegCountStatus(eventId));
     if (response.status !== 200) {
       throw new Error('Registration count check failed');
     }
@@ -128,7 +121,7 @@ export const useRegisterFooter = (
     const email = getValues('email');
 
     try {
-      const response = await api.execute(checkPreRegistration(eventId!, email));
+      const response = await api.execute(checkPreRegistration(eventId, email));
       switch (response.status) {
         case 200:
           return checkAcceptanceStatus(response.data);
