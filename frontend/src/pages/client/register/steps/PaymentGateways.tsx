@@ -1,26 +1,45 @@
 import { FC } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { BPI_LOGO, CHINABANK_LOGO, GCASH_LOGO, MAYA_LOGO, RCBC_LOGO, UPB_LOGO } from '@/assets/paymentGatewaysIcons';
 import Button from '@/components/Button';
+import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { PaymentMethod, eWalletChannelCode, DirectDebitChannelCode, PaymentChannel } from '@/model/payments';
 import { cn } from '@/utils/classes';
 import { RegisterFormValues } from '@/hooks/useRegisterForm';
 
 interface PaymentOptionProps {
   paymentTitle: string;
+  imgSrc?: string;
   currentPaymentChannel?: PaymentChannel | null;
   paymentChannelCode: eWalletChannelCode | DirectDebitChannelCode;
   onClick: () => void;
 }
-const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, paymentChannelCode, currentPaymentChannel, onClick }) => {
+const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, imgSrc, paymentChannelCode, currentPaymentChannel, onClick }) => {
   const selected = currentPaymentChannel === paymentChannelCode;
   return (
-    <Button
-      className={cn(selected && 'scale-90 bg-primary text-primary-foreground border-none hover:text-primary-foreground')}
-      variant="outline"
-      onClick={onClick}
-    >
-      {paymentTitle}
-    </Button>
+    <div className="w-full md:w-1/2 px-2">
+      <Button
+        className={cn(
+          'w-full h-auto justify-normal p-2 transition-all',
+          selected && 'bg-transparent hover:bg-transparent border border-primary',
+          paymentChannelCode === 'BPI' && 'pl-0'
+        )}
+        variant={'outline'}
+        onClick={onClick}
+      >
+        {imgSrc && (
+          <div className="h-10 mr-2">
+            <img
+              src={imgSrc}
+              className={cn('w-full h-full', paymentChannelCode === 'PAYMAYA' && 'py-2 pt-3', paymentChannelCode === 'BPI' && 'py-0')}
+              alt={paymentTitle}
+            />
+          </div>
+        )}
+        <p className="text-muted-foreground">{paymentTitle}</p>
+        <RadioGroupItem className="ml-auto" value={paymentChannelCode} checked={selected} />
+      </Button>
+    </div>
   );
 };
 
@@ -49,48 +68,58 @@ const PaymentGateways: FC<Props> = ({ getTransactionFee }) => {
 
   return (
     <>
-      <h4>eWallets:</h4>
-      <div className="flex gap-2">
-        <PaymentOption
-          paymentTitle="Gcash"
-          paymentChannelCode="GCASH"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setEWalletPaymentChannel('GCASH')}
-        />
-        <PaymentOption
-          paymentTitle="Maya"
-          paymentChannelCode="PAYMAYA"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setEWalletPaymentChannel('PAYMAYA')}
-        />
-      </div>
-      <h4>Direct Debit:</h4>
-      <div className="flex gap-2">
-        <PaymentOption
-          paymentTitle="BPI"
-          paymentChannelCode="BPI"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setDirectDebitPaymentChannel('BPI')}
-        />
-        <PaymentOption
-          paymentTitle="RCBC"
-          paymentChannelCode="RCBC"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setDirectDebitPaymentChannel('RCBC')}
-        />
-        <PaymentOption
-          paymentTitle="UBP"
-          paymentChannelCode="UBP"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setDirectDebitPaymentChannel('UBP')}
-        />
-        <PaymentOption
-          paymentTitle="ChinaBank"
-          paymentChannelCode="CHINABANK"
-          currentPaymentChannel={currentPaymentChannel}
-          onClick={() => setDirectDebitPaymentChannel('CHINABANK')}
-        />
-      </div>
+      <h4>Select a payment method:</h4>
+      <RadioGroup className="block space-y-2">
+        <p>eWallets:</p>
+        <div className="flex flex-wrap gap-y-2">
+          <PaymentOption
+            paymentTitle="Gcash"
+            paymentChannelCode="GCASH"
+            imgSrc={GCASH_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setEWalletPaymentChannel('GCASH')}
+          />
+          <PaymentOption
+            paymentTitle="Maya"
+            paymentChannelCode="PAYMAYA"
+            imgSrc={MAYA_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setEWalletPaymentChannel('PAYMAYA')}
+          />
+        </div>
+
+        <p>Direct Debit:</p>
+        <div className="flex flex-wrap gap-y-2">
+          <PaymentOption
+            paymentTitle="BPI"
+            paymentChannelCode="BPI"
+            imgSrc={BPI_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setDirectDebitPaymentChannel('BPI')}
+          />
+          <PaymentOption
+            paymentTitle="RCBC"
+            paymentChannelCode="RCBC"
+            imgSrc={RCBC_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setDirectDebitPaymentChannel('RCBC')}
+          />
+          <PaymentOption
+            paymentTitle="Union Bank"
+            paymentChannelCode="UBP"
+            imgSrc={UPB_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setDirectDebitPaymentChannel('UBP')}
+          />
+          <PaymentOption
+            paymentTitle="China Bank"
+            paymentChannelCode="CHINABANK"
+            imgSrc={CHINABANK_LOGO}
+            currentPaymentChannel={currentPaymentChannel}
+            onClick={() => setDirectDebitPaymentChannel('CHINABANK')}
+          />
+        </div>
+      </RadioGroup>
     </>
   );
 };

@@ -48,7 +48,7 @@ const AdminPageContent = () => {
 
   const ADMIN_CONFIG = getAdminRouteConfig({
     userGroups: userGroups,
-    eventId: eventId!,
+    eventId: eventId,
     setLogoutOpen
   });
 

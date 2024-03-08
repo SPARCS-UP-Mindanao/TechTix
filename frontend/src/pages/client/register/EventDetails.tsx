@@ -3,6 +3,7 @@ import Icon from '@/components/Icon';
 import RichTextContent from '@/components/RichContent/RichTextContent';
 import Separator from '@/components/Separator';
 import { Event } from '@/model/events';
+import { formatMoney } from '@/utils/functions';
 
 interface Props {
   event: Event;
@@ -30,6 +31,13 @@ const EventDetails = ({ event }: Props) => {
             <Icon name="MapPin" />
             <p className="text-sm">{event.venue}</p>
           </div>
+
+          {event.paidEvent && event.status !== 'completed' && (
+            <div className="flex items-center space-x-2">
+              <Icon name="Banknote" />
+              <p className="text-sm">{formatMoney(event.price, 'PHP')}</p>
+            </div>
+          )}
         </div>
       </header>
 

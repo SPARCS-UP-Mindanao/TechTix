@@ -59,11 +59,12 @@ export const getEventRegistrations = (eventId: string) =>
   });
 
 export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
-  createApi<Registration[]>({
+  createApi<RegistrationDto, Registration>({
     method: 'get',
     authorize: true,
     url: `/registrations/${email}/email`,
-    queryParams: { eventId }
+    queryParams: { eventId },
+    output: mapRegistrationDtoToRegistration
   });
 
 export const getSpecificRegistration = (eventId: string, registrationId: string) =>

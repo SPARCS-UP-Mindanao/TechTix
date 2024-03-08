@@ -50,7 +50,7 @@ const EventFormSchema = z
       .optional(),
     isLimitedSlot: z.boolean(),
     isApprovalFlow: z.boolean(),
-    maximumSlots: z.number().optional()
+    maximumSlots: z.coerce.number().optional()
   })
   .refine(
     (data) => {

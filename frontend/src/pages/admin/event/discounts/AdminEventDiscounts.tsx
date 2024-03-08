@@ -3,13 +3,13 @@ import { useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
-import { FormItem, FormLabel, FormError } from '@/components/Form';
+import { FormItem, FormLabel, FormError, FormDescription } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import Tooltip from '@/components/Tooltip';
 import { getAllDiscounts } from '@/api/discounts';
-import { Discount, OrganizationDiscount } from '@/model/discount';
-import { Event } from '@/model/events';
+import { Discount, OrganizationDiscount, enabledDiscountStatus } from '@/model/discount';
+import { Event, EventStatus } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
@@ -21,6 +21,7 @@ const CreateDiscoutFormItems = () => (
         <div className="flex flex-col space-y-2">
           <FormLabel>Discount Recipient</FormLabel>
           <Input type="text" {...field} />
+          <FormDescription>Enter the organization you want to give discounts to</FormDescription>
           <FormError />
         </div>
       )}
@@ -39,6 +40,7 @@ const CreateDiscoutFormItems = () => (
         <div className="flex flex-col space-y-2">
           <FormLabel>Quantity</FormLabel>
           <Input type="number" min="0" step="1" {...field} />
+          <FormDescription>Enter the number of discounts you want to give</FormDescription>
           <FormError />
         </div>
       )}
@@ -93,12 +95,12 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
   const { form, submit, discounts, showDiscountCodes, setShowDiscountCodes } = useDiscountForm(eventId);
 
   const handleSubmit = async () => await submit();
-  const handleClose = async () => {
+  const handleClose = () => {
     setIsModalOpen(false);
     setShowDiscountCodes(false);
     setIsCopyClicked(false);
     form.reset();
-    await refetch();
+    refetch();
   };
 
   const successButton = () => {
@@ -170,13 +172,27 @@ const DiscountHeader: FC<DiscountHeaderProps> = ({ organization }) => {
 };
 
 interface DiscountTablesProps {
-  organizations?: OrganizationDiscount[];
+  organizations: OrganizationDiscount[];
+  status: EventStatus;
+  isPaidEvent: boolean;
   isFetching: boolean;
 }
 
-const DiscountTables = ({ organizations, isFetching }: DiscountTablesProps) => {
-  if (isFetching || !organizations) {
-    return <DataTable columns={discountColumns} data={[]} loading={isFetching} noDataText="No discounts" />;
+const DiscountTables = ({ organizations, status, isPaidEvent, isFetching }: DiscountTablesProps) => {
+  if (isFetching || !organizations.length) {
+    const getNoDataText = () => {
+      if (isPaidEvent) {
+        return 'No discounts found';
+      }
+
+      if (isPaidEvent && !enabledDiscountStatus.includes(status)) {
+        return `Discounts are disabled for events in ${status} status`;
+      }
+
+      return 'Discounts are disabled for free events';
+    };
+
+    return <DataTable columns={discountColumns} data={[]} loading={isFetching} noDataText={getNoDataText()} />;
   }
 
   return (
@@ -192,20 +208,21 @@ const DiscountTables = ({ organizations, isFetching }: DiscountTablesProps) => {
 };
 
 const AdminEventDiscounts: FC = () => {
-  const { eventId } = useOutletContext<Event>();
+  const { eventId, paidEvent, status } = useOutletContext<Event>();
+  const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId));
 
-  const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId!));
+  const discountsDisabled = isFetching || !paidEvent || !enabledDiscountStatus.includes(status);
 
   return (
     <section className="flex flex-col gap-6 items-center">
       <div className="inline-flex justify-center items-center space-x-4">
         <h2>Discounts</h2>
         <Tooltip toolTipContent="Refresh discounts" side="right">
-          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+          <Button variant="outline" disabled={!paidEvent} loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
         </Tooltip>
       </div>
-      <CreateDiscountModal disabled={isFetching} eventId={eventId!} refetch={refetch} />
-      <DiscountTables organizations={response?.data} isFetching={isFetching} />
+      <CreateDiscountModal disabled={discountsDisabled} eventId={eventId} refetch={refetch} />
+      <DiscountTables organizations={response?.data || []} status={status} isPaidEvent={paidEvent} isFetching={isFetching} />
     </section>
   );
 };

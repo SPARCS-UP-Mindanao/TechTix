@@ -61,13 +61,13 @@ export type RegisterField = keyof RegisterFormValues;
 
 type RegisterFieldMap = Partial<Record<RegisterStepId, RegisterField[]>>;
 
-export const REGISTER_STEPS_FIELD: RegisterFieldMap = {
+export const REGISTER_FIELDS: RegisterFieldMap = {
   UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
   PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience']
 };
 
-export const REGISTER_STEPS_FIELD_WITH_PREREGISTRATION: RegisterFieldMap = {
-  ...REGISTER_STEPS_FIELD,
+export const REGISTER_FIELDS_WITH_PREREGISTRATION: RegisterFieldMap = {
+  ...REGISTER_FIELDS,
   EventDetails: ['email']
 };
 
@@ -125,8 +125,6 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
   });
 
   const registerUser = form.handleSubmit(async (values) => {
-    console.log();
-
     try {
       const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId)));
       if (response.status === 200) {
@@ -159,7 +157,7 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
       const { errorData } = e as CustomAxiosError;
       errorToast({
         title: 'Error in Registering',
-        description: errorData.message || errorData.detail[0].msg
+        description: errorData.message || errorData.detail[0].msg || 'An error occurred while registering. Please try again.'
       });
     }
   });
@@ -196,7 +194,7 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
       const { errorData } = e as CustomAxiosError;
       errorToast({
         title: 'Error in Pre-registering',
-        description: errorData.message || errorData.detail[0].msg
+        description: errorData.message || errorData.detail[0].msg || 'An error occurred while pre-registering. Please try again.'
       });
     }
   });

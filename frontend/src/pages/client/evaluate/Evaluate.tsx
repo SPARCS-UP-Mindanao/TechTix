@@ -1,181 +1,89 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
-import { z } from 'zod';
-import Button from '@/components/Button';
 import ErrorPage from '@/components/ErrorPage';
-import Icon from '@/components/Icon';
+import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
+import Input from '@/components/Input';
 import Separator from '@/components/Separator';
-import { getEvent } from '@/api/events';
-import { isEmpty } from '@/utils/functions';
-import { useApiQuery } from '@/hooks/useApi';
-import { useCheckEmailForm } from '@/hooks/useCheckEmailForm';
-import { QuestionSchemaBuilder, useEvaluationForm } from '@/hooks/useEvaluationForm';
-import { useMetaData } from '@/hooks/useMetaData';
-import CertificateClaim from './CertificateClaim';
+import Stepper from '@/components/Stepper';
+import { DefaultEvaluateField, useEvaluationForm } from '@/hooks/useEvaluationForm';
+import EventDetails from '../register/EventDetails';
+import EventHeader from '../register/EventHeader';
 import EvaluateFormSkeleton from './EvaluateFormSkeleton';
-import EventInformation from './EventInformation';
-import PageHeader from './PageHeader';
-import QuestionBuilder from './QuestionBuilder';
-import Stepper from './Stepper';
-import { question1, question2 } from './questionsConfig';
-
-const EVALUATE_STEPS = ['EventInformation', 'Evaluation_1', 'Evaluation_2', 'ClaimCertificate'] as const;
-type EvaluateSteps = (typeof EVALUATE_STEPS)[number];
-const EVALUATIONS_FORM_STEPS = ['Evaluation_1', 'Evaluation_2'];
+import EvaluateFooter from './footer/EvaluateFooter';
+import QuestionBuilder from './questionBuilder/QuestionBuilder';
+import { EVALUTATION_QUESTIONS_1, EVALUTATION_QUESTIONS_2 } from './questionBuilder/questionsConfig';
+import ClaimCertificate from './steps/ClaimCertificate';
+import { EvaluateStep, EvaluateSteps, STEP_CLAIM_CERTIFICATE, STEP_EVENT_DETAILS } from './steps/EvaluationSteps';
+import { useEvaluatePage } from './useEvaluatePage';
 
 const Evaluate = () => {
-  const setMetaData = useMetaData();
-  const [currentStep, setCurrentStep] = useState<EvaluateSteps>(EVALUATE_STEPS[0]);
-  const eventId = useParams().eventId!;
-  const { data: eventResponse, isFetching } = useApiQuery(getEvent(eventId!));
+  const { eventId } = useParams();
+  const [currentStep, setCurrentStep] = useState<EvaluateStep>(STEP_EVENT_DETAILS);
+  const { response, isFetching } = useEvaluatePage(eventId!);
 
-  const evaluationSchema = QuestionSchemaBuilder([...question1, ...question2]);
-  type EvaluationField = keyof z.infer<typeof evaluationSchema> & string;
-
-  const EVALUATION_FORM_STEPS_FIELD: { [key: string]: EvaluationField[] } = {
-    Evaluation_1: question1.map((question) => question.name),
-    Evaluation_2: question2.map((question) => question.name)
-  };
-
-  const fieldsToCheck: EvaluationField[] = EVALUATION_FORM_STEPS_FIELD[currentStep as keyof typeof EVALUATION_FORM_STEPS_FIELD];
-  const scrollToView = () => {
-    const viewportHeight = window.innerHeight;
-    const scrollAmount = viewportHeight * 0.2;
-    window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
-  };
-  const nextStep = async () => {
-    const moveToNextStep = () => {
-      const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
-      if (currentIndex < EVALUATE_STEPS.length - 1) {
-        setCurrentStep(EVALUATE_STEPS[currentIndex + 1]);
-        scrollToView();
-      }
-    };
-
-    if (isEmpty(fieldsToCheck)) {
-      moveToNextStep();
-    } else {
-      await form.trigger(fieldsToCheck).then((isValid) => {
-        if (isValid) {
-          moveToNextStep();
-        }
-      });
-    }
-  };
-
-  const {
-    claimCertificateForm,
-    checkEmail,
-    data: certificateResponse,
-    isClaimCertificateLoading
-  } = useCheckEmailForm({
-    eventId,
-    setCurrentStep,
-    nextStep,
-    EVALUATE_STEPS
-  });
-
-  const { form, submitEvaluation, postEvalSuccess } = useEvaluationForm([...question1, ...question2], eventId, certificateResponse?.registrationId);
-
-  const prevStep = () => {
-    const currentIndex = EVALUATE_STEPS.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(EVALUATE_STEPS[currentIndex - 1]);
-    }
-  };
+  const { form, EVALUATE_FIELDS, submit } = useEvaluationForm([...EVALUTATION_QUESTIONS_1, ...EVALUTATION_QUESTIONS_2], eventId!);
 
   if (isFetching) {
     return <EvaluateFormSkeleton />;
   }
 
-  if (!eventResponse || (eventResponse && !eventResponse.data && eventResponse.errorData)) {
-    return <ErrorPage error={eventResponse} />;
+  if (!response || (response && !response.data && response.errorData)) {
+    return <ErrorPage error={response} />;
   }
 
-  if (eventResponse.data.status !== 'completed') {
+  if (response.data.status !== 'completed') {
     return <ErrorPage />;
   }
 
-  const eventInfo = eventResponse.data;
-
-  setMetaData({
-    title: eventInfo.name,
-    iconUrl: eventInfo.logoUrl
-  });
-
-  if (postEvalSuccess) {
-    nextStep();
-  }
-
-  const showEvaluateButton = EVALUATE_STEPS.indexOf(currentStep) === 0;
-  const showNextButton = EVALUATE_STEPS.indexOf(currentStep) !== 0 && EVALUATE_STEPS.indexOf(currentStep) < EVALUATE_STEPS.length - 2;
-  const showPrevButton = EVALUATE_STEPS.indexOf(currentStep) !== 0 && EVALUATE_STEPS.indexOf(currentStep) < EVALUATE_STEPS.length - 1;
-  const showSubmitButton = EVALUATE_STEPS.indexOf(currentStep) === EVALUATE_STEPS.length - 2;
+  const eventInfo = response.data;
+  const fieldsToCheck: DefaultEvaluateField[] = EVALUATE_FIELDS[currentStep.id] || [];
+  const STEPS = EvaluateSteps;
+  const showStepper = currentStep.id !== 'EventDetails' && currentStep.id !== 'ClaimCertificate';
 
   return (
     <section className="flex flex-col items-center px-4">
-      <div className="flex flex-col items-center w-full max-w-2xl mb-9">
+      <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
+        <EventHeader event={eventInfo} showBanner={currentStep.id !== 'ClaimCertificate'} />
+
         <FormProvider {...form}>
-          <section className="w-full">
-            {currentStep !== 'ClaimCertificate' && (
-              <PageHeader avatarImg={eventInfo.logoLink} bannerImg={eventInfo.bannerLink} bannerUrl={eventInfo.bannerUrl} />
-            )}
-            {currentStep === 'EventInformation' && (
-              <EventInformation event={eventInfo} nextStep={nextStep} eventId={eventId} claimCertificateForm={claimCertificateForm} />
-            )}
-            {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && (
-              <div className="flex flex-col items-center w-full mt-6">
-                <p className="font-subjectivity font-bold text-center text-xl leading-6">Evaluation</p>
-                <div className="w-[94px]">
-                  <Stepper steps={EVALUATIONS_FORM_STEPS} currentStep={currentStep} />
-                </div>
-              </div>
-            )}
+          <main className="w-full">
+            {currentStep.id !== 'EventDetails' && currentStep.title && <h1 className="text-xl text-center">{currentStep.title}</h1>}
 
-            {currentStep === 'Evaluation_1' && (
-              <div className="flex flex-col items-center mt-6 w-full">
-                <QuestionBuilder questions={question1} />
-              </div>
-            )}
+            {showStepper && <Stepper steps={STEPS} currentStep={currentStep} stepsToExclude={[STEP_CLAIM_CERTIFICATE]} />}
 
-            {currentStep === 'Evaluation_2' && (
-              <div className="flex flex-col items-center mt-6 w-full">
-                <QuestionBuilder questions={question2} />
-              </div>
-            )}
-
-            {(currentStep === 'Evaluation_1' || currentStep === 'Evaluation_2') && <Separator className="my-4" />}
-
-            {currentStep === 'ClaimCertificate' && eventInfo && eventInfo?.logoLink && certificateResponse?.registrationId && (
-              <CertificateClaim eventId={eventId} logoLink={eventInfo?.logoLink} registrationId={certificateResponse?.registrationId} />
-            )}
-
-            <div className="flex w-full justify-around my-6">
-              {showEvaluateButton && (
-                <Button onClick={checkEmail} loading={isClaimCertificateLoading} variant="primaryGradient" className="py-6 sm:px-16">
-                  Evaluate
-                </Button>
-              )}
-              {showPrevButton && (
-                <Button onClick={prevStep} variant={'outline'} className="py-6 sm:px-16">
-                  <Icon name="ChevronLeft" />
-                  Back
-                </Button>
-              )}
-              {showNextButton && (
-                <Button onClick={nextStep} className="py-6 sm:px-16">
-                  Next
-                  <Icon name="ChevronRight" />
-                </Button>
-              )}
-              {showSubmitButton && (
-                <Button onClick={submitEvaluation} type="submit" className="py-6 sm:px-16">
-                  Submit
-                </Button>
-              )}
+            <div className="space-y-4">
+              {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
+              {currentStep.id === 'Evaluation_1' && <QuestionBuilder questions={EVALUTATION_QUESTIONS_1} />}
+              {currentStep.id === 'Evaluation_2' && <QuestionBuilder questions={EVALUTATION_QUESTIONS_2} />}
             </div>
-          </section>
+
+            {currentStep.id === 'EventDetails' && (
+              <FormItem name="email">
+                {({ field }) => (
+                  <FormItemContainer className="px-0 my-6">
+                    <FormLabel>Email</FormLabel>
+                    <Input type="email" {...field} />
+                    <FormDescription>Enter the email address you used for registering for the event</FormDescription>
+                    <FormError />
+                  </FormItemContainer>
+                )}
+              </FormItem>
+            )}
+
+            {(currentStep.id === 'Evaluation_1' || currentStep.id === 'Evaluation_2') && <Separator className="my-4" />}
+
+            <EvaluateFooter
+              event={eventInfo}
+              steps={STEPS}
+              currentStep={currentStep}
+              fieldsToCheck={fieldsToCheck}
+              setCurrentStep={setCurrentStep}
+              submitForm={submit}
+            />
+          </main>
+
+          {currentStep.id === 'ClaimCertificate' && <ClaimCertificate />}
         </FormProvider>
       </div>
     </section>
