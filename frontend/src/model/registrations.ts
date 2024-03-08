@@ -70,7 +70,7 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   yearsOfExperience: registration.yearsOfExperience,
   organization: registration.organization,
   title: registration.title,
-  discountCode: registration.discountCode ?? '',
+  discountCode: registration.discountPercentage ? registration.discountCode : '',
   amountPaid: registration.total ?? null,
   eventId: eventId
 });
