@@ -131,7 +131,7 @@ export const getRegistrationColumns = (registrationType: RegisterMode): ColumnDe
       }
     };
 
-    const displayName = acceptanceStatusMap[preRegistration.acceptanceStatus].displayName;
+    const { displayName } = acceptanceStatusMap[preRegistration.acceptanceStatus];
 
     return (
       <Badge variant={getVariant()} className="max-w-[100px]">
@@ -141,7 +141,7 @@ export const getRegistrationColumns = (registrationType: RegisterMode): ColumnDe
   };
 
   const acceptanceStatus: ColumnDef<Registration | PreRegistration> = {
-    id: 'acceptanceStatus',
+    accessorKey: 'acceptanceStatus',
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>

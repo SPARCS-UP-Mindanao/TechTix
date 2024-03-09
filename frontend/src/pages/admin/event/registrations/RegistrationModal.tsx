@@ -22,7 +22,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
-  const { paidEvent, eventId } = useOutletContext<Event>();
+  const { paidEvent, eventId, status } = useOutletContext<Event>();
 
   const { form, onUpdate, onDelete, onApprove, onReject } = useEditRegistrationForm(eventId, registrationInfo);
   const { isSubmitting, isDirty } = useFormState({ control: form.control });
@@ -185,10 +185,10 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
 
           {registrationInfo.type === 'preregistration' && !allowEdit && (
             <>
-              <Button icon="X" variant="negative" disabled={registrationInfo.acceptanceStatus !== 'PENDING'} loading={isSubmitting} onClick={onReject}>
+              <Button icon="X" variant="negative" disabled={status != 'preregistration'} loading={isSubmitting} onClick={onReject}>
                 Reject
               </Button>
-              <Button icon="Check" variant="positive" disabled={registrationInfo.acceptanceStatus !== 'PENDING'} loading={isSubmitting} onClick={onApprove}>
+              <Button icon="Check" variant="positive" disabled={status != 'preregistration'} loading={isSubmitting} onClick={onApprove}>
                 Accept
               </Button>
             </>

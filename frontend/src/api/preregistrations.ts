@@ -53,3 +53,11 @@ export const checkPreRegistration = (eventId: string, email: string) =>
     queryParams: { eventId },
     output: mapPreRegistrationToDto
   });
+
+export const deletePreRegistration = (eventId: string, entryId: string) =>
+  createApi<PreRegistration>({
+    authorize: true,
+    method: 'delete',
+    url: `/preregistrations/${entryId}`,
+    queryParams: { eventId }
+  });
