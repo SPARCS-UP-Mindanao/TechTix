@@ -1,4 +1,3 @@
-import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 from utils.utils import Utils
 
 
@@ -49,18 +49,18 @@ class EventsRepository:
 
         except PutError as e:
             message = f'Failed to save event strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {entry_id}]: Save Events strategy data successful')
+            logger.info(f'[{self.core_obj} = {entry_id}]: Save Events strategy data successful')
             return HTTPStatus.OK, event_entry, None
 
     def query_events_by_admin_id(self, admin_id: str, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
@@ -79,32 +79,32 @@ class EventsRepository:
             if not event_entries:
                 if event_id:
                     message = f'Event with ID={event_id} not found'
-                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                    logger.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No events found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query event: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id:
-                logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+                logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
                 return HTTPStatus.OK, event_entries[0], None
 
-            logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+            logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
     def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
@@ -120,32 +120,32 @@ class EventsRepository:
             if not event_entries:
                 if event_id:
                     message = f'Event with ID={event_id} not found'
-                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                    logger.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No events found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query event: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id:
-                logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+                logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
                 return HTTPStatus.OK, event_entries[0], None
 
-            logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+            logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
     def update_event(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
@@ -178,12 +178,12 @@ class EventsRepository:
                 transaction.save(old_event_entry)
 
             event_entry.refresh()
-            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
@@ -204,11 +204,11 @@ class EventsRepository:
             event_entry.entryStatus = EntryStatus.DELETED.value
             event_entry.save()
 
-            logging.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
     def update_event_after_s3_upload(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
@@ -229,12 +229,12 @@ class EventsRepository:
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()
-            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
@@ -252,9 +252,9 @@ class EventsRepository:
 
         except PutError as e:
             message = f'Failed to append event registration count: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
         else:
-            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
             return HTTPStatus.OK, event_entry, ''

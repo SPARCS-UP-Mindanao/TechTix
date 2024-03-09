@@ -1,4 +1,3 @@
-import logging
 import os
 from datetime import datetime
 from http import HTTPStatus
@@ -15,6 +14,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class EvaluationRepository:
@@ -49,18 +49,18 @@ class EvaluationRepository:
 
         except PutError as e:
             message = f'Failed to save evaluation strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
+            logger.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
+            logger.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
+            logger.error(f'[{self.core_obj} = {hash_key}, {range_key}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {hash_key}, {range_key}]: Save Evaluations strategy data successful')
+            logger.info(f'[{self.core_obj} = {hash_key}, {range_key}]: Save Evaluations strategy data successful')
             return HTTPStatus.OK, evaluation_items, None
 
     def query_evaluations(
@@ -86,32 +86,32 @@ class EvaluationRepository:
             if not evaluation_entries:
                 if event_id and registration_id and question:
                     message = f'Evaluation with id {event_id}, {registration_id}#{question} not found'
-                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                    logger.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No evaluations found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query evaluation: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}, {range_key}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id and registration_id and question:
                 evaluation_entry = evaluation_entries[0]
-                logging.info(f'[{self.core_obj}={evaluation_entry.rangeKey}] Fetch Evaluation data successful')
+                logger.info(f'[{self.core_obj}={evaluation_entry.rangeKey}] Fetch Evaluation data successful')
                 return HTTPStatus.OK, evaluation_entry, None
             else:
-                logging.info(f'[{self.core_obj}] Fetch Evaluation data successful')
+                logger.info(f'[{self.core_obj}] Fetch Evaluation data successful')
                 return HTTPStatus.OK, evaluation_entries, None
 
     def query_evaluations_by_question(self, event_id: str, question: str) -> Tuple[HTTPStatus, List[Evaluation], str]:
@@ -125,23 +125,23 @@ class EvaluationRepository:
 
             if not evaluation_entries:
                 message = f'No evaluations found for event {event_id} and question {question}'
-                logging.error(f'[{self.core_obj}={question}] {message}')
+                logger.error(f'[{self.core_obj}={question}] {message}')
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query evaluation: {str(e)}'
-            logging.error(f'[{self.core_obj}={question}] {message}')
+            logger.error(f'[{self.core_obj}={question}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={question}] {message}')
+            logger.error(f'[{self.core_obj}={question}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={question}] {message}')
+            logger.error(f'[{self.core_obj}={question}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj}={question}] Fetch Evaluation data successful')
+            logger.info(f'[{self.core_obj}={question}] Fetch Evaluation data successful')
             return HTTPStatus.OK, evaluation_entries, None
 
     def update_evaluation(
@@ -164,10 +164,10 @@ class EvaluationRepository:
                 transaction.update(evaluation_entry, actions=actions)
 
             evaluation_entry.refresh()
-            logging.info(f'[{evaluation_entry.rangeKey}] ' f'Update evaluation data successful')
+            logger.info(f'[{evaluation_entry.rangeKey}] ' f'Update evaluation data successful')
             return HTTPStatus.OK, evaluation_entry, None
 
         except TransactWriteError as e:
             message = f'Failed to update evaluation data: {str(e)}'
-            logging.error(f'[{self.core_obj}={evaluation_entry.rangeKey}] {message}')
+            logger.error(f'[{self.core_obj}={evaluation_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message

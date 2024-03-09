@@ -1,7 +1,9 @@
+from http import HTTPStatus
 from typing import List
 
+from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
@@ -145,11 +147,39 @@ def update_preregistration(
     preregistration: PreRegistrationPatch,
     entry_id: str = Path(..., title='Pre-registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Update an existing pre-registration entry.
     """
+    _ = current_user
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.update_preregistration(
         event_id=event_id, preregistration_id=entry_id, preregistration_in=preregistration
     )
+
+
+@preregistration_router.delete(
+    '/{entryId}',
+    status_code=HTTPStatus.NO_CONTENT,
+    responses={
+        204: {'description': 'Pre-registration deletion success', 'content': None},
+    },
+    summary='Delete pre-registration',
+)
+@preregistration_router.delete(
+    '{entryId}/',
+    status_code=HTTPStatus.NO_CONTENT,
+    include_in_schema=False,
+)
+def delete_preregistration(
+    entry_id: str = Path(..., title='Pre-registration Id', alias=CommonConstants.ENTRY_ID),
+    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
+):
+    """
+    Delete a specific registration entry by its ID.
+    """
+    _ = current_user
+    preregistrations_uc = PreRegistrationUsecase()
+    return preregistrations_uc.delete_preregistration(preregistration_id=entry_id, event_id=event_id)

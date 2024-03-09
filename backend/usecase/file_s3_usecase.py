@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import Tuple
 
@@ -9,6 +8,7 @@ from model.events.events_constants import EventUploadField, EventUploadType
 from model.file_uploads.file_upload import FileDownloadOut, FileUploadOut
 from model.file_uploads.file_upload_constants import ClientMethods
 from starlette.responses import JSONResponse
+from utils.logger import logger
 
 
 class FileS3Usecase:
@@ -33,7 +33,7 @@ class FileS3Usecase:
 
             return FileUploadOut(**url_data)
         except ClientError as e:
-            logging.error('Error creating presigned url: %s', e)
+            logger.error('Error creating presigned url: %s', e)
             return JSONResponse(status_code=500, content={'message': 'Error creating presigned url'})
 
     def create_download_url(self, object_key) -> FileDownloadOut:
@@ -48,7 +48,7 @@ class FileS3Usecase:
 
             return FileDownloadOut(**url_data)
         except ClientError as e:
-            logging.error('Error creating presigned url: %s', e)
+            logger.error('Error creating presigned url: %s', e)
             return None
 
     def get_values_from_object_key(self, object_key) -> Tuple[str, str]:

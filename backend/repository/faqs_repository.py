@@ -1,4 +1,3 @@
-import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class FAQsRepository:
@@ -47,18 +47,18 @@ class FAQsRepository:
 
         except PutError as e:
             message = f'Failed to save faqs strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {entry_id}]: Save FAQs strategy data successful')
+            logger.info(f'[{self.core_obj} = {entry_id}]: Save FAQs strategy data successful')
             return HTTPStatus.OK, faqs_entry, None
 
     def query_faq_entry(self, event_id: str) -> Tuple[HTTPStatus, FAQs, str]:
@@ -75,27 +75,27 @@ class FAQsRepository:
             )
             if not faqs_entries:
                 message = f'FAQs with ID={event_id} not found'
-                logging.error(f'[{self.core_obj}={event_id}] {message}')
+                logger.error(f'[{self.core_obj}={event_id}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query faqs: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.NOT_FOUND, None, message
 
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         else:
-            logging.info(f'[{self.core_obj}={event_id}] Fetch FAQs data successful')
+            logger.info(f'[{self.core_obj}={event_id}] Fetch FAQs data successful')
             return HTTPStatus.OK, faqs_entries[0], None
 
     def update_faqs(self, faqs_entry: FAQs, faqs_in: FAQsIn) -> Tuple[HTTPStatus, FAQs, str]:
@@ -128,12 +128,12 @@ class FAQsRepository:
                 transaction.save(old_faqs_entry)
 
             faqs_entry.refresh()
-            logging.info(f'[{faqs_entry.rangeKey}] ' f'Update faqs data successful')
+            logger.info(f'[{faqs_entry.rangeKey}] ' f'Update faqs data successful')
             return HTTPStatus.OK, faqs_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update faqs data: {str(e)}'
-            logging.error(f'[{faqs_entry.rangeKey}] {message}')
+            logger.error(f'[{faqs_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
@@ -154,9 +154,9 @@ class FAQsRepository:
             faqs_entry.entryStatus = EntryStatus.DELETED.value
             faqs_entry.save()
 
-            logging.info(f'[{faqs_entry.rangeKey}] ' f'Delete faqs data successful')
+            logger.info(f'[{faqs_entry.rangeKey}] ' f'Delete faqs data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete faqs data: {str(e)}'
-            logging.error(f'[{faqs_entry.rangeKey}] {message}')
+            logger.error(f'[{faqs_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message

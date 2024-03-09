@@ -202,6 +202,40 @@ class PreRegistrationUsecase:
             for preregistration in preregistrations
         ]
 
+    def delete_preregistration(self, event_id: str, preregistration_id: str) -> Union[None, JSONResponse]:
+        """
+        Deletes a specific preregistration entry by its ID.
+
+        Args:
+            event_id: The ID of the event
+            registration_id (str): The unique identifier of the registration to be deleted.
+
+        Returns:
+            Union[None, JSONResponse]: If deleted successfully, returns None.
+                If unsuccessful, returns a JSONResponse with an error message.
+        """
+        status, _, message = self.__events_repository.query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        (
+            status,
+            preregistration,
+            message,
+        ) = self.__preregistrations_repository.query_preregistrations(
+            event_id=event_id, preregistration_id=preregistration_id
+        )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        status, message = self.__preregistrations_repository.delete_preregistration(
+            preregistration_entry=preregistration
+        )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        return None
+
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
         """
