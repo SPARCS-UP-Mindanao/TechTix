@@ -1,4 +1,3 @@
-import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class DiscountsRepository:
@@ -47,18 +47,18 @@ class DiscountsRepository:
 
         except PutError as e:
             message = f'Failed to save discount strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
+            logger.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
             return HTTPStatus.OK, discount_entry, None
 
     def query_discounts(self, event_id: str, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
@@ -80,32 +80,32 @@ class DiscountsRepository:
             if not discount_entries:
                 if discount_id:
                     message = f'Discount with ID={discount_id} not found'
-                    logging.error(f'[{self.core_obj}={discount_id}] {message}')
+                    logger.error(f'[{self.core_obj}={discount_id}] {message}')
                 else:
                     message = 'No discounts found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query discount: {str(e)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if discount_id:
-                logging.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
+                logger.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
                 return HTTPStatus.OK, discount_entries[0], None
 
-            logging.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
+            logger.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
             return HTTPStatus.OK, discount_entries, None
 
     def update_discount(self, discount_entry: Discount, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
@@ -138,12 +138,12 @@ class DiscountsRepository:
                 transaction.save(old_discount_entry)
 
             discount_entry.refresh()
-            logging.info(f'[{discount_entry.rangeKey}] ' f'Update discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] ' f'Update discount data successful')
             return HTTPStatus.OK, discount_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update discount data: {str(e)}'
-            logging.error(f'[{discount_entry.rangeKey}] {message}')
+            logger.error(f'[{discount_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
@@ -164,9 +164,9 @@ class DiscountsRepository:
             discount_entry.entryStatus = EntryStatus.DELETED.value
             discount_entry.save()
 
-            logging.info(f'[{discount_entry.rangeKey}] ' f'Delete discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] ' f'Delete discount data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete discount data: {str(e)}'
-            logging.error(f'[{discount_entry.rangeKey}] {message}')
+            logger.error(f'[{discount_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message

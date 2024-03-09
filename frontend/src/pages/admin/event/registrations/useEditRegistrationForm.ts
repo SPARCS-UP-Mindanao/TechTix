@@ -1,7 +1,7 @@
 import { useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { updatePreRegistration } from '@/api/preregistrations';
+import { deletePreRegistration, updatePreRegistration } from '@/api/preregistrations';
 import { deleteRegistration, updateRegistration } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { EventWithRefetchEvent } from '@/model/events';
@@ -100,7 +100,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
       const response =
         registrationInfo.type === 'registration'
           ? await api.execute(deleteRegistration(eventId, registrationId))
-          : await api.execute(deleteRegistration(eventId, registrationId)); // TODO: Follow up for delete pre-registration API
+          : await api.execute(deletePreRegistration(eventId, registrationId));
       if (response.status === 200 || response.status === 204) {
         successToast({
           title: 'Deleted successfully',

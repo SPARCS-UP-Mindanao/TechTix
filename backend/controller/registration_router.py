@@ -1,8 +1,9 @@
 from http import HTTPStatus
 from typing import List
 
+from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.registrations.registration import (
     RegistrationIn,
@@ -146,10 +147,12 @@ def update_registration(
     registration: RegistrationPatch,
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Update an existing registration entry.
     """
+    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.update_registration(
         event_id=event_id, registration_id=entry_id, registration_in=registration
@@ -160,7 +163,7 @@ def update_registration(
     '/{entryId}',
     status_code=HTTPStatus.NO_CONTENT,
     responses={
-        204: {'description': 'Joint entry deletion success', 'content': None},
+        204: {'description': 'Registration deletion success', 'content': None},
     },
     summary='Delete registration',
 )
@@ -172,9 +175,11 @@ def update_registration(
 def delete_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Delete a specific registration entry by its ID.
     """
+    _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.delete_registration(registration_id=entry_id, event_id=event_id)

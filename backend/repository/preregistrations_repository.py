@@ -1,4 +1,3 @@
-import logging
 import os
 from datetime import datetime
 from http import HTTPStatus
@@ -14,6 +13,7 @@ from model.preregistrations.preregistration import (
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
+    DeleteError,
     PutError,
     PynamoDBConnectionError,
     QueryError,
@@ -22,6 +22,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class PreRegistrationsRepository:
@@ -73,18 +74,18 @@ class PreRegistrationsRepository:
 
         except PutError as e:
             message = f'Failed to save pre-registration strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {preregistration_id}]: Successfully saved pre-registration strategy form')
+            logger.info(f'[{self.core_obj} = {preregistration_id}]: Successfully saved pre-registration strategy form')
             return HTTPStatus.OK, preregistration_entry, None
 
     def query_preregistrations(
@@ -127,32 +128,32 @@ class PreRegistrationsRepository:
             if not preregistration_entries:
                 if preregistration_id:
                     message = f'Pre-registration with id {preregistration_id} not found'
-                    logging.error(f'[{self.core_obj}={preregistration_id}] {message}')
+                    logger.error(f'[{self.core_obj}={preregistration_id}] {message}')
                 else:
                     message = 'No pre-registration found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query pre-registration: {str(e)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if preregistration_id:
-                logging.info(f'[{self.core_obj} = {preregistration_id}]: Fetch Pre-registration data successful')
+                logger.info(f'[{self.core_obj} = {preregistration_id}]: Fetch Pre-registration data successful')
                 return HTTPStatus.OK, preregistration_entries[0], None
 
-            logging.info(f'[{self.core_obj}]: Fetch Pre-registration data successful')
+            logger.info(f'[{self.core_obj}]: Fetch Pre-registration data successful')
             return HTTPStatus.OK, preregistration_entries, None
 
     def query_preregistrations_with_email(
@@ -185,26 +186,26 @@ class PreRegistrationsRepository:
 
             if not preregistration_entries:
                 message = f'Pre-registration with email {email} not found'
-                logging.error(f'[{self.core_obj}={email}] {message}')
+                logger.error(f'[{self.core_obj}={email}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query pre-registrations: {str(e)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj}]: Fetch Pre-registration with email successful')
+            logger.info(f'[{self.core_obj}]: Fetch Pre-registration with email successful')
             return HTTPStatus.OK, preregistration_entries, None
 
     def update_preregistration(
@@ -238,10 +239,30 @@ class PreRegistrationsRepository:
                 transaction.update(preregistration_entry, actions=actions)
 
             preregistration_entry.refresh()
-            logging.info(f'[{preregistration_entry.rangeKey}] ' f'Update event data succesful')
+            logger.info(f'[{preregistration_entry.rangeKey}] ' f'Update event data succesful')
             return HTTPStatus.OK, preregistration_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{preregistration_entry.rangeKey}] {message}')
+            logger.error(f'[{preregistration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    def delete_preregistration(self, preregistration_entry: PreRegistration) -> HTTPStatus:
+        """
+        Delete a preregistration record from the database.
+
+        Args:
+            registration_entry (Registration): The registration record to be deleted.
+
+        Returns:
+            HTTPStatus: The HTTP status of the operation.
+        """
+        try:
+            preregistration_entry.delete()
+            logger.info(f'[{preregistration_entry.rangeKey}] ' f'Delete Preregistration data successful')
+            return HTTPStatus.OK, None
+
+        except DeleteError as e:
+            message = f'Failed to delete event data: {str(e)}'
+            logger.error(f'[{preregistration_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR
