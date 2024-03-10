@@ -117,6 +117,7 @@ class EventsRepository:
                     filter_condition=Event.entryStatus == EntryStatus.ACTIVE.value,
                 )
             )
+
             if not event_entries:
                 if event_id:
                     message = f'Event with ID={event_id} not found'
