@@ -104,20 +104,20 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    def add_numbers(a, b):
        """
        Adds two numbers together.
-      
+
        :param a: The first number to add.
        :type a: int or float
-   
+
        :param b: The second number to add.
        :type b: int or float
-   
+
        :return: The sum of `a` and `b`.
        :rtype: int or float
        """
-   
+
        return a + b
    ```
-   
+
 ## Format Checking
 We now use Pre-commit for enforcing code formatting and linting. It runs our formatting libraries before the code is committed. This ensures that the code is always formatted and linted before it is added to the codebase.
 

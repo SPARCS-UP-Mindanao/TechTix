@@ -129,7 +129,7 @@ class EmailUsecase:
         salutation = f'Good day {preregistration.firstName},'
         body = [
             f'Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can’t wait to share it with you.',
-            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/registration',
+            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/register',
             'If you have any questions or need assistance, we’re here for you. Let’s make this event unforgettable!',
         ]
         regards = ['Best,']
