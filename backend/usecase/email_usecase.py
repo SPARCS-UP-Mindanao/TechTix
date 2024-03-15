@@ -129,7 +129,7 @@ class EmailUsecase:
         salutation = f'Good day {preregistration.firstName},'
         body = [
             f'Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can’t wait to share it with you.',
-            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/registration',
+            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/register',
             'If you have any questions or need assistance, we’re here for you. Let’s make this event unforgettable!',
         ]
         regards = ['Best,']
@@ -148,20 +148,11 @@ class EmailUsecase:
     def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event):
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
-            f'Dear {preregistration.firstName}',
-            '',
             f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
-            '',
             'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
-            '',
             'Despite this setback, we want to extend a heartfelt invitation to you for our next event at Sparcs. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
-            '',
             'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us.',
-            '',
             'Thank you for your understanding.',
-            '',
-            'Warm regards,',
-            'Your Sparcs Team',
         ]
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']

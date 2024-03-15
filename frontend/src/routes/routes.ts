@@ -23,6 +23,10 @@ export const routes = createBrowserRouter([
         lazy: () => import('@/pages/client/register/RegisterPage')
       },
       {
+        path: 'registration',
+        lazy: () => import('@/pages/client/register/RegisterPage')
+      },
+      {
         path: 'evaluate',
         lazy: () => import('@/pages/client/evaluate/EvaluatePage')
       },
