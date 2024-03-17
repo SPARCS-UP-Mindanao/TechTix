@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { FormProvider, useFormState, useWatch } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
@@ -24,9 +24,14 @@ const AdminEventForm: FC<Props> = ({ event }) => {
   const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
   const { isSubmitting, isDirty } = useFormState(form);
 
+  const [showIsPaidAlert, setShowIsPaidAlert] = useState(false);
   const isPaidAndHasRegistrants = event ? event.paidEvent && !!event.registrationCount : false;
+  const isPreviouslyPaid = !paidEvent && isPaidAndHasRegistrants;
 
-  const handleSubmit = async () => await submit();
+  const onSubmit = async () => {
+    await submit();
+    isPreviouslyPaid && setShowIsPaidAlert(false);
+  };
 
   return (
     <FormProvider {...form}>
@@ -75,11 +80,11 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         <Separator className="my-4" />
 
         <FormItem name="paidEvent">
-          {({ field }) => (
+          {({ field: { value, onChange } }) => (
             <FormItemContainer halfSpace>
               <div className="flex flex-row gap-2">
                 <FormLabel>Is this a paid event?</FormLabel>
-                <Switch id="isPaidEvent" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting || isPaidAndHasRegistrants} />
+                <Switch id="isPaidEvent" checked={value} onCheckedChange={onChange} disabled={isSubmitting} />
               </div>
               <FormError />
             </FormItemContainer>
@@ -91,7 +96,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             {({ field }) => (
               <FormItemContainer halfSpace>
                 <FormLabel>Price</FormLabel>
-                <Input type="number" {...field} disabled={isSubmitting || isPaidAndHasRegistrants} />
+                <Input type="number" {...field} disabled={isSubmitting} />
                 <FormError />
               </FormItemContainer>
             )}
@@ -245,9 +250,26 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             </Button>
           )}
 
-          <Button icon="Save" disabled={!isDirty} loading={isSubmitting} onClick={handleSubmit} type="submit" variant="primaryGradient">
-            Save
+          <Button
+            icon="Save"
+            disabled={!isDirty}
+            loading={isSubmitting}
+            onClick={isPreviouslyPaid ? () => setShowIsPaidAlert(true) : onSubmit}
+            type="submit"
+            variant="primaryGradient"
+          >
+            {event ? 'Save' : 'Create'}
           </Button>
+
+          <AlertModal
+            alertModalTitle="Are you sure you want to continue?"
+            alertModalDescription="There are already registrants who have paid for the event. Are you sure you want to make this event free?"
+            visible={showIsPaidAlert}
+            confirmVariant="negative"
+            isLoading={isSubmitting}
+            onCompleteAction={onSubmit}
+            onCancelAction={() => setShowIsPaidAlert(false)}
+          />
         </div>
       </main>
     </FormProvider>
