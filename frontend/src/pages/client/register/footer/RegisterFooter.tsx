@@ -10,10 +10,12 @@ interface Props {
   steps: RegisterStep[];
   currentStep: RegisterStep;
   fieldsToCheck: RegisterField[];
+  isRegisterSuccessful: boolean;
   setCurrentStep: (step: RegisterStep) => void;
+  retryRegister: () => void;
 }
 
-const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, setCurrentStep }) => {
+const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, isRegisterSuccessful, setCurrentStep, retryRegister }) => {
   const {
     paymentButtonDisabled,
     isValidatingEmail,
@@ -104,6 +106,14 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, s
   };
 
   const successFooter = () => {
+    if (!isRegisterSuccessful) {
+      return (
+        <Button icon="RotateCw" onClick={retryRegister} className="py-6 sm:px-8">
+          Retry submitting registration
+        </Button>
+      );
+    }
+
     return (
       <Button onClick={onSignUpOther} className="py-6 sm:px-8">
         Sign up another person

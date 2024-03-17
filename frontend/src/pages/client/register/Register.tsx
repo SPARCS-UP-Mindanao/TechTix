@@ -44,7 +44,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
 
-  const { isSuccessLoading } = useSuccess(currentStep, form.getValues, onSubmit);
+  const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
 
   if (isFetching) {
     return <RegisterFormLoading />;
@@ -148,7 +148,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
             </div>
 
             {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
-            {currentStep.id === 'Success' && <SuccessStep event={eventInfo} />}
+            {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}
             {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4" />}
 
             {currentStep.id === 'EventDetails' && eventInfo.isApprovalFlow && eventInfo.status === 'open' && (
@@ -164,7 +164,15 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               </FormItem>
             )}
 
-            <RegisterFooter event={eventInfo} steps={STEPS} currentStep={currentStep} fieldsToCheck={fieldsToCheck} setCurrentStep={setCurrentStep} />
+            <RegisterFooter
+              event={eventInfo}
+              steps={STEPS}
+              currentStep={currentStep}
+              fieldsToCheck={fieldsToCheck}
+              isRegisterSuccessful={isRegisterSuccessful}
+              retryRegister={retryRegister}
+              setCurrentStep={setCurrentStep}
+            />
 
             {showFAQs && <FAQs />}
           </main>

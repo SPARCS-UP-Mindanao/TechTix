@@ -192,6 +192,11 @@ export const useRegisterFooter = (
         return;
       }
 
+      if (!event.paidEvent) {
+        setCurrentStep(STEP_SUCCESS);
+        return;
+      }
+
       setCurrentStep(STEP_PAYMENT);
       return;
     }
