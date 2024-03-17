@@ -97,10 +97,10 @@ export const getRegistrationColumns = (registrationType: RegisterMode): ColumnDe
       },
       enableHiding: getEnableHiding('createDate'),
       cell: ({ row }) => {
-        console.log('original in date', new Date(row.getValue('createDate')));
-        console.log('original', moment(row.getValue('createDate')));
-        console.log('parsed', moment(row.getValue('createDate')).local().format('MMM D h:mm A'));
-        console.log('date now', moment().local().format('MMM D h:mm A'));
+        // console.log('original in date', new Date(row.getValue('createDate')));
+        // console.log('original', moment(row.getValue('createDate')));
+        // console.log('parsed', moment(row.getValue('createDate')).local().format('MMM D h:mm A'));
+        // console.log('date now', moment().local().format('MMM D h:mm A'));
 
         return moment(row.getValue('createDate')).local().format('MMM D h:mm A');
       }
