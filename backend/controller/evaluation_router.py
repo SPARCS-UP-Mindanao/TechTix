@@ -36,16 +36,16 @@ def get_evaluations(
     registration_id: str = Query(None, title='Registration Id'),
 ):
     """Get Evaluation Entries
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param registration_id: The registration ID.
     :type registration_id: str
-    
+
     :return: List of EvaluationListOut objects.
     :rtype: List[EvaluationListOut]
-    
+
     """
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.get_evaluations(event_id, registration_id)
@@ -72,16 +72,16 @@ def get_evaluations_by_question(
     question: EvaluationQuestionType = Path(..., title='Question'),
 ):
     """Get Evaluation Entries by Question
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param question: The question.
     :type question: EvaluationQuestionType
-    
+
     :return: List of EvaluationOut objects.
     :rtype: List[EvaluationOut]
-    
+
     """
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.get_evaluations_by_question(event_id, question)
@@ -109,19 +109,19 @@ def get_evaluation(
     question: EvaluationQuestionType = Query(..., title='Question'),
 ):
     """Get Evaluation Entry
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param registration_id: The registration ID.
     :type registration_id: str
-    
+
     :param question: The question.
     :type question: EvaluationQuestionType
-    
+
     :return: EvaluationOut object.
     :rtype: EvaluationOut
-    
+
     """
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.get_evaluation(event_id, registration_id, question)
@@ -147,13 +147,13 @@ def create_evaluation(
     evaluation: EvaluationListIn,
 ):
     """Create Evaluation Entry
-    
+
     :param evaluation: EvaluationListIn object containing the new evaluation data.
     :type evaluation: EvaluationListIn
-    
+
     :return: List of EvaluationOut objects.
     :rtype: List[EvaluationOut]
-    
+
     """
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.create_evaluation(evaluation)
@@ -183,22 +183,22 @@ def update_evaluation(
     question: EvaluationQuestionType = Query(..., title='Question'),
 ):
     """Update Evaluation Entry
-    
+
     :param evaluation: EvaluationPatch object containing the updated evaluation data.
     :type evaluation: EvaluationPatch
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param registration_id: The registration ID.
     :type registration_id: str
-    
+
     :param question: The question.
     :type question: EvaluationQuestionType
-    
+
     :return: EvaluationOut object.
     :rtype: EvaluationOut
-    
+
     """
     evaluations_uc = EvaluationUsecase()
     return evaluations_uc.update_evaluation(event_id, registration_id, question, evaluation)

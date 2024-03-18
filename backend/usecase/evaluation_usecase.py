@@ -23,13 +23,13 @@ class EvaluationUsecase:
 
     def create_evaluation(self, evaluation_list_in: EvaluationListIn) -> Union[JSONResponse, List[EvaluationOut]]:
         """Create evaluations for a registration
-        
+
         :param evaluation_list_in: The evaluations to be created
         :type evaluation_list_in: EvaluationListIn
-        
+
         :return: The created evaluations
         :rtype: Union[JSONResponse, List[EvaluationOut]]
-        
+
         """
         event_id = evaluation_list_in.eventId
         registration_id = evaluation_list_in.registrationId
@@ -68,22 +68,22 @@ class EvaluationUsecase:
         evaluation_in: EvaluationPatch,
     ) -> Union[JSONResponse, EvaluationOut]:
         """Update an evaluation
-        
+
         :param event_id: The id of the event
         :type event_id: str
-        
+
         :param registration_id: The id of the registration
         :type registration_id: str
-        
+
         :param question: The question to be updated
         :type question: str
-        
+
         :param evaluation_in: The evaluation to be updated
         :type evaluation_in: EvaluationPatch
-        
+
         :return: The updated evaluation
         :rtype: Union[JSONResponse, EvaluationOut]
-        
+
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -114,16 +114,16 @@ class EvaluationUsecase:
 
     def get_evaluation(self, event_id: str, registration_id: str, question: str) -> Union[JSONResponse, EvaluationOut]:
         """Get an evaluation
-        
+
         :param event_id: The id of the event
         :type event_id: str
-        
+
         :param registration_id: The id of the registration
         :type registration_id: str
-        
+
         :param question: The question to be updated
         :type question: str
-        
+
         :return: The evaluation for the registration
         :rtype: Union[JSONResponse, EvaluationOut]
 
@@ -145,16 +145,16 @@ class EvaluationUsecase:
         self, event_id: str = None, registration_id: str = None, question: str = None
     ) -> Union[JSONResponse, List[EvaluationListOut]]:
         """Get evaluations for a registration
-        
+
         :param event_id: The id of the event. Defaults to None.
         :type event_id: str, optional
-        
+
         :param registration_id: The id of the registration. Defaults to None.
         :type registration_id: str, optional
-        
+
         :param question: The question to be updated. Defaults to None.
         :type question: str, optional
-        
+
         :return: The evaluations for the registration
         :rtype: Union[JSONResponse, List[EvaluationListOut]]
 
@@ -196,13 +196,13 @@ class EvaluationUsecase:
 
     def get_evaluations_by_question(self, event_id: str, question: str) -> Union[JSONResponse, List[EvaluationOut]]:
         """Get evaluations for a question
-        
+
         :param event_id: The id of the event
         :type event_id: str
-        
+
         :param question: The question to be updated
         :type question: str
-        
+
         :return: The evaluations for the question
         :rtype: Union[JSONResponse, List[EvaluationOut]]
 
@@ -230,10 +230,10 @@ class EvaluationUsecase:
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
         """Convert a data entry to a dictionary
-        
+
         :param data_entry: The data entry to be converted
         :type data_entry: Any
-        
+
         :return: The data entry as a dictionary
         :rtype: dict
 

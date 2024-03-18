@@ -41,10 +41,10 @@ class RegistrationsRepository:
         self, registration_in: RegistrationIn, registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Store a registration record in the database.
-        
+
         :param registration_in: The registration data to be stored.
         :type registration_in: RegistrationIn
-        
+
         :return: A tuple containing HTTP status, the stored registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, Registration, str]
 
@@ -85,13 +85,13 @@ class RegistrationsRepository:
         self, event_id: str = None, registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
         """Query registration records from the database.
-        
+
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
-        
+
         :param registration_id: The event ID to query (default is None to query all records).
         :type registration_id: str
-        
+
         :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[Registration], str]
 
@@ -154,13 +154,13 @@ class RegistrationsRepository:
         self, event_id: str, email: str, exclude_registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
         """Query registrations with email
-        
+
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
-        
+
         :param email: The email to query (default is None to query all records).
         :type event_id: str
-        
+
         :param exclude_registration: The registration ID to exclude (default is None to query all records).
         :type event_id: str
 
@@ -209,13 +209,13 @@ class RegistrationsRepository:
         self, registration_entry: Registration, registration_in: RegistrationIn
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Update a registration record in the database.
-        
+
         :param registration_entry: The existing registration record to be updated.
         :type registration_entry: Registration
-        
+
         :param registration_in: The new registration data.
         :type registration_in: RegistrationIn
-        
+
         :return: A tuple containing HTTP status, the updated registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, Registration, str]
 
@@ -247,10 +247,10 @@ class RegistrationsRepository:
 
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
         """Delete a registration record from the database.
-        
+
         :param registration_entry: The registration record to be deleted.
         :type registration_entry: Registration
-        
+
         :return: The HTTP status of the operation.
         :rtype: HTTPStatus
 

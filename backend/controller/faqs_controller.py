@@ -28,10 +28,10 @@ def get_faqs(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """Get FAQs
-    
+
     :param event_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.EVENT_ID).
     :type event_id: str, optional
-    
+
     :return: FAQsOut object.
     :rtype: FAQsOut
 
@@ -63,16 +63,16 @@ def update_faqs(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Update FAQs
-    
+
     :param faqs: FAQsIn object containing the new FAQs data.
     :type faqs: FAQsIn
-    
+
     :param event_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.EVENT_ID).
     :type event_id: str, optional
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: FAQsOut object.
     :rtype: FAQsOut
 

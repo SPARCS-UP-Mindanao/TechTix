@@ -28,13 +28,13 @@ class DiscountUsecase:
 
         :param event_id: The event ID.
         :type event_id: str
-        
+
         :param entry_id: The entry ID.
         :type entry_id: str
-        
+
         :return: DiscountOut object.
         :rtype: DiscountOut
-        
+
         """
         status, discount, message = self.__discounts_repository.query_discounts(event_id=event_id, discount_id=entry_id)
         if status != HTTPStatus.OK:
@@ -64,10 +64,10 @@ class DiscountUsecase:
 
         :param event_id: The event ID.
         :type event_id: str
-        
+
         :return: List of DiscountOrganization objects.
         :rtype: List[DiscountOrganization]
-        
+
         """
         status, discounts, message = self.__discounts_repository.query_discounts(
             event_id=event_id,
@@ -109,16 +109,16 @@ class DiscountUsecase:
 
         :param event_id: The event ID.
         :type event_id: str
-        
+
         :param entry_id: The entry ID.
         :type entry_id: str
-        
+
         :param registration_id: The registration ID.
         :type registration_id: str
-        
+
         :return: DiscountOut object or JSONResponse in case of error.
         :rtype: Union[DiscountOut, JSONResponse]
-        
+
         """
         status, discount_entry, message = self.__discounts_repository.query_discounts(
             discount_id=entry_id, event_id=event_id
@@ -156,10 +156,10 @@ class DiscountUsecase:
 
         :param discount_in: DiscountIn object containing the new discount data.
         :type discount_in: DiscountIn
-        
+
         :return: List of DiscountOut objects or JSONResponse in case of error.
         :rtype: Union[JSONResponse, List[DiscountOut]]
-        
+
         """
         status, _, __ = self.__events_repository.query_events(discount_in.eventId)
         if status != HTTPStatus.OK:
@@ -192,10 +192,10 @@ class DiscountUsecase:
 
         :param length: The length of the discount code (default is 8).
         :type length: int
-        
+
         :return: The generated discount code.
         :rtype: str
-        
+
         """
         characters = string.ascii_uppercase + string.digits
         return ''.join(random.choice(characters) for _ in range(length))
@@ -206,7 +206,7 @@ class DiscountUsecase:
 
         :param data_entry: The data entry to be converted.
         :type data_entry: Any
-        
+
         :return: The converted data entry.
         :rtype: dict
         """

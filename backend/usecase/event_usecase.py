@@ -36,7 +36,7 @@ class EventUsecase:
 
         :return: The created event or an error message.
         :rtype: Union[JSONResponse, EventOut]
-        
+
         """
         slug = Utils.convert_to_slug(event_in.name)
         if re.search(CommonConstants.INVALID_URL_PATTERN, slug):
@@ -77,7 +77,7 @@ class EventUsecase:
 
         :return: The updated event or an error message.
         :rtype: Union[JSONResponse, EventOut]
-        
+
         """
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
@@ -128,7 +128,7 @@ class EventUsecase:
 
         :return: The requested event or an error message.
         :rtype: Union[JSONResponse, EventOut]
-        
+
         """
         status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -146,7 +146,7 @@ class EventUsecase:
 
         :return: The requested events or an error message.
         :rtype: Union[JSONResponse, List[EventOut]]
-        
+
         """
         if admin_id:
             status, events, message = self.__events_repository.query_events_by_admin_id(admin_id)
@@ -167,7 +167,7 @@ class EventUsecase:
 
         :return: None if successful, otherwise an error message.
         :rtype: Union[None, JSONResponse]
-        
+
         """
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
@@ -193,7 +193,7 @@ class EventUsecase:
 
         :return: The updated event or an error message.
         :rtype: Union[JSONResponse, EventOut]
-        
+
         """
         decoded_object_key = unquote_plus(object_key)
         event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(decoded_object_key)
@@ -224,7 +224,7 @@ class EventUsecase:
 
         :return: The event with pre-signed URLs.
         :rtype: EventOut
-        
+
         """
         if event.bannerLink:
             banner_link = self.__file_s3_usecase.create_download_url(event.bannerLink)
@@ -249,7 +249,6 @@ class EventUsecase:
 
         :return: The converted data entry.
         :rtype: dict
-        
+
         """
         return json.loads(data_entry.to_json())
-    
