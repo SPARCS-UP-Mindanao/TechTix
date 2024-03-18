@@ -40,15 +40,14 @@ class RegistrationsRepository:
     def store_registration(
         self, registration_in: RegistrationIn, registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
-        """
-        Store a registration record in the database.
+        """Store a registration record in the database.
+        
+        :param registration_in: The registration data to be stored.
+        :type registration_in: RegistrationIn
+        
+        :return: A tuple containing HTTP status, the stored registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, Registration, str]
 
-        Args:
-            registration_in (RegistrationIn): The registration data to be stored.
-
-        Returns:
-            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the stored registration record,
-            and an optional error message.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in)  # load data from pydantic schema
         registration_id = registration_id or ulid.ulid()
@@ -85,16 +84,17 @@ class RegistrationsRepository:
     def query_registrations(
         self, event_id: str = None, registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
-        """
-        Query registration records from the database.
+        """Query registration records from the database.
+        
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
+        
+        :param registration_id: The event ID to query (default is None to query all records).
+        :type registration_id: str
+        
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            registration_id (str, optional): The registration ID to query (default is None to query all records).
-
-        Returns:
-            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
-            and an optional error message.
         """
         try:
             if event_id is None:
@@ -153,17 +153,20 @@ class RegistrationsRepository:
     def query_registrations_with_email(
         self, event_id: str, email: str, exclude_registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
-        """
-        Query registrations with email
+        """Query registrations with email
+        
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
+        
+        :param email: The email to query (default is None to query all records).
+        :type event_id: str
+        
+        :param exclude_registration: The registration ID to exclude (default is None to query all records).
+        :type event_id: str
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            email (str, optional): The email to query (default is None to query all records).
-            exclude_registration (str, optional): The registration ID to exclude (default is None to query all records).
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
 
-        Returns:
-            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
-            and an optional error message.
         """
         try:
             filter_condition = Registration.entryStatus.__eq__(EntryStatus.ACTIVE.value)
@@ -205,16 +208,17 @@ class RegistrationsRepository:
     def update_registration(
         self, registration_entry: Registration, registration_in: RegistrationIn
     ) -> Tuple[HTTPStatus, Registration, str]:
-        """
-        Update a registration record in the database.
+        """Update a registration record in the database.
+        
+        :param registration_entry: The existing registration record to be updated.
+        :type registration_entry: Registration
+        
+        :param registration_in: The new registration data.
+        :type registration_in: RegistrationIn
+        
+        :return: A tuple containing HTTP status, the updated registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, Registration, str]
 
-        Args:
-            registration_entry (Registration): The existing registration record to be updated.
-            registration_in (RegistrationIn): The new registration data.
-
-        Returns:
-            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the updated registration record,
-            and an optional error message.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
@@ -242,14 +246,14 @@ class RegistrationsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
-        """
-        Delete a registration record from the database.
+        """Delete a registration record from the database.
+        
+        :param registration_entry: The registration record to be deleted.
+        :type registration_entry: Registration
+        
+        :return: The HTTP status of the operation.
+        :rtype: HTTPStatus
 
-        Args:
-            registration_entry (Registration): The registration record to be deleted.
-
-        Returns:
-            HTTPStatus: The HTTP status of the operation.
         """
         try:
             registration_entry.delete()

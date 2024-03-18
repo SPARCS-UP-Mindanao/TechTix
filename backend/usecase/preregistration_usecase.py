@@ -31,15 +31,14 @@ class PreRegistrationUsecase:
         self.__email_usecase = EmailUsecase()
 
     def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
-        """
-        Creates a new pre-registration entry.
+        """Creates a new pre-registration entry.
+        
+        :param preregistration_in: The data for creating the new pre-registration.
+        :type preregistration_in: PreRegistrationIn
+        
+        :return: If successful, returns the created pre-registration entry. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: Union[JSONResponse, PreRegistrationOut]
 
-        Args:
-            pre-registration_in (PreRegistrationIn): The data for creating the new pre-registration.
-
-        Returns:
-            Union[JSONResponse, PreRegistrationOut]: If successful, returns the created pre-registration entry.
-                If unsuccessful, returns a JSONResponse with an error message.
         """
         status, event, message = self.__events_repository.query_events(event_id=preregistration_in.eventId)
         if status != HTTPStatus.OK:
@@ -90,16 +89,17 @@ class PreRegistrationUsecase:
     def update_preregistration(
         self, event_id: str, preregistration_id: str, preregistration_in: PreRegistrationPatch
     ) -> Union[JSONResponse, PreRegistrationOut]:
-        """
-        Updates an existing pre-registration entry.
+        """Updates an existing pre-registration entry.
+        
+        :param preregistration_id: The unique identifier of the pre-registration to be updated.
+        :type preregistration_id: str
+        
+        :param preregistration_in: The data for updating the pre-registration.
+        :type preregistration_in: PreRegistrationIn
+        
+        :return: If successful, returns the updated pre-registration entry. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: Union[JSONResponse, PreRegistrationOut]
 
-        Args:
-            preregistration_id (str): The unique identifier of the pre-registration to be updated.
-            preregistration_in (PreRegistrationIn): The data for updating the pre-registration.
-
-        Returns:
-            Union[JSONResponse, PreRegistrationOut]: If successful, returns the updated pre-registration entry.
-                If unsuccessful, returns a JSONResponse with an error message.
         """
         status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -131,16 +131,17 @@ class PreRegistrationUsecase:
         return preregistration_out
 
     def get_preregistration(self, event_id: str, preregistration_id: str) -> Union[JSONResponse, PreRegistrationOut]:
-        """
-        Retrieves a specific pre-registration entry by its ID.
+        """Retrieves a specific pre-registration entry by its ID.
+        
+        :param event_id: The ID of the event
+        :type event_id: str
+        
+        :param preregistration_id: The unique identifier of the pre-registration to be retrieved.
+        :type preregistration_id: str
+        
+        :return: If found, returns the requested preregistration entry. If not found, returns a JSONResponse with an error message.
+        :rtype: Union[JSONResponse, PreRegistrationOut]
 
-        Args:
-            event_id (str): ID of the event
-            preregistration_id (str): The unique identifier of the pre-registration to be retrieved.
-
-        Returns:
-            Union[JSONResponse, PreRegistrationOut]: If found, returns the requested preregistration entry.
-                If not found, returns a JSONResponse with an error message.
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -160,6 +161,18 @@ class PreRegistrationUsecase:
         return PreRegistrationOut(**preregistration_data)
 
     def get_preregistration_by_email(self, event_id: str, email: str) -> PreRegistrationOut:
+        """Retrieves a specific pre-registration entry by its email.
+        
+        :param event_id: The ID of the event
+        :type event_id: str
+        
+        :param email: The email of the pre-registration to be retrieved.
+        :type email: str
+        
+        :return: If found, returns the requested preregistration entry. If not found, returns a JSONResponse with an error message.
+        :rtype: PreRegistrationOut
+
+        """
         (
             status,
             preregistrations,
@@ -174,16 +187,14 @@ class PreRegistrationUsecase:
         return PreRegistrationOut(**preregistration_data)
 
     def get_preregistrations(self, event_id: str = None) -> Union[JSONResponse, List[PreRegistrationOut]]:
-        """
-        Retrieves a list of pre-registration preregistration_entries.
+        """Retrieves a list of pre-registration preregistration_entries.
+        
+        :param event_id: If provided, only retrieves pre-registration entries for the specified event. If not provided, retrieves all pre-registration entries.
+        :type event_id: str, optional
+        
+        :return: If successful, returns a list of pre-registration entries. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: Union[JSONResponse, List[PreRegistrationOut]]
 
-        Args:
-            event_id (str,optional): If provided, only retrieves pre-registration entries for the specified event.
-                If not provided, retrieves all pre-registration entries.
-
-        Returns:
-            Union[JSONResponse, List[PreRegistrationOut]]: If successful, returns a list of pre-registration entries.
-                If unsuccessful, returns a JSONResponse with an error message.
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -203,16 +214,17 @@ class PreRegistrationUsecase:
         ]
 
     def delete_preregistration(self, event_id: str, preregistration_id: str) -> Union[None, JSONResponse]:
-        """
-        Deletes a specific preregistration entry by its ID.
+        """Deletes a specific preregistration entry by its ID.
+        
+        :param event_id: The ID of the event
+        :type event_id: str
+        
+        :param preregistration_id: The unique identifier of the preregistration to be deleted.
+        :type preregistration_id: str
+        
+        :return: If deleted successfully, returns None. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: Union[None, JSONResponse]
 
-        Args:
-            event_id: The ID of the event
-            registration_id (str): The unique identifier of the registration to be deleted.
-
-        Returns:
-            Union[None, JSONResponse]: If deleted successfully, returns None.
-                If unsuccessful, returns a JSONResponse with an error message.
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -238,13 +250,13 @@ class PreRegistrationUsecase:
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
-        """
-        Converts a data entry to a dictionary.
+        """Converts a data entry to a dictionary.
+        
+        :param data_entry: The data entry to be converted.
+        :type data_entry: Any
+        
+        :return: A dictionary representation of the data entry.
+        :rtype: dict
 
-        Args:
-            data_entry: The data entry to be converted.
-
-        Returns:
-            dict: A dictionary representation of the data entry.
         """
         return json.loads(data_entry.to_json())

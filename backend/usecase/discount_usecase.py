@@ -24,6 +24,18 @@ class DiscountUsecase:
         self.__registrations_repository = RegistrationsRepository()
 
     def get_discount(self, event_id: str, entry_id: str) -> DiscountOut:
+        """Get a discount.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :param entry_id: The entry ID.
+        :type entry_id: str
+        
+        :return: DiscountOut object.
+        :rtype: DiscountOut
+        
+        """
         status, discount, message = self.__discounts_repository.query_discounts(event_id=event_id, discount_id=entry_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -48,6 +60,15 @@ class DiscountUsecase:
         return discount_out
 
     def get_discount_list(self, event_id: str) -> List[DiscountOrganization]:
+        """Get a list of discounts.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :return: List of DiscountOrganization objects.
+        :rtype: List[DiscountOrganization]
+        
+        """
         status, discounts, message = self.__discounts_repository.query_discounts(
             event_id=event_id,
         )
@@ -84,6 +105,21 @@ class DiscountUsecase:
         ]
 
     def claim_discount(self, event_id: str, entry_id: str, registration_id: str):
+        """Claim a discount.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :param entry_id: The entry ID.
+        :type entry_id: str
+        
+        :param registration_id: The registration ID.
+        :type registration_id: str
+        
+        :return: DiscountOut object or JSONResponse in case of error.
+        :rtype: Union[DiscountOut, JSONResponse]
+        
+        """
         status, discount_entry, message = self.__discounts_repository.query_discounts(
             discount_id=entry_id, event_id=event_id
         )
@@ -116,6 +152,15 @@ class DiscountUsecase:
         return DiscountOut(**discount_data)
 
     def create_discounts(self, discount_in: DiscountIn) -> Union[JSONResponse, List[DiscountOut]]:
+        """Create discounts.
+
+        :param discount_in: DiscountIn object containing the new discount data.
+        :type discount_in: DiscountIn
+        
+        :return: List of DiscountOut objects or JSONResponse in case of error.
+        :rtype: Union[JSONResponse, List[DiscountOut]]
+        
+        """
         status, _, __ = self.__events_repository.query_events(discount_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': 'Event does not exist'})
@@ -143,9 +188,26 @@ class DiscountUsecase:
         return discount_list
 
     def __generate_discount_code(self, length=8):
+        """Generate a discount code.
+
+        :param length: The length of the discount code (default is 8).
+        :type length: int
+        
+        :return: The generated discount code.
+        :rtype: str
+        
+        """
         characters = string.ascii_uppercase + string.digits
         return ''.join(random.choice(characters) for _ in range(length))
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
+        """Convert a data entry to a dictionary.
+
+        :param data_entry: The data entry to be converted.
+        :type data_entry: Any
+        
+        :return: The converted data entry.
+        :rtype: dict
+        """
         return json.loads(data_entry.to_json())

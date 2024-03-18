@@ -29,6 +29,15 @@ class EventUsecase:
         self.__faqs_repository = FAQsRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        """Create a new event
+
+        :param event_in: The event data to create.
+        :type event_in: EventIn
+
+        :return: The created event or an error message.
+        :rtype: Union[JSONResponse, EventOut]
+        
+        """
         slug = Utils.convert_to_slug(event_in.name)
         if re.search(CommonConstants.INVALID_URL_PATTERN, slug):
             return JSONResponse(
@@ -58,6 +67,18 @@ class EventUsecase:
         return self.collect_pre_signed_url(event_out)
 
     def update_event(self, event_id: str, event_in: EventIn) -> Union[JSONResponse, EventOut]:
+        """Update an existing event.
+
+        :param event_id: The ID of the event to update.
+        :type event_id: str
+
+        :param event_in: The new event data.
+        :type event_in: EventIn
+
+        :return: The updated event or an error message.
+        :rtype: Union[JSONResponse, EventOut]
+        
+        """
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -100,6 +121,15 @@ class EventUsecase:
         return self.collect_pre_signed_url(event_out)
 
     def get_event(self, event_id: str) -> Union[JSONResponse, EventOut]:
+        """Get an event by its ID
+
+        :param event_id: The ID of the event to get.
+        :type event_id: str
+
+        :return: The requested event or an error message.
+        :rtype: Union[JSONResponse, EventOut]
+        
+        """
         status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -109,6 +139,15 @@ class EventUsecase:
         return self.collect_pre_signed_url(event_out)
 
     def get_events(self, admin_id: str = None) -> Union[JSONResponse, List[EventOut]]:
+        """Get all events or all events for a specific admin
+
+        :param admin_id: The ID of the admin to get events for.
+        :type admin_id: str, optional
+
+        :return: The requested events or an error message.
+        :rtype: Union[JSONResponse, List[EventOut]]
+        
+        """
         if admin_id:
             status, events, message = self.__events_repository.query_events_by_admin_id(admin_id)
         else:
@@ -121,6 +160,15 @@ class EventUsecase:
         return [self.collect_pre_signed_url(EventOut(**event_data)) for event_data in events_data]
 
     def delete_event(self, event_id: str) -> Union[None, JSONResponse]:
+        """Delete an event by its ID
+
+        :param event_id: The ID of the event to delete.
+        :type event_id: str
+
+        :return: None if successful, otherwise an error message.
+        :rtype: Union[None, JSONResponse]
+        
+        """
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -138,6 +186,15 @@ class EventUsecase:
         return None
 
     def update_event_after_s3_upload(self, object_key) -> Union[JSONResponse, EventOut]:
+        """Update an event after an S3 upload
+
+        :param object_key: The object key of the uploaded file.
+        :type object_key: str
+
+        :return: The updated event or an error message.
+        :rtype: Union[JSONResponse, EventOut]
+        
+        """
         decoded_object_key = unquote_plus(object_key)
         event_id, upload_type = self.__file_s3_usecase.get_values_from_object_key(decoded_object_key)
 
@@ -160,6 +217,15 @@ class EventUsecase:
         return self.collect_pre_signed_url(event_out)
 
     def collect_pre_signed_url(self, event: EventOut):
+        """Collect pre-signed URLs for an event.
+
+        :param event: The event to collect pre-signed URLs for.
+        :type event: EventOut
+
+        :return: The event with pre-signed URLs.
+        :rtype: EventOut
+        
+        """
         if event.bannerLink:
             banner_link = self.__file_s3_usecase.create_download_url(event.bannerLink)
             event.bannerUrl = banner_link.downloadLink
@@ -176,4 +242,14 @@ class EventUsecase:
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
+        """Convert a data entry to a dictionary.
+
+        :param data_entry: The data entry to convert.
+        :type data_entry: str
+
+        :return: The converted data entry.
+        :rtype: dict
+        
+        """
         return json.loads(data_entry.to_json())
+    

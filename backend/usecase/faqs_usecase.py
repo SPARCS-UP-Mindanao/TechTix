@@ -14,6 +14,18 @@ class FAQsUsecase:
         self.__events_repository = EventsRepository()
 
     def create_update_faqs(self, faqs_in: FAQsIn, event_id: str) -> Union[JSONResponse, FAQsOut]:
+        """Create or update FAQs for an event
+        
+        :param faqs_in: The FAQs to be created or updated
+        :type faqs_in: FAQsIn
+        
+        :param event_id: The id of the event
+        :type event_id: str
+        
+        :return: The created or updated FAQs
+        :rtype: Union[JSONResponse, FAQsOut]
+        
+        """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -43,6 +55,15 @@ class FAQsUsecase:
         return FAQsOut(**self.__convert_data_entry_to_dict(faqs))
 
     def get_faqs(self, event_id: str) -> Union[JSONResponse, FAQsOut]:
+        """Get the FAQs for an event
+        
+        :param event_id: The id of the event
+        :type event_id: str
+        
+        :return: The FAQs for the event
+        :rtype: Union[JSONResponse, FAQsOut]
+
+        """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -56,4 +77,13 @@ class FAQsUsecase:
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
+        """Convert a data entry to a dictionary
+        
+        :param data_entry: The data entry to be converted
+        :type data_entry: Any
+        
+        :return: The dictionary representation of the data entry
+        :rtype: dict
+        
+        """
         return json.loads(data_entry.to_json())

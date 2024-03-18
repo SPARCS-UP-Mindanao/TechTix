@@ -28,6 +28,15 @@ class EventsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_event(self, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
+        """Store a new event.
+
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+        
+        :return: Tuple containing the HTTP status, the Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+        
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
         entry_id = Utils.convert_to_slug(event_in.name)
         current_user = os.getenv('CURRENT_USER')
@@ -64,6 +73,18 @@ class EventsRepository:
             return HTTPStatus.OK, event_entry, None
 
     def query_events_by_admin_id(self, admin_id: str, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+        """Query events by admin ID.
+
+        :param admin_id: The admin ID.
+        :type admin_id: str
+        
+        :param event_id: The event ID (optional).
+        :type event_id: str
+        
+        :return: Tuple containing the HTTP status, a list of Event objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Event], str]
+        
+        """
         try:
             range_key_prefix = f'{admin_id}#{event_id}' if event_id else f'{admin_id}#'
             range_key_condition = Event.rangeKey.startswith(range_key_prefix)
@@ -108,6 +129,15 @@ class EventsRepository:
             return HTTPStatus.OK, event_entries, None
 
     def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+        """Query events.
+
+        :param event_id: The event ID (optional).
+        :type event_id: str
+        
+        :return: Tuple containing the HTTP status, a list of Event objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Event], str]
+        
+        """
         try:
             range_key_condition = Event.eventId == event_id if event_id else None
             event_entries = list(
@@ -149,6 +179,18 @@ class EventsRepository:
             return HTTPStatus.OK, event_entries, None
 
     def update_event(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
+        """Update an existing event.
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+        
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+        
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+        
+        """
         current_version = event_entry.latestVersion
         new_version = current_version + 1
 
@@ -188,6 +230,15 @@ class EventsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_event(self, event_entry: Event) -> Tuple[HTTPStatus, str]:
+        """Delete an existing event.
+
+        :param event_entry: The Event object to be deleted.
+        :type event_entry: Event
+        
+        :return: Tuple containing the HTTP status and a message.
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         try:
             # create new entry with old data
             current_version = event_entry.latestVersion
@@ -212,11 +263,20 @@ class EventsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
     def update_event_after_s3_upload(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
-        """
-        This method is almost the same as the update_event() method,
+        """This method is almost the same as the update_event() method,
         but excludes the metadata e.g updatedBy, updateDate etc.
         This is needed so that the lambda handler that triggers when a file
         is uploaded on S3 works properly.
+        
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+        
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+        
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
         _, updated_data = RepositoryUtils.get_update(
@@ -239,12 +299,17 @@ class EventsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def append_event_registration_count(self, event_entry: Event, append_count: int = 1):
-        """
-        Adds the registrationCount attribute of the event_entry by append_count
+        """Adds the registrationCount attribute of the event_entry by append_count
 
-        :param event_entry: Event
-        :param append_count: int
-        :return: HTTPStatus, str
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+        
+        :param append_count: The count to be appended.
+        :type append_count: int
+        
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+        
         """
         try:
             event_entry.update(actions=[Event.registrationCount.add(append_count)])

@@ -27,6 +27,15 @@ faqs_router = APIRouter()
 def get_faqs(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
+    """Get FAQs
+    
+    :param event_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.EVENT_ID).
+    :type event_id: str, optional
+    
+    :return: FAQsOut object.
+    :rtype: FAQsOut
+
+    """
     faqs_uc = FAQsUsecase()
     return faqs_uc.get_faqs(event_id=event_id)
 
@@ -53,6 +62,21 @@ def update_faqs(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
     current_user: AccessUser = Depends(get_current_user),
 ):
+    """Update FAQs
+    
+    :param faqs: FAQsIn object containing the new FAQs data.
+    :type faqs: FAQsIn
+    
+    :param event_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.EVENT_ID).
+    :type event_id: str, optional
+    
+    :param current_user: The current user, defaults to Depends(get_current_user).
+    :type current_user: AccessUser, optional
+    
+    :return: FAQsOut object.
+    :rtype: FAQsOut
+
+    """
     _ = current_user
     faqs_uc = FAQsUsecase()
     return faqs_uc.create_update_faqs(event_id=event_id, faqs_in=faqs)

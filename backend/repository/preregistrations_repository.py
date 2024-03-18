@@ -45,15 +45,14 @@ class PreRegistrationsRepository:
     def store_preregistration(
         self, preregistration_in: PreRegistrationIn, preregistration_id: str = None
     ) -> Tuple[HTTPStatus, PreRegistration, str]:
-        """
-        Store a pre-registration record in the database.
+        """Store a pre-registration record in the database.
+        
+        :param preregistration_in: The pre-registration data to be stored.
+        :type preregistration_in: PreRegistrationIn
+        
+        :return: A tuple containing HTTP status, the stored pre-registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
-        Args:
-            preregistration_in (PreRegistrationIn): The pre-registration data to be stored.
-
-        Returns:
-            Tuple[HTTPStatus, PreRegistration, str]: A tuple containing HTTP status, the stored pre-registration record,
-            and an optional error message.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=preregistration_in)  # load data from pydantic schema
         preregistration_id = preregistration_id or ulid.ulid()
@@ -91,16 +90,17 @@ class PreRegistrationsRepository:
     def query_preregistrations(
         self, event_id: str = None, preregistration_id: str = None
     ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
-        """
-        Query pre-registration records from the database.
+        """Query pre-registration records from the database.
+        
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
+        
+        :param preregistration_id: The pre-registration ID to query (default is None to query all records).
+        :type preregistration_id: str
+        
+        :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            preregistration_id (str, optional): The pre-registration ID to query (default is None to query all records).
-
-        Returns:
-            Tuple[HTTPStatus, List[PreRegistration], str]: A tuple containing HTTP status, a list of pre-registration records,
-            and an optional error message.
         """
         try:
             if event_id is None:
@@ -159,17 +159,20 @@ class PreRegistrationsRepository:
     def query_preregistrations_with_email(
         self, event_id: str, email: str, exclude_preregistration_id: str = None
     ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
-        """
-        Query pre-registrations with email
+        """Query pre-registrations with email.
+        
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
+        
+        :param email: The email to query (default is None to query all records).
+        :type email: str
+        
+        :param exclude_preregistration: The registration ID to exclude (default is None to query all records).
+        :type exclude_preregistration: str
+        
+        :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            email (str, optional): The email to query (default is None to query all records).
-            exclude_preregistration (str, optional): The registration ID to exclude (default is None to query all records).
-
-        Returns:
-            Tuple[HTTPStatus, List[PreRegistration], str]: A tuple containing HTTP status, a list of pre-registration records,
-            and an optional error message.
         """
         try:
             filter_condition = PreRegistration.entryStatus.__eq__(EntryStatus.ACTIVE.value)
@@ -211,16 +214,17 @@ class PreRegistrationsRepository:
     def update_preregistration(
         self, preregistration_entry: PreRegistration, preregistration_in: PreRegistrationPatch
     ) -> Tuple[HTTPStatus, PreRegistration, str]:
-        """
-        Update a pre-registration record in the database.
+        """Update a pre-registration record in the database.
+        
+        :param preregistration_entry: The existing pre-registration record to be updated.
+        :type preregistration_entry: PreRegistration
+        
+        :param preregistration_in: The new pre-registration data.
+        :type preregistration_in: PreRegistrationPatch
+        
+        :return: A tuple containing HTTP status, the updated pre-registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
-        Args:
-            preregistration_entry (PreRegistration): The existing pre-registration record to be updated.
-            preregistration_in (PreRegistrationIn): The new pre-registration data.
-
-        Returns:
-            Tuple[HTTPStatus, PreRegistration, str]: A tuple containing HTTP status, the updated pre-registration record,
-            and an optional error message.
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=preregistration_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
@@ -248,14 +252,14 @@ class PreRegistrationsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_preregistration(self, preregistration_entry: PreRegistration) -> HTTPStatus:
-        """
-        Delete a preregistration record from the database.
+        """ Delete a preregistration record from the database.
+        
+        :param registration_entry: The registration record to be deleted.
+        :type registration_entry: Registration
+        
+        :return: The HTTP status of the operation.
+        :rtype: HTTPStatus
 
-        Args:
-            registration_entry (Registration): The registration record to be deleted.
-
-        Returns:
-            HTTPStatus: The HTTP status of the operation.
         """
         try:
             preregistration_entry.delete()
