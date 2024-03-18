@@ -22,6 +22,14 @@ class FileS3Usecase:
         self.__presigned_url_expiration_time = 30
 
     def create_presigned_url(self, object_key) -> FileUploadOut:
+        """Create a presigned url for uploading files to s3
+        
+        :param object_key: The key of the object to be uploaded
+        :type object_key: str
+        
+        :return: The presigned url and the object key
+        :rtype: FileUploadOut
+        """
         try:
             presigned_url = self.__s3_client.generate_presigned_url(
                 ClientMethod=ClientMethods.PUT_OBJECT,
@@ -37,6 +45,14 @@ class FileS3Usecase:
             return JSONResponse(status_code=500, content={'message': 'Error creating presigned url'})
 
     def create_download_url(self, object_key) -> FileDownloadOut:
+        """Create a presigned url for downloading files from s3
+        
+        :param object_key: The key of the object to be downloaded
+        :type object_key: str
+        
+        :return: The presigned url and the object key
+        :rtype: FileDownloadOut
+        """
         try:
             presigned_url = self.__s3_client.generate_presigned_url(
                 ClientMethod=ClientMethods.GET_OBJECT,
@@ -52,6 +68,15 @@ class FileS3Usecase:
             return None
 
     def get_values_from_object_key(self, object_key) -> Tuple[str, str]:
+        """Get the entry id and upload type from the object key
+        
+        :param object_key: The key of the object
+        :type object_key: str
+        
+        :return: The entry id and the upload type
+        :rtype: Tuple[str, str]
+        
+        """
         object_key_split = object_key.split('/')
         entry_id = object_key_split[1]
         upload_type = object_key_split[2]

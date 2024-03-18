@@ -27,6 +27,18 @@ class FAQsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_faqs(self, event_id: str, faqs_in: FAQsIn) -> Tuple[HTTPStatus, FAQs, str]:
+        """Store a new FAQs entry.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :param faqs_in: FAQsIn object containing the new FAQs data.
+        :type faqs_in: FAQsIn
+        
+        :return: Tuple containing the HTTP status, the FAQs object, and a message.
+        :rtype: Tuple[HTTPStatus, FAQs, str]
+        
+        """
         entry_id = event_id
         data = RepositoryUtils.load_data(pydantic_schema_in=faqs_in)
         range_key = f'v{self.latest_version}#{event_id}'
@@ -62,6 +74,15 @@ class FAQsRepository:
             return HTTPStatus.OK, faqs_entry, None
 
     def query_faq_entry(self, event_id: str) -> Tuple[HTTPStatus, FAQs, str]:
+        """Query a FAQs entry.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :return: Tuple containing the HTTP status, the FAQs object, and a message.
+        :rtype: Tuple[HTTPStatus, FAQs, str]
+        
+        """
         try:
             range_key_prefix = f'v{self.latest_version}#{event_id}'
             range_key_condition = FAQs.rangeKey.__eq__(range_key_prefix)
@@ -99,6 +120,19 @@ class FAQsRepository:
             return HTTPStatus.OK, faqs_entries[0], None
 
     def update_faqs(self, faqs_entry: FAQs, faqs_in: FAQsIn) -> Tuple[HTTPStatus, FAQs, str]:
+        """Update an existing FAQs entry.
+
+        :param faqs_entry: The FAQs object to be updated.
+        :type faqs_entry: FAQs
+        
+        :param faqs_in: FAQsIn object containing the new FAQs data.
+        :type faqs_in: FAQsIn
+        
+        :return: Tuple containing the HTTP status, the updated FAQs object, and a message.
+        :rtype: Tuple[HTTPStatus, FAQs, str]
+        
+        """
+
         current_version = faqs_entry.latestVersion
         new_version = current_version + 1
 
@@ -138,6 +172,15 @@ class FAQsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_faqs(self, faqs_entry: FAQs) -> Tuple[HTTPStatus, str]:
+        """Delete a FAQs entry.
+
+        :param faqs_entry: The FAQs object to be deleted.
+        :type faqs_entry: FAQs
+        
+        :return: Tuple containing the HTTP status and a message.
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         try:
             # create new entry with old data
             current_version = faqs_entry.latestVersion

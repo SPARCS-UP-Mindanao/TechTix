@@ -23,6 +23,15 @@ class EmailUsecase:
         self.__preregistration_repository = PreRegistrationsRepository()
 
     def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
+        """Send an email to the queue
+        
+        :param email_in: The email to be sent
+        :type email_in: EmailIn
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         message = None
         try:
             timestamp = datetime.utcnow().isoformat(timespec='seconds')
@@ -48,6 +57,15 @@ class EmailUsecase:
             return HTTPStatus.OK, message
 
     def send_event_creation_email(self, event: Event):
+        """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         subject = f'Event {event.name} has been created'
         body = [f'Event {event.name} has been created. Please check the event page for more details.']
         salutation = 'Dear Sparcs ,'
@@ -64,6 +82,18 @@ class EmailUsecase:
         return self.send_email(email_in=email_in)
 
     def send_registration_creation_email(self, registration: Registration, event: Event):
+        """Send an email to the queue. 
+        
+        :param registration: The registration to be sent
+        :type registration: Registration
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         subject = f'{event.name} Registration Confirmation'
         body = [
             f'Thank you for registering for the upcoming {event.name}!',
@@ -85,6 +115,15 @@ class EmailUsecase:
         return self.send_email(email_in=email_in)
 
     def send_accept_reject_status_email(self, preregistrations: List[PreRegistration], event: Event):
+        """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
+        
+        :param preregistrations: The preregistrations to be sent
+        :type preregistrations: List[PreRegistration]
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        """
         for preregistration in preregistrations:
             if preregistration.acceptanceEmailSent:
                 continue
@@ -104,6 +143,18 @@ class EmailUsecase:
             )
 
     def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
+        """Send an email to the queue.
+        
+        :param preregistration: The preregistration to be sent
+        :type preregistration: PreRegistration
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         subject = f'Welcome to {event.name} Pre-Registration!'
         body = [
             'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
@@ -125,6 +176,18 @@ class EmailUsecase:
         return self.send_email(email_in=email_in)
 
     def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event):
+        """Send an acceptance email to the queue.
+        
+        :param preregistration: The preregistration to be sent
+        :type preregistration: PreRegistration
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
         body = [
@@ -146,6 +209,18 @@ class EmailUsecase:
         return self.send_email(email_in=email_in)
 
     def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event):
+        """Send a rejection email to the queue.
+        
+        :param preregistration: The preregistration to be sent
+        :type preregistration: PreRegistration
+        
+        :param event: The event to be sent
+        :type event: Event
+        
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
             f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
@@ -175,6 +250,21 @@ class EmailUsecase:
         claim_certificate_url: str,
         participants: list,
     ):
+        """Send an email to the queue.
+        
+        :param event_id: The id of the event
+        :type event_id: str
+        
+        :param event_name: The name of the event
+        :type event_name: str
+        
+        :param claim_certificate_url: The url to claim the certificate
+        :type claim_certificate_url: str
+        
+        :param participants: The participants to be sent
+        :type participants: list
+        
+        """
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [

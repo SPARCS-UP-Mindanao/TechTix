@@ -27,6 +27,15 @@ class DiscountsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_discount(self, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
+        """Store a new discount.
+
+        :param discount_in: The discount data to store.
+        :type discount_in: DiscountDBIn
+
+        :return: The HTTP status, the stored discount or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+        
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=discount_in)
         entry_id = discount_in.entryId
         event_id = discount_in.eventId
@@ -62,6 +71,18 @@ class DiscountsRepository:
             return HTTPStatus.OK, discount_entry, None
 
     def query_discounts(self, event_id: str, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
+        """Query discounts by event ID and optionally by discount ID.
+
+        :param event_id: The ID of the event to query discounts for.
+        :type event_id: str
+
+        :param discount_id: The ID of the discount to query, defaults to None.
+        :type discount_id: str, optional
+
+        :return: The HTTP status, the queried discounts or None, and a message.
+        :rtype: Tuple[HTTPStatus, List[Discount], str]
+        
+        """
         try:
             if discount_id:
                 range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
@@ -109,6 +130,18 @@ class DiscountsRepository:
             return HTTPStatus.OK, discount_entries, None
 
     def update_discount(self, discount_entry: Discount, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
+        """Update a discount.
+
+        :param discount_entry: The discount entry to update.
+        :type discount_entry: Discount
+
+        :param discount_in: The new discount data.
+        :type discount_in: DiscountDBIn
+
+        :return: The HTTP status, the updated discount or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+        
+        """
         current_version = discount_entry.latestVersion
         new_version = current_version + 1
 
@@ -148,6 +181,15 @@ class DiscountsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_discount(self, discount_entry: Discount) -> Tuple[HTTPStatus, str]:
+        """Delete a discount.
+
+        :param discount_entry: The discount entry to delete.
+        :type discount_entry: Discount
+
+        :return: The HTTP status and a message.
+        :rtype: Tuple[HTTPStatus, str]
+        
+        """
         try:
             # create new entry with old data
             current_version = discount_entry.latestVersion
