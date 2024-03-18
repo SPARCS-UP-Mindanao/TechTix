@@ -24,6 +24,15 @@ class EvaluationRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_evaluation(self, evaluation_list_in: EvaluationListIn) -> Tuple[HTTPStatus, List[Evaluation], str]:
+        """Store a new evaluation.
+
+        :param evaluation_list_in: EvaluationListIn object containing the new evaluation data.
+        :type evaluation_list_in: EvaluationListIn
+        
+        :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Evaluation], str]
+        
+        """
         hash_key = event_id = evaluation_list_in.eventId
         registration_id = evaluation_list_in.registrationId
 
@@ -66,6 +75,21 @@ class EvaluationRepository:
     def query_evaluations(
         self, event_id: str = None, registration_id: str = None, question: str = None
     ) -> Tuple[HTTPStatus, List[Evaluation], str]:
+        """Query evaluations.
+
+        :param event_id: The event ID (optional).
+        :type event_id: str
+        
+        :param registration_id: The registration ID (optional).
+        :type registration_id: str
+        
+        :param question: The question (optional).
+        :type question: str
+        
+        :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Evaluation], str]
+        
+        """
         range_key = f'{registration_id}#{question}'
         try:
             # "not"s to avoid nesting. order: only hash key, incomplete range key, complete
@@ -115,6 +139,18 @@ class EvaluationRepository:
                 return HTTPStatus.OK, evaluation_entries, None
 
     def query_evaluations_by_question(self, event_id: str, question: str) -> Tuple[HTTPStatus, List[Evaluation], str]:
+        """Query evaluations by question.
+
+        :param event_id: The event ID.
+        :type event_id: str
+        
+        :param question: The question.
+        :type question: str
+        
+        :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Evaluation], str]
+        
+        """
         try:
             evaluation_entries = list(
                 Evaluation.questionLSI.query(
@@ -147,6 +183,18 @@ class EvaluationRepository:
     def update_evaluation(
         self, evaluation_entry: Evaluation, evaluation_in: EvaluationPatch
     ) -> Tuple[HTTPStatus, Evaluation, str]:
+        """Update an existing evaluation.
+
+        :param evaluation_entry: The Evaluation object to be updated.
+        :type evaluation_entry: Evaluation
+        
+        :param evaluation_in: EvaluationPatch object containing the new evaluation data.
+        :type evaluation_in: EvaluationPatch
+        
+        :return: Tuple containing the HTTP status, the updated Evaluation object, and a message.
+        :rtype: Tuple[HTTPStatus, Evaluation, str]
+        
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
             old_data=RepositoryUtils.db_model_to_dict(evaluation_entry), new_data=data
