@@ -35,10 +35,10 @@ def get_events(
     admin_id: str = Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID),
 ):
     """Get events.
-    
+
     :param admin_id: The admin ID. Defaults to Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID).
     :type admin_id: str, optional
-    
+
     :return: List of EventOut objects.
     :rtype: List[EventOut]
 
@@ -68,13 +68,13 @@ def get_admin_events(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Get admin events.
-    
+
     :param admin_id: The admin ID. Defaults to Query(None, title='Admin Id', alias=CommonConstants.ADMIN_ID).
     :type admin_id: str, optional
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: List of EventOut objects.
     :rtype: List[EventOut]
 
@@ -104,10 +104,10 @@ def get_event(
     entry_id: str = Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID),
 ):
     """Get event
-    
+
     :param entry_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID).
     :type entry_id: str, optional
-    
+
     :return: EventOut object.
     :rtype: EventOut
 
@@ -137,13 +137,13 @@ def create_event(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Create event
-    
+
     :param event: EventIn object containing the new event data.
     :type event: EventIn
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: EventOut object.
     :rtype: EventOut
 
@@ -176,16 +176,16 @@ def update_event(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Update event
-    
+
     :param event: EventIn object containing the updated event data.
     :type event: EventIn
-    
+
     :param entry_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID).
     :type entry_id: str, optional
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: EventOut object.
     :rtype: EventOut
 
@@ -213,13 +213,13 @@ def delete_event(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Delete event
-    
+
     :param entry_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID).
     :type entry_id: str, optional
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: None
     :rtype: None
 
@@ -248,16 +248,16 @@ def get_presigned_url(
     upload_type: EventUploadType = Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE),
 ):
     """Get presigned URL
-    
+
     :param upload_in: FileUploadIn object containing the file name.
     :type upload_in: FileUploadIn
-    
+
     :param entry_id: The event ID. Defaults to Path(..., title='Event Id', alias=CommonConstants.ENTRY_ID).
     :type entry_id: str, optional
-    
+
     :param upload_type: The upload type. Defaults to Path(..., title='Upload Type', alias=FileUploadConstants.UPLOAD_TYPE).
     :type upload_type: EventUploadType, optional
-    
+
     :return: FileUploadOut object.
     :rtype: FileUploadOut
 

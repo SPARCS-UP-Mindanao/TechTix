@@ -32,10 +32,10 @@ class EventsRepository:
 
         :param event_in: EventIn object containing the new event data.
         :type event_in: EventIn
-        
+
         :return: Tuple containing the HTTP status, the Event object, and a message.
         :rtype: Tuple[HTTPStatus, Event, str]
-        
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
         entry_id = Utils.convert_to_slug(event_in.name)
@@ -77,13 +77,13 @@ class EventsRepository:
 
         :param admin_id: The admin ID.
         :type admin_id: str
-        
+
         :param event_id: The event ID (optional).
         :type event_id: str
-        
+
         :return: Tuple containing the HTTP status, a list of Event objects, and a message.
         :rtype: Tuple[HTTPStatus, List[Event], str]
-        
+
         """
         try:
             range_key_prefix = f'{admin_id}#{event_id}' if event_id else f'{admin_id}#'
@@ -133,10 +133,10 @@ class EventsRepository:
 
         :param event_id: The event ID (optional).
         :type event_id: str
-        
+
         :return: Tuple containing the HTTP status, a list of Event objects, and a message.
         :rtype: Tuple[HTTPStatus, List[Event], str]
-        
+
         """
         try:
             range_key_condition = Event.eventId == event_id if event_id else None
@@ -183,13 +183,13 @@ class EventsRepository:
 
         :param event_entry: The Event object to be updated.
         :type event_entry: Event
-        
+
         :param event_in: EventIn object containing the new event data.
         :type event_in: EventIn
-        
+
         :return: Tuple containing the HTTP status, the updated Event object, and a message.
         :rtype: Tuple[HTTPStatus, Event, str]
-        
+
         """
         current_version = event_entry.latestVersion
         new_version = current_version + 1
@@ -234,10 +234,10 @@ class EventsRepository:
 
         :param event_entry: The Event object to be deleted.
         :type event_entry: Event
-        
+
         :return: Tuple containing the HTTP status and a message.
         :rtype: Tuple[HTTPStatus, str]
-        
+
         """
         try:
             # create new entry with old data
@@ -267,13 +267,13 @@ class EventsRepository:
         but excludes the metadata e.g updatedBy, updateDate etc.
         This is needed so that the lambda handler that triggers when a file
         is uploaded on S3 works properly.
-        
+
         :param event_entry: The Event object to be updated.
         :type event_entry: Event
-        
+
         :param event_in: EventIn object containing the new event data.
         :type event_in: EventIn
-        
+
         :return: Tuple containing the HTTP status, the updated Event object, and a message.
         :rtype: Tuple[HTTPStatus, Event, str]
 
@@ -303,13 +303,13 @@ class EventsRepository:
 
         :param event_entry: The Event object to be updated.
         :type event_entry: Event
-        
+
         :param append_count: The count to be appended.
         :type append_count: int
-        
+
         :return: Tuple containing the HTTP status, the updated Event object, and a message.
         :rtype: Tuple[HTTPStatus, Event, str]
-        
+
         """
         try:
             event_entry.update(actions=[Event.registrationCount.add(append_count)])

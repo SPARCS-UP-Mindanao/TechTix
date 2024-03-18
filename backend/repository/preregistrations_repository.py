@@ -46,10 +46,10 @@ class PreRegistrationsRepository:
         self, preregistration_in: PreRegistrationIn, preregistration_id: str = None
     ) -> Tuple[HTTPStatus, PreRegistration, str]:
         """Store a pre-registration record in the database.
-        
+
         :param preregistration_in: The pre-registration data to be stored.
         :type preregistration_in: PreRegistrationIn
-        
+
         :return: A tuple containing HTTP status, the stored pre-registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
@@ -91,13 +91,13 @@ class PreRegistrationsRepository:
         self, event_id: str = None, preregistration_id: str = None
     ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
         """Query pre-registration records from the database.
-        
+
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
-        
+
         :param preregistration_id: The pre-registration ID to query (default is None to query all records).
         :type preregistration_id: str
-        
+
         :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
 
@@ -160,16 +160,16 @@ class PreRegistrationsRepository:
         self, event_id: str, email: str, exclude_preregistration_id: str = None
     ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
         """Query pre-registrations with email.
-        
+
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
-        
+
         :param email: The email to query (default is None to query all records).
         :type email: str
-        
+
         :param exclude_preregistration: The registration ID to exclude (default is None to query all records).
         :type exclude_preregistration: str
-        
+
         :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
 
@@ -215,13 +215,13 @@ class PreRegistrationsRepository:
         self, preregistration_entry: PreRegistration, preregistration_in: PreRegistrationPatch
     ) -> Tuple[HTTPStatus, PreRegistration, str]:
         """Update a pre-registration record in the database.
-        
+
         :param preregistration_entry: The existing pre-registration record to be updated.
         :type preregistration_entry: PreRegistration
-        
+
         :param preregistration_in: The new pre-registration data.
         :type preregistration_in: PreRegistrationPatch
-        
+
         :return: A tuple containing HTTP status, the updated pre-registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
@@ -252,11 +252,11 @@ class PreRegistrationsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_preregistration(self, preregistration_entry: PreRegistration) -> HTTPStatus:
-        """ Delete a preregistration record from the database.
-        
+        """Delete a preregistration record from the database.
+
         :param registration_entry: The registration record to be deleted.
         :type registration_entry: Registration
-        
+
         :return: The HTTP status of the operation.
         :rtype: HTTPStatus
 

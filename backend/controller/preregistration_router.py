@@ -36,13 +36,13 @@ def get_preregistrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """Get a list of pre-registration entries
-    
+
     :param event_id: The event ID. Defaults to Query(None, title='Event Id', alias=CommonConstants.EVENT_ID).
     :type event_id: str, optional
-    
+
     :return: List of PreRegistrationOut objects.
     :rtype: List[PreRegistrationOut]
-    
+
     """
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.get_preregistrations(event_id=event_id)
@@ -69,16 +69,16 @@ def get_preregistration(
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """Get a specific pre-registration entry by its ID.
-    
+
     :param entry_id: The pre-registration ID.
     :type entry_id: str
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :return: PreRegistrationOut object.
     :rtype: PreRegistrationOut
-    
+
     """
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.get_preregistration(event_id=event_id, preregistration_id=entry_id)
@@ -105,13 +105,13 @@ def get_preregistration_by_email(
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """Get a specific pre-registration email used.
-    
+
     :param email: The email.
     :type email: EmailStr
-    
-    :param event_id: The event ID. 
+
+    :param event_id: The event ID.
     :type event_id: str
-    
+
     """
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.get_preregistration_by_email(event_id=event_id, email=email)
@@ -141,13 +141,13 @@ def create_preregistration(
     preregistration_in: PreRegistrationIn,
 ):
     """Create a new pre-registration entry.
-    
+
     :param preregistration_in: PreRegistrationIn object containing the new pre-registration data.
     :type preregistration_in: PreRegistrationIn
-    
+
     :return: PreRegistrationOut object.
     :rtype: PreRegistrationOut
-    
+
     """
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.create_preregistration(preregistration_in)
@@ -177,22 +177,22 @@ def update_preregistration(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Update an existing pre-registration entry.
-    
+
     :param preregistration: PreRegistrationPatch object containing the new pre-registration data.
     :type preregistration: PreRegistrationPatch
-    
+
     :param entry_id: The pre-registration ID.
     :type entry_id: str
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: PreRegistrationOut object.
     :rtype: PreRegistrationOut
-    
+
     """
     _ = current_user
     preregistrations_uc = PreRegistrationUsecase()
@@ -220,19 +220,19 @@ def delete_preregistration(
     current_user: AccessUser = Depends(get_current_user),
 ):
     """Delete a specific registration entry by its ID.
-    
+
     :param entry_id: The pre-registration ID.
     :type entry_id: str
-    
+
     :param event_id: The event ID.
     :type event_id: str
-    
+
     :param current_user: The current user, defaults to Depends(get_current_user).
     :type current_user: AccessUser, optional
-    
+
     :return: None
     :rtype: None
-    
+
     """
     _ = current_user
     preregistrations_uc = PreRegistrationUsecase()

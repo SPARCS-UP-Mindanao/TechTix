@@ -28,10 +28,10 @@ class EvaluationRepository:
 
         :param evaluation_list_in: EvaluationListIn object containing the new evaluation data.
         :type evaluation_list_in: EvaluationListIn
-        
+
         :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
         :rtype: Tuple[HTTPStatus, List[Evaluation], str]
-        
+
         """
         hash_key = event_id = evaluation_list_in.eventId
         registration_id = evaluation_list_in.registrationId
@@ -79,16 +79,16 @@ class EvaluationRepository:
 
         :param event_id: The event ID (optional).
         :type event_id: str
-        
+
         :param registration_id: The registration ID (optional).
         :type registration_id: str
-        
+
         :param question: The question (optional).
         :type question: str
-        
+
         :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
         :rtype: Tuple[HTTPStatus, List[Evaluation], str]
-        
+
         """
         range_key = f'{registration_id}#{question}'
         try:
@@ -143,13 +143,13 @@ class EvaluationRepository:
 
         :param event_id: The event ID.
         :type event_id: str
-        
+
         :param question: The question.
         :type question: str
-        
+
         :return: Tuple containing the HTTP status, a list of Evaluation objects, and a message.
         :rtype: Tuple[HTTPStatus, List[Evaluation], str]
-        
+
         """
         try:
             evaluation_entries = list(
@@ -187,13 +187,13 @@ class EvaluationRepository:
 
         :param evaluation_entry: The Evaluation object to be updated.
         :type evaluation_entry: Evaluation
-        
+
         :param evaluation_in: EvaluationPatch object containing the new evaluation data.
         :type evaluation_in: EvaluationPatch
-        
+
         :return: Tuple containing the HTTP status, the updated Evaluation object, and a message.
         :rtype: Tuple[HTTPStatus, Evaluation, str]
-        
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=evaluation_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(

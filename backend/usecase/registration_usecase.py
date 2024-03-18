@@ -40,10 +40,10 @@ class RegistrationUsecase:
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """Creates a new registration entry.
-        
+
         :param registration_in: The data for creating the new registration.
         :type registration_in: RegistrationIn
-        
+
         :return: If successful, returns the created registration entry. If unsuccessful, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, RegistrationOut]
 
@@ -121,13 +121,13 @@ class RegistrationUsecase:
         self, event: Event, registration_in: RegistrationIn
     ) -> Union[JSONResponse, RegistrationOut]:
         """Creates a new registration entry for an event with approval flow.
-        
+
         :param event: The event for which the registration is being created.
         :type event: Event
-        
+
         :param registration_in: The data for creating the new registration.
         :type registration_in: RegistrationIn
-        
+
         :return: If successful, returns the created registration entry. If unsuccessful, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, RegistrationOut]
 
@@ -175,13 +175,13 @@ class RegistrationUsecase:
         self, event_id: str, registration_id: str, registration_in: RegistrationPatch
     ) -> Union[JSONResponse, RegistrationOut]:
         """Updates an existing registration entry.
-        
+
         :param registration_id: The unique identifier of the registration to be updated.
         :type registration_id: str
-        
+
         :param registration_in: The data for updating the registration.
         :type registration_in: RegistrationIn
-        
+
         :return: If successful, returns the updated registration entry. If unsuccessful, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, RegistrationOut]
 
@@ -214,13 +214,13 @@ class RegistrationUsecase:
 
     def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
         """Retrieves a specific registration entry by its ID.
-        
+
         :param event_id: The ID of the event
         :type event_id: str
-        
+
         :param registration_id: The unique identifier of the registration to be retrieved.
         :type registration_id: str
-        
+
         :return: If found, returns the requested registration entry. If not found, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, RegistrationOut]
 
@@ -244,13 +244,13 @@ class RegistrationUsecase:
 
     def get_registration_by_email(self, event_id: str, email: str) -> RegistrationOut:
         """Retrieves a specific registration entry by its email.
-        
+
         :param event_id: The ID of the event
         :type event_id: str
-        
+
         :param email: The email of the registration to be retrieved.
         :type email: str
-        
+
         :return: If found, returns the requested registration entry. If not found, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, RegistrationOut]
 
@@ -271,10 +271,10 @@ class RegistrationUsecase:
 
     def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
         """Retrieves a list of registration eregistration_idntries.
-        
+
         :param event_id: If provided, only retrieves registration entries for the specified event. If not provided, retrieves all registration entries.
         :type event_id: str, optional
-        
+
         :return: If successful, returns a list of registration entries. If unsuccessful, returns a JSONResponse with an error message.
         :rtype: Union[JSONResponse, List[RegistrationOut]
 
@@ -298,16 +298,16 @@ class RegistrationUsecase:
 
     def delete_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
         """Deletes a specific registration entry by its ID.
-        
+
         :param event_id: The ID of the event
         :type event_id: str
-        
+
         :param registration_id: The unique identifier of the registration to be deleted.
         :type registration_id: str
-        
+
         :return: If deleted successfully, returns None. If unsuccessful, returns a JSONResponse with an error message.
         :rtype: Union[None, JSONResponse]
-        
+
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
@@ -329,13 +329,13 @@ class RegistrationUsecase:
 
     def collect_pre_signed_url(self, registration: RegistrationOut):
         """Collects the pre-signed URL for the GCash payment image.
-        
+
         :param registration: The registration entry to be updated.
         :type registration: RegistrationOut
-        
+
         :return: The updated registration entry with the pre-signed URL for the GCash payment image.
         :rtype: RegistrationOut
-        
+
         """
         if registration.gcashPayment:
             gcash_payment = self.__file_s3_usecase.create_download_url(registration.gcashPayment)
@@ -346,13 +346,13 @@ class RegistrationUsecase:
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
         """Converts a data entry to a dictionary.
-        
+
         :param data_entry: The data entry to be converted.
         :type data_entry: Any
-        
+
         :return: A dictionary representation of the data entry.
         :rtype: dict
-        
+
         """
 
         return json.loads(data_entry.to_json())
