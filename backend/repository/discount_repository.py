@@ -34,7 +34,7 @@ class DiscountsRepository:
 
         :return: The HTTP status, the stored discount or None, and a message.
         :rtype: Tuple[HTTPStatus, Discount, str]
-        
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=discount_in)
         entry_id = discount_in.entryId
@@ -81,7 +81,7 @@ class DiscountsRepository:
 
         :return: The HTTP status, the queried discounts or None, and a message.
         :rtype: Tuple[HTTPStatus, List[Discount], str]
-        
+
         """
         try:
             if discount_id:
@@ -140,7 +140,7 @@ class DiscountsRepository:
 
         :return: The HTTP status, the updated discount or None, and a message.
         :rtype: Tuple[HTTPStatus, Discount, str]
-        
+
         """
         current_version = discount_entry.latestVersion
         new_version = current_version + 1
@@ -188,7 +188,7 @@ class DiscountsRepository:
 
         :return: The HTTP status and a message.
         :rtype: Tuple[HTTPStatus, str]
-        
+
         """
         try:
             # create new entry with old data
