@@ -52,6 +52,8 @@ class EventsRepository:
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
                 eventId=entry_id,
+                lastEmailSent=self.current_date,
+                dailyEmailCount=0,
                 **data,
             )
             event_entry.save()
@@ -209,6 +211,12 @@ class EventsRepository:
                     updatedBy=os.getenv('CURRENT_USER'),
                     latestVersion=new_version,
                 )
+                if updated_data.get('lastEmailSent') is None:
+                    updated_data['lastEmailSent'] = self.current_date
+
+                if updated_data.get('dailyEmailCount') is None:
+                    updated_data['dailyEmailCount'] = 0
+
                 actions = [getattr(Event, k).set(v) for k, v in updated_data.items()]
                 transaction.update(event_entry, actions=actions)
 
@@ -317,6 +325,32 @@ class EventsRepository:
 
         except PutError as e:
             message = f'Failed to append event registration count: {str(e)}'
+            logger.error(f'[{event_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message
+
+        else:
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
+
+    def append_event_email_sent_count(self, event_entry: Event, append_count: int = 1):
+        """Adds the dailyEmailSent attribute of the event_entry by append_count
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+
+        :param append_count: The count to be appended.
+        :type append_count: int
+
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
+        try:
+            event_entry.update(actions=[Event.dailyEmailCount.add(append_count)])
+            event_entry.save()
+
+        except PutError as e:
+            message = f'Failed to append event daily email sent count: {str(e)}'
             logger.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
