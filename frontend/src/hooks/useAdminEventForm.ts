@@ -120,7 +120,6 @@ export const useAdminEventForm = (event?: Event) => {
         startDate: '',
         endDate: '',
         venue: '',
-        autoConfirm: false,
         paidEvent: false,
         isLimitedSlot: false,
         isApprovalFlow: false,

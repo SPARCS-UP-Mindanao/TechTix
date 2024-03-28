@@ -1,17 +1,19 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from http import HTTPStatus
 from typing import List, Tuple
 
 import ulid
 from boto3 import client as boto3_client
 from constants.common_constants import EmailType
+from dateutil.parser import parse
 from model.email.email import EmailIn
-from model.events.event import Event
+from model.events.event import Event, EventDataIn
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
+from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from utils.logger import logger
 
@@ -21,6 +23,24 @@ class EmailUsecase:
         self.__sqs_client = boto3_client('sqs', region_name=os.getenv('REGION', 'ap-southeast-1'))
         self.__sqs_url = os.getenv('EMAIL_QUEUE')
         self.__preregistration_repository = PreRegistrationsRepository()
+        self.__events_repository = EventsRepository()
+
+    def __send_email_handler(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
+        timestamp = datetime.utcnow().isoformat(timespec='seconds')
+        event_id = email_in.eventId
+        payload = email_in.dict()
+        message_id = ulid.ulid()
+
+        response = self.__sqs_client.send_message(
+            QueueUrl=self.__sqs_url,
+            MessageBody=json.dumps(payload),
+            MessageDeduplicationId=f'sparcs-event-{event_id}-{timestamp}-{message_id}',
+            MessageGroupId=f'sparcs-event-{event_id}',
+        )
+        smtp_service = 'Amazon SES' if email_in.useBackupSMTP else 'SendGrid'
+        message_id = response.get('MessageId')
+        message = f'Queue message success via {smtp_service}: {message_id}'
+        logger.info(message)
 
     def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue
@@ -34,19 +54,42 @@ class EmailUsecase:
         """
         message = None
         try:
-            timestamp = datetime.utcnow().isoformat(timespec='seconds')
+            smtp_service_daily_free_tier_limit = 100
             event_id = email_in.eventId
-            payload = email_in.dict()
-            message_id = ulid.ulid()
-            response = self.__sqs_client.send_message(
-                QueueUrl=self.__sqs_url,
-                MessageBody=json.dumps(payload),
-                MessageDeduplicationId=f'sparcs-event-{event_id}-{timestamp}-{message_id}',
-                MessageGroupId=f'sparcs-event-{event_id}',
-            )
-            message_id = response.get('MessageId')
-            message = f'Queue message success: {message_id}'
-            logger.info(message)
+
+            # Check free tier limit
+            status, event, message = self.__events_repository.query_events(event_id)
+            if status != HTTPStatus.OK:
+                return status, message
+
+            last_email_sent = parse(event.lastEmailSent)
+            if last_email_sent.tzinfo is None:
+                last_email_sent = last_email_sent.replace(tzinfo=timezone.utc)
+
+            one_day_passed = (datetime.now(timezone.utc) - last_email_sent).days >= 1
+
+            if event.dailyEmailCount >= smtp_service_daily_free_tier_limit and not one_day_passed:
+                email_in.useBackupSMTP = True
+
+                message = 'Daily email count exceeded free tier limit. Using backup SMTP service.'
+                logger.info(message)
+
+            else:
+                email_in.useBackupSMTP = False
+
+            # Send email
+            self.__send_email_handler(email_in)
+
+            # Update daily lastEmailSent
+            if one_day_passed:
+                event_update = EventDataIn(
+                    lastEmailSent=datetime.now(timezone.utc),
+                )
+                status, event, message = self.__events_repository.update_event(event_entry=event, event_in=event_update)
+                if status != HTTPStatus.OK:
+                    return status, message
+
+            self.__events_repository.append_event_email_sent_count(event_entry=event)
 
         except Exception as e:
             message = f'Failed to send email: {str(e)}'
@@ -56,7 +99,83 @@ class EmailUsecase:
         else:
             return HTTPStatus.OK, message
 
-    def send_event_creation_email(self, event: Event):
+    def send_batch_email(self, email_in_list: List[EmailIn], event_id: str) -> Tuple[HTTPStatus, str]:
+        """Send an email to the queue
+
+        :param email_in_list: The email list to be sent
+        :type email_in: EmailIn
+
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
+        message = None
+        try:
+            smtp_service_daily_free_tier_limit = 100
+            email_len = len(email_in_list)
+
+            # Calculate the number of emails to send
+            status, event, message = self.__events_repository.query_events(event_id)
+            if status != HTTPStatus.OK:
+                return status, message
+
+            curent_daily_email_count = event.dailyEmailCount
+            total_email_count = curent_daily_email_count + email_len
+            append_count = email_len
+
+            if total_email_count >= smtp_service_daily_free_tier_limit:
+                if curent_daily_email_count >= total_email_count:
+                    logger.info('Batch Sending Emails via Backup SMTP Service')
+                    append_count = email_len
+
+                    default_smtp_service = []
+                    backup_smtp_service = email_in_list
+
+                else:
+                    logger.info('Batch Sending Emails via Default and Backup SMTP Service')
+                    serviceable_email_count = smtp_service_daily_free_tier_limit - curent_daily_email_count
+                    append_count = serviceable_email_count
+
+                    default_smtp_service = email_in_list[:serviceable_email_count]
+                    backup_smtp_service = email_in_list[serviceable_email_count:]
+
+            else:
+                logger.info('Batch Sending Emails via Default SMTP Service')
+                default_smtp_service = email_in_list
+                backup_smtp_service = []
+
+            # Send emails
+            for email_in in default_smtp_service:
+                email_in.useBackupSMTP = False
+                self.__send_email_handler(email_in)
+
+            for email_in in backup_smtp_service:
+                email_in.useBackupSMTP = True
+                self.__send_email_handler(email_in)
+
+            # Update daily email count
+            last_email_sent = parse(event.lastEmailSent)
+            if last_email_sent.tzinfo is None:
+                last_email_sent = last_email_sent.replace(tzinfo=timezone.utc)
+
+            one_day_passed = (datetime.now(timezone.utc) - last_email_sent).days >= 1
+            if one_day_passed:
+                event_update = EventDataIn(
+                    lastEmailSent=datetime.now(timezone.utc),
+                )
+                status, event, message = self.__events_repository.update_event(event_entry=event, event_in=event_update)
+
+            self.__events_repository.append_event_email_sent_count(event_entry=event, append_count=append_count)
+
+        except Exception as e:
+            message = f'Failed to send email: {str(e)}'
+            logger.error(message)
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message
+
+        else:
+            return HTTPStatus.OK, message
+
+    def send_event_creation_email(self, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
 
         :param event: The event to be sent
@@ -81,7 +200,7 @@ class EmailUsecase:
         )
         return self.send_email(email_in=email_in)
 
-    def send_registration_creation_email(self, registration: Registration, event: Event):
+    def send_registration_creation_email(self, registration: Registration, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue.
 
         :param registration: The registration to be sent
@@ -114,7 +233,9 @@ class EmailUsecase:
         logger.info(f'Sending registration confirmation email to {registration.email}')
         return self.send_email(email_in=email_in)
 
-    def send_accept_reject_status_email(self, preregistrations: List[PreRegistration], event: Event):
+    def send_accept_reject_status_email(
+        self, preregistrations: List[PreRegistration], event: Event
+    ) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
 
         :param preregistrations: The preregistrations to be sent
@@ -124,6 +245,7 @@ class EmailUsecase:
         :type event: Event
 
         """
+        emails = []
         for preregistration in preregistrations:
             if preregistration.acceptanceEmailSent:
                 continue
@@ -132,17 +254,23 @@ class EmailUsecase:
                 preregistration.acceptanceStatus and preregistration.acceptanceStatus == AcceptanceStatus.ACCEPTED.value
             )
             if should_send_acceptance:
-                self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
+                email = self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
                 logger.info(f'Acceptance email sent to {preregistration.email} for event {event.eventId}')
             else:
-                self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
+                email = self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
                 logger.info(f'Rejection email sent to {preregistration.email} for event {event.eventId}')
+
+            emails.append(email)
 
             self.__preregistration_repository.update_preregistration(
                 preregistration_entry=preregistration, preregistration_in=PreRegistrationPatch(acceptanceEmailSent=True)
             )
 
-    def send_preregistration_creation_email(self, preregistration: PreRegistration, event: Event):
+        return self.send_batch_email(email_in_list=emails, event_id=event.eventId)
+
+    def send_preregistration_creation_email(
+        self, preregistration: PreRegistration, event: Event
+    ) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue.
 
         :param preregistration: The preregistration to be sent
@@ -175,7 +303,7 @@ class EmailUsecase:
         logger.info(f'Sending pre-registration email to {preregistration.email}')
         return self.send_email(email_in=email_in)
 
-    def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event):
+    def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event) -> EmailIn:
         """Send an acceptance email to the queue.
 
         :param preregistration: The preregistration to be sent
@@ -184,9 +312,7 @@ class EmailUsecase:
         :param event: The event to be sent
         :type event: Event
 
-        :return: The status and message
-        :rtype: Tuple[HTTPStatus, str]
-
+        :return: EmailIn
         """
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
@@ -206,9 +332,9 @@ class EmailUsecase:
             eventId=event.eventId,
         )
         logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
-        return self.send_email(email_in=email_in)
+        return email_in
 
-    def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event):
+    def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event) -> EmailIn:
         """Send a rejection email to the queue.
 
         :param preregistration: The preregistration to be sent
@@ -217,8 +343,7 @@ class EmailUsecase:
         :param event: The event to be sent
         :type event: Event
 
-        :return: The status and message
-        :rtype: Tuple[HTTPStatus, str]
+        :return: EmailIn
 
         """
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
@@ -241,7 +366,7 @@ class EmailUsecase:
             eventId=event.eventId,
         )
         logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
-        return self.send_email(email_in=email_in)
+        return email_in
 
     def send_event_completion_email(
         self,
@@ -249,7 +374,7 @@ class EmailUsecase:
         event_name: str,
         claim_certificate_url: str,
         participants: list,
-    ):
+    ) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue.
 
         :param event_id: The id of the event
@@ -274,8 +399,8 @@ class EmailUsecase:
             "We're excited to see you at future SPARCS events – more great experiences await!",
         ]
         regards = ['Best,']
-        for participant in participants:
-            email_in = EmailIn(
+        emails = [
+            EmailIn(
                 to=[participant],
                 subject=subject,
                 body=body,
@@ -284,7 +409,7 @@ class EmailUsecase:
                 emailType=EmailType.EVALUATION_EMAIL.value,
                 eventId=event_id,
             )
-            logger.info(f'Sending event completion email to {participant}')
-            self.send_email(email_in=email_in)
+            for participant in participants
+        ]
 
-        return
+        return self.send_batch_email(email_in_list=emails, event_id=event_id)
