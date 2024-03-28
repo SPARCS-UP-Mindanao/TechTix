@@ -13,7 +13,6 @@ export interface EventDto {
   bannerUrl: string;
   logoUrl: string;
   logoLink: string;
-  autoConfirm: boolean;
   paidEvent: boolean;
   price: number;
   certificateTemplate: string;

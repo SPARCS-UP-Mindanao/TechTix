@@ -9,7 +9,6 @@ export interface Event {
   startDate: string;
   endDate: string;
   venue: string;
-  autoConfirm?: boolean;
   paidEvent: boolean;
   price: number;
   bannerLink: string | null;
@@ -143,7 +142,6 @@ export interface CreateEvent {
   startDate: string;
   endDate: string;
   venue: string;
-  autoConfirm: boolean;
   paidEvent: boolean;
   price: number;
   bannerLink: string | null;
@@ -166,7 +164,6 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   startDate: values.startDate,
   endDate: values.endDate,
   venue: values.venue,
-  autoConfirm: false,
   paidEvent: values.paidEvent,
   price: values.paidEvent ? values.price : 0,
   status: values.status,
