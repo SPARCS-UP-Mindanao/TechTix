@@ -13,7 +13,7 @@ const ImageViewer: FC<FileViewerProps> = ({ objectKey, className, alt }) => {
   const { fileUrl, isFetching } = useFileUrl(objectKey);
 
   if (isFetching) {
-    return <Skeleton className={cn('min-w-full h-full', className)} />;
+    return <Skeleton className={cn('h-full', className)} />;
   }
 
   if (!fileUrl) {

@@ -10,7 +10,7 @@ interface Props {
 export const EventHeader: FC<Props> = ({ event, showBanner = true }) => {
   return (
     <>
-      <ImageViewer objectKey={event.logoLink} className="w-12 h-12 rounded-full overflow-hidden" />
+      <ImageViewer objectKey={event.logoLink} className="!w-12 !h-12 rounded-full overflow-hidden" />
       {showBanner && (
         <div className="flex w-full max-h-[448px] justify-center relative overflow-hidden">
           <ImageViewer objectKey={event.bannerLink} className="w-full max-w-md object-contain z-10" />
