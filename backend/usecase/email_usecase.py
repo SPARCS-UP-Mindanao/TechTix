@@ -42,63 +42,6 @@ class EmailUsecase:
         message = f'Queue message success via {smtp_service}: {message_id}'
         logger.info(message)
 
-    def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
-        """Send an email to the queue
-
-        :param email_in: The email to be sent
-        :type email_in: EmailIn
-
-        :return: The status and message
-        :rtype: Tuple[HTTPStatus, str]
-
-        """
-        message = None
-        try:
-            smtp_service_daily_free_tier_limit = 100
-            event_id = email_in.eventId
-
-            # Check free tier limit
-            status, event, message = self.__events_repository.query_events(event_id)
-            if status != HTTPStatus.OK:
-                return status, message
-
-            last_email_sent = parse(event.lastEmailSent)
-            if last_email_sent.tzinfo is None:
-                last_email_sent = last_email_sent.replace(tzinfo=timezone.utc)
-
-            one_day_passed = (datetime.now(timezone.utc) - last_email_sent).days >= 1
-
-            if event.dailyEmailCount >= smtp_service_daily_free_tier_limit and not one_day_passed:
-                email_in.useBackupSMTP = True
-
-                message = 'Daily email count exceeded free tier limit. Using backup SMTP service.'
-                logger.info(message)
-
-            else:
-                email_in.useBackupSMTP = False
-
-            # Send email
-            self.__send_email_handler(email_in)
-
-            # Update daily lastEmailSent
-            if one_day_passed:
-                event_update = EventDataIn(
-                    lastEmailSent=datetime.now(timezone.utc),
-                )
-                status, event, message = self.__events_repository.update_event(event_entry=event, event_in=event_update)
-                if status != HTTPStatus.OK:
-                    return status, message
-
-            self.__events_repository.append_event_email_sent_count(event_entry=event)
-
-        except Exception as e:
-            message = f'Failed to send email: {str(e)}'
-            logger.error(message)
-            return HTTPStatus.INTERNAL_SERVER_ERROR, message
-
-        else:
-            return HTTPStatus.OK, message
-
     def send_batch_email(self, email_in_list: List[EmailIn], event_id: str) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue
 
@@ -119,21 +62,29 @@ class EmailUsecase:
             if status != HTTPStatus.OK:
                 return status, message
 
-            curent_daily_email_count = event.dailyEmailCount
+            # Check free tier limit refresh time
+            last_email_sent = parse(event.lastEmailSent)
+            if last_email_sent.tzinfo is None:
+                last_email_sent = last_email_sent.replace(tzinfo=timezone.utc)
+
+            one_day_passed = (datetime.now(timezone.utc) - last_email_sent).days >= 1
+
+            # Check emails sent
+            curent_daily_email_count = event.dailyEmailCount if not one_day_passed else 0
             total_email_count = curent_daily_email_count + email_len
             append_count = email_len
 
             if total_email_count >= smtp_service_daily_free_tier_limit:
-                if curent_daily_email_count >= total_email_count:
+                serviceable_email_count = smtp_service_daily_free_tier_limit - curent_daily_email_count
+
+                if serviceable_email_count <= 0:
                     logger.info('Batch Sending Emails via Backup SMTP Service')
-                    append_count = email_len
 
                     default_smtp_service = []
                     backup_smtp_service = email_in_list
 
                 else:
                     logger.info('Batch Sending Emails via Default and Backup SMTP Service')
-                    serviceable_email_count = smtp_service_daily_free_tier_limit - curent_daily_email_count
                     append_count = serviceable_email_count
 
                     default_smtp_service = email_in_list[:serviceable_email_count]
@@ -154,18 +105,15 @@ class EmailUsecase:
                 self.__send_email_handler(email_in)
 
             # Update daily email count
-            last_email_sent = parse(event.lastEmailSent)
-            if last_email_sent.tzinfo is None:
-                last_email_sent = last_email_sent.replace(tzinfo=timezone.utc)
-
-            one_day_passed = (datetime.now(timezone.utc) - last_email_sent).days >= 1
             if one_day_passed:
                 event_update = EventDataIn(
                     lastEmailSent=datetime.now(timezone.utc),
+                    dailyEmailCount=append_count,
                 )
                 status, event, message = self.__events_repository.update_event(event_entry=event, event_in=event_update)
 
-            self.__events_repository.append_event_email_sent_count(event_entry=event, append_count=append_count)
+            else:
+                self.__events_repository.append_event_email_sent_count(event_entry=event, append_count=append_count)
 
         except Exception as e:
             message = f'Failed to send email: {str(e)}'
@@ -174,6 +122,18 @@ class EmailUsecase:
 
         else:
             return HTTPStatus.OK, message
+
+    def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
+        """Send an email to the queue
+
+        :param email_in: The email to be sent
+        :type email_in: EmailIn
+
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
+        return self.send_batch_email(email_in_list=[email_in], event_id=email_in.eventId)
 
     def send_event_creation_email(self, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
