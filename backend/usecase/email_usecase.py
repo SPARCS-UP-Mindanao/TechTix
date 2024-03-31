@@ -1,15 +1,14 @@
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
 import ulid
 from boto3 import client as boto3_client
 from constants.common_constants import EmailType
-from dateutil.parser import parse
 from model.email.email import EmailIn
-from model.events.event import Event, EventDataIn
+from model.events.event import Event
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
