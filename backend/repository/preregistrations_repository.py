@@ -87,10 +87,58 @@ class PreRegistrationsRepository:
             logger.info(f'[{self.core_obj} = {preregistration_id}]: Successfully saved pre-registration strategy form')
             return HTTPStatus.OK, preregistration_entry, None
 
-    def query_preregistrations(
-        self, event_id: str = None, preregistration_id: str = None
-    ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
+    def query_preregistrations(self, event_id: str = None) -> Tuple[HTTPStatus, List[PreRegistration], str]:
         """Query pre-registration records from the database.
+
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
+
+        :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
+
+        """
+        try:
+            if event_id is None:
+                preregistration_entries = list(
+                    PreRegistration.scan(
+                        filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
+                    )
+                )
+            else:
+                preregistration_entries = list(
+                    PreRegistration.query(
+                        hash_key=event_id,
+                        filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
+                    )
+                )
+
+            if not preregistration_entries:
+                message = 'No pre-registration found'
+                logger.error(f'[{self.core_obj}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query pre-registration: {str(e)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj}]: Fetch Pre-registration data successful')
+            return HTTPStatus.OK, preregistration_entries, None
+
+    def query_preregistration_with_preregistration_id(
+        self, preregistration_id: str, event_id: str = None
+    ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
+        """Query pre-registration records from the database specific to a preregistration ID.
 
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
@@ -109,7 +157,7 @@ class PreRegistrationsRepository:
                         filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
-            elif preregistration_id:
+            else:
                 preregistration_entries = list(
                     PreRegistration.query(
                         hash_key=event_id,
@@ -117,21 +165,10 @@ class PreRegistrationsRepository:
                         filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
-            else:
-                preregistration_entries = list(
-                    PreRegistration.query(
-                        hash_key=event_id,
-                        filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
-                )
 
             if not preregistration_entries:
-                if preregistration_id:
-                    message = f'Pre-registration with id {preregistration_id} not found'
-                    logger.error(f'[{self.core_obj}={preregistration_id}] {message}')
-                else:
-                    message = 'No pre-registration found'
-                    logger.error(f'[{self.core_obj}] {message}')
+                message = f'Pre-registration with id {preregistration_id} not found'
+                logger.error(f'[{self.core_obj}={preregistration_id}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
@@ -149,12 +186,8 @@ class PreRegistrationsRepository:
             logger.error(f'[{self.core_obj} = {preregistration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if preregistration_id:
-                logger.info(f'[{self.core_obj} = {preregistration_id}]: Fetch Pre-registration data successful')
-                return HTTPStatus.OK, preregistration_entries[0], None
-
-            logger.info(f'[{self.core_obj}]: Fetch Pre-registration data successful')
-            return HTTPStatus.OK, preregistration_entries, None
+            logger.info(f'[{self.core_obj} = {preregistration_id}]: Fetch Pre-registration data successful')
+            return HTTPStatus.OK, preregistration_entries[0], None
 
     def query_preregistrations_with_email(
         self, event_id: str, email: str, exclude_preregistration_id: str = None
