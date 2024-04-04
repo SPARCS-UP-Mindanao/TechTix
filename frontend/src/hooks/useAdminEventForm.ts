@@ -5,7 +5,6 @@ import { updateEvent, createEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { Event, EventStatus, EventWithRefetchEvent, mapCreateEventValues, mapEventToFormValues } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
-import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,14 +39,6 @@ const EventFormSchema = z
     bannerLink: z.string().optional(),
     logoLink: z.string().optional(),
     certificateTemplate: z.string().optional(),
-    gcashQRCode: z.string().optional(),
-    gcashName: z.string().optional(),
-    gcashNumber: z
-      .string()
-      .refine(isValidContactNumber, {
-        message: 'Please enter a valid PH contact number'
-      })
-      .optional(),
     isLimitedSlot: z.boolean(),
     isApprovalFlow: z.boolean(),
     maximumSlots: z.coerce.number().optional()
