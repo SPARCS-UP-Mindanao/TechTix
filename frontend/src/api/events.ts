@@ -90,7 +90,7 @@ export const getAdminEvents = (adminId: string) =>
     output: mapEventsDtoToEvent
   });
 
-export const createEvent = (event: Omit<Event, 'eventId'>) =>
+export const createEvent = (event: Omit<Event, 'eventId' | 'registrationCount'>) =>
   createApi<EventDto, Event>({
     method: 'post',
     authorize: true,
