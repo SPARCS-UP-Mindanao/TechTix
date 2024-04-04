@@ -115,9 +115,7 @@ class DiscountsRepository:
             logger.info(f'[{self.core_obj} = Fetch Discount data successful')
             return HTTPStatus.OK, discount_entries, None
 
-    def query_discount_with_discount_id(
-        self, event_id: str, discount_id: str
-    ) -> Tuple[HTTPStatus, Discount, str]:
+    def query_discount_with_discount_id(self, event_id: str, discount_id: str) -> Tuple[HTTPStatus, Discount, str]:
         """Query discounts by discount ID.
 
         :param event_id: The ID of the event to query discounts for.
