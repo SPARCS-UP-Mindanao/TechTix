@@ -12,11 +12,6 @@
     @apply bg-background text-foreground;
   }
 
-  ul,
-  ol {
-    list-style: revert;
-  }
-
   input,
   textarea {
     -webkit-user-select: text; /* Chrome, Opera, Safari */
