@@ -24,6 +24,7 @@ import { IconComponentAttributes } from '../Icon';
 import Input from '../Input';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import Toggle from '../Toggle';
+import './RichContent.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Editor } from '@tiptap/react';
 
