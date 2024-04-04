@@ -133,7 +133,7 @@ class RegistrationsRepository:
 
     def query_registration_with_registration_id(
         self, registration_id: str, event_id: str
-    ) -> Tuple[HTTPStatus, List[Registration], str]:
+    ) -> Tuple[HTTPStatus, Registration, str]:
         """Query a specific registration record from the database.
 
         :param event_id: The event ID to query.

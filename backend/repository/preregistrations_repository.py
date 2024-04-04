@@ -137,7 +137,7 @@ class PreRegistrationsRepository:
 
     def query_preregistration_with_preregistration_id(
         self, preregistration_id: str, event_id: str
-    ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
+    ) -> Tuple[HTTPStatus, PreRegistration, str]:
         """Query pre-registration records from the database specific to a preregistration ID.
 
         :param event_id: The event ID to query.
