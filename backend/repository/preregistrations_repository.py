@@ -136,35 +136,28 @@ class PreRegistrationsRepository:
             return HTTPStatus.OK, preregistration_entries, None
 
     def query_preregistration_with_preregistration_id(
-        self, preregistration_id: str, event_id: str = None
+        self, preregistration_id: str, event_id: str
     ) -> Tuple[HTTPStatus, List[PreRegistration], str]:
         """Query pre-registration records from the database specific to a preregistration ID.
 
-        :param event_id: The event ID to query (default is None to query all records).
+        :param event_id: The event ID to query.
         :type event_id: str
 
-        :param preregistration_id: The pre-registration ID to query (default is None to query all records).
+        :param preregistration_id: The pre-registration ID to query.
         :type preregistration_id: str
 
         :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
-        :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
+        :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
         """
         try:
-            if event_id is None:
-                preregistration_entries = list(
-                    PreRegistration.scan(
-                        filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
+            preregistration_entries = list(
+                PreRegistration.query(
+                    hash_key=event_id,
+                    range_key_condition=PreRegistration.rangeKey.__eq__(preregistration_id),
+                    filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
                 )
-            else:
-                preregistration_entries = list(
-                    PreRegistration.query(
-                        hash_key=event_id,
-                        range_key_condition=PreRegistration.rangeKey.__eq__(preregistration_id),
-                        filter_condition=PreRegistration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
-                )
+            )
 
             if not preregistration_entries:
                 message = f'Pre-registration with id {preregistration_id} not found'

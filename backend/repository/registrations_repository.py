@@ -132,14 +132,14 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entries, None
 
     def query_registration_with_registration_id(
-        self, registration_id: str, event_id: str = None
+        self, registration_id: str, event_id: str
     ) -> Tuple[HTTPStatus, List[Registration], str]:
         """Query a specific registration record from the database.
 
-        :param event_id: The event ID to query (default is None to query all records).
+        :param event_id: The event ID to query.
         :type event_id: str
 
-        :param registration_id: The event ID to query (default is None to query all records).
+        :param registration_id: The event ID to query.
         :type registration_id: str
 
         :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
@@ -147,22 +147,13 @@ class RegistrationsRepository:
 
         """
         try:
-            if event_id is None:
-                registration_entries = list(
-                    Registration.scan(
-                        range_key_condition=Registration.rangeKey.__eq__(registration_id),
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
+            registration_entries = list(
+                Registration.query(
+                    hash_key=event_id,
+                    range_key_condition=Registration.rangeKey.__eq__(registration_id),
+                    filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                 )
-
-            else:
-                registration_entries = list(
-                    Registration.query(
-                        hash_key=event_id,
-                        range_key_condition=Registration.rangeKey.__eq__(registration_id),
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
-                )
+            )
 
             if not registration_entries:
                 if registration_id:

@@ -117,7 +117,7 @@ class DiscountsRepository:
 
     def query_discount_with_discount_id(
         self, event_id: str, discount_id: str
-    ) -> Tuple[HTTPStatus, List[Discount], str]:
+    ) -> Tuple[HTTPStatus, Discount, str]:
         """Query discounts by discount ID.
 
         :param event_id: The ID of the event to query discounts for.
@@ -127,7 +127,7 @@ class DiscountsRepository:
         :type discount_id: str
 
         :return: The HTTP status, the queried discounts or None, and a message.
-        :rtype: Tuple[HTTPStatus, List[Discount], str]
+        :rtype: Tuple[HTTPStatus, Discount, str]
 
         """
         try:
