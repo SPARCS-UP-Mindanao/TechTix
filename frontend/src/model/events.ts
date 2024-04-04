@@ -14,9 +14,6 @@ export interface Event {
   bannerLink: string | null;
   logoLink: string | null;
   certificateTemplate: string | null;
-  gcashQRCode?: string | null;
-  gcashName?: string | null;
-  gcashNumber?: string | null;
   status: EventStatus;
   eventId: string;
   isLimitedSlot: boolean;
@@ -127,9 +124,6 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   bannerLink: event.bannerLink || undefined,
   logoLink: event.logoLink || undefined,
   certificateTemplate: event.certificateTemplate || undefined,
-  gcashQRCode: event.gcashQRCode || undefined,
-  gcashName: event.gcashName || undefined,
-  gcashNumber: event.gcashNumber || undefined,
   isLimitedSlot: event.isLimitedSlot,
   isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined
@@ -148,11 +142,7 @@ export interface CreateEvent {
   logoLink: string | null;
   certificateTemplate: string | null;
   isLimitedSlot: boolean;
-  gcashQRCode: string | null;
-  gcashName: string | null;
-  gcashNumber: string | null;
   isApprovalFlow: boolean;
-  registrationCount: number;
   maximumSlots: number | null;
   status: EventStatus;
 }
@@ -170,13 +160,9 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   maximumSlots: values.maximumSlots || null,
   isLimitedSlot: values.isLimitedSlot,
   isApprovalFlow: values.isApprovalFlow,
-  registrationCount: 0,
   bannerLink: values.bannerLink || null,
   logoLink: values.logoLink || null,
-  certificateTemplate: values.certificateTemplate || null,
-  gcashQRCode: values.gcashQRCode || null,
-  gcashName: values.gcashName || null,
-  gcashNumber: values.gcashNumber || null
+  certificateTemplate: values.certificateTemplate || null
 });
 
 export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {
