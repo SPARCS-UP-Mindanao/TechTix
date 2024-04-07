@@ -36,7 +36,9 @@ class DiscountUsecase:
         :rtype: DiscountOut
 
         """
-        status, discount, message = self.__discounts_repository.query_discounts(event_id=event_id, discount_id=entry_id)
+        status, discount, message = self.__discounts_repository.query_discount_with_discount_id(
+            event_id=event_id, discount_id=entry_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -48,7 +50,7 @@ class DiscountUsecase:
                 _,
                 registration_entry,
                 _,
-            ) = self.__registrations_repository.query_registrations(
+            ) = self.__registrations_repository.query_registration_with_registration_id(
                 event_id=event_id, registration_id=discount.registrationId
             )
             if not registration_entry:
@@ -85,7 +87,7 @@ class DiscountUsecase:
                     _,
                     registration_entry,
                     _,
-                ) = self.__registrations_repository.query_registrations(
+                ) = self.__registrations_repository.query_registration_with_registration_id(
                     event_id=event_id, registration_id=discount.registrationId
                 )
                 if registration_entry:
@@ -120,7 +122,7 @@ class DiscountUsecase:
         :rtype: Union[DiscountOut, JSONResponse]
 
         """
-        status, discount_entry, message = self.__discounts_repository.query_discounts(
+        status, discount_entry, message = self.__discounts_repository.query_discount_with_discount_id(
             discount_id=entry_id, event_id=event_id
         )
         if status != HTTPStatus.OK:

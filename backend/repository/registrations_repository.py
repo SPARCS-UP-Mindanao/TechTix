@@ -45,6 +45,9 @@ class RegistrationsRepository:
         :param registration_in: The registration data to be stored.
         :type registration_in: RegistrationIn
 
+        :param registration_id: The registration ID to be stored. If not provided, a new ULID will be generated.
+        :type registration_id: str
+
         :return: A tuple containing HTTP status, the stored registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, Registration, str]
 
@@ -81,16 +84,11 @@ class RegistrationsRepository:
             logger.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None
 
-    def query_registrations(
-        self, event_id: str = None, registration_id: str = None
-    ) -> Tuple[HTTPStatus, List[Registration], str]:
-        """Query registration records from the database.
+    def query_registrations(self, event_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+        """Query a list of registration records from the database.
 
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
-
-        :param registration_id: The event ID to query (default is None to query all records).
-        :type registration_id: str
 
         :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[Registration], str]
@@ -103,14 +101,6 @@ class RegistrationsRepository:
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
-            elif registration_id:
-                registration_entries = list(
-                    Registration.query(
-                        hash_key=event_id,
-                        range_key_condition=Registration.rangeKey.__eq__(registration_id),
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
-                )
             else:
                 registration_entries = list(
                     Registration.query(
@@ -120,12 +110,54 @@ class RegistrationsRepository:
                 )
 
             if not registration_entries:
-                if registration_id:
-                    message = f'Registration with id {registration_id} not found'
-                    logger.error(f'[{self.core_obj}={registration_id}] {message}')
-                else:
-                    message = 'No registration found'
-                    logger.error(f'[{self.core_obj}] {message}')
+                message = 'No registration found'
+                logger.error(f'[{self.core_obj}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query registration: {str(e)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj}]: Fetch Registration data successful')
+            return HTTPStatus.OK, registration_entries, None
+
+    def query_registration_with_registration_id(
+        self, registration_id: str, event_id: str
+    ) -> Tuple[HTTPStatus, Registration, str]:
+        """Query a specific registration record from the database.
+
+        :param event_id: The event ID to query.
+        :type event_id: str
+
+        :param registration_id: The event ID to query.
+        :type registration_id: str
+
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
+
+        """
+        try:
+            registration_entries = list(
+                Registration.query(
+                    hash_key=event_id,
+                    range_key_condition=Registration.rangeKey.__eq__(registration_id),
+                    filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                )
+            )
+
+            if not registration_entries:
+                message = f'Registration with id {registration_id} not found'
+                logger.error(f'[{self.core_obj} = {registration_id}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
@@ -143,12 +175,8 @@ class RegistrationsRepository:
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if registration_id:
-                logger.info(f'[{self.core_obj} = {registration_id}]: Fetch Registration data successful')
-                return HTTPStatus.OK, registration_entries[0], None
-
-            logger.info(f'[{self.core_obj}]: Fetch Registration data successful')
-            return HTTPStatus.OK, registration_entries, None
+            logger.info(f'[{self.core_obj} = {registration_id}]: Fetch Registration data successful')
+            return HTTPStatus.OK, registration_entries[0], None
 
     def query_registrations_with_email(
         self, event_id: str, email: str, exclude_registration_id: str = None
