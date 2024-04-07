@@ -156,12 +156,8 @@ class RegistrationsRepository:
             )
 
             if not registration_entries:
-                if registration_id:
-                    message = f'Registration with id {registration_id} not found'
-                    logger.error(f'[{self.core_obj} = {registration_id}] {message}')
-                else:
-                    message = 'No registration found'
-                    logger.error(f'[{self.core_obj}] {message}')
+                message = f'Registration with id {registration_id} not found'
+                logger.error(f'[{self.core_obj} = {registration_id}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
