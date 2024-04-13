@@ -50,7 +50,7 @@ class RegistrationUsecase:
 
         """
 
-        event = EventUsecase.get_event(registration_in.eventId)
+        event = EventsRepository.query_events(registration_in.eventId)
         if event.registrationType == RegistrationType.REDIRECT:
             message = 'Registrations should not be created for REDIRECT registration type'
             return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
