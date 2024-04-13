@@ -1,14 +1,14 @@
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 
-const RegisterForm1 = () => {
+const UserBioStep = () => {
   return (
     <>
       <FormItem name="firstName">
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>First Name</FormLabel>
-            <Input type="text" className="" {...field} />
+            <Input type="text" {...field} />
             <FormError />
           </div>
         )}
@@ -18,7 +18,7 @@ const RegisterForm1 = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Last Name</FormLabel>
-            <Input type="text" className="" {...field} />
+            <Input type="text" {...field} />
             <FormError />
           </div>
         )}
@@ -28,7 +28,7 @@ const RegisterForm1 = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Email</FormLabel>
-            <Input type="email" className="" {...field} />
+            <Input type="email" {...field} />
             <FormError />
           </div>
         )}
@@ -38,7 +38,7 @@ const RegisterForm1 = () => {
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Phone number</FormLabel>
-            <Input type="text" placeholder="09XXXXXXXXX" className="" {...field} />
+            <Input type="text" placeholder="09XX XXX XXXX" {...field} />
             <FormError />
           </div>
         )}
@@ -47,4 +47,4 @@ const RegisterForm1 = () => {
   );
 };
 
-export default RegisterForm1;
+export default UserBioStep;

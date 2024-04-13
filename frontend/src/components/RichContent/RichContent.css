@@ -7,11 +7,11 @@
 }
 
 .tiptap ol {
-  list-style: decimal;
+  list-style: decimal !important;
 }
 
 .tiptap ul {
-  list-style: disc;
+  list-style: disc !important;
 }
 
 .tiptap ul,

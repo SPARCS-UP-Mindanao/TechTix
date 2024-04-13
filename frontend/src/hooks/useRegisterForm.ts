@@ -1,13 +1,18 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { preRegisterUserInEvent } from '@/api/preregistrations';
 import { registerUserInEvent } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
+import { PaymentChannel, PaymentMethod } from '@/model/payments';
+import { mapCreatePreregistrationValues } from '@/model/preregistrations';
+import { RegisterMode, mapCreateRegistrationValues } from '@/model/registrations';
 import { isValidContactNumber } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { RegisterStepId } from '@/pages/client/register/steps/RegistrationSteps';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const RegisterFormSchema = z.object({
+const PreRegisterFormSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email address'
   }),
@@ -36,68 +41,99 @@ const RegisterFormSchema = z.object({
   }),
   title: z.string().min(1, {
     message: 'Please enter your title'
-  }),
-  gcashPayment: z
-    .string()
-    .min(1, {
-      message: 'Please submit a screenshot of your Gcash payment'
-    })
-    .nullish(),
-  referenceNumber: z
-    .string()
-    .min(1, {
-      message: 'Please enter your Gcash reference number'
-    })
-    .refine((value) => value.length === 13, {
-      message: 'Please enter a valid Gcash reference number'
-    })
-    .nullish(),
-  discountCode: z.string().optional(),
-  amountPaid: z
-    .number()
-    .min(0, {
-      message: 'Please enter a valid amount'
-    })
-    .nullish()
+  })
 });
 
+const RegisterFormSchema = PreRegisterFormSchema.extend({
+  discountCode: z.string().optional(),
+  discountPercentage: z.number().optional(),
+  transactionFee: z.number().optional().nullish(),
+  paymentMethod: z.custom<PaymentMethod | null>().optional(),
+  paymentChannel: z.custom<PaymentChannel | null>().optional(),
+  discountedPrice: z.number().optional(),
+  total: z.number().optional()
+});
+
+export type PreRegisterFormValues = z.infer<typeof PreRegisterFormSchema>;
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 
-export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) => {
+export type RegisterField = keyof RegisterFormValues;
+
+type RegisterFieldMap = Partial<Record<RegisterStepId, RegisterField[]>>;
+
+export const REGISTER_FIELDS: RegisterFieldMap = {
+  UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
+  PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience']
+};
+
+export const REGISTER_FIELDS_WITH_PREREGISTRATION: RegisterFieldMap = {
+  ...REGISTER_FIELDS,
+  EventDetails: ['email']
+};
+
+const getFormSchema = (mode: RegisterMode) => {
+  if (mode === 'preregister') {
+    return PreRegisterFormSchema;
+  }
+
+  return RegisterFormSchema;
+};
+
+export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const form = useForm<RegisterFormValues>({
     mode: 'onChange',
-    resolver: zodResolver(RegisterFormSchema),
-    defaultValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-      contactNumber: '',
-      careerStatus: '',
-      yearsOfExperience: '',
-      organization: '',
-      title: ''
+    resolver: zodResolver(getFormSchema(mode)),
+    defaultValues: async () => {
+      if (mode === 'preregister') {
+        return {
+          firstName: '',
+          lastName: '',
+          contactNumber: '',
+          careerStatus: '',
+          yearsOfExperience: '',
+          organization: '',
+          title: ''
+        };
+      }
+
+      const savedState = localStorage.getItem('formState');
+      if (savedState) {
+        const formState = JSON.parse(savedState);
+        return formState;
+      }
+
+      return {
+        email: '',
+        firstName: '',
+        lastName: '',
+        contactNumber: '',
+        careerStatus: '',
+        yearsOfExperience: '',
+        organization: '',
+        title: '',
+        discountCode: '',
+        discountPercentage: 0,
+        transactionFee: null,
+        paymentMethod: null,
+        paymentChannel: null,
+        discountedPrice: 0,
+        total: 0
+      };
     }
   });
 
-  const submit = form.handleSubmit(async (values) => {
+  const registerUser = form.handleSubmit(async (values) => {
     try {
-      const response = await api.execute(
-        registerUserInEvent({
-          eventId: entryId,
-          certificateClaimed: false,
-          ...values
-        })
-      );
+      const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId)));
       if (response.status === 200) {
         successToast({
-          title: 'Register Info',
-          description: `Registering user with email: ${values.email}`
+          title: 'Registration Successful',
+          description: `Successfully registered user with email: ${values.email}`
         });
         navigateOnSuccess();
       } else if (response.status === 400) {
-        console.log(response);
         const { message } = response.errorData;
         errorToast({
           title: message
@@ -120,14 +156,51 @@ export const useRegisterForm = (entryId: string, navigateOnSuccess: () => void) 
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({
-        title: 'Error in logging in',
-        description: errorData.message || errorData.detail[0].msg
+        title: 'Error in Registering',
+        description: errorData.message || errorData.detail[0].msg || 'An error occurred while registering. Please try again.'
+      });
+    }
+  });
+
+  const preRegisterUser = form.handleSubmit(async (values) => {
+    try {
+      const response = await api.execute(preRegisterUserInEvent(mapCreatePreregistrationValues(values, eventId)));
+      if (response.status === 200) {
+        successToast({
+          title: 'Pregistration Successful',
+          description: `Successfully pre-registered user with email: ${values.email}`
+        });
+      } else if (response.status === 400) {
+        const { message } = response.errorData;
+        errorToast({
+          title: message
+        });
+      } else if (response.status === 409) {
+        form.setError('email', {
+          type: 'manual',
+          message: 'The email you entered has already been used. Please enter a different email.'
+        });
+        errorToast({
+          title: 'Email already registered',
+          description: 'The email you entered has already been used. Please enter a different email.'
+        });
+      } else {
+        errorToast({
+          title: 'Error in Pre-registering',
+          description: 'An error occurred while pre-registering. Please try again.'
+        });
+      }
+    } catch (e) {
+      const { errorData } = e as CustomAxiosError;
+      errorToast({
+        title: 'Error in Pre-registering',
+        description: errorData.message || errorData.detail[0].msg || 'An error occurred while pre-registering. Please try again.'
       });
     }
   });
 
   return {
     form,
-    submit
+    onSubmit: mode === 'preregister' ? preRegisterUser : registerUser
   };
 };

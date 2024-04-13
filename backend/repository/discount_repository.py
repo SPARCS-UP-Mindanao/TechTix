@@ -1,4 +1,3 @@
-import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class DiscountsRepository:
@@ -27,6 +27,15 @@ class DiscountsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_discount(self, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
+        """Store a new discount.
+
+        :param discount_in: The discount data to store.
+        :type discount_in: DiscountDBIn
+
+        :return: The HTTP status, the stored discount or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=discount_in)
         entry_id = discount_in.entryId
         event_id = discount_in.eventId
@@ -47,28 +56,33 @@ class DiscountsRepository:
 
         except PutError as e:
             message = f'Failed to save discount strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
+            logger.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
             return HTTPStatus.OK, discount_entry, None
 
-    def query_discounts(self, event_id: str, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
+    def query_discounts(self, event_id: str) -> Tuple[HTTPStatus, List[Discount], str]:
+        """Query discounts by event.
+
+        :param event_id: The ID of the event to query discounts for.
+        :type event_id: str
+
+        :return: The HTTP status, the queried discounts or None, and a message.
+        :rtype: Tuple[HTTPStatus, List[Discount], str]
+
+        """
         try:
-            if discount_id:
-                range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
-                range_key_condition = Discount.rangeKey.__eq__(range_key_prefix)
-            else:
-                range_key_prefix = f'v{self.latest_version}#{event_id}'
-                range_key_condition = Discount.rangeKey.startswith(range_key_prefix)
+            range_key_prefix = f'v{self.latest_version}#{event_id}'
+            range_key_condition = Discount.rangeKey.startswith(range_key_prefix)
 
             discount_entries = list(
                 Discount.query(
@@ -77,38 +91,91 @@ class DiscountsRepository:
                     filter_condition=Discount.entryStatus == EntryStatus.ACTIVE.value,
                 )
             )
+
             if not discount_entries:
-                if discount_id:
-                    message = f'Discount with ID={discount_id} not found'
-                    logging.error(f'[{self.core_obj}={discount_id}] {message}')
-                else:
-                    message = 'No discounts found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                message = 'No discounts found'
+                logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query discount: {str(e)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj} = {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj} = {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={discount_id}] {message}')
+            logger.error(f'[{self.core_obj} = {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if discount_id:
-                logging.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
-                return HTTPStatus.OK, discount_entries[0], None
-
-            logging.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
+            logger.info(f'[{self.core_obj} = Fetch Discount data successful')
             return HTTPStatus.OK, discount_entries, None
 
+    def query_discount_with_discount_id(self, event_id: str, discount_id: str) -> Tuple[HTTPStatus, Discount, str]:
+        """Query discounts by discount ID.
+
+        :param event_id: The ID of the event to query discounts for.
+        :type event_id: str
+
+        :param discount_id: The ID of the discount to query, defaults to None.
+        :type discount_id: str
+
+        :return: The HTTP status, the queried discounts or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+
+        """
+        try:
+            range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
+            range_key_condition = Discount.rangeKey.__eq__(range_key_prefix)
+
+            discount_entries = list(
+                Discount.query(
+                    hash_key=self.core_obj,
+                    range_key_condition=range_key_condition,
+                    filter_condition=Discount.entryStatus == EntryStatus.ACTIVE.value,
+                )
+            )
+
+            if not discount_entries:
+                message = f'Discount with ID = {discount_id} not found'
+                logger.error(f'[{self.core_obj} = {discount_id}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query discount: {str(e)}'
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj}={discount_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
+            return HTTPStatus.OK, discount_entries[0], None
+
     def update_discount(self, discount_entry: Discount, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
+        """Update a discount.
+
+        :param discount_entry: The discount entry to update.
+        :type discount_entry: Discount
+
+        :param discount_in: The new discount data.
+        :type discount_in: DiscountDBIn
+
+        :return: The HTTP status, the updated discount or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+
+        """
         current_version = discount_entry.latestVersion
         new_version = current_version + 1
 
@@ -138,16 +205,25 @@ class DiscountsRepository:
                 transaction.save(old_discount_entry)
 
             discount_entry.refresh()
-            logging.info(f'[{discount_entry.rangeKey}] ' f'Update discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] ' f'Update discount data successful')
             return HTTPStatus.OK, discount_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update discount data: {str(e)}'
-            logging.error(f'[{discount_entry.rangeKey}] {message}')
+            logger.error(f'[{discount_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_discount(self, discount_entry: Discount) -> Tuple[HTTPStatus, str]:
+        """Delete a discount.
+
+        :param discount_entry: The discount entry to delete.
+        :type discount_entry: Discount
+
+        :return: The HTTP status and a message.
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         try:
             # create new entry with old data
             current_version = discount_entry.latestVersion
@@ -164,9 +240,9 @@ class DiscountsRepository:
             discount_entry.entryStatus = EntryStatus.DELETED.value
             discount_entry.save()
 
-            logging.info(f'[{discount_entry.rangeKey}] ' f'Delete discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] ' f'Delete discount data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete discount data: {str(e)}'
-            logging.error(f'[{discount_entry.rangeKey}] {message}')
+            logger.error(f'[{discount_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message

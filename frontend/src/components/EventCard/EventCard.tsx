@@ -22,15 +22,15 @@ interface CardHeaderProps {
 }
 
 const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, isDeletingEvent, setDeleteModalOpen }) => {
-  const { fileUrl: imageUrl, isLoading } = useFileUrl(event.bannerLink!);
+  const { fileUrl: imageUrl, isFetching } = useFileUrl(event.bannerLink!);
 
   return (
     <div className="h-1/2 group-hover:opacity-70 transition" style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}>
-      {isLoading && <Skeleton className="w-full h-full rounded-b-none" />}
+      {isFetching && <Skeleton className="w-full h-full rounded-b-none" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
-          {!isDeletingEvent && !isLoading && (
-            <Suspense fallback={null}>
+          {!isDeletingEvent && !isFetching && (
+            <Suspense fallback={<></>}>
               <ActionsDropdown setDeleteModalOpen={setDeleteModalOpen} />
             </Suspense>
           )}
@@ -83,7 +83,7 @@ interface EventCardProps {
 }
 
 const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled = true, refetch, onClick }) => {
-  const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId!);
+  const { onDeleteEvent, isDeletingEvent } = useDeleteEvent(event.eventId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => setIsModalOpen(false);
 

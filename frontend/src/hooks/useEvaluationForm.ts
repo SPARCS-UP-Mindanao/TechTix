@@ -1,78 +1,42 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { postEvaluation } from '@/api/evaluations';
-import { QuestionConfigItem } from '@/model/evaluations';
+import { ClaimCertificateResponse, postEvaluation } from '@/api/evaluations';
+import { CustomAxiosError } from '@/api/utils/createApi';
+import { QuestionConfigItem, mapFormValuesToEvaluateCreate } from '@/model/evaluations';
+import { isEmpty } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { questionSchemaBuilder } from '@/pages/client/evaluate/questionBuilder/questionSchemaBuilder';
+import { EVALUTATION_QUESTIONS_1, EVALUTATION_QUESTIONS_2 } from '@/pages/client/evaluate/questionBuilder/questionsConfig';
+import { EvaluateStepId } from '@/pages/client/evaluate/steps/EvaluationSteps';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-export const ClaimCertificateFormSchema = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address'
-  })
-});
+export interface DefaultEvaluateFormValues {
+  email: string;
+  certificate: ClaimCertificateResponse;
+  [x: string]: any;
+}
 
-export type ClaimCertificateFormValues = z.infer<typeof ClaimCertificateFormSchema>;
+export type DefaultEvaluateField = string;
+export type DefaultEvaluateFieldMap = Partial<Record<EvaluateStepId, DefaultEvaluateField[]>>;
 
-export const useClaimCertificateForm = () => {
-  const form = useForm<ClaimCertificateFormValues>({
-    mode: 'onChange',
-    resolver: zodResolver(ClaimCertificateFormSchema),
-    defaultValues: {
-      email: ''
-    }
+export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string) => {
+  const EvaluateFormSchema = questionSchemaBuilder(questions).extend({
+    email: z.string().email({
+      message: 'Please enter a valid email address'
+    }),
+    certificate: z.custom<ClaimCertificateResponse>().refine((value) => !isEmpty(value), {
+      message: 'Please try refreshing the page'
+    })
   });
 
-  // To add: onSubmit function
+  type EvaluateFormValues = z.infer<typeof EvaluateFormSchema>;
 
-  return {
-    form
-  };
-};
-
-export const QuestionSchemaBuilder = (questions: QuestionConfigItem[]): z.ZodObject<any> => {
-  const schema = questions.reduce(
-    (acc, question) => {
-      if (question.questionType === 'multiple_answers') {
-        {
-          question.required
-            ? (acc[question.name] = z.array(z.string()).refine((value) => value.length > 0, {
-                message: 'This field is required'
-              }))
-            : (acc[question.name] = z.array(z.string()).optional());
-        }
-      } else if (question.questionType === 'slider') {
-        {
-          question.required ? (acc[question.name] = z.array(z.number().min(1).max(5))) : (acc[question.name] = z.array(z.number().min(1).max(5)).optional());
-        }
-      } else if (question.questionType === 'text_short' || question.questionType === 'text_long') {
-        {
-          question.required ? (acc[question.name] = z.string().min(1, { message: 'This field is required' })) : (acc[question.name] = z.string().optional());
-        }
-      } else if (question.questionType === 'multiple_choice_dropdown' || question.questionType === 'multiple_choice') {
-        {
-          question.required
-            ? (acc[question.name] = z.string().refine((value) => value !== '', {
-                message: 'This field is required'
-              }))
-            : (acc[question.name] = z.string().optional());
-        }
-      }
-      return acc;
-    },
-    {} as Record<string, z.ZodTypeAny>
-  );
-  return z.object(schema);
-};
-
-export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string, registrationId?: string) => {
   const api = useApi();
-  const { errorToast } = useNotifyToast();
-  const [postEvalSuccess, setPostEvalSuccess] = useState(false);
-  const form = useForm({
+  const { errorToast, successToast } = useNotifyToast();
+  const form = useForm<EvaluateFormValues>({
     mode: 'onChange',
-    resolver: zodResolver(QuestionSchemaBuilder(questions)),
+    resolver: zodResolver(EvaluateFormSchema),
     defaultValues: questions.reduce(
       (acc, question) => {
         if (question.questionType === 'slider') {
@@ -86,25 +50,39 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
     )
   });
 
-  const submitEvaluation = form.handleSubmit(async (values) => {
-    const response = await api.execute(postEvaluation(eventId, registrationId!, values));
+  type EvaluateField = keyof EvaluateFormValues;
+  type EvaluateFieldMap = Partial<Record<EvaluateStepId, EvaluateField[]>>;
+
+  const EVALUATE_FIELDS: EvaluateFieldMap = {
+    EventDetails: ['email'],
+    Evaluation_1: EVALUTATION_QUESTIONS_1.map((question) => question.name),
+    Evaluation_2: EVALUTATION_QUESTIONS_2.map((question) => question.name)
+  };
+
+  const submit = form.handleSubmit(async (values) => {
+    const { certificate } = values;
+    const { registrationId } = certificate!;
+
     try {
+      const response = await api.execute(postEvaluation(eventId, registrationId, mapFormValuesToEvaluateCreate(values)));
       if (response.status === 200) {
-        setPostEvalSuccess(true);
-      }
-    } catch (error) {
-      if (response.status === 400) {
-        errorToast({
-          title: 'Error in submitting evaluation',
-          description: 'Please try again.'
+        successToast({
+          title: 'Evaluation submitted successfully!',
+          description: 'Thank you for submitting your evaluation. You may now access your certificate.'
         });
       }
+    } catch (e) {
+      const { errorData } = e as CustomAxiosError;
+      errorToast({
+        title: 'Error in submitting evaluation',
+        description: errorData.message || errorData.detail[0].msg
+      });
     }
   });
 
   return {
     form,
-    submitEvaluation,
-    postEvalSuccess
+    submit,
+    EVALUATE_FIELDS
   };
 };

@@ -56,14 +56,21 @@ class Event(Model):
     venue = UnicodeAttribute(null=True)
     bannerLink = UnicodeAttribute(null=True)
     logoLink = UnicodeAttribute(null=True)
-    autoConfirm = BooleanAttribute(null=True)
-    payedEvent = BooleanAttribute(null=True)
+    paidEvent = BooleanAttribute(null=True)
     price = NumberAttribute(null=True)
     certificateTemplate = UnicodeAttribute(null=True)
+    isApprovalFlow = BooleanAttribute(null=True)
 
     gcashQRCode = UnicodeAttribute(null=True)
     gcashName = UnicodeAttribute(null=True)
     gcashNumber = UnicodeAttribute(null=True)
+
+    isLimitedSlot = BooleanAttribute(default=False)
+    registrationCount = NumberAttribute(default=0)
+    maximumSlots = NumberAttribute(null=True)
+
+    dailyEmailCount = NumberAttribute(default=0)
+    lastEmailSent = UnicodeAttribute(null=True)
 
     eventIdIndex = EventIdIndex()
 
@@ -80,21 +87,34 @@ class EventIn(BaseModel):
     startDate: datetime = Field(None, title='Date')
     endDate: datetime = Field(None, title='Date')
     venue: str = Field(None, title='Venue')
-    autoConfirm: bool = Field(None, title='Auto Confirm')
-    payedEvent: bool = Field(None, title='Payed Event')
+    paidEvent: bool = Field(None, title='Paid Event')
     price: float = Field(None, title='Price')
     bannerLink: str = Field(None, title='Banner Link')
     logoLink: str = Field(None, title='Poster Link')
     certificateTemplate: str = Field(None, title='Certificate Template')
+    isApprovalFlow: bool = Field(None, title='Approval Flow')
+
+    isLimitedSlot: bool = Field(None, title='Is Limited Slot')
+    maximumSlots: int = Field(None, title='Maximum Slots')
+
+    status: Optional[EventStatus] = Field(None, title='Event Status')
+
+
+class EventDataIn(EventIn):
+    class Config:
+        extra = Extra.forbid
 
     gcashQRCode: str = Field(None, title='GCash QR Code')
     gcashName: str = Field(None, title='Gcash Name')
     gcashNumber: str = Field(None, title='Gcash Number')
 
-    status: Optional[EventStatus] = Field(None, title='Event Status')
+    registrationCount: int = Field(None, title='Registration Count')
+
+    dailyEmailCount: int = Field(None, title='Daily Email Count')
+    lastEmailSent: datetime = Field(None, title='Last Email Sent')
 
 
-class EventOut(EventIn):
+class EventOut(EventDataIn):
     class Config:
         extra = Extra.ignore
 

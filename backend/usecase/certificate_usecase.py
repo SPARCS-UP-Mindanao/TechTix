@@ -24,6 +24,18 @@ class CertificateUsecase:
         self.__sqs_url = os.getenv('CERTIFICATE_QUEUE')
 
     def generate_certificates(self, event_id: str, registration_id: str = None) -> Tuple[HTTPStatus, str]:
+        """Generate certificates for an event
+
+        :param event_id: The id of the event
+        :type event_id: str
+
+        :param registration_id: The id of the registration
+        :type registration_id: str
+
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         message = None
         try:
             timestamp = datetime.utcnow().isoformat(timespec='seconds')
@@ -56,6 +68,18 @@ class CertificateUsecase:
             return HTTPStatus.OK, message
 
     def claim_certificate(self, event_id: str, certificate_in: CertificateIn) -> Union[JSONResponse, CertificateOut]:
+        """Claim a certificate
+
+        :param event_id: The id of the event
+        :type event_id: str
+
+        :param certificate_in: The certificate to be claimed
+        :type certificate_in: CertificateIn
+
+        :return: The claimed certificate
+        :rtype: Union[JSONResponse, CertificateOut]
+
+        """
         status, event, message = self.__events_repository.query_events(event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})

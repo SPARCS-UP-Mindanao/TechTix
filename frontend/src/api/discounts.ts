@@ -1,5 +1,5 @@
 import { createApi } from '@/api/utils/createApi';
-import { Discount, CreateDiscounts, OrganizationDiscount } from '@/model/discount';
+import { Discount, CreateDiscount, OrganizationDiscount } from '@/model/discount';
 import { Registration } from '@/model/registrations';
 
 export interface DiscountDto {
@@ -29,7 +29,7 @@ export const getAllDiscounts = (eventId: string) =>
     }
   });
 
-export const createDiscount = (createDiscount: CreateDiscounts, eventId: string) =>
+export const createDiscount = (createDiscount: CreateDiscount, eventId: string) =>
   createApi<DiscountDto[], Discount[]>({
     method: 'post',
     authorize: true,

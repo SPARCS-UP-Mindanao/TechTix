@@ -22,6 +22,17 @@ __auth = Cognito(
 def get_current_user(
     current_user: AccessUser = Depends(__auth.claim(AccessUser)),
 ) -> AccessUser:
+    """Get the current user
+
+    :param current_user: The current user
+    :type current_user: AccessUser
+
+    :raises HTTPException: Raises an invalid access token when the current user is invalid
+
+    :return: The current user
+    :rtype: AccessUser
+
+    """
     if not current_user.username:
         raise HTTPException(status_code=401, detail='Invalid access token')
 

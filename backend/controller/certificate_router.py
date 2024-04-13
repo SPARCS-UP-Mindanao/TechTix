@@ -27,8 +27,17 @@ def update_certificate(
     certificate_in: CertificateIn,
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
-    """
-    Handle event certificate claiming.
+    """Handle event certificate claiming.
+
+    :param certificate_in: The certificate details.
+    :type certificate_in: CertificateIn
+
+    :param event_id: The event id.
+    :type event_id: str
+
+    :return: The claimed certificate
+    :rtype: Union[JSONResponse, CertificateOut]
+
     """
     certificate_uc = CertificateUsecase()
     return certificate_uc.claim_certificate(event_id=event_id, certificate_in=certificate_in)

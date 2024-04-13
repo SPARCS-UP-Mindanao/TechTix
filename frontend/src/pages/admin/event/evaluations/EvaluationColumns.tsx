@@ -1,14 +1,14 @@
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import Icon from '@/components/Icon';
-import { UserEvaluation } from '@/model/evaluations';
+import { Evaluation } from '@/model/evaluations';
 import EvaluationInfoModal from './EvaluationInfoModal';
 import { ColumnDef } from '@tanstack/react-table';
 
 const showableHeaders: readonly string[] = ['registration', 'evaluationList'];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
-export const evaluationColumns: ColumnDef<UserEvaluation>[] = [
+export const evaluationColumns: ColumnDef<Evaluation>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -19,22 +19,12 @@ export const evaluationColumns: ColumnDef<UserEvaluation>[] = [
     enableHiding: getEnableHiding('select')
   },
   {
-    accessorKey: 'registrationId',
-    header: 'ID',
-    cell: ({ row }) => {
-      const registrationInfo = row.original;
-      const id = registrationInfo.registration.registrationId;
-      return id && id.slice(-6);
-    },
-    enableHiding: getEnableHiding('registration.registrationId')
-  },
-  {
     accessorKey: 'firstName',
     header: 'First Name',
     enableHiding: getEnableHiding('firstName'),
     cell: ({ row }) => {
-      const registrationInfo = row.original;
-      return registrationInfo.registration.firstName;
+      const evaluation = row.original;
+      return evaluation.registration.firstName;
     }
   },
   {
@@ -49,8 +39,8 @@ export const evaluationColumns: ColumnDef<UserEvaluation>[] = [
     },
     enableHiding: getEnableHiding('lastName'),
     cell: ({ row }) => {
-      const registrationInfo = row.original;
-      return registrationInfo.registration.lastName;
+      const evaluation = row.original;
+      return evaluation.registration.lastName;
     }
   },
   {
@@ -65,26 +55,16 @@ export const evaluationColumns: ColumnDef<UserEvaluation>[] = [
     },
     enableHiding: getEnableHiding('email'),
     cell: ({ row }) => {
-      const registrationInfo = row.original;
-      return registrationInfo.registration.email;
-    }
-  },
-  {
-    accessorKey: 'contactNumber',
-    header: 'Contact Number',
-    enableHiding: getEnableHiding('contactNumber'),
-    cell: ({ row }) => {
-      const registrationInfo = row.original;
-      return registrationInfo.registration.contactNumber;
+      const evaluation = row.original;
+      return evaluation.registration.email;
     }
   },
   {
     id: 'actions',
     cell: ({ row }) => {
-      const registrationInfo = row.original;
-      const fullName = registrationInfo.registration.firstName + ' ' + registrationInfo.registration.lastName;
-      const evaluations = registrationInfo.evaluationList;
-      return <EvaluationInfoModal fullName={fullName} evaluations={evaluations} />;
+      const evaluation = row.original;
+      const fullName = evaluation.registration.firstName + ' ' + evaluation.registration.lastName;
+      return <EvaluationInfoModal fullName={fullName} evaluationList={evaluation.evaluationList} />;
     },
     enableHiding: getEnableHiding('actions')
   }

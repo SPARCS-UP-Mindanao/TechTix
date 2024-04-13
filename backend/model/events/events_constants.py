@@ -3,6 +3,7 @@ from enum import Enum
 
 class EventStatus(str, Enum):
     DRAFT = 'draft'
+    PRE_REGISTRATION = 'preregistration'
     OPEN = 'open'
     CANCELLED = 'cancelled'
     CLOSED = 'closed'

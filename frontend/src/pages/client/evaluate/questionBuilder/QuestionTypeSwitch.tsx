@@ -7,7 +7,7 @@ import Slider from '@/components/Slider';
 import { Textarea } from '@/components/TextArea';
 import { QuestionConfigItem } from '@/model/evaluations';
 
-const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
+const QuestionTypeSwitch = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
   question: QuestionConfigItem,
   field: ControllerRenderProps<FieldValues, TName>,
   disabled: boolean = false
@@ -87,7 +87,20 @@ const BuilderQuestion = <TFieldValues extends FieldValues, TName extends FieldPa
           </div>
         </div>
       );
+    case 'radio_buttons':
+      return (
+        <RadioGroup onValueChange={field.onChange} {...field} disabled={disabled}>
+          <div className="flex justify-between px-2 mb-1">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="flex flex-col items-center gap-2">
+                <span key={index}>{index + 1}</span>
+                <RadioGroupItem value={String(index + 1)} id={String(index + 1)} />
+              </div>
+            ))}
+          </div>
+        </RadioGroup>
+      );
   }
 };
 
-export default BuilderQuestion;
+export default QuestionTypeSwitch;

@@ -1,4 +1,3 @@
-import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 from utils.utils import Utils
 
 
@@ -28,6 +28,15 @@ class EventsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_event(self, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
+        """Store a new event.
+
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+
+        :return: Tuple containing the HTTP status, the Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
         entry_id = Utils.convert_to_slug(event_in.name)
         current_user = os.getenv('CURRENT_USER')
@@ -43,27 +52,41 @@ class EventsRepository:
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
                 eventId=entry_id,
+                lastEmailSent=self.current_date,
+                dailyEmailCount=0,
                 **data,
             )
             event_entry.save()
 
         except PutError as e:
             message = f'Failed to save event strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {entry_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {entry_id}]: Save Events strategy data successful')
+            logger.info(f'[{self.core_obj} = {entry_id}]: Save Events strategy data successful')
             return HTTPStatus.OK, event_entry, None
 
     def query_events_by_admin_id(self, admin_id: str, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+        """Query events by admin ID.
+
+        :param admin_id: The admin ID.
+        :type admin_id: str
+
+        :param event_id: The event ID (optional).
+        :type event_id: str
+
+        :return: Tuple containing the HTTP status, a list of Event objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Event], str]
+
+        """
         try:
             range_key_prefix = f'{admin_id}#{event_id}' if event_id else f'{admin_id}#'
             range_key_condition = Event.rangeKey.startswith(range_key_prefix)
@@ -79,35 +102,44 @@ class EventsRepository:
             if not event_entries:
                 if event_id:
                     message = f'Event with ID={event_id} not found'
-                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                    logger.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No events found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query event: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id:
-                logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+                logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
                 return HTTPStatus.OK, event_entries[0], None
 
-            logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+            logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
     def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+        """Query events.
+
+        :param event_id: The event ID (optional).
+        :type event_id: str
+
+        :return: Tuple containing the HTTP status, a list of Event objects, and a message.
+        :rtype: Tuple[HTTPStatus, List[Event], str]
+
+        """
         try:
             range_key_condition = Event.eventId == event_id if event_id else None
             event_entries = list(
@@ -120,35 +152,47 @@ class EventsRepository:
             if not event_entries:
                 if event_id:
                     message = f'Event with ID={event_id} not found'
-                    logging.error(f'[{self.core_obj}={event_id}] {message}')
+                    logger.error(f'[{self.core_obj}={event_id}] {message}')
                 else:
                     message = 'No events found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                    logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query event: {str(e)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj}={event_id}] {message}')
+            logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
             if event_id:
-                logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+                logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
                 return HTTPStatus.OK, event_entries[0], None
 
-            logging.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
+            logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
     def update_event(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
+        """Update an existing event.
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
         current_version = event_entry.latestVersion
         new_version = current_version + 1
 
@@ -167,6 +211,12 @@ class EventsRepository:
                     updatedBy=os.getenv('CURRENT_USER'),
                     latestVersion=new_version,
                 )
+                if updated_data.get('lastEmailSent') is None:
+                    updated_data['lastEmailSent'] = self.current_date
+
+                if updated_data.get('dailyEmailCount') is None:
+                    updated_data['dailyEmailCount'] = 0
+
                 actions = [getattr(Event, k).set(v) for k, v in updated_data.items()]
                 transaction.update(event_entry, actions=actions)
 
@@ -178,16 +228,25 @@ class EventsRepository:
                 transaction.save(old_event_entry)
 
             event_entry.refresh()
-            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_event(self, event_entry: Event) -> Tuple[HTTPStatus, str]:
+        """Delete an existing event.
+
+        :param event_entry: The Event object to be deleted.
+        :type event_entry: Event
+
+        :return: Tuple containing the HTTP status and a message.
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
         try:
             # create new entry with old data
             current_version = event_entry.latestVersion
@@ -204,19 +263,28 @@ class EventsRepository:
             event_entry.entryStatus = EntryStatus.DELETED.value
             event_entry.save()
 
-            logging.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
     def update_event_after_s3_upload(self, event_entry: Event, event_in: EventIn) -> Tuple[HTTPStatus, Event, str]:
-        """
-        This method is almost the same as the update_event() method,
+        """This method is almost the same as the update_event() method,
         but excludes the metadata e.g updatedBy, updateDate etc.
         This is needed so that the lambda handler that triggers when a file
         is uploaded on S3 works properly.
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+
+        :param event_in: EventIn object containing the new event data.
+        :type event_in: EventIn
+
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
         _, updated_data = RepositoryUtils.get_update(
@@ -229,11 +297,63 @@ class EventsRepository:
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()
-            logging.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{event_entry.rangeKey}] {message}')
+            logger.error(f'[{event_entry.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    def append_event_registration_count(self, event_entry: Event, append_count: int = 1):
+        """Adds the registrationCount attribute of the event_entry by append_count
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+
+        :param append_count: The count to be appended.
+        :type append_count: int
+
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
+        try:
+            event_entry.update(actions=[Event.registrationCount.add(append_count)])
+            event_entry.save()
+
+        except PutError as e:
+            message = f'Failed to append event registration count: {str(e)}'
+            logger.error(f'[{event_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message
+
+        else:
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
+
+    def append_event_email_sent_count(self, event_entry: Event, append_count: int = 1):
+        """Adds the dailyEmailSent attribute of the event_entry by append_count
+
+        :param event_entry: The Event object to be updated.
+        :type event_entry: Event
+
+        :param append_count: The count to be appended.
+        :type append_count: int
+
+        :return: Tuple containing the HTTP status, the updated Event object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
+        try:
+            event_entry.update(actions=[Event.dailyEmailCount.add(append_count)])
+            event_entry.save()
+
+        except PutError as e:
+            message = f'Failed to append event daily email sent count: {str(e)}'
+            logger.error(f'[{event_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, message
+
+        else:
+            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            return HTTPStatus.OK, event_entry, ''

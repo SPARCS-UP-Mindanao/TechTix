@@ -1,9 +1,9 @@
 import { QuestionConfigItem } from '@/model/evaluations';
 
-export const question1: QuestionConfigItem[] = [
+export const EVALUTATION_QUESTIONS_1: QuestionConfigItem[] = [
   {
     name: 'overall_experience',
-    questionType: 'slider',
+    questionType: 'radio_buttons',
     question: 'Please rate your overall experience of the event (5 being the highest).',
     options: [],
     required: true
@@ -31,24 +31,24 @@ export const question1: QuestionConfigItem[] = [
   },
   {
     name: 'event_timing_convenient',
-    questionType: 'slider',
+    questionType: 'radio_buttons',
     question: 'Please rate your satisfaction with the duration of the event (5 being the highest).',
     options: [],
     required: true
   }
 ];
 
-export const question2: QuestionConfigItem[] = [
+export const EVALUTATION_QUESTIONS_2: QuestionConfigItem[] = [
   {
     name: 'quality_of_speakers',
-    questionType: 'slider',
+    questionType: 'radio_buttons',
     question: 'Please rate the quality of the speakers (5 being the highest).',
     options: [],
     required: true
   },
   {
     name: 'how_likely_recommend_events_to_others',
-    questionType: 'slider',
+    questionType: 'radio_buttons',
     question: 'Please rate how likely you are to recommend the event to others (5 being most likely)',
     options: [],
     required: true
@@ -76,7 +76,7 @@ export const question2: QuestionConfigItem[] = [
   }
 ];
 
-export const questionToDisplayMap = new Map([
+export const QUESTIONS = new Map([
   ['overall_experience', 'Please rate your overall experience of the event (5 being the highest).'],
   ['how_did_you_hear_about_the_event', 'How did you hear about the event?'],
   ['what_do_you_like_most_about_the_event', 'What do you like most about the event?'],

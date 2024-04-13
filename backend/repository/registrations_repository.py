@@ -1,4 +1,3 @@
-import logging
 import os
 from datetime import datetime
 from http import HTTPStatus
@@ -18,6 +17,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from utils.logger import logger
 
 
 class RegistrationsRepository:
@@ -40,15 +40,17 @@ class RegistrationsRepository:
     def store_registration(
         self, registration_in: RegistrationIn, registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
-        """
-        Store a registration record in the database.
+        """Store a registration record in the database.
 
-        Args:
-            registration_in (RegistrationIn): The registration data to be stored.
+        :param registration_in: The registration data to be stored.
+        :type registration_in: RegistrationIn
 
-        Returns:
-            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the stored registration record,
-            and an optional error message.
+        :param registration_id: The registration ID to be stored. If not provided, a new ULID will be generated.
+        :type registration_id: str
+
+        :return: A tuple containing HTTP status, the stored registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, Registration, str]
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in)  # load data from pydantic schema
         registration_id = registration_id or ulid.ulid()
@@ -68,46 +70,34 @@ class RegistrationsRepository:
 
         except PutError as e:
             message = f'Failed to save registration strategy form: {str(e)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
+            logger.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None
 
-    def query_registrations(
-        self, event_id: str = None, registration_id: str = None
-    ) -> Tuple[HTTPStatus, List[Registration], str]:
-        """
-        Query registration records from the database.
+    def query_registrations(self, event_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+        """Query a list of registration records from the database.
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            registration_id (str, optional): The registration ID to query (default is None to query all records).
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
 
-        Returns:
-            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
-            and an optional error message.
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
+
         """
         try:
             if event_id is None:
                 registration_entries = list(
                     Registration.scan(
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
-                    )
-                )
-            elif registration_id:
-                registration_entries = list(
-                    Registration.query(
-                        hash_key=event_id,
-                        range_key_condition=Registration.rangeKey.__eq__(registration_id),
                         filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
                     )
                 )
@@ -120,50 +110,91 @@ class RegistrationsRepository:
                 )
 
             if not registration_entries:
-                if registration_id:
-                    message = f'Registration with id {registration_id} not found'
-                    logging.error(f'[{self.core_obj}={registration_id}] {message}')
-                else:
-                    message = 'No registration found'
-                    logging.error(f'[{self.core_obj}] {message}')
+                message = 'No registration found'
+                logger.error(f'[{self.core_obj}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query registration: {str(e)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj}]: Fetch Registration data successful')
+            return HTTPStatus.OK, registration_entries, None
+
+    def query_registration_with_registration_id(
+        self, registration_id: str, event_id: str
+    ) -> Tuple[HTTPStatus, Registration, str]:
+        """Query a specific registration record from the database.
+
+        :param event_id: The event ID to query.
+        :type event_id: str
+
+        :param registration_id: The event ID to query.
+        :type registration_id: str
+
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
+
+        """
+        try:
+            registration_entries = list(
+                Registration.query(
+                    hash_key=event_id,
+                    range_key_condition=Registration.rangeKey.__eq__(registration_id),
+                    filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                )
+            )
+
+            if not registration_entries:
+                message = f'Registration with id {registration_id} not found'
+                logger.error(f'[{self.core_obj} = {registration_id}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query registration: {str(e)}'
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {registration_id}]: {message}')
+            logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if registration_id:
-                logging.info(f'[{self.core_obj} = {registration_id}]: Fetch Registration data successful')
-                return HTTPStatus.OK, registration_entries[0], None
-
-            logging.info(f'[{self.core_obj}]: Fetch Registration data successful')
-            return HTTPStatus.OK, registration_entries, None
+            logger.info(f'[{self.core_obj} = {registration_id}]: Fetch Registration data successful')
+            return HTTPStatus.OK, registration_entries[0], None
 
     def query_registrations_with_email(
         self, event_id: str, email: str, exclude_registration_id: str = None
     ) -> Tuple[HTTPStatus, List[Registration], str]:
-        """
-        Query registrations with email
+        """Query registrations with email
 
-        Args:
-            event_id (str, optional): The event ID to query (default is None to query all records).
-            email (str, optional): The email to query (default is None to query all records).
-            exclude_registration (str, optional): The registration ID to exclude (default is None to query all records).
+        :param event_id: The event ID to query (default is None to query all records).
+        :type event_id: str
 
-        Returns:
-            Tuple[HTTPStatus, List[Registration], str]: A tuple containing HTTP status, a list of registration records,
-            and an optional error message.
+        :param email: The email to query (default is None to query all records).
+        :type event_id: str
+
+        :param exclude_registration: The registration ID to exclude (default is None to query all records).
+        :type event_id: str
+
+        :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
+        :rtype: Tuple[HTTPStatus, List[Registration], str]
+
         """
         try:
             filter_condition = Registration.entryStatus.__eq__(EntryStatus.ACTIVE.value)
@@ -180,41 +211,42 @@ class RegistrationsRepository:
 
             if not registration_entries:
                 message = f'Registration with email {email} not found'
-                logging.error(f'[{self.core_obj}={email}] {message}')
+                logger.error(f'[{self.core_obj}={email}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
         except QueryError as e:
             message = f'Failed to query registrations: {str(e)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
-            logging.error(f'[{self.core_obj} = {email}]: {message}')
+            logger.error(f'[{self.core_obj} = {email}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            logging.info(f'[{self.core_obj}]: Fetch Registration with email successful')
+            logger.info(f'[{self.core_obj}]: Fetch Registration with email successful')
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(
         self, registration_entry: Registration, registration_in: RegistrationIn
     ) -> Tuple[HTTPStatus, Registration, str]:
-        """
-        Update a registration record in the database.
+        """Update a registration record in the database.
 
-        Args:
-            registration_entry (Registration): The existing registration record to be updated.
-            registration_in (RegistrationIn): The new registration data.
+        :param registration_entry: The existing registration record to be updated.
+        :type registration_entry: Registration
 
-        Returns:
-            Tuple[HTTPStatus, Registration, str]: A tuple containing HTTP status, the updated registration record,
-            and an optional error message.
+        :param registration_in: The new registration data.
+        :type registration_in: RegistrationIn
+
+        :return: A tuple containing HTTP status, the updated registration record, and an optional error message.
+        :rtype: Tuple[HTTPStatus, Registration, str]
+
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=registration_in, exclude_unset=True)
         has_update, updated_data = RepositoryUtils.get_update(
@@ -233,30 +265,30 @@ class RegistrationsRepository:
                 transaction.update(registration_entry, actions=actions)
 
             registration_entry.refresh()
-            logging.info(f'[{registration_entry.rangeKey}] ' f'Update event data succesful')
+            logger.info(f'[{registration_entry.rangeKey}] ' f'Update event data succesful')
             return HTTPStatus.OK, registration_entry, ''
 
         except TransactWriteError as e:
             message = f'Failed to update event data: {str(e)}'
-            logging.error(f'[{registration_entry.rangeKey}] {message}')
+            logger.error(f'[{registration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def delete_registration(self, registration_entry: Registration) -> HTTPStatus:
-        """
-        Delete a registration record from the database.
+        """Delete a registration record from the database.
 
-        Args:
-            registration_entry (Registration): The registration record to be deleted.
+        :param registration_entry: The registration record to be deleted.
+        :type registration_entry: Registration
 
-        Returns:
-            HTTPStatus: The HTTP status of the operation.
+        :return: The HTTP status of the operation.
+        :rtype: HTTPStatus
+
         """
         try:
             registration_entry.delete()
-            logging.info(f'[{registration_entry.rangeKey}] ' f'Delete event data successful')
+            logger.info(f'[{registration_entry.rangeKey}] ' f'Delete registration data successful')
             return HTTPStatus.OK, None
 
         except DeleteError as e:
             message = f'Failed to delete event data: {str(e)}'
-            logging.error(f'[{registration_entry.rangeKey}] {message}')
+            logger.error(f'[{registration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR

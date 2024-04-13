@@ -1,7 +1,7 @@
 import { createApi } from '@/api/utils/createApi';
-import { Registration } from '@/model/registrations';
+import { CreateRegistration, Registration, UpdateRegistration } from '@/model/registrations';
 
-interface RegistrationDto {
+export interface RegistrationDto {
   firstName: string;
   lastName: string;
   contactNumber: string;
@@ -9,7 +9,6 @@ interface RegistrationDto {
   yearsOfExperience: string;
   organization: string;
   title: string;
-  certificateClaimed: boolean;
   email: string;
   eventId: string;
   registrationId: string;
@@ -21,16 +20,21 @@ interface RegistrationDto {
   referenceNumber: string | null;
   gcashPayment: string | null;
   gcashPaymentUrl: string | null;
+  certificateGenerated: boolean;
+  certificateClaimed: boolean;
+  certificateImgObjectKey: string | null;
+  certificatePdfObjectKey: string | null;
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
-  ...registration
+  ...registration,
+  type: 'registration'
 });
 
 const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): Registration[] =>
   registrations.map((registration) => mapRegistrationDtoToRegistration(registration));
 
-export const registerUserInEvent = (userInfo: Registration) =>
+export const registerUserInEvent = (userInfo: CreateRegistration) =>
   createApi<Registration>({
     method: 'post',
     url: '/registrations',
@@ -55,11 +59,12 @@ export const getEventRegistrations = (eventId: string) =>
   });
 
 export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
-  createApi<Registration[]>({
+  createApi<RegistrationDto, Registration>({
     method: 'get',
     authorize: true,
     url: `/registrations/${email}/email`,
-    queryParams: { eventId }
+    queryParams: { eventId },
+    output: mapRegistrationDtoToRegistration
   });
 
 export const getSpecificRegistration = (eventId: string, registrationId: string) =>
@@ -71,7 +76,7 @@ export const getSpecificRegistration = (eventId: string, registrationId: string)
     output: mapRegistrationDtoToRegistration
   });
 
-export const updateRegistration = (eventId: string, registrationId: string, userInfo: Registration) =>
+export const updateRegistration = (eventId: string, registrationId: string, userInfo: UpdateRegistration) =>
   createApi<Registration>({
     method: 'put',
     authorize: true,

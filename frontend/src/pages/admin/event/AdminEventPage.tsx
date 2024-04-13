@@ -6,7 +6,7 @@ import { useApiQuery } from '@/hooks/useApi';
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
 
-  const { data: response, isFetching } = useApiQuery(getEvent(eventId!));
+  const { data: response, isFetching, refetch: refetchEvent } = useApiQuery(getEvent(eventId!));
 
   if (isFetching) {
     return (
@@ -27,7 +27,7 @@ const AdminEventPageContent = () => {
     );
   }
 
-  const event = response.data;
+  const event = { ...response.data, refetchEvent };
 
   return (
     <div>

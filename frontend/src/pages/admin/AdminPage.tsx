@@ -48,7 +48,7 @@ const AdminPageContent = () => {
 
   const ADMIN_CONFIG = getAdminRouteConfig({
     userGroups: userGroups,
-    eventId: eventId!,
+    eventId: eventId,
     setLogoutOpen
   });
 
@@ -80,7 +80,7 @@ const AdminPageContent = () => {
           style={{ paddingLeft: !md ? 0 : SIDEBAR_OFFSET }}
         >
           {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
-          <div className="p-10 md:p-14">
+          <div className="p-10 px-4 md:p-14">
             <AdminPageRoute context={{ userGroups }} />
           </div>
         </div>
