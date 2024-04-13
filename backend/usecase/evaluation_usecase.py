@@ -23,9 +23,7 @@ class EvaluationUsecase:
         self.__registrations_repository = RegistrationsRepository()
         self.__events_repository = EventsRepository()
 
-    def create_evaluation(
-        self, evaluation_list_in: EvaluationListIn
-    ) -> Union[JSONResponse, List[EvaluationOut]]:
+    def create_evaluation(self, evaluation_list_in: EvaluationListIn) -> Union[JSONResponse, List[EvaluationOut]]:
         """Create evaluations for a registration
 
         :param evaluation_list_in: The evaluations to be created
@@ -43,46 +41,35 @@ class EvaluationUsecase:
             event_id
         )  # NOTE: am i doing this right, i don't wanna add another param but di pud ko sure if fetching the whole thing is the best move?
         if event.registrationType == RegistrationType.REDIRECT:
-            message = (
-                "Error: Evaluation should not be created for REDIRECT registrationType"
-            )
-            return JSONResponse(
-                status_code=HTTPStatus.BAD_REQUEST, content={"message": message}
-            )
+            message = 'Error: Evaluation should not be created for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
 
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
             registration,
             message,
-        ) = self.__registrations_repository.query_registrations(
-            event_id=event_id, registration_id=registration_id
-        )
+        ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
             evaluation_list,
             message,
-        ) = self.__evaluations_repository.store_evaluation(
-            evaluation_list_in=evaluation_list_in
-        )
+        ) = self.__evaluations_repository.store_evaluation(evaluation_list_in=evaluation_list_in)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         self.__registrations_repository.update_registration(
             registration_entry=registration,
             registration_in=RegistrationPatch(certificateClaimed=True),
         )
 
-        return [
-            EvaluationOut(**self.__convert_data_entry_to_dict(evaluation))
-            for evaluation in evaluation_list
-        ]
+        return [EvaluationOut(**self.__convert_data_entry_to_dict(evaluation)) for evaluation in evaluation_list]
 
     def update_evaluation(
         self,
@@ -111,43 +98,37 @@ class EvaluationUsecase:
         """
         event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = "Error: No evaluation to update for REDIRECT registrationType"
-            return JSONResponse(
-                status_code=HTTPStatus.BAD_REQUEST, content={"message": message}
-            )
+            message = 'Error: No evaluation to update for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
 
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         status, __, message = self.__registrations_repository.query_registrations(
             event_id=event_id, registration_id=registration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         status, evaluation, message = self.__evaluations_repository.query_evaluations(
             event_id, registration_id, question
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
             update_evaluation,
             message,
-        ) = self.__evaluations_repository.update_evaluation(
-            evaluation_entry=evaluation, evaluation_in=evaluation_in
-        )
+        ) = self.__evaluations_repository.update_evaluation(evaluation_entry=evaluation, evaluation_in=evaluation_in)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         evaluation_data = self.__convert_data_entry_to_dict(update_evaluation)
         return EvaluationOut(**evaluation_data)
 
-    def get_evaluation(
-        self, event_id: str, registration_id: str, question: str
-    ) -> Union[JSONResponse, EvaluationOut]:
+    def get_evaluation(self, event_id: str, registration_id: str, question: str) -> Union[JSONResponse, EvaluationOut]:
         """Get an evaluation
 
         :param event_id: The id of the event
@@ -165,20 +146,18 @@ class EvaluationUsecase:
         """
         event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = "Error: No evaluations for REDIRECT registrationType"
-            return JSONResponse(
-                status_code=HTTPStatus.BAD_REQUEST, content={"message": message}
-            )
+            message = 'Error: No evaluations for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
 
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         status, evaluation, message = self.__evaluations_repository.query_evaluations(
             event_id, registration_id, question
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         evaluations_data = self.__convert_data_entry_to_dict(evaluation)
         return EvaluationOut(**evaluations_data)
@@ -204,22 +183,18 @@ class EvaluationUsecase:
         if event_id:
             event = EventUsecase.get_event(event_id)
             if event.registrationType == RegistrationType.REDIRECT:
-                message = "Error: No evaluations for REDIRECT registrationType"
-                return JSONResponse(
-                    status_code=HTTPStatus.BAD_REQUEST, content={"message": message}
-                )
+                message = 'Error: No evaluations for REDIRECT registrationType'
+                return JSONResponse(status_code=HTTPStatus.BAD_REQUEST, content={'message': message})
 
-            status, _, message = self.__events_repository.query_events(
-                event_id=event_id
-            )
+            status, _, message = self.__events_repository.query_events(event_id=event_id)
             if status != HTTPStatus.OK:
-                return JSONResponse(status_code=status, content={"message": message})
+                return JSONResponse(status_code=status, content={'message': message})
 
         status, evaluations, message = self.__evaluations_repository.query_evaluations(
             event_id, registration_id, question
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         evaluation_out_dict = {}
         for evaluation in evaluations:
@@ -231,9 +206,7 @@ class EvaluationUsecase:
 
         evaluations_return = []
         for registration_id, evaluation_out_list in evaluation_out_dict.items():
-            evaluations_return_entry = EvaluationListOut(
-                evaluationList=evaluation_out_list
-            )
+            evaluations_return_entry = EvaluationListOut(evaluationList=evaluation_out_list)
 
             _, registration, _ = self.__registrations_repository.query_registrations(
                 event_id=event_id, registration_id=registration_id
@@ -247,9 +220,7 @@ class EvaluationUsecase:
 
         return evaluations_return
 
-    def get_evaluations_by_question(
-        self, event_id: str, question: str
-    ) -> Union[JSONResponse, List[EvaluationOut]]:
+    def get_evaluations_by_question(self, event_id: str, question: str) -> Union[JSONResponse, List[EvaluationOut]]:
         """Get evaluations for a question
 
         :param event_id: The id of the event
@@ -266,24 +237,20 @@ class EvaluationUsecase:
         if event.registrationType == RegistrationType.REDIRECT:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={
-                    "message": "Error: No evaluations for REDIRECT registrationType"
-                },
+                content={'message': 'Error: No evaluations for REDIRECT registrationType'},
             )
 
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
             evaluations,
             message,
-        ) = self.__evaluations_repository.query_evaluations_by_question(
-            event_id, question
-        )
+        ) = self.__evaluations_repository.query_evaluations_by_question(event_id, question)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         evaluation_out_list = []
         for evaluation in evaluations:

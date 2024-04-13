@@ -6,7 +6,6 @@ from model.events.events_constants import EventStatus, RegistrationType
 from pydantic import BaseModel, EmailStr, Extra, Field
 from pynamodb.attributes import (
     BooleanAttribute,
-    EnumAttribute,
     NumberAttribute,
     UnicodeAttribute,
 )
@@ -16,7 +15,7 @@ from pynamodb.models import Model
 
 class EventIdIndex(LocalSecondaryIndex):
     class Meta:
-        index_name = 'eventId-index'
+        index_name = "eventId-index"
         projection = AllProjection()
         read_capacity_units = 1
         write_capacity_units = 1
@@ -29,9 +28,9 @@ class Event(Model):
     # hk: v<version_number>
     # rk: <adminId>#<eventId>
     class Meta:
-        table_name = os.getenv('EVENTS_TABLE')
-        region = os.getenv('REGION')
-        billing_mode = 'PAY_PER_REQUEST'
+        table_name = os.getenv("EVENTS_TABLE")
+        region = os.getenv("REGION")
+        billing_mode = "PAY_PER_REQUEST"
 
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
@@ -48,7 +47,7 @@ class Event(Model):
     name = UnicodeAttribute(null=True)
     description = UnicodeAttribute(null=True)
     status = UnicodeAttribute(null=True)
-    registrationType = EnumAttribute(choices=RegistrationType)
+    registrationType = UnicodeAttribute(null=True)
     redirectRegisterUrl = UnicodeAttribute(null=True)
     email = UnicodeAttribute(null=True)
     startDate = UnicodeAttribute(null=True)
@@ -79,50 +78,54 @@ class EventIn(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    name: str = Field(None, title='Name')
-    description: str = Field(None, title='Description')
-    registrationType: RegistrationType = Field(RegistrationType.TECHTIX, title='Registration Type')
-    redirectRegisterUrl: str = Field(None, title='Redirect Register URL')
-    email: EmailStr = Field(None, title='Email')
-    startDate: datetime = Field(None, title='Date')
-    endDate: datetime = Field(None, title='Date')
-    venue: str = Field(None, title='Venue')
-    paidEvent: bool = Field(None, title='Paid Event')
-    price: float = Field(None, title='Price')
-    bannerLink: str = Field(None, title='Banner Link')
-    logoLink: str = Field(None, title='Poster Link')
-    certificateTemplate: str = Field(None, title='Certificate Template')
-    isApprovalFlow: bool = Field(None, title='Approval Flow')
+    name: str = Field(None, title="Name")
+    description: str = Field(None, title="Description")
+    registrationType: RegistrationType = Field(
+        RegistrationType.TECHTIX, title="Registration Type"
+    )
+    redirectRegisterUrl: str = Field(None, title="Redirect Register URL")
+    email: EmailStr = Field(None, title="Email")
+    startDate: datetime = Field(None, title="Date")
+    endDate: datetime = Field(None, title="Date")
+    venue: str = Field(None, title="Venue")
+    paidEvent: bool = Field(None, title="Paid Event")
+    price: float = Field(None, title="Price")
+    bannerLink: str = Field(None, title="Banner Link")
+    logoLink: str = Field(None, title="Poster Link")
+    certificateTemplate: str = Field(None, title="Certificate Template")
+    isApprovalFlow: bool = Field(None, title="Approval Flow")
 
-    isLimitedSlot: bool = Field(None, title='Is Limited Slot')
-    maximumSlots: int = Field(None, title='Maximum Slots')
+    isLimitedSlot: bool = Field(None, title="Is Limited Slot")
+    maximumSlots: int = Field(None, title="Maximum Slots")
 
-    status: Optional[EventStatus] = Field(None, title='Event Status')
+    status: Optional[EventStatus] = Field(None, title="Event Status")
 
 
 class EventDataIn(EventIn):
     class Config:
         extra = Extra.forbid
 
-    gcashQRCode: str = Field(None, title='GCash QR Code')
-    gcashName: str = Field(None, title='Gcash Name')
-    gcashNumber: str = Field(None, title='Gcash Number')
+    gcashQRCode: str = Field(None, title="GCash QR Code")
+    gcashName: str = Field(None, title="Gcash Name")
+    gcashNumber: str = Field(None, title="Gcash Number")
 
-    registrationCount: int = Field(None, title='Registration Count')
+    registrationCount: int = Field(None, title="Registration Count")
 
-    dailyEmailCount: int = Field(None, title='Daily Email Count')
-    lastEmailSent: datetime = Field(None, title='Last Email Sent')
+    dailyEmailCount: int = Field(None, title="Daily Email Count")
+    lastEmailSent: datetime = Field(None, title="Last Email Sent")
 
 
 class EventOut(EventDataIn):
     class Config:
         extra = Extra.ignore
 
-    eventId: str = Field(..., title='ID')
-    createDate: datetime = Field(..., title='Created At')
-    updateDate: datetime = Field(..., title='Updated At')
-    createdBy: str = Field(..., title='Created By')
-    updatedBy: str = Field(None, title='Updated By')
-    bannerUrl: Optional[str] = Field(None, title='Banner Pre-signed URL')
-    logoUrl: Optional[str] = Field(None, title='Logo Pre-signed URL')
-    certificateTemplateUrl: Optional[str] = Field(None, title='Certificate Template Pre-signed URL')
+    eventId: str = Field(..., title="ID")
+    createDate: datetime = Field(..., title="Created At")
+    updateDate: datetime = Field(..., title="Updated At")
+    createdBy: str = Field(..., title="Created By")
+    updatedBy: str = Field(None, title="Updated By")
+    bannerUrl: Optional[str] = Field(None, title="Banner Pre-signed URL")
+    logoUrl: Optional[str] = Field(None, title="Logo Pre-signed URL")
+    certificateTemplateUrl: Optional[str] = Field(
+        None, title="Certificate Template Pre-signed URL"
+    )
