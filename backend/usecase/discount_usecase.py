@@ -40,18 +40,14 @@ class DiscountUsecase:
         """
         event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = "Error: No discounts for REDIRECT registrationType"
-            return JSONResponse(
-                status_code=HTTPStatus.NOT_FOUND, content={"message": message}
-            )
+            message = 'Error: No discounts for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.NOT_FOUND, content={'message': message})
 
-        status, discount, message = (
-            self.__discounts_repository.query_discount_with_discount_id(
-                event_id=event_id, discount_id=entry_id
-            )
+        status, discount, message = self.__discounts_repository.query_discount_with_discount_id(
+            event_id=event_id, discount_id=entry_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         discount_data = self.__convert_data_entry_to_dict(discount)
         discount_out = DiscountOut(**discount_data)
@@ -84,16 +80,14 @@ class DiscountUsecase:
         """
         event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = "Error: No discounts for REDIRECT registrationType"
-            return JSONResponse(
-                status_code=HTTPStatus.NOT_FOUND, content={"message": message}
-            )
+            message = 'Error: No discounts for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.NOT_FOUND, content={'message': message})
 
         status, discounts, message = self.__discounts_repository.query_discounts(
             event_id=event_id,
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         discount_map = {}
         for discount in discounts:
@@ -109,9 +103,7 @@ class DiscountUsecase:
                     event_id=event_id, registration_id=discount.registrationId
                 )
                 if registration_entry:
-                    registration_data = self.__convert_data_entry_to_dict(
-                        registration_entry
-                    )
+                    registration_data = self.__convert_data_entry_to_dict(registration_entry)
                     discount_out.registration = registration_data
 
             discount_out_list = discount_map.get(discount_out.organizationId) or []
@@ -145,26 +137,22 @@ class DiscountUsecase:
 
         event = EventUsecase.get_event(event_id)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = "Error: No discounts for REDIRECT registrationType"
-            return JSONResponse(
-                status_code=HTTPStatus.NOT_FOUND, content={"message": message}
-            )
+            message = 'Error: No discounts for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.NOT_FOUND, content={'message': message})
 
-        status, discount_entry, message = (
-            self.__discounts_repository.query_discount_with_discount_id(
-                discount_id=entry_id, event_id=event_id
-            )
+        status, discount_entry, message = self.__discounts_repository.query_discount_with_discount_id(
+            discount_id=entry_id, event_id=event_id
         )
         if status != HTTPStatus.OK:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={"message": "Discount Does Not Exist"},
+                content={'message': 'Discount Does Not Exist'},
             )
 
         if discount_entry.claimed:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={"message": "Discount already claimed"},
+                content={'message': 'Discount already claimed'},
             )
 
         discount_data = self.__convert_data_entry_to_dict(discount_entry)
@@ -178,14 +166,12 @@ class DiscountUsecase:
             discount_entry=discount_entry, discount_in=discount_in
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         discount_data = self.__convert_data_entry_to_dict(discount)
         return DiscountOut(**discount_data)
 
-    def create_discounts(
-        self, discount_in: DiscountIn
-    ) -> Union[JSONResponse, List[DiscountOut]]:
+    def create_discounts(self, discount_in: DiscountIn) -> Union[JSONResponse, List[DiscountOut]]:
         """Create discounts.
 
         :param discount_in: DiscountIn object containing the new discount data.
@@ -197,19 +183,13 @@ class DiscountUsecase:
         """
         event = EventUsecase.get_event(DiscountIn.eventId)
         if event.registrationType == RegistrationType.REDIRECT:
-            message = (
-                "Error: Discounts should not be created for REDIRECT registrationType"
-            )
-            return JSONResponse(
-                status_code=HTTPStatus.NOT_FOUND, content={"message": message}
-            )
+            message = 'Error: Discounts should not be created for REDIRECT registrationType'
+            return JSONResponse(status_code=HTTPStatus.NOT_FOUND, content={'message': message})
 
         status, _, __ = self.__events_repository.query_events(discount_in.eventId)
 
         if status != HTTPStatus.OK:
-            return JSONResponse(
-                status_code=status, content={"message": "Event does not exist"}
-            )
+            return JSONResponse(status_code=status, content={'message': 'Event does not exist'})
 
         discount_list = []
         organization_id = Utils.convert_to_slug(discount_in.organizationName)
@@ -223,11 +203,9 @@ class DiscountUsecase:
                 entryId=self.__generate_discount_code(),
             )
 
-            status, discount, message = self.__discounts_repository.store_discount(
-                discount_in=discount_in
-            )
+            status, discount, message = self.__discounts_repository.store_discount(discount_in=discount_in)
             if status != HTTPStatus.OK:
-                return JSONResponse(status_code=status, content={"message": message})
+                return JSONResponse(status_code=status, content={'message': message})
 
             discount_data = self.__convert_data_entry_to_dict(discount)
             discount_out = DiscountOut(**discount_data)
@@ -246,7 +224,7 @@ class DiscountUsecase:
 
         """
         characters = string.ascii_uppercase + string.digits
-        return "".join(random.choice(characters) for _ in range(length))
+        return ''.join(random.choice(characters) for _ in range(length))
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
