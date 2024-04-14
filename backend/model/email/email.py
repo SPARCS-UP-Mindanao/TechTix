@@ -14,4 +14,3 @@ class EmailIn(BaseModel):
     regards: List[str] = Field(..., title='Regards of the email')
     emailType: EmailType = Field(..., title='Type of the email')
     eventId: str = Field(..., title='Event ID of the email')
-    useBackupSMTP: bool = Field(None, title='Use backup SMTP Service')
