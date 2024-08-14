@@ -1,4 +1,5 @@
 service: sparcs-events-api
+frameworkVersion: ^3.25.0
 
 custom:
   projectName: sparcs-events

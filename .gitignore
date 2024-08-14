@@ -6,3 +6,5 @@ my.secrets
 .env
 .env.local
 .DS_STORE
+
+.ruff_cache
