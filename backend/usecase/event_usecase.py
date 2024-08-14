@@ -110,8 +110,7 @@ class EventUsecase:
             ) = self.__registration_repository.query_registrations(event_id=event_id)
             participants = [entry.email for entry in registrations if not entry.evaluationEmailSent]
             self.__email_usecase.send_event_completion_email(
-                event_id=event_id,
-                event_name=event.name,
+                event=event,
                 claim_certificate_url=claim_certificate_url,
                 participants=participants,
             )
