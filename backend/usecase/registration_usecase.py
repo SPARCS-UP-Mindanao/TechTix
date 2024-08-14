@@ -194,7 +194,9 @@ class RegistrationUsecase:
             status,
             registration,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
+        ) = self.__registrations_repository.query_registration_with_registration_id(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -234,7 +236,9 @@ class RegistrationUsecase:
             status,
             registration,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
+        ) = self.__registrations_repository.query_registration_with_registration_id(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -317,7 +321,9 @@ class RegistrationUsecase:
             status,
             registration,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id, registration_id=registration_id)
+        ) = self.__registrations_repository.query_registration_with_registration_id(
+            event_id=event_id, registration_id=registration_id
+        )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

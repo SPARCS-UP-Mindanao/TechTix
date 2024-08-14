@@ -37,7 +37,7 @@ jobs:
       - name: Install Serverless Framework
         run: |
           npm install
-          npm install -g serverless
+          npm install -g serverless@3.39.0
         working-directory: backend
 
       - name: Deploy with Serverless

@@ -70,26 +70,19 @@ class DiscountsRepository:
             logger.info(f'[{self.core_obj} = {entry_id}]: Save Discounts strategy data successful')
             return HTTPStatus.OK, discount_entry, None
 
-    def query_discounts(self, event_id: str, discount_id: str = None) -> Tuple[HTTPStatus, List[Discount], str]:
-        """Query discounts by event ID and optionally by discount ID.
+    def query_discounts(self, event_id: str) -> Tuple[HTTPStatus, List[Discount], str]:
+        """Query discounts by event.
 
         :param event_id: The ID of the event to query discounts for.
         :type event_id: str
-
-        :param discount_id: The ID of the discount to query, defaults to None.
-        :type discount_id: str, optional
 
         :return: The HTTP status, the queried discounts or None, and a message.
         :rtype: Tuple[HTTPStatus, List[Discount], str]
 
         """
         try:
-            if discount_id:
-                range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
-                range_key_condition = Discount.rangeKey.__eq__(range_key_prefix)
-            else:
-                range_key_prefix = f'v{self.latest_version}#{event_id}'
-                range_key_condition = Discount.rangeKey.startswith(range_key_prefix)
+            range_key_prefix = f'v{self.latest_version}#{event_id}'
+            range_key_condition = Discount.rangeKey.startswith(range_key_prefix)
 
             discount_entries = list(
                 Discount.query(
@@ -98,13 +91,58 @@ class DiscountsRepository:
                     filter_condition=Discount.entryStatus == EntryStatus.ACTIVE.value,
                 )
             )
+
             if not discount_entries:
-                if discount_id:
-                    message = f'Discount with ID={discount_id} not found'
-                    logger.error(f'[{self.core_obj}={discount_id}] {message}')
-                else:
-                    message = 'No discounts found'
-                    logger.error(f'[{self.core_obj}] {message}')
+                message = 'No discounts found'
+                logger.error(f'[{self.core_obj}] {message}')
+
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query discount: {str(e)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj} = {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj} = Fetch Discount data successful')
+            return HTTPStatus.OK, discount_entries, None
+
+    def query_discount_with_discount_id(self, event_id: str, discount_id: str) -> Tuple[HTTPStatus, Discount, str]:
+        """Query discounts by discount ID.
+
+        :param event_id: The ID of the event to query discounts for.
+        :type event_id: str
+
+        :param discount_id: The ID of the discount to query, defaults to None.
+        :type discount_id: str
+
+        :return: The HTTP status, the queried discounts or None, and a message.
+        :rtype: Tuple[HTTPStatus, Discount, str]
+
+        """
+        try:
+            range_key_prefix = f'v{self.latest_version}#{event_id}#{discount_id}'
+            range_key_condition = Discount.rangeKey.__eq__(range_key_prefix)
+
+            discount_entries = list(
+                Discount.query(
+                    hash_key=self.core_obj,
+                    range_key_condition=range_key_condition,
+                    filter_condition=Discount.entryStatus == EntryStatus.ACTIVE.value,
+                )
+            )
+
+            if not discount_entries:
+                message = f'Discount with ID = {discount_id} not found'
+                logger.error(f'[{self.core_obj} = {discount_id}] {message}')
 
                 return HTTPStatus.NOT_FOUND, None, message
 
@@ -122,12 +160,8 @@ class DiscountsRepository:
             logger.error(f'[{self.core_obj}={discount_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
         else:
-            if discount_id:
-                logger.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
-                return HTTPStatus.OK, discount_entries[0], None
-
             logger.info(f'[{self.core_obj}={discount_id}] Fetch Discount data successful')
-            return HTTPStatus.OK, discount_entries, None
+            return HTTPStatus.OK, discount_entries[0], None
 
     def update_discount(self, discount_entry: Discount, discount_in: DiscountDBIn) -> Tuple[HTTPStatus, Discount, str]:
         """Update a discount.

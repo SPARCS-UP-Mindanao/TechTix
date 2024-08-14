@@ -109,7 +109,7 @@ class PreRegistrationUsecase:
             status,
             preregistration,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations(
+        ) = self.__preregistrations_repository.query_preregistration_with_preregistration_id(
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
@@ -151,7 +151,7 @@ class PreRegistrationUsecase:
             status,
             preregistration,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations(
+        ) = self.__preregistrations_repository.query_preregistration_with_preregistration_id(
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
@@ -234,7 +234,7 @@ class PreRegistrationUsecase:
             status,
             preregistration,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations(
+        ) = self.__preregistrations_repository.query_preregistration_with_preregistration_id(
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
