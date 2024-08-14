@@ -53,3 +53,12 @@ class EmailType(str, Enum):
     CONFIRMATION_EMAIL = 'confirmationEmail'
     EVALUATION_EMAIL = 'evaluationEmail'
     EVENT_CREATION_EMAIL = 'eventCreationEmail'
+    ADMIN_INVITATION_EMAIL = 'adminInvitationEmail'
+
+
+class SpecialEmails(str, Enum):
+    DURIAN_PY = 'durianpy.davao@gmail.com'
+
+
+class SpecialSenders(str, Enum):
+    DURIAN_PY = 'DurianPy - Davao Python User Group'

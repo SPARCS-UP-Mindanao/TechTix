@@ -6,7 +6,7 @@ from typing import List, Tuple
 
 import ulid
 from boto3 import client as boto3_client
-from constants.common_constants import EmailType
+from constants.common_constants import EmailType, SpecialEmails, SpecialSenders
 from model.email.email import EmailIn
 from model.events.event import Event
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
@@ -21,6 +21,9 @@ class EmailUsecase:
         self.__sqs_client = boto3_client('sqs', region_name=os.getenv('REGION', 'ap-southeast-1'))
         self.__sqs_url = os.getenv('EMAIL_QUEUE')
         self.__preregistration_repository = PreRegistrationsRepository()
+        self.__sender_name_map = {
+            SpecialEmails.DURIAN_PY.value: SpecialSenders.DURIAN_PY.value,
+        }
 
     def __send_email_handler(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
         timestamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
@@ -86,6 +89,12 @@ class EmailUsecase:
         body = [f'Event {event.name} has been created. Please check the event page for more details.']
         salutation = 'Dear Sparcs ,'
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         email_in = EmailIn(
             to=[event.email],
             subject=subject,
@@ -94,6 +103,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.EVENT_CREATION_EMAIL.value,
             eventId=event.eventId,
+            isSparcs=is_sparcs,
         )
         return self.send_email(email_in=email_in)
 
@@ -110,6 +120,7 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         subject = f'{event.name} Registration Confirmation'
         body = [
             f'Thank you for registering for the upcoming {event.name}!',
@@ -118,6 +129,11 @@ class EmailUsecase:
         ]
         salutation = f'Good day {registration.firstName},'
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
         email_in = EmailIn(
             to=[registration.email],
             subject=subject,
@@ -126,6 +142,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.REGISTRATION_EMAIL.value,
             eventId=event.eventId,
+            isSparcs=is_sparcs,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
         return self.send_email(email_in=email_in)
@@ -180,6 +197,7 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         subject = f'Welcome to {event.name} Pre-Registration!'
         body = [
             'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
@@ -188,6 +206,11 @@ class EmailUsecase:
 
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
         email_in = EmailIn(
             to=[preregistration.email],
             subject=subject,
@@ -196,6 +219,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
+            isSparcs=is_sparcs,
         )
         logger.info(f'Sending pre-registration email to {preregistration.email}')
         return self.send_email(email_in=email_in)
@@ -211,6 +235,7 @@ class EmailUsecase:
 
         :return: EmailIn
         """
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
         body = [
@@ -219,6 +244,11 @@ class EmailUsecase:
             'If you have any questions or need assistance, we’re here for you. Let’s make this event unforgettable!',
         ]
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
         email_in = EmailIn(
             to=[preregistration.email],
             subject=subject,
@@ -227,6 +257,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
+            isSparcs=is_sparcs,
         )
         logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
         return email_in
@@ -243,16 +274,22 @@ class EmailUsecase:
         :return: EmailIn
 
         """
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
             f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
             'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
-            'Despite this setback, we want to extend a heartfelt invitation to you for our next event at Sparcs. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
+            'Despite this setback, we want to extend a heartfelt invitation to you for our next event. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
             'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us.',
             'Thank you for your understanding.',
         ]
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
         email_in = EmailIn(
             to=[preregistration.email],
             subject=subject,
@@ -261,24 +298,21 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
+            isSparcs=is_sparcs,
         )
         logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
         return email_in
 
     def send_event_completion_email(
         self,
-        event_id: str,
-        event_name: str,
+        event: Event,
         claim_certificate_url: str,
         participants: list,
     ) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue.
 
-        :param event_id: The id of the event
-        :type event_id: str
-
-        :param event_name: The name of the event
-        :type event_name: str
+        :param event: Event entry
+        :type event: Event
 
         :param claim_certificate_url: The url to claim the certificate
         :type claim_certificate_url: str
@@ -287,15 +321,23 @@ class EmailUsecase:
         :type participants: list
 
         """
+        event_name = event.name
+        event_id = event.eventId
+        is_sparcs = event.email != SpecialEmails.DURIAN_PY
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [
             f'A big thank you for attending {event_name}! Your participation made the event truly special.',
             'To claim your certificate, please fill out the evaluation form below. Your feedback is crucial for us to keep improving.',
             claim_certificate_url,
-            "We're excited to see you at future SPARCS events – more great experiences await!",
+            "We're excited to see you at future events – more great experiences await!",
         ]
         regards = ['Best,']
+
+        # Check if email is a special sender to add to the regards message
+        if special_sender := self.__sender_name_map.get(event.email):
+            regards.append(special_sender)
+
         emails = [
             EmailIn(
                 to=[participant],
@@ -305,6 +347,7 @@ class EmailUsecase:
                 regards=regards,
                 emailType=EmailType.EVALUATION_EMAIL.value,
                 eventId=event_id,
+                isSparcs=is_sparcs,
             )
             for participant in participants
         ]
