@@ -1,6 +1,7 @@
+from model.entities import Entities
 from pydantic import BaseModel, Field
 from pynamodb.attributes import NumberAttribute, UnicodeAttribute
-from model.entities import Entities
+
 
 class TicketType(Entities, discriminator='TicketType'):
     # hk: Entities#<eventId>
@@ -13,7 +14,7 @@ class TicketType(Entities, discriminator='TicketType'):
     maximumQuantity = NumberAttribute(null=False)
 
     currentSales = NumberAttribute(default=0)
-    
+
     eventId = UnicodeAttribute(null=False)
 
 

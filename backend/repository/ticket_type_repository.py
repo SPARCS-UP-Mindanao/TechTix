@@ -1,5 +1,4 @@
 import os
-from ulid import ulid
 from copy import deepcopy
 from datetime import datetime
 from http import HTTPStatus
@@ -17,6 +16,7 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
+from ulid import ulid
 from utils.logger import logger
 
 
@@ -118,7 +118,9 @@ class TicketTypeRepository:
             logger.info(f'[{self.core_obj} = Fetch TicketType data successful')
             return HTTPStatus.OK, ticket_type_entries, None
 
-    def query_ticket_type_with_ticket_type_id(self, event_id: str, ticket_type_id: str) -> Tuple[HTTPStatus, TicketType, str]:
+    def query_ticket_type_with_ticket_type_id(
+        self, event_id: str, ticket_type_id: str
+    ) -> Tuple[HTTPStatus, TicketType, str]:
         """Query ticket_types by ticket_type ID.
 
         :param event_id: The ID of the event to query ticket_types for.
@@ -167,7 +169,9 @@ class TicketTypeRepository:
             logger.info(f'[{self.core_obj}={ticket_type_id}] Fetch TicketType data successful')
             return HTTPStatus.OK, ticket_type_entries[0], None
 
-    def update_ticket_type(self, ticket_type_entry: TicketType, ticket_type_in: TicketTypeIn) -> Tuple[HTTPStatus, TicketType, str]:
+    def update_ticket_type(
+        self, ticket_type_entry: TicketType, ticket_type_in: TicketTypeIn
+    ) -> Tuple[HTTPStatus, TicketType, str]:
         """Update a ticket_type.
 
         :param ticket_type_entry: The ticket_type entry to update.
@@ -250,7 +254,6 @@ class TicketTypeRepository:
             message = f'Failed to delete ticket_type data: {str(e)}'
             logger.error(f'[{ticket_type_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
-
 
     def append_ticket_type_sales(self, ticket_type_entry: TicketType, append_count: int = 1):
         """Adds the currentSales attribute of the ticket_type_entry by append_count
