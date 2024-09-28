@@ -13,6 +13,7 @@ from repository.events_repository import EventsRepository
 from repository.faqs_repository import FAQsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from repository.registrations_repository import RegistrationsRepository
+from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
@@ -27,6 +28,7 @@ class EventUsecase:
         self.__registration_repository = RegistrationsRepository()
         self.__preregistration_repository = PreRegistrationsRepository()
         self.__faqs_repository = FAQsRepository()
+        self.__ticket_type_repository = TicketTypeRepository()
 
     def create_event(self, event_in: EventIn) -> Union[JSONResponse, EventOut]:
         """Create a new event
@@ -56,6 +58,13 @@ class EventUsecase:
         status, event, message = self.__events_repository.store_event(event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if event_in.ticketTypes:
+            for ticket_type in event_in.ticketTypes:
+                ticket_type.eventId = event.eventId
+                status, ticket_type, message = self.__ticket_type_repository.store_ticket_type(ticket_type)
+                if status != HTTPStatus.OK:
+                    return JSONResponse(status_code=status, content={'message': message})
 
         # Queue Event Creation Email
         email_status, message = self.__email_usecase.send_event_creation_email(event)
@@ -89,6 +98,26 @@ class EventUsecase:
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if event_in.ticketTypes:
+            status, ticket_types_entries, message = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+            ticket_types_map = {ticket_type.entryId: ticket_type for ticket_type in ticket_types_entries}
+            for ticket_type in event_in.ticketTypes:
+                ticket_type_entry = ticket_types_map.get(ticket_type.entryId)
+                if not ticket_type_entry:
+                    return JSONResponse(
+                        status_code=HTTPStatus.BAD_REQUEST,
+                        content={'message': f'Ticket type {ticket_type.name} not found'},
+                    )
+
+                status, ticket_type, message = self.__ticket_type_repository.update_ticket_type(
+                    ticket_type_entry=ticket_type_entry, ticket_type_in=ticket_type
+                )
+                if status != HTTPStatus.OK:
+                    return JSONResponse(status_code=status, content={'message': message})
 
         should_send_accept_reject_emails = (
             original_event.isApprovalFlow

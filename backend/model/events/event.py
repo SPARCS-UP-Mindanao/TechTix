@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from model.events.events_constants import EventStatus
+from model.ticket_types.ticket_types import TicketTypeIn
 from pydantic import BaseModel, EmailStr, Extra, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
@@ -65,6 +66,8 @@ class Event(Model):
     dailyEmailCount = NumberAttribute(default=0)
     lastEmailSent = UnicodeAttribute(null=True)
 
+    hasMultipleTicketTypes = BooleanAttribute(default=False)
+
     eventIdIndex = EventIdIndex()
 
 
@@ -89,6 +92,8 @@ class EventIn(BaseModel):
     maximumSlots: int = Field(None, title='Maximum Slots')
 
     status: Optional[EventStatus] = Field(None, title='Event Status')
+    hasMultipleTicketTypes: Optional[bool] = Field(None, title='Has Multiple Ticket Types')
+    ticketTypes: Optional[List[TicketTypeIn]] = Field(None, title='Ticket Types')
 
 
 class EventDataIn(EventIn):
