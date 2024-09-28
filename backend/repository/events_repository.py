@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 from datetime import datetime
 from http import HTTPStatus
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from constants.common_constants import EntryStatus
 from model.events.event import Event, EventIn
@@ -130,7 +130,7 @@ class EventsRepository:
             logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
-    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, Union[Event, List[Event]], str]:
         """Query events.
 
         :param event_id: The event ID (optional).

@@ -13,6 +13,7 @@ from model.registrations.registration import (
 )
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
+from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
 from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
@@ -37,6 +38,7 @@ class RegistrationUsecase:
         self.__discount_usecase = DiscountUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__preregistration_usecase = PreRegistrationUsecase()
+        self.__ticket_type_repository = TicketTypeRepository()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """Creates a new registration entry.
@@ -84,6 +86,28 @@ class RegistrationUsecase:
                 content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
             )
 
+        # check if ticket types in event exists
+        ticket_type_entry = None
+        if event.hasMultipleTicketTypes:
+            ticket_type_id = registration_in.ticketTypeId
+            if not ticket_type_id:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Ticket type ID is required for multiple ticket types event'},
+                )
+
+            status, ticket_type_entry, message = self.__ticket_type_repository.query_ticket_type_with_ticket_type_id(
+                event_id=event_id, ticket_type_id=ticket_type_id
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+            if ticket_type_entry.currentSales >= ticket_type_entry.maximumQuantity:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': f'Ticket type {ticket_type_entry.name} is sold out'},
+                )
+
         registration_id = ulid.ulid()
         discount_code = registration_in.discountCode
         if discount_code:
@@ -108,6 +132,13 @@ class RegistrationUsecase:
         status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if ticket_type_entry:
+            status, __, message = self.__ticket_type_repository.append_ticket_type_sales(
+                ticket_type_entry=ticket_type_entry
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 
