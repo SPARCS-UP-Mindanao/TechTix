@@ -23,6 +23,7 @@ class EmailUsecase:
         self.__preregistration_repository = PreRegistrationsRepository()
         self.__sender_name_map = {
             SpecialEmails.DURIAN_PY.value: SpecialSenders.DURIAN_PY.value,
+            SpecialEmails.AWSUG_DAVAO.value: SpecialSenders.AWSUG_DAVAO.value,
         }
 
     def __send_email_handler(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
@@ -94,7 +95,8 @@ class EmailUsecase:
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
         email_in = EmailIn(
             to=[event.email],
             subject=subject,
@@ -120,11 +122,13 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
+
         subject = f'{event.name} Registration Confirmation'
         body = [
             f'Thank you for registering for the upcoming {event.name}!',
-            "We're thrilled to have you join us. If you have any questions or need assistance, please don't hesitate to reach out to us. We're here to help!",
+            f"We're thrilled to have you join us. If you have any questions or need assistance, please don't hesitate to reach out to us at {event.email}. We're here to help!",
             'See you soon!',
         ]
         salutation = f'Good day {registration.firstName},'
@@ -197,11 +201,12 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
         subject = f'Welcome to {event.name} Pre-Registration!'
         body = [
             'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
-            'Stay tuned for updates, and in the meantime, feel free to check out more details on our social media channels or reach out with any questions. We’re here to help!',
+            f'Stay tuned for updates, and in the meantime, feel free to check out more details on our social media channels or reach out at {event.email} with any questions. We’re here to help!',
         ]
 
         salutation = f'Good day {preregistration.firstName},'
@@ -235,13 +240,14 @@ class EmailUsecase:
 
         :return: EmailIn
         """
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
         body = [
             f'Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can’t wait to share it with you.',
             f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/register',
-            'If you have any questions or need assistance, we’re here for you. Let’s make this event unforgettable!',
+            f'If you have any questions or need assistance, reach out to us at {event.email}. Let’s make this event unforgettable!',
         ]
         regards = ['Best,']
 
@@ -274,13 +280,14 @@ class EmailUsecase:
         :return: EmailIn
 
         """
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
             f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
             'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
             'Despite this setback, we want to extend a heartfelt invitation to you for our next event. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
-            'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us.',
+            f'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us at {event.email}.',
             'Thank you for your understanding.',
         ]
         salutation = f'Good day {preregistration.firstName},'
@@ -323,13 +330,15 @@ class EmailUsecase:
         """
         event_name = event.name
         event_id = event.eventId
-        is_sparcs = event.email != SpecialEmails.DURIAN_PY
+        is_special_email = event.email in [email.value for email in SpecialEmails]
+        is_sparcs = not is_special_email
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [
             f'A big thank you for attending {event_name}! Your participation made the event truly special.',
             'To claim your certificate, please fill out the evaluation form below. Your feedback is crucial for us to keep improving.',
             claim_certificate_url,
+            f'If you have any questions or need assistance, reach out to us at {event.email}.',
             "We're excited to see you at future events – more great experiences await!",
         ]
         regards = ['Best,']
