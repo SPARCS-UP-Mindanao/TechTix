@@ -2,6 +2,17 @@ import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
 import { Event, EventFAQs, EventStatus, FAQ } from '@/model/events';
 
+export interface TicketType {
+  name: string;
+  description?: string;
+  tier: string;
+  price: number;
+  maximumQuantity: number;
+  eventId: string;
+  entryId: string;
+  konfhubId: string;
+}
+
 export interface EventDto {
   name: string;
   description: string;
@@ -26,6 +37,9 @@ export interface EventDto {
   updateDate: string;
   createdBy: string;
   updatedBy: string;
+  hasMultipleTicketTypes?: boolean;
+  ticketTypes?: TicketType[];
+  konfhubId: string;
 }
 
 export type OptionalEvent = Partial<Event>;

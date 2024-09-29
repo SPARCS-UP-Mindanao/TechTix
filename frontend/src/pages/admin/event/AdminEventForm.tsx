@@ -1,9 +1,10 @@
 import { FC, useState } from 'react';
-import { FormProvider, useFormState, useWatch } from 'react-hook-form';
+import { FormProvider, useFormState, useWatch, useFieldArray } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
 import Button from '@/components/Button';
 import DatePicker from '@/components/DatePicker';
+import Checkbox from '@/components/Checkbox';
 import FileUpload from '@/components/FileUpload';
 import { FormItem, FormLabel, FormError, FormItemContainer, FormItemSpacer } from '@/components/Form';
 import Input from '@/components/Input';
@@ -20,9 +21,16 @@ interface Props {
 
 const AdminEventForm: FC<Props> = ({ event }) => {
   const { form, submit, cancel } = useAdminEventForm(event);
-  const paidEvent = useWatch({ name: 'paidEvent', control: form.control });
-  const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control: form.control });
-  const { isSubmitting, isDirty } = useFormState(form);
+  const { control, register, watch } = form;
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "ticketTypes"
+  });
+  const paidEvent = useWatch({ name: 'paidEvent', control });
+  const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control });
+  const { isSubmitting, isDirty} = useFormState({ control });
+
+  const hasMultipleTicketTypes = watch('hasMultipleTicketTypes');
 
   const [showIsPaidAlert, setShowIsPaidAlert] = useState(false);
   const isPaidAndHasRegistrants = event ? event.paidEvent && !!event.registrationCount : false;
@@ -193,6 +201,70 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             </FormItemContainer>
           )}
         </FormItem>
+
+        <Separator className="my-4" />
+
+        {event && (
+          <>
+            <FormItem name="hasMultipleTicketTypes">
+              {({ field: { value, onChange } }) => (
+                <FormItemContainer>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="hasMultipleTicketTypes" checked={value} onCheckedChange={onChange} />
+                    <FormLabel htmlFor="hasMultipleTicketTypes">Has Multiple Ticket Types</FormLabel>
+                  </div>
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+
+            {hasMultipleTicketTypes && (
+              <FormItem name="ticketTypes">
+                {() => (
+                  <FormItemContainer>
+                    <FormLabel>Ticket Types</FormLabel>
+                    {fields.map((item, index) => (
+                      <div key={item.id} className="space-y-2">
+                        <FormLabel htmlFor={`ticketTypes.${index}.name`}>Name</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.name`)} id={`ticketTypes.${index}.name`} placeholder="Name" />
+
+                        <FormLabel htmlFor={`ticketTypes.${index}.description`}>Description</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.description`)} id={`ticketTypes.${index}.description`} placeholder="Description" />
+
+                        <FormLabel htmlFor={`ticketTypes.${index}.tier`}>Tier</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.tier`)} id={`ticketTypes.${index}.tier`} placeholder="Tier" />
+
+                        <FormLabel htmlFor={`ticketTypes.${index}.price`}>Price</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.price`)} id={`ticketTypes.${index}.price`} type="number" step="0.01" placeholder="Price" />
+
+                        <FormLabel htmlFor={`ticketTypes.${index}.maximumQuantity`}>Maximum Quantity</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.maximumQuantity`)} id={`ticketTypes.${index}.maximumQuantity`} type="number" placeholder="Maximum Quantity" />
+
+                        <FormLabel htmlFor={`ticketTypes.${index}.konfhubId`}>Konfhub ID</FormLabel>
+                        <Input {...register(`ticketTypes.${index}.konfhubId`)} id={`ticketTypes.${index}.konfhubId`} placeholder="Konfhub ID" />
+
+                        <Button type="button" onClick={() => remove(index)}>Remove</Button>
+                      </div>
+                    ))}
+                    <Button type="button" onClick={() => append({ name: '', description: '', tier: '', price: 0, maximumQuantity: 0, konfhubId: '' })}>
+                      Add Ticket Type
+                    </Button>
+                  </FormItemContainer>
+                )}
+              </FormItem>
+            )}
+
+            <FormItem name="konfhubId">
+              {({ field }) => (
+                <FormItemContainer>
+                  <FormLabel>Konfhub Event ID</FormLabel>
+                  <Input {...field} placeholder="Konfhub ID" />
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+          </>
+        )}
 
         <Separator className="my-4" />
 

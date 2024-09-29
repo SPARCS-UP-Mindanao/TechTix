@@ -143,7 +143,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
             <div className="space-y-4">
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'UserBio' && <UserBioStep />}
-              {currentStep.id === 'PersonalInfo' && <PersonalInfoStep />}
+              {currentStep.id === 'PersonalInfo' && <PersonalInfoStep event={eventInfo} />}
               {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} />}
             </div>
 

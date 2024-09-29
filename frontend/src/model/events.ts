@@ -2,6 +2,15 @@ import { FAQUpdateValues } from '@/api/events';
 import { EventFormValues } from '@/hooks/useAdminEventForm';
 import { FAQsFormValues } from '@/hooks/useFAQsForm';
 
+export interface TicketType {
+  name: string;
+  description?: string;
+  tier: string;
+  price: number;
+  maximumQuantity: number;
+  konfhubId: string;
+}
+
 export interface Event {
   name: string;
   description: string;
@@ -27,6 +36,9 @@ export interface Event {
   bannerUrl?: string;
   logoUrl?: string;
   certificateTemplateUrl?: string;
+  hasMultipleTicketTypes?: boolean;
+  ticketTypes?: TicketType[];
+  konfhubId?: string;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -126,7 +138,10 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   certificateTemplate: event.certificateTemplate || undefined,
   isLimitedSlot: event.isLimitedSlot,
   isApprovalFlow: event.isApprovalFlow || false,
-  maximumSlots: event.maximumSlots || undefined
+  maximumSlots: event.maximumSlots || undefined,
+  hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
+  ticketTypes: event.ticketTypes || [],
+  konfhubId: event.konfhubId || undefined
 });
 
 export interface CreateEvent {

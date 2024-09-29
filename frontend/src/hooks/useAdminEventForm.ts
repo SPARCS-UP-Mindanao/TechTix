@@ -41,7 +41,33 @@ const EventFormSchema = z
     certificateTemplate: z.string().optional(),
     isLimitedSlot: z.boolean(),
     isApprovalFlow: z.boolean(),
-    maximumSlots: z.coerce.number().optional()
+    maximumSlots: z.coerce.number().optional(),
+    ticketTypes: z.array(z.object({
+      name: z.string().min(1, {
+        message: 'Please enter the ticket type name'
+      }),
+      description: z.string().min(1, {
+        message: 'Please enter the ticket type description'
+      }).optional(),
+      tier: z.string().min(1, {
+        message: 'Please enter the ticket type tier'
+      }),
+      price: z.coerce.number().min(0, {
+        message: 'Please enter the ticket type price'
+      }),
+      maximumQuantity: z.coerce.number().min(0, {
+        message: 'Please enter the ticket type maximum quantity'
+      }),
+      konfhubId: z.string().min(1, {
+        message: 'Please enter the ticket type konfhub id'
+        })
+      })
+    )
+    .optional(),
+    hasMultipleTicketTypes: z.boolean(),
+    konfhubId: z.string().min(1, {
+      message: 'Please enter the event konfhub id'
+    }).optional(),
   })
   .refine(
     (data) => {
@@ -115,7 +141,9 @@ export const useAdminEventForm = (event?: Event) => {
         isLimitedSlot: false,
         isApprovalFlow: false,
         price: 0,
-        status: 'draft'
+        status: 'draft',
+        ticketTypes: [],
+        hasMultipleTicketTypes: false,
       };
     }
   });

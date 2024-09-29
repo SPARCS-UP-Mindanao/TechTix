@@ -1,8 +1,19 @@
+import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
+import Label from '@/components/Label';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select';
+import { Event } from '@/model/events';
 
-const PersonalInfoStep = () => {
+
+interface Props {
+  event: Event;
+}
+const PersonalInfoStep = ({ event }: Props) => {
+  const shirtSizeOptions = ['SM', 'S', 'M', 'L', 'XL'];
+  const shirtSizeLink = import.meta.env.VITE_COMMDAY_SHIRT_SIZE_LINK
+  const isAWSUG = event.email === 'hello@awsugdavao.ph';
+
   return (
     <>
       <FormItem name="careerStatus">
@@ -63,6 +74,47 @@ const PersonalInfoStep = () => {
           </div>
         )}
       </FormItem>
+
+      {isAWSUG ? (
+        <FormItem name="shirtSize">
+          {({ field }) => (
+            <div className="flex flex-col gap-1">
+              <FormLabel>Shirt Size</FormLabel>
+              <p className="text-muted-foreground text-sm">
+                To check shirt size, please refer to the <a href={shirtSizeLink} className="text-primary underline" target="_blank">link here</a>.
+              </p>
+              <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-wrap gap-4 py-3">
+                {shirtSizeOptions.map((size) => (
+                  <div key={size} className="flex items-center space-x-2">
+                    <RadioGroupItem value={size} id={`size-${size}`} />
+                    <Label htmlFor={`size-${size}`}>{size}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+      ) : null}
+
+      {event.hasMultipleTicketTypes ? (
+        <FormItem name="ticketType">
+          {({ field }) => (
+            <div className="flex flex-col gap-1">
+              <FormLabel>Ticket Type</FormLabel>
+              <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-col gap-2">
+                {event.ticketTypes?.map((ticketType) => (
+                  <div key={ticketType.entryId} className="flex items-center space-x-2">
+                    <RadioGroupItem value={ticketType.entryId} id={`ticket-${ticketType.entryId}`} className="h-4 w-4 rounded-sm" />
+                    <Label htmlFor={`ticket-${ticketType.entryId}`}>{ticketType.name}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+      ) : null}
     </>
   );
 };

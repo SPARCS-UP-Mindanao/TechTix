@@ -12,6 +12,7 @@ custom:
   preregistrations: ${self:custom.stage}-${self:custom.projectName}-preregistrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   frontendUrl: https://techtix.app
+  konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
   emailQueue:
     !ImportValue EmailQueue-${self:custom.stage}
   certificateQueue:
@@ -58,6 +59,7 @@ provider:
     EMAIL_QUEUE: ${self:custom.emailQueue}
     CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
+    KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:custom.stage}
     USER_POOL_CLIENT_ID:
