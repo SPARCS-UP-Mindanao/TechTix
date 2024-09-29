@@ -42,32 +42,30 @@ const EventFormSchema = z
     isLimitedSlot: z.boolean(),
     isApprovalFlow: z.boolean(),
     maximumSlots: z.coerce.number().optional(),
-    ticketTypes: z.array(z.object({
-      name: z.string().min(1, {
-        message: 'Please enter the ticket type name'
-      }),
-      description: z.string().min(1, {
-        message: 'Please enter the ticket type description'
-      }).optional(),
-      tier: z.string().min(1, {
-        message: 'Please enter the ticket type tier'
-      }),
-      price: z.coerce.number().min(0, {
-        message: 'Please enter the ticket type price'
-      }),
-      maximumQuantity: z.coerce.number().min(0, {
-        message: 'Please enter the ticket type maximum quantity'
-      }),
-      konfhubId: z.string().min(1, {
-        message: 'Please enter the ticket type konfhub id'
+    ticketTypes: z
+      .array(
+        z.object({
+          name: z.string().min(1, {
+            message: 'Please enter the ticket type name'
+          }),
+          description: z.string().optional(),
+          tier: z.string().min(1, {
+            message: 'Please enter the ticket type tier'
+          }),
+          price: z.coerce.number().min(0, {
+            message: 'Please enter the ticket type price'
+          }),
+          maximumQuantity: z.coerce.number().min(0, {
+            message: 'Please enter the ticket type maximum quantity'
+          }),
+          konfhubId: z.string().min(1, {
+            message: 'Please enter the ticket type konfhub id'
+          })
         })
-      })
-    )
-    .optional(),
+      )
+      .optional(),
     hasMultipleTicketTypes: z.boolean(),
-    konfhubId: z.string().min(1, {
-      message: 'Please enter the event konfhub id'
-    }).optional(),
+    konfhubId: z.string().optional()
   })
   .refine(
     (data) => {
@@ -143,7 +141,7 @@ export const useAdminEventForm = (event?: Event) => {
         price: 0,
         status: 'draft',
         ticketTypes: [],
-        hasMultipleTicketTypes: false,
+        hasMultipleTicketTypes: false
       };
     }
   });

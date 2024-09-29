@@ -183,14 +183,14 @@ class EventUsecase:
         event_data = self.__convert_data_entry_to_dict(event)
         event_out = EventOut(**event_data)
 
-        status, ticket_types, message = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
+        if event.hasMultipleTicketTypes:
+            _, ticket_types, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+            if ticket_types:
+                ticket_types_out = [
+                    TicketTypeOut(**self.__convert_data_entry_to_dict(ticket_type)) for ticket_type in ticket_types
+                ]
+                event_out.ticketTypes = ticket_types_out
 
-        ticket_types_out = [
-            TicketTypeOut(**self.__convert_data_entry_to_dict(ticket_type)) for ticket_type in ticket_types
-        ]
-        event_out.ticketTypes = ticket_types_out
         return self.collect_pre_signed_url(event_out)
 
     def get_events(self, admin_id: str = None) -> Union[JSONResponse, List[EventOut]]:

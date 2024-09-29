@@ -161,7 +161,9 @@ class RegistrationUsecase:
             konfhub_capture_registration_in = KonfHubCaptureRegistrationIn(
                 event_id=event.konfhubId,
                 registration_tz=CommonConstants.PH_TIMEZONE,
-                registration_details=konfhub_registration_details,
+                registration_details={
+                    registration_in.ticketTypeId: [konfhub_registration_details],
+                },
             )
             status, _, message = self.__konfhub_gateway.capture_registration(konfhub_capture_registration_in)
             if status != HTTPStatus.OK:

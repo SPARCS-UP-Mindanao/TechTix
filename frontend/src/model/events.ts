@@ -9,6 +9,7 @@ export interface TicketType {
   price: number;
   maximumQuantity: number;
   konfhubId: string;
+  currentSales?: number | null;
 }
 
 export interface Event {
@@ -36,9 +37,9 @@ export interface Event {
   bannerUrl?: string;
   logoUrl?: string;
   certificateTemplateUrl?: string;
-  hasMultipleTicketTypes?: boolean;
-  ticketTypes?: TicketType[];
-  konfhubId?: string;
+  hasMultipleTicketTypes: boolean;
+  ticketTypes: TicketType[] | null;
+  konfhubId: string | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -140,7 +141,7 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined,
   hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
-  ticketTypes: event.ticketTypes || [],
+  ticketTypes: event.ticketTypes || undefined,
   konfhubId: event.konfhubId || undefined
 });
 
@@ -160,6 +161,9 @@ export interface CreateEvent {
   isApprovalFlow: boolean;
   maximumSlots: number | null;
   status: EventStatus;
+  hasMultipleTicketTypes: boolean;
+  ticketTypes: TicketType[] | null;
+  konfhubId: string | null;
 }
 
 export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
@@ -177,7 +181,19 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   isApprovalFlow: values.isApprovalFlow,
   bannerLink: values.bannerLink || null,
   logoLink: values.logoLink || null,
-  certificateTemplate: values.certificateTemplate || null
+  certificateTemplate: values.certificateTemplate || null,
+  hasMultipleTicketTypes: values.hasMultipleTicketTypes,
+  ticketTypes: values.ticketTypes
+    ? values.ticketTypes.map((ticket) => ({
+        name: ticket.name,
+        price: ticket.price,
+        tier: ticket.tier,
+        maximumQuantity: ticket.maximumQuantity,
+        konfhubId: ticket.konfhubId,
+        description: ticket.description
+      }))
+    : null,
+  konfhubId: values.konfhubId || null
 });
 
 export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {

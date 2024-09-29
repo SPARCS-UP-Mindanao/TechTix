@@ -1,5 +1,6 @@
+from typing import Dict, List
+
 from pydantic import BaseModel, EmailStr
-from typing import Dict, List   
 
 
 class RegistrationDetail(BaseModel):
@@ -12,6 +13,7 @@ class RegistrationDetail(BaseModel):
     phone_number: str
     dial_code: str
     country_code: str
+
 
 class KonfHubCaptureRegistrationIn(BaseModel):
     event_id: str

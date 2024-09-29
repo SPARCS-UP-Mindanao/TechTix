@@ -13,6 +13,18 @@ export interface TicketType {
   konfhubId: string;
 }
 
+export interface TicketTypeDto {
+  name: string;
+  description?: string;
+  tier: string;
+  price: number;
+  maximumQuantity: number;
+  eventId: string;
+  entryId: string;
+  konfhubId: string;
+  currentSales: number | null;
+}
+
 export interface EventDto {
   name: string;
   description: string;
@@ -37,9 +49,9 @@ export interface EventDto {
   updateDate: string;
   createdBy: string;
   updatedBy: string;
-  hasMultipleTicketTypes?: boolean;
-  ticketTypes?: TicketType[];
-  konfhubId: string;
+  hasMultipleTicketTypes: boolean;
+  ticketTypes: TicketTypeDto[] | null;
+  konfhubId: string | null;
 }
 
 export type OptionalEvent = Partial<Event>;
