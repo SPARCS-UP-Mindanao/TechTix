@@ -16,7 +16,6 @@ from pynamodb.exceptions import (
 )
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
-from ulid import ulid
 from utils.logger import logger
 
 
@@ -38,7 +37,7 @@ class TicketTypeRepository:
 
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=ticket_type_in)
-        entry_id = ulid()
+        entry_id = ticket_type_in.konfhubId
         event_id = ticket_type_in.eventId
         hash_key = f'{self.core_obj}#{event_id}'
         range_key = f'v{self.latest_version}#{entry_id}'
@@ -52,6 +51,7 @@ class TicketTypeRepository:
                 updatedBy=os.getenv('CURRENT_USER'),
                 latestVersion=self.latest_version,
                 entryStatus=EntryStatus.ACTIVE.value,
+                entryId=entry_id,
                 **data,
             )
             ticket_type_entry.save()

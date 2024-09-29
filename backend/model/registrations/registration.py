@@ -69,6 +69,7 @@ class Registration(Model):
     evaluationEmailSent = BooleanAttribute(default=False)
     certificateGenerated = BooleanAttribute(default=False)
     ticketTypeId = UnicodeAttribute(null=True)
+    shirtSize = UnicodeAttribute(null=True)
 
 
 class RegistrationDataIn(BaseModel):
@@ -84,6 +85,7 @@ class RegistrationDataIn(BaseModel):
     title: str = Field(None, title='Title')
     eventId: str = Field(None, title='Event ID')
     ticketTypeId: str = Field(None, title='Ticket Type ID')
+    shirtSize: str = Field(None, title='Shirt Size')
 
 
 class PreRegistrationToRegistrationIn(RegistrationDataIn):

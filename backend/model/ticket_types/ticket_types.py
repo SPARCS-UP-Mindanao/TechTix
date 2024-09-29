@@ -16,6 +16,7 @@ class TicketType(Entities, discriminator='TicketType'):
     currentSales = NumberAttribute(default=0)
 
     eventId = UnicodeAttribute(null=False)
+    konfhubId = UnicodeAttribute(null=False)
 
 
 class TicketTypeIn(BaseModel):
@@ -25,9 +26,8 @@ class TicketTypeIn(BaseModel):
     price: float = Field(None, title='Price')
     maximumQuantity: int = Field(None, title='Maximum Quantity')
     eventId: str = Field(None, title='Event ID')
-    entryId: str = Field(None, title='Entry ID')
+    konfhubId: str = Field(None, title='Konfhub ID')
 
 
 class TicketTypeOut(TicketTypeIn):
-    entryId: str = Field(None, title='Entry ID')
     currentSales: int = Field(None, title='Current Sales')

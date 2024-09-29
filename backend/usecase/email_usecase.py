@@ -25,8 +25,13 @@ class EmailUsecase:
             SpecialEmails.DURIAN_PY.value: SpecialSenders.DURIAN_PY.value,
             SpecialEmails.AWSUG_DAVAO.value: SpecialSenders.AWSUG_DAVAO.value,
         }
+        self.__event_email = None
 
     def __send_email_handler(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
+        if self.__event_email and self.__event_email == SpecialEmails.AWSUG_DAVAO.value:
+            logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
+            return
+
         timestamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
         payload = [email_in.dict() for email_in in email_in_list]
         event_id = email_in_list[0].eventId
@@ -91,6 +96,8 @@ class EmailUsecase:
         salutation = 'Dear Sparcs ,'
         regards = ['Best,']
 
+        self.__event_email = event.email
+
         # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
@@ -124,6 +131,7 @@ class EmailUsecase:
         """
         is_special_email = event.email in [email.value for email in SpecialEmails]
         is_sparcs = not is_special_email
+        self.__event_email = event.email
 
         subject = f'{event.name} Registration Confirmation'
         body = [
@@ -164,6 +172,7 @@ class EmailUsecase:
 
         """
         emails = []
+        self.__event_email = event.email
         for preregistration in preregistrations:
             if preregistration.acceptanceEmailSent:
                 continue
@@ -201,6 +210,7 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
+        self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
         is_sparcs = not is_special_email
         subject = f'Welcome to {event.name} Pre-Registration!'
@@ -240,6 +250,7 @@ class EmailUsecase:
 
         :return: EmailIn
         """
+        self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
         is_sparcs = not is_special_email
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
@@ -280,6 +291,7 @@ class EmailUsecase:
         :return: EmailIn
 
         """
+        self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
         is_sparcs = not is_special_email
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
@@ -328,6 +340,7 @@ class EmailUsecase:
         :type participants: list
 
         """
+        self.__event_email = event.email
         event_name = event.name
         event_id = event.eventId
         is_special_email = event.email in [email.value for email in SpecialEmails]

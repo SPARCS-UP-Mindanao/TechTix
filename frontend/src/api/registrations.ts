@@ -24,6 +24,8 @@ export interface RegistrationDto {
   certificateClaimed: boolean;
   certificateImgObjectKey: string | null;
   certificatePdfObjectKey: string | null;
+  ticketTypeId: string | null;
+  shirtSize: string | null;
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({

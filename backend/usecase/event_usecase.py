@@ -9,6 +9,7 @@ from urllib.parse import unquote_plus
 from constants.common_constants import CommonConstants
 from model.events.event import EventIn, EventOut
 from model.events.events_constants import EventStatus
+from model.ticket_types.ticket_types import TicketTypeOut
 from repository.events_repository import EventsRepository
 from repository.faqs_repository import FAQsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
@@ -100,22 +101,29 @@ class EventUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         if event_in.ticketTypes:
-            status, ticket_types_entries, message = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
-            if status != HTTPStatus.OK:
-                return JSONResponse(status_code=status, content={'message': message})
+            _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+            ticket_types_map = {ticket_type.konfhubId: ticket_type for ticket_type in ticket_types_entries or []}
 
-            ticket_types_map = {ticket_type.entryId: ticket_type for ticket_type in ticket_types_entries}
             for ticket_type in event_in.ticketTypes:
-                ticket_type_entry = ticket_types_map.get(ticket_type.entryId)
-                if not ticket_type_entry:
-                    return JSONResponse(
-                        status_code=HTTPStatus.BAD_REQUEST,
-                        content={'message': f'Ticket type {ticket_type.name} not found'},
+                ticket_type.eventId = event_id
+                ticket_type_entry = ticket_types_map.get(ticket_type.konfhubId)
+                if ticket_type_entry:
+                    status, _, message = self.__ticket_type_repository.update_ticket_type(
+                        ticket_type_entry=ticket_type_entry, ticket_type_in=ticket_type
                     )
+                else:
+                    status, _, message = self.__ticket_type_repository.store_ticket_type(ticket_type)
 
-                status, ticket_type, message = self.__ticket_type_repository.update_ticket_type(
-                    ticket_type_entry=ticket_type_entry, ticket_type_in=ticket_type
-                )
+                if status != HTTPStatus.OK:
+                    return JSONResponse(status_code=status, content={'message': message})
+
+            # Delete ticket types not present in the input
+            konfhub_ids_in_input = {ticket_type.konfhubId for ticket_type in event_in.ticketTypes}
+            for ticket_type in ticket_types_map.values():
+                if ticket_type.entryId in konfhub_ids_in_input:
+                    continue
+
+                status, message = self.__ticket_type_repository.delete_ticket_type(ticket_type)
                 if status != HTTPStatus.OK:
                     return JSONResponse(status_code=status, content={'message': message})
 
@@ -146,6 +154,16 @@ class EventUsecase:
 
         event_data = self.__convert_data_entry_to_dict(update_event)
         event_out = EventOut(**event_data)
+
+        status, ticket_types, message = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        ticket_types_out = [
+            TicketTypeOut(**self.__convert_data_entry_to_dict(ticket_type)) for ticket_type in ticket_types
+        ]
+        event_out.ticketTypes = ticket_types_out
+
         return self.collect_pre_signed_url(event_out)
 
     def get_event(self, event_id: str) -> Union[JSONResponse, EventOut]:
@@ -164,6 +182,15 @@ class EventUsecase:
 
         event_data = self.__convert_data_entry_to_dict(event)
         event_out = EventOut(**event_data)
+
+        if event.hasMultipleTicketTypes:
+            _, ticket_types, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+            if ticket_types:
+                ticket_types_out = [
+                    TicketTypeOut(**self.__convert_data_entry_to_dict(ticket_type)) for ticket_type in ticket_types
+                ]
+                event_out.ticketTypes = ticket_types_out
+
         return self.collect_pre_signed_url(event_out)
 
     def get_events(self, admin_id: str = None) -> Union[JSONResponse, List[EventOut]]:

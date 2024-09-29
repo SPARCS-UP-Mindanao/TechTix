@@ -17,6 +17,7 @@ python-dotenv = "==1.0.0"
 pydantic = {version = "<2", extras = ["email"]}
 lambda-decorators = "==0.6.0"
 python-dateutil = "==2.9.0.post0"
+requests = "==2.32.3"
 
 [dev-packages]
 uvicorn = "==0.14.0"
