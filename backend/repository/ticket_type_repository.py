@@ -4,6 +4,7 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
+import pytz
 from constants.common_constants import EntryStatus
 from model.ticket_types.ticket_types import TicketType, TicketTypeIn
 from pynamodb.connection import Connection
@@ -22,7 +23,7 @@ from utils.logger import logger
 class TicketTypeRepository:
     def __init__(self) -> None:
         self.core_obj = 'TicketType'
-        self.current_date = datetime.utcnow().isoformat()
+        self.current_date = datetime.now(tz=pytz.timezone('Asia/Manila')).isoformat()
         self.latest_version = 0
         self.conn = Connection(region=os.getenv('REGION'))
 
