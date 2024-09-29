@@ -77,5 +77,7 @@ export const mapUpdatePreregistrationValues = (
   organization: newPreregistrationValues.organization,
   title: newPreregistrationValues.title,
   acceptanceStatus: updatedStatus ?? previousPreregistration.acceptanceStatus,
-  acceptanceEmailSent: previousPreregistration.acceptanceEmailSent
+  acceptanceEmailSent: previousPreregistration.acceptanceEmailSent,
+  ticketTypeId: previousPreregistration.ticketTypeId,
+  shirtSize: previousPreregistration.shirtSize
 });

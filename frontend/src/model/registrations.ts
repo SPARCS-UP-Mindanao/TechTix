@@ -97,5 +97,7 @@ export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrat
   certificatePdfObjectKey: previousRegistration.certificatePdfObjectKey,
   certificateImgObjectKey: previousRegistration.certificateImgObjectKey,
   certificateGenerated: previousRegistration.certificateGenerated,
-  eventId: previousRegistration.eventId
+  eventId: previousRegistration.eventId,
+  ticketTypeId: previousRegistration.ticketTypeId,
+  shirtSize: previousRegistration.shirtSize
 });
