@@ -51,7 +51,9 @@ const RegisterFormSchema = PreRegisterFormSchema.extend({
   paymentMethod: z.custom<PaymentMethod | null>().optional(),
   paymentChannel: z.custom<PaymentChannel | null>().optional(),
   discountedPrice: z.number().optional(),
-  total: z.number().optional()
+  total: z.number().optional(),
+  ticketTypeId: z.string().optional(),
+  shirtSize: z.string().optional()
 });
 
 export type PreRegisterFormValues = z.infer<typeof PreRegisterFormSchema>;
@@ -94,7 +96,9 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
           careerStatus: '',
           yearsOfExperience: '',
           organization: '',
-          title: ''
+          title: '',
+          shirtSize: '',
+          ticketTypeId: ''
         };
       }
 
@@ -119,7 +123,9 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
         paymentMethod: null,
         paymentChannel: null,
         discountedPrice: 0,
-        total: 0
+        total: 0,
+        ticketTypeId: '',
+        shirtSize: ''
       };
     }
   });

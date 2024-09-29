@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from model.events.events_constants import EventStatus
+from model.ticket_types.ticket_types import TicketTypeIn, TicketTypeOut
 from pydantic import BaseModel, EmailStr, Extra, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
@@ -65,12 +66,15 @@ class Event(Model):
     dailyEmailCount = NumberAttribute(default=0)
     lastEmailSent = UnicodeAttribute(null=True)
 
+    hasMultipleTicketTypes = BooleanAttribute(default=False)
+    konfhubId = UnicodeAttribute(null=True)
+
     eventIdIndex = EventIdIndex()
 
 
-class EventIn(BaseModel):
+class EventDBIn(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     name: str = Field(None, title='Name')
     description: str = Field(None, title='Description')
@@ -89,6 +93,15 @@ class EventIn(BaseModel):
     maximumSlots: int = Field(None, title='Maximum Slots')
 
     status: Optional[EventStatus] = Field(None, title='Event Status')
+    hasMultipleTicketTypes: Optional[bool] = Field(None, title='Has Multiple Ticket Types')
+    konfhubId: Optional[str] = Field(None, title='Konfhub ID')
+
+
+class EventIn(EventDBIn):
+    class Config:
+        extra = Extra.forbid
+
+    ticketTypes: Optional[List[TicketTypeIn]] = Field(None, title='Ticket Types')
 
 
 class EventDataIn(EventIn):
@@ -117,3 +130,4 @@ class EventOut(EventDataIn):
     bannerUrl: Optional[str] = Field(None, title='Banner Pre-signed URL')
     logoUrl: Optional[str] = Field(None, title='Logo Pre-signed URL')
     certificateTemplateUrl: Optional[str] = Field(None, title='Certificate Template Pre-signed URL')
+    ticketTypes: Optional[List[TicketTypeOut]] = Field(None, title='Ticket Types')

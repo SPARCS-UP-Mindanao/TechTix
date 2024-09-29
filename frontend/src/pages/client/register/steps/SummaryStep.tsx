@@ -22,7 +22,9 @@ const SummaryStep = ({ event }: SummaryProps) => {
     discountPercentage,
     transactionFee,
     discountedPrice,
-    total
+    total,
+    ticketTypeId,
+    shirtSize
   } = watch();
   return (
     <div className="space-y-2 mb-4">
@@ -53,6 +55,12 @@ const SummaryStep = ({ event }: SummaryProps) => {
 
           <span className="font-bold">Title: </span>
           <span>{title}</span>
+
+          <span className="font-bold">Ticket Type: </span>
+          <span>{ticketTypeId}</span>
+
+          <span className="font-bold">Shirt Size: </span>
+          <span>{shirtSize}</span>
         </div>
 
         {event.paidEvent && event.status !== 'preregistration' && <hr />}

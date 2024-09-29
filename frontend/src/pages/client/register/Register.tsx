@@ -6,6 +6,7 @@ import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } fr
 import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import Stepper from '@/components/Stepper';
+import { Event } from '@/model/events';
 import { RegisterMode } from '@/model/registrations';
 import { REGISTER_FIELDS, REGISTER_FIELDS_WITH_PREREGISTRATION, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
@@ -41,10 +42,17 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
   const { form, onSubmit } = useRegisterForm(eventId!, mode, navigateOnSuccess);
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
+  const [eventInfo, setEventInfo] = useState<Event | null>(null);
 
   const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
 
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
+
+  const updateEventPrice = (newPrice: number) => {
+    if (eventInfo) {
+      setEventInfo({ ...eventInfo, price: newPrice });
+    }
+  };
 
   if (isFetching) {
     return <RegisterFormLoading />;
@@ -54,7 +62,10 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
     return <ErrorPage error={response} />;
   }
 
-  const eventInfo = response.data;
+  if (!eventInfo) {
+    setEventInfo(response.data);
+    return null;
+  }
 
   if (eventInfo.status === 'draft' || (mode === 'register' && eventInfo.status === 'preregistration')) {
     return <ErrorPage />;
@@ -143,7 +154,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
             <div className="space-y-4">
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'UserBio' && <UserBioStep />}
-              {currentStep.id === 'PersonalInfo' && <PersonalInfoStep />}
+              {currentStep.id === 'PersonalInfo' && <PersonalInfoStep event={eventInfo} updateEventPrice={updateEventPrice} />}
               {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} />}
             </div>
 

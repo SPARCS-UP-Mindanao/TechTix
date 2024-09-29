@@ -25,6 +25,8 @@ export interface Registration {
   certificateClaimed: boolean;
   certificateImgObjectKey: string | null;
   certificatePdfObjectKey: string | null;
+  ticketTypeId: string | null;
+  shirtSize: string | null;
 }
 
 export type RegisterMode = 'register' | 'preregister';
@@ -72,7 +74,9 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   title: registration.title,
   discountCode: registration.discountPercentage ? registration.discountCode : '',
   amountPaid: registration.total ?? null,
-  eventId: eventId
+  eventId: eventId,
+  ticketTypeId: registration.ticketTypeId ?? null,
+  shirtSize: registration.shirtSize ?? null
 });
 
 export type UpdateRegistration = Omit<Registration, 'type' | 'registrationId' | 'email' | 'amountPaid' | 'certificateClaimed' | 'eventId'>;
@@ -93,5 +97,7 @@ export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrat
   certificatePdfObjectKey: previousRegistration.certificatePdfObjectKey,
   certificateImgObjectKey: previousRegistration.certificateImgObjectKey,
   certificateGenerated: previousRegistration.certificateGenerated,
-  eventId: previousRegistration.eventId
+  eventId: previousRegistration.eventId,
+  ticketTypeId: previousRegistration.ticketTypeId,
+  shirtSize: previousRegistration.shirtSize
 });

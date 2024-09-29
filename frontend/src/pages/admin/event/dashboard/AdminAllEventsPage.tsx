@@ -18,11 +18,11 @@ const AdminAllEvents = () => {
     return <AdminAllEventsPageSkeleton />;
   }
 
-  if (!response || (response && response.status !== 200 && response.status !== 404)) {
+  if (!response || (response && response.status !== 200)) {
     return (
       // TODO: Add event not found page
       <div className="py-10">
-        <h1>Events not found</h1>
+        <h1>No Events Found</h1>
       </div>
     );
   }

@@ -2,6 +2,16 @@ import { FAQUpdateValues } from '@/api/events';
 import { EventFormValues } from '@/hooks/useAdminEventForm';
 import { FAQsFormValues } from '@/hooks/useFAQsForm';
 
+export interface TicketType {
+  name: string;
+  description?: string;
+  tier: string;
+  price: number;
+  maximumQuantity: number;
+  konfhubId: string;
+  currentSales?: number | null;
+}
+
 export interface Event {
   name: string;
   description: string;
@@ -27,6 +37,9 @@ export interface Event {
   bannerUrl?: string;
   logoUrl?: string;
   certificateTemplateUrl?: string;
+  hasMultipleTicketTypes: boolean;
+  ticketTypes: TicketType[] | null;
+  konfhubId: string | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -126,7 +139,10 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   certificateTemplate: event.certificateTemplate || undefined,
   isLimitedSlot: event.isLimitedSlot,
   isApprovalFlow: event.isApprovalFlow || false,
-  maximumSlots: event.maximumSlots || undefined
+  maximumSlots: event.maximumSlots || undefined,
+  hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
+  ticketTypes: event.ticketTypes || undefined,
+  konfhubId: event.konfhubId || undefined
 });
 
 export interface CreateEvent {
@@ -145,6 +161,9 @@ export interface CreateEvent {
   isApprovalFlow: boolean;
   maximumSlots: number | null;
   status: EventStatus;
+  hasMultipleTicketTypes: boolean;
+  ticketTypes: TicketType[] | null;
+  konfhubId: string | null;
 }
 
 export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
@@ -162,7 +181,19 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   isApprovalFlow: values.isApprovalFlow,
   bannerLink: values.bannerLink || null,
   logoLink: values.logoLink || null,
-  certificateTemplate: values.certificateTemplate || null
+  certificateTemplate: values.certificateTemplate || null,
+  hasMultipleTicketTypes: values.hasMultipleTicketTypes,
+  ticketTypes: values.ticketTypes
+    ? values.ticketTypes.map((ticket) => ({
+        name: ticket.name,
+        price: ticket.price,
+        tier: ticket.tier,
+        maximumQuantity: ticket.maximumQuantity,
+        konfhubId: ticket.konfhubId,
+        description: ticket.description
+      }))
+    : null,
+  konfhubId: values.konfhubId || null
 });
 
 export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {

@@ -3,8 +3,11 @@ from http import HTTPStatus
 from typing import List, Union
 
 import ulid
+from constants.common_constants import CommonConstants
+from external_gateway.konfhub_gateway import KonfHubGateway
 from model.events.event import Event
 from model.events.events_constants import EventStatus
+from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
     RegistrationIn,
@@ -13,6 +16,7 @@ from model.registrations.registration import (
 )
 from repository.events_repository import EventsRepository
 from repository.registrations_repository import RegistrationsRepository
+from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
 from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
@@ -37,6 +41,8 @@ class RegistrationUsecase:
         self.__discount_usecase = DiscountUsecase()
         self.__file_s3_usecase = FileS3Usecase()
         self.__preregistration_usecase = PreRegistrationUsecase()
+        self.__ticket_type_repository = TicketTypeRepository()
+        self.__konfhub_gateway = KonfHubGateway()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """Creates a new registration entry.
@@ -76,9 +82,31 @@ class RegistrationUsecase:
                 content={'message': f'Registration with email {email} already exists'},
             )
 
-        # check if registration count in event is full
+        # check if ticket types in event exists
         future_registrations = event.registrationCount
-        if event.isLimitedSlot and future_registrations >= event.maximumSlots:
+        ticket_type_entry = None
+        if event.hasMultipleTicketTypes:
+            ticket_type_id = registration_in.ticketTypeId
+            if not ticket_type_id:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Ticket type ID is required for multiple ticket types event'},
+                )
+
+            status, ticket_type_entry, message = self.__ticket_type_repository.query_ticket_type_with_ticket_type_id(
+                event_id=event_id, ticket_type_id=ticket_type_id
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+            if ticket_type_entry.currentSales >= ticket_type_entry.maximumQuantity:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': f'Ticket type {ticket_type_entry.name} is sold out'},
+                )
+
+        elif event.isLimitedSlot and future_registrations >= event.maximumSlots:
+            # check if registration count in event is full
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
@@ -108,6 +136,38 @@ class RegistrationUsecase:
         status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
+
+        if ticket_type_entry:
+            status, __, message = self.__ticket_type_repository.append_ticket_type_sales(
+                ticket_type_entry=ticket_type_entry
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+        # Capture registration to KonfHub
+        if event.konfhubId:
+            phone_number_with_no_zero = registration_in.contactNumber.lstrip('0')
+            konfhub_registration_details = RegistrationDetail(
+                name=f'{registration_in.firstName} {registration_in.lastName}',
+                email_id=registration_in.email,
+                quantity=1,
+                designation=registration_in.title,
+                organisation=registration_in.organization,
+                t_shirt_size=registration_in.shirtSize,
+                phone_number=phone_number_with_no_zero,
+                dial_code=CommonConstants.PH_DIAL_CODE,
+                country_code=CommonConstants.PH_COUNTRY_CODE,
+            )
+            konfhub_capture_registration_in = KonfHubCaptureRegistrationIn(
+                event_id=event.konfhubId,
+                registration_tz=CommonConstants.PH_TIMEZONE,
+                registration_details={
+                    registration_in.ticketTypeId: [konfhub_registration_details],
+                },
+            )
+            status, _, message = self.__konfhub_gateway.capture_registration(konfhub_capture_registration_in)
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 

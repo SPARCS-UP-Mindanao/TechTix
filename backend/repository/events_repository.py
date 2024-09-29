@@ -2,10 +2,11 @@ import os
 from copy import deepcopy
 from datetime import datetime
 from http import HTTPStatus
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
+import pytz
 from constants.common_constants import EntryStatus
-from model.events.event import Event, EventIn
+from model.events.event import Event, EventDBIn, EventIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -23,7 +24,7 @@ from utils.utils import Utils
 class EventsRepository:
     def __init__(self) -> None:
         self.core_obj = 'Event'
-        self.current_date = datetime.utcnow().isoformat()
+        self.current_date = datetime.now(tz=pytz.timezone('Asia/Manila')).isoformat()
         self.latest_version = 0
         self.conn = Connection(region=os.getenv('REGION'))
 
@@ -38,9 +39,12 @@ class EventsRepository:
 
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in)
+        db_in = EventDBIn(**data)
+        db_in_data = RepositoryUtils.load_data(pydantic_schema_in=db_in)
         entry_id = Utils.convert_to_slug(event_in.name)
         current_user = os.getenv('CURRENT_USER')
         range_key = f'{current_user}#{entry_id}'
+
         try:
             event_entry = Event(
                 hashKey=f'v{self.latest_version}',
@@ -54,7 +58,7 @@ class EventsRepository:
                 eventId=entry_id,
                 lastEmailSent=self.current_date,
                 dailyEmailCount=0,
-                **data,
+                **db_in_data,
             )
             event_entry.save()
 
@@ -130,7 +134,7 @@ class EventsRepository:
             logger.info(f'[{self.core_obj}={event_id}] Fetch Event data successful')
             return HTTPStatus.OK, event_entries, None
 
-    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, List[Event], str]:
+    def query_events(self, event_id: str = None) -> Tuple[HTTPStatus, Union[Event, List[Event]], str]:
         """Query events.
 
         :param event_id: The event ID (optional).
@@ -197,8 +201,10 @@ class EventsRepository:
         new_version = current_version + 1
 
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
+        db_in = EventDBIn(**data)
+        db_in_data = RepositoryUtils.load_data(pydantic_schema_in=db_in)
         has_update, updated_data = RepositoryUtils.get_update(
-            old_data=RepositoryUtils.db_model_to_dict(event_entry), new_data=data
+            old_data=RepositoryUtils.db_model_to_dict(event_entry), new_data=db_in_data
         )
         if not has_update:
             return HTTPStatus.OK, event_entry, 'no update'
@@ -287,8 +293,10 @@ class EventsRepository:
 
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=event_in, exclude_unset=True)
+        db_in = EventDBIn(**data)
+        db_in_data = RepositoryUtils.load_data(pydantic_schema_in=db_in)
         _, updated_data = RepositoryUtils.get_update(
-            old_data=RepositoryUtils.db_model_to_dict(event_entry), new_data=data
+            old_data=RepositoryUtils.db_model_to_dict(event_entry), new_data=db_in_data
         )
 
         try:

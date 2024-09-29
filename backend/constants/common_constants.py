@@ -46,6 +46,10 @@ class CommonConstants:
 
     INVALID_URL_PATTERN = r'[:/?#@\[\]!$&\'()*+,;="<>%{}|\\^~`]|[\x00-\x1F\x7F-\xFF]'
 
+    PH_TIMEZONE = 'GMT+08'
+    PH_COUNTRY_CODE = 'PH'
+    PH_DIAL_CODE = '+63'
+
 
 class EmailType(str, Enum):
     REGISTRATION_EMAIL = 'registrationEmail'
@@ -58,7 +62,9 @@ class EmailType(str, Enum):
 
 class SpecialEmails(str, Enum):
     DURIAN_PY = 'durianpy.davao@gmail.com'
+    AWSUG_DAVAO = 'hello@awsugdavao.ph'
 
 
 class SpecialSenders(str, Enum):
     DURIAN_PY = 'DurianPy - Davao Python User Group'
+    AWSUG_DAVAO = 'AWS User Group Davao'
