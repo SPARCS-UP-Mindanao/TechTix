@@ -3,6 +3,7 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
+import pytz
 import ulid
 from constants.common_constants import EntryStatus
 from model.registrations.registration import Registration, RegistrationIn
@@ -34,7 +35,7 @@ class RegistrationsRepository:
 
     def __init__(self) -> None:
         self.core_obj = 'Registration'
-        self.current_date = datetime.utcnow().isoformat()
+        self.current_date = datetime.now(tz=pytz.timezone('Asia/Manila')).isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_registration(

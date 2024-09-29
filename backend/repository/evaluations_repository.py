@@ -3,6 +3,7 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import List, Tuple
 
+import pytz
 from model.evaluations.evaluation import Evaluation, EvaluationListIn, EvaluationPatch
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
@@ -20,7 +21,7 @@ from utils.logger import logger
 class EvaluationRepository:
     def __init__(self) -> None:
         self.core_obj = 'Evaluation'
-        self.current_date = datetime.utcnow().isoformat()
+        self.current_date = datetime.now(tz=pytz.timezone('Asia/Manila')).isoformat()
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_evaluation(self, evaluation_list_in: EvaluationListIn) -> Tuple[HTTPStatus, List[Evaluation], str]:
