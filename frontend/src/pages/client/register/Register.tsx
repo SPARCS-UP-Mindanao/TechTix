@@ -43,9 +43,9 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
+  const [isTransactionFeeLoading, setIsTransactionFeeLoading] = useState(false);
 
   const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
-
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
 
   const updateEventPrice = (newPrice: number) => {
@@ -155,7 +155,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'UserBio' && <UserBioStep />}
               {currentStep.id === 'PersonalInfo' && <PersonalInfoStep event={eventInfo} updateEventPrice={updateEventPrice} />}
-              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} />}
+              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} setIsTransactionFeeLoading={setIsTransactionFeeLoading} />}
             </div>
 
             {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
@@ -183,6 +183,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               isRegisterSuccessful={isRegisterSuccessful}
               retryRegister={retryRegister}
               setCurrentStep={setCurrentStep}
+              isTransactionFeeLoading={isTransactionFeeLoading}
             />
 
             {showFAQs && <FAQs />}

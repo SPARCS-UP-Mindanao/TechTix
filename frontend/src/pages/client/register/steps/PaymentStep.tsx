@@ -10,6 +10,7 @@ import { useTransactionFee } from '../useTransactionFee';
 
 interface Props {
   eventPrice: number;
+  setIsTransactionFeeLoading: (isLoading: boolean) => void;
 }
 
 export const calculateTotalPrice = (eventPrice: number, transactionFee?: number | null, discountPercentage?: number) => {
@@ -24,7 +25,7 @@ export const calculateTotalPrice = (eventPrice: number, transactionFee?: number 
   return eventPrice;
 };
 
-const PaymentStep = ({ eventPrice }: Props) => {
+const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
   const { watch } = useFormContext<RegisterFormValues>();
   const { isTransactionFeeLoading, getTransactionFee } = useTransactionFee(eventPrice);
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(eventPrice);
@@ -42,6 +43,13 @@ const PaymentStep = ({ eventPrice }: Props) => {
     }
 
     return formatMoney(transactionFee, 'PHP');
+  };
+
+  const handleGetTransactionFee = async () => {
+    setIsTransactionFeeLoading(true);
+    console.debug('getTransactionFee');
+    await getTransactionFee();
+    setIsTransactionFeeLoading(false);
   };
 
   return (
@@ -63,7 +71,7 @@ const PaymentStep = ({ eventPrice }: Props) => {
 
       <hr />
 
-      <PaymentGateways getTransactionFee={getTransactionFee} />
+      <PaymentGateways getTransactionFee={handleGetTransactionFee} />
 
       <hr />
       <div className="flex flex-col items-start gap-5">
