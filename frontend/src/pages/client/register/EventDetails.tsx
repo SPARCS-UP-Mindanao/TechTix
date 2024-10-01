@@ -32,7 +32,7 @@ const EventDetails = ({ event }: Props) => {
             <p className="text-sm col-span-11">{event.venue}</p>
           </div>
 
-          {event.paidEvent && event.status !== 'completed' && (
+          {event.paidEvent && !event.hasMultipleTicketTypes && event.status !== 'completed' && (
             <div className="grid grid-cols-12 items-center space-x-2">
               <Icon name="Banknote" className="col-span-1" />
               <p className="text-sm col-span-11">{formatMoney(event.price, 'PHP')}</p>
