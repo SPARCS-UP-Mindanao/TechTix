@@ -13,7 +13,27 @@ export default defineConfig({
         enabled: true
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,gltf}']
+        // Define which files should be precached
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,gltf}'],
+        // Configure runtime caching strategy
+        runtimeCaching: [
+          {
+            // Match all URLs
+            urlPattern: ({ url }) => url.href,
+            // Use Network First strategy
+            handler: 'NetworkFirst',
+            options: {
+              // Name of the cache storage
+              cacheName: 'api-cache',
+              // Time to wait for network response before falling back to cache
+              networkTimeoutSeconds: 10,
+              // Define which responses are considered cacheable
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.png'],
       manifest: {
