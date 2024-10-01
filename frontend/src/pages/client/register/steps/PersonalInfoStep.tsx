@@ -12,7 +12,7 @@ interface Props {
   updateEventPrice: (newPrice: number) => void;
 }
 const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
-  const shirtSizeOptions = ['XS', 'S', 'M', 'L', 'XL'];
+  const shirtSizeOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
   const shirtSizeLink = import.meta.env.VITE_COMMDAY_SHIRT_SIZE_LINK;
   const isAWSUG = event.email === 'hello@awsugdavao.ph';
   const industryOptions = [
