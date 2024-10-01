@@ -237,7 +237,7 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                 <FormLabel>I am attending the AWS Community Day in line with my:</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="I am attending the AWS Community Day in line with my:" />
+                    <SelectValue placeholder="Select your reason" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px] overflow-y-auto">
                     {awsCommunityDayInLineWithOptions.map((option) => (
@@ -268,7 +268,7 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                   }
                 }}
                 value={field.value}
-                className="grid grid-cols-2 gap-2"
+                className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3"
               >
                 {event.ticketTypes?.map((ticketType) => (
                   <div className="w-full" key={ticketType.konfhubId}>
