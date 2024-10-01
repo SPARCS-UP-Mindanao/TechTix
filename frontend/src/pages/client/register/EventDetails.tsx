@@ -22,20 +22,20 @@ const EventDetails = ({ event }: Props) => {
       <header className="text-left space-y-4">
         <h1 className="text-lg ">{event.name}</h1>
         <div className="space-y-1">
-          <div className="flex items-center space-x-2">
-            <Icon name="Clock" />
-            <p className="text-sm">{getDate()}</p>
+          <div className="grid grid-cols-12 items-center space-x-2">
+            <Icon name="Clock" className="col-span-1" />
+            <p className="text-sm col-span-11">{getDate()}</p>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Icon name="MapPin" />
-            <p className="text-sm">{event.venue}</p>
+          <div className="grid grid-cols-12 items-center space-x-2">
+            <Icon name="MapPin" className="col-span-1" />
+            <p className="text-sm col-span-11">{event.venue}</p>
           </div>
 
           {event.paidEvent && event.status !== 'completed' && (
-            <div className="flex items-center space-x-2">
-              <Icon name="Banknote" />
-              <p className="text-sm">{formatMoney(event.price, 'PHP')}</p>
+            <div className="grid grid-cols-12 items-center space-x-2">
+              <Icon name="Banknote" className="col-span-1" />
+              <p className="text-sm col-span-11">{formatMoney(event.price, 'PHP')}</p>
             </div>
           )}
         </div>
