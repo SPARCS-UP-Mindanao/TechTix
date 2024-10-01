@@ -19,7 +19,7 @@ const SuccessStep: FC<SuccessProps> = ({ event, isRegisterSuccessful }) => {
   return (
     <div className="text-center pt-8 space-y-4">
       <p>Thank you for signing up for {event.name}. See you there!</p>
-      <p>Please check your email for more details regarding the event.</p>
+      <p>Please check your email for more details regarding the event. If you don't see it in your inbox, be sure to check your spam folder.</p>
     </div>
   );
 };
