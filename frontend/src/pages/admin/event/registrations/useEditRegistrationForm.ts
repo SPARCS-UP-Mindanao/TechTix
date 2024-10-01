@@ -6,6 +6,7 @@ import { deleteRegistration, updateRegistration } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { EventWithRefetchEvent } from '@/model/events';
 import { PreRegistration, mapPreRegistrationToFormValues, mapUpdatePreregistrationValues } from '@/model/preregistrations';
+import { PreRegistrationUpdate } from '@/model/preregistrations';
 import { Registration, mapRegistrationToFormValues, mapUpdateRegistrationValues } from '@/model/registrations';
 import { isValidContactNumber } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
@@ -39,7 +40,13 @@ const EditRegistrationFormSchema = z.object({
   }),
   title: z.string().min(1, {
     message: 'Please enter the title'
-  })
+  }),
+  cityOfResidence: z.string().optional(),
+  industry: z.string().optional(),
+  levelOfAWSUsage: z.string().optional(),
+  awsUsecase: z.string().optional(),
+  awsCommunityDayInLineWith: z.string().optional(),
+  foodRestrictions: z.string().optional()
 });
 
 export type EditRegistrationFormValues = z.infer<typeof EditRegistrationFormSchema>;
@@ -70,8 +77,10 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
       const response =
         registrationInfo.type === 'registration'
           ? await api.execute(updateRegistration(eventId, registrationId, mapUpdateRegistrationValues(values, registrationInfo)))
-          : await api.execute(updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo)));
-      if (response.status === 200 || response.status === 200) {
+          : await api.execute(
+              updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo) as PreRegistrationUpdate)
+            );
+      if (response.status === 200) {
         successToast({
           title: 'Updated successfully',
           description: 'Registration updated successfully'
@@ -131,7 +140,9 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
     }
 
     try {
-      const response = await api.execute(updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo, 'ACCEPTED')));
+      const response = await api.execute(
+        updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo, 'ACCEPTED') as PreRegistrationUpdate)
+      );
       if (response.status === 200 || response.status === 204) {
         successToast({
           title: 'Approved successfully',
@@ -162,7 +173,9 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
     }
 
     try {
-      const response = await api.execute(updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo, 'REJECTED')));
+      const response = await api.execute(
+        updatePreRegistration(eventId, registrationId, mapUpdatePreregistrationValues(values, registrationInfo, 'REJECTED') as PreRegistrationUpdate)
+      );
       if (response.status === 200 || response.status === 204) {
         successToast({
           title: 'Rejected successfully',

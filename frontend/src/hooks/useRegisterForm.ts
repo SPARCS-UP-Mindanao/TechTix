@@ -45,6 +45,9 @@ const PreRegisterFormSchema = z.object({
 });
 
 const RegisterFormSchema = PreRegisterFormSchema.extend({
+  cityOfResidence: z.string().min(1, {
+    message: 'Please enter your city of residence'
+  }),
   discountCode: z.string().optional(),
   discountPercentage: z.number().optional(),
   transactionFee: z.number().optional().nullish(),
@@ -52,19 +55,49 @@ const RegisterFormSchema = PreRegisterFormSchema.extend({
   paymentChannel: z.custom<PaymentChannel | null>().optional(),
   discountedPrice: z.number().optional(),
   total: z.number().optional(),
+  foodRestrictions: z.string().optional(),
+
   ticketTypeId: z.string().optional(),
-  shirtSize: z.string().optional()
+  shirtSize: z.string().optional(),
+  industry: z.string().optional(),
+  levelOfAWSUsage: z.string().optional(),
+  awsUsecase: z.string().optional(),
+  awsCommunityDayInLineWith: z.string().optional()
+});
+
+const RegisterFormSchemaAWS = RegisterFormSchema.extend({
+  ticketTypeId: z.string().min(1, {
+    message: 'Please select a ticket type'
+  }),
+  shirtSize: z.string().min(1, {
+    message: 'Please select your shirt size'
+  }),
+  industry: z.string().min(1, {
+    message: 'Please select your industry'
+  }),
+  levelOfAWSUsage: z.string().min(1, {
+    message: 'Please select your level of AWS usage'
+  }),
+  awsUsecase: z.string().min(1, {
+    message: 'Please enter your AWS usecase'
+  }),
+  awsCommunityDayInLineWith: z.string().min(1, {
+    message: 'Please enter your AWS community day in line with'
+  })
 });
 
 export type PreRegisterFormValues = z.infer<typeof PreRegisterFormSchema>;
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
+export type RegisterFormValuesAWS = z.infer<typeof RegisterFormSchemaAWS>;
 
 export type RegisterField = keyof RegisterFormValues;
+export type RegisterFieldAWS = keyof RegisterFormValuesAWS;
 
 type RegisterFieldMap = Partial<Record<RegisterStepId, RegisterField[]>>;
+type RegisterFieldMapAWS = Partial<Record<RegisterStepId, RegisterFieldAWS[]>>;
 
 export const REGISTER_FIELDS: RegisterFieldMap = {
-  UserBio: ['firstName', 'lastName', 'email', 'contactNumber'],
+  UserBio: ['firstName', 'lastName', 'email', 'contactNumber', 'cityOfResidence'],
   PersonalInfo: ['careerStatus', 'organization', 'title', 'yearsOfExperience']
 };
 
@@ -73,20 +106,26 @@ export const REGISTER_FIELDS_WITH_PREREGISTRATION: RegisterFieldMap = {
   EventDetails: ['email']
 };
 
-const getFormSchema = (mode: RegisterMode) => {
+export const REGISTER_FIELDS_WITH_TICKET_TYPE_AWS: RegisterFieldMapAWS = {
+  ...REGISTER_FIELDS,
+  UserBio: [...(REGISTER_FIELDS.UserBio || []), 'foodRestrictions'],
+  PersonalInfo: [...(REGISTER_FIELDS.PersonalInfo || []), 'shirtSize', 'industry', 'levelOfAWSUsage', 'awsUsecase', 'awsCommunityDayInLineWith', 'ticketTypeId']
+};
+
+const getFormSchema = (mode: RegisterMode, isConference: boolean) => {
   if (mode === 'preregister') {
     return PreRegisterFormSchema;
   }
 
-  return RegisterFormSchema;
+  return isConference ? RegisterFormSchemaAWS : RegisterFormSchema;
 };
 
-export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnSuccess: () => void) => {
+export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnSuccess: () => void, isConference: boolean = false) => {
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
-  const form = useForm<RegisterFormValues>({
+  const form = useForm<RegisterFormValues | RegisterFormValuesAWS>({
     mode: 'onChange',
-    resolver: zodResolver(getFormSchema(mode)),
+    resolver: zodResolver(getFormSchema(mode, isConference)),
     defaultValues: async () => {
       if (mode === 'preregister') {
         return {
@@ -104,8 +143,7 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
 
       const savedState = localStorage.getItem('formState');
       if (savedState) {
-        const formState = JSON.parse(savedState);
-        return formState;
+        return JSON.parse(savedState);
       }
 
       return {
@@ -125,7 +163,11 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
         discountedPrice: 0,
         total: 0,
         ticketTypeId: '',
-        shirtSize: ''
+        shirtSize: '',
+        industry: '',
+        levelOfAWSUsage: '',
+        awsUsecase: '',
+        awsCommunityDayInLineWith: ''
       };
     }
   });

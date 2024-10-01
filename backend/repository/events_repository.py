@@ -328,17 +328,18 @@ class EventsRepository:
 
         """
         try:
-            event_entry.update(actions=[Event.registrationCount.add(append_count)])
-            event_entry.save()
+            with TransactWrite(connection=self.conn) as transaction:
+                actions = [Event.registrationCount.add(append_count)]
+                transaction.update(event_entry, actions=actions)
 
-        except PutError as e:
+            event_entry.refresh()
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
+
+        except TransactWriteError as e:
             message = f'Failed to append event registration count: {str(e)}'
             logger.error(f'[{event_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR, message
-
-        else:
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
-            return HTTPStatus.OK, event_entry, ''
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
     def append_event_email_sent_count(self, event_entry: Event, append_count: int = 1):
         """Adds the dailyEmailSent attribute of the event_entry by append_count
@@ -354,14 +355,15 @@ class EventsRepository:
 
         """
         try:
-            event_entry.update(actions=[Event.dailyEmailCount.add(append_count)])
-            event_entry.save()
+            with TransactWrite(connection=self.conn) as transaction:
+                actions = [Event.dailyEmailCount.add(append_count)]
+                transaction.update(event_entry, actions=actions)
 
-        except PutError as e:
+            event_entry.refresh()
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
+            return HTTPStatus.OK, event_entry, ''
+
+        except TransactWriteError as e:
             message = f'Failed to append event daily email sent count: {str(e)}'
             logger.error(f'[{event_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR, message
-
-        else:
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
-            return HTTPStatus.OK, event_entry, ''
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message

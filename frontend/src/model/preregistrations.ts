@@ -25,6 +25,13 @@ export interface PreRegistration
   acceptanceStatus: AcceptanceStatus;
   preRegistrationId: string;
   acceptanceEmailSent: boolean;
+
+  cityOfResidence: string | null;
+  industry: string | null;
+  levelOfAWSUsage: string | null;
+  awsUsecase: string | null;
+  awsCommunityDayInLineWith: string | null;
+  foodRestrictions: string | null;
 }
 
 export const mapCreatePreregistrationValues = (registration: RegisterFormValues, eventId: string): PreRegistrationCreate => ({
@@ -79,5 +86,11 @@ export const mapUpdatePreregistrationValues = (
   acceptanceStatus: updatedStatus ?? previousPreregistration.acceptanceStatus,
   acceptanceEmailSent: previousPreregistration.acceptanceEmailSent,
   ticketTypeId: previousPreregistration.ticketTypeId,
-  shirtSize: previousPreregistration.shirtSize
+  shirtSize: previousPreregistration.shirtSize ?? null,
+  cityOfResidence: newPreregistrationValues.cityOfResidence ?? null,
+  industry: newPreregistrationValues.industry ?? null,
+  levelOfAWSUsage: newPreregistrationValues.levelOfAWSUsage,
+  awsUsecase: newPreregistrationValues.awsUsecase ?? null,
+  awsCommunityDayInLineWith: newPreregistrationValues.awsCommunityDayInLineWith ?? null,
+  foodRestrictions: newPreregistrationValues.foodRestrictions ?? null
 });
