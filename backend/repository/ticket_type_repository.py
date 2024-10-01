@@ -270,14 +270,20 @@ class TicketTypeRepository:
 
         """
         try:
-            ticket_type_entry.update(actions=[TicketType.currentSales.add(append_count)])
-            ticket_type_entry.save()
+            with TransactWrite(connection=self.conn) as transaction:
+                condition = TicketType.rangeKey == ticket_type_entry.rangeKey
+                actions = [
+                    TicketType.currentSales.add(append_count),
+                    TicketType.updateDate.set(self.current_date),
+                    TicketType.updatedBy.set(os.getenv('CURRENT_USER')),
+                ]
+                transaction.update(ticket_type_entry, actions=actions, condition=condition)
 
-        except PutError as e:
+            ticket_type_entry.refresh()
+            logger.info(f'[{ticket_type_entry.rangeKey}] Append ticket_type sales count successful')
+            return HTTPStatus.OK, ticket_type_entry, ''
+
+        except TransactWriteError as e:
             message = f'Failed to append ticket_type sales count: {str(e)}'
             logger.error(f'[{ticket_type_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR, message
-
-        else:
-            logger.info(f'[{ticket_type_entry.rangeKey}] ' f'Update ticket_type data successful')
-            return HTTPStatus.OK, ticket_type_entry, ''
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message

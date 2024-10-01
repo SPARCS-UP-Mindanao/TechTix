@@ -74,6 +74,21 @@ export const getRegistrationColumns = (registrationType: RegisterMode): ColumnDe
       enableHiding: getEnableHiding('email')
     },
     {
+      accessorKey: 'createDate',
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Date Registered
+            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      enableHiding: getEnableHiding('createDate'),
+      cell: ({ row }) => {
+        return moment(row.getValue('createDate')).local().format('MMM D h:mm A');
+      }
+    },
+    {
       accessorKey: 'organization',
       header: ({ column }) => {
         return (
@@ -86,24 +101,28 @@ export const getRegistrationColumns = (registrationType: RegisterMode): ColumnDe
       enableHiding: getEnableHiding('organization')
     },
     {
-      accessorKey: 'createDate',
+      accessorKey: 'careerStatus',
       header: ({ column }) => {
         return (
           <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            Date Registered
+            Career Status
             <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
           </Button>
         );
       },
-      enableHiding: getEnableHiding('createDate'),
-      cell: ({ row }) => {
-        // console.log('original in date', new Date(row.getValue('createDate')));
-        // console.log('original', moment(row.getValue('createDate')));
-        // console.log('parsed', moment(row.getValue('createDate')).local().format('MMM D h:mm A'));
-        // console.log('date now', moment().local().format('MMM D h:mm A'));
-
-        return moment(row.getValue('createDate')).local().format('MMM D h:mm A');
-      }
+      enableHiding: getEnableHiding('careerStatus')
+    },
+    {
+      accessorKey: 'yearsOfExperience',
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Years of Experience
+            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      enableHiding: getEnableHiding('yearsOfExperience')
     },
     {
       id: 'actions',

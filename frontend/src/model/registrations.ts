@@ -25,8 +25,15 @@ export interface Registration {
   certificateClaimed: boolean;
   certificateImgObjectKey: string | null;
   certificatePdfObjectKey: string | null;
-  ticketTypeId: string | null;
-  shirtSize: string | null;
+
+  ticketTypeId?: string | null;
+  shirtSize?: string | null;
+  cityOfResidence?: string | null;
+  industry: string | null;
+  levelOfAWSUsage?: string | null;
+  awsUsecase?: string | null;
+  awsCommunityDayInLineWith?: string | null;
+  foodRestrictions?: string | null;
 }
 
 export type RegisterMode = 'register' | 'preregister';
@@ -55,7 +62,15 @@ export const mapRegistrationToFormValues = (registration: Registration): Registe
   careerStatus: registration.careerStatus,
   yearsOfExperience: registration.yearsOfExperience,
   organization: registration.organization,
-  title: registration.title
+  title: registration.title,
+  ticketTypeId: registration.ticketTypeId ?? undefined,
+  shirtSize: registration.shirtSize ?? undefined,
+  cityOfResidence: registration.cityOfResidence ?? '',
+  industry: registration.industry ?? undefined,
+  levelOfAWSUsage: registration.levelOfAWSUsage ?? undefined,
+  awsUsecase: registration.awsUsecase ?? undefined,
+  awsCommunityDayInLineWith: registration.awsCommunityDayInLineWith ?? undefined,
+  foodRestrictions: registration.foodRestrictions ?? undefined
 });
 
 export type CreateRegistration = Omit<
@@ -76,7 +91,13 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   amountPaid: registration.total ?? null,
   eventId: eventId,
   ticketTypeId: registration.ticketTypeId ?? null,
-  shirtSize: registration.shirtSize ?? null
+  shirtSize: registration.shirtSize ?? null,
+  cityOfResidence: registration.cityOfResidence ?? null,
+  industry: registration.industry ?? null,
+  levelOfAWSUsage: registration.levelOfAWSUsage ?? null,
+  awsUsecase: registration.awsUsecase ?? null,
+  awsCommunityDayInLineWith: registration.awsCommunityDayInLineWith ?? null,
+  foodRestrictions: registration.foodRestrictions ?? null
 });
 
 export type UpdateRegistration = Omit<Registration, 'type' | 'registrationId' | 'email' | 'amountPaid' | 'certificateClaimed' | 'eventId'>;
@@ -99,5 +120,11 @@ export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrat
   certificateGenerated: previousRegistration.certificateGenerated,
   eventId: previousRegistration.eventId,
   ticketTypeId: previousRegistration.ticketTypeId,
-  shirtSize: previousRegistration.shirtSize
+  shirtSize: previousRegistration.shirtSize,
+  cityOfResidence: previousRegistration.cityOfResidence,
+  industry: previousRegistration.industry,
+  levelOfAWSUsage: previousRegistration.levelOfAWSUsage,
+  awsUsecase: previousRegistration.awsUsecase,
+  awsCommunityDayInLineWith: previousRegistration.awsCommunityDayInLineWith,
+  foodRestrictions: previousRegistration.foodRestrictions
 });

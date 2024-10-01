@@ -171,6 +171,62 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
           </>
         )}
 
+        {registrationInfo.ticketTypeId && (
+          <FormItemContainer halfSpace>
+            <Label>Ticket Type:</Label>
+            <Input disabled value={registrationInfo.ticketTypeId} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.shirtSize && (
+          <FormItemContainer halfSpace>
+            <Label>Shirt Size:</Label>
+            <Input disabled value={registrationInfo.shirtSize} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.cityOfResidence && (
+          <FormItemContainer halfSpace>
+            <Label>City of Residence:</Label>
+            <Input disabled value={registrationInfo.cityOfResidence} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.industry && (
+          <FormItemContainer halfSpace>
+            <Label>Industry:</Label>
+            <Input disabled value={registrationInfo.industry} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.levelOfAWSUsage && (
+          <FormItemContainer halfSpace>
+            <Label>Level of AWS Usage:</Label>
+            <Input disabled value={registrationInfo.levelOfAWSUsage} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.awsUsecase && (
+          <FormItemContainer halfSpace>
+            <Label>AWS Use Case:</Label>
+            <Input disabled value={registrationInfo.awsUsecase} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.awsCommunityDayInLineWith && (
+          <FormItemContainer halfSpace>
+            <Label>AWS Community Day In Line With:</Label>
+            <Input disabled value={registrationInfo.awsCommunityDayInLineWith} />
+          </FormItemContainer>
+        )}
+
+        {registrationInfo.foodRestrictions && (
+          <FormItemContainer halfSpace>
+            <Label>Food Restrictions:</Label>
+            <Input disabled value={registrationInfo.foodRestrictions} />
+          </FormItemContainer>
+        )}
+
         <div className="w-full flex mt-4 md:mt-8 justify-center space-x-4">
           {allowEdit && (
             <>

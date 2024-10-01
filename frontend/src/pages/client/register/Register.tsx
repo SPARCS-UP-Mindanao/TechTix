@@ -8,7 +8,13 @@ import Separator from '@/components/Separator';
 import Stepper from '@/components/Stepper';
 import { Event } from '@/model/events';
 import { RegisterMode } from '@/model/registrations';
-import { REGISTER_FIELDS, REGISTER_FIELDS_WITH_PREREGISTRATION, RegisterField, useRegisterForm } from '@/hooks/useRegisterForm';
+import {
+  REGISTER_FIELDS,
+  REGISTER_FIELDS_WITH_PREREGISTRATION,
+  REGISTER_FIELDS_WITH_TICKET_TYPE_AWS,
+  RegisterField,
+  useRegisterForm
+} from '@/hooks/useRegisterForm';
 import EventDetails from './EventDetails';
 import EventHeader from './EventHeader';
 import FAQs from './FAQs';
@@ -39,13 +45,14 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
   const { eventId } = useParams();
 
   const navigateOnSuccess = () => setCurrentStep(STEP_SUCCESS);
-  const { form, onSubmit } = useRegisterForm(eventId!, mode, navigateOnSuccess);
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
+  const [isTransactionFeeLoading, setIsTransactionFeeLoading] = useState(false);
 
+  const isConference = eventInfo?.email === 'hello@awsugdavao.ph';
+  const { form, onSubmit } = useRegisterForm(eventId!, mode, navigateOnSuccess, isConference);
   const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
-
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
 
   const updateEventPrice = (newPrice: number) => {
@@ -132,6 +139,10 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
       return REGISTER_FIELDS_WITH_PREREGISTRATION;
     }
 
+    if (isConference) {
+      return REGISTER_FIELDS_WITH_TICKET_TYPE_AWS;
+    }
+
     return REGISTER_FIELDS;
   };
 
@@ -155,7 +166,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'UserBio' && <UserBioStep />}
               {currentStep.id === 'PersonalInfo' && <PersonalInfoStep event={eventInfo} updateEventPrice={updateEventPrice} />}
-              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} />}
+              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} setIsTransactionFeeLoading={setIsTransactionFeeLoading} />}
             </div>
 
             {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
@@ -183,6 +194,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               isRegisterSuccessful={isRegisterSuccessful}
               retryRegister={retryRegister}
               setCurrentStep={setCurrentStep}
+              isTransactionFeeLoading={isTransactionFeeLoading}
             />
 
             {showFAQs && <FAQs />}

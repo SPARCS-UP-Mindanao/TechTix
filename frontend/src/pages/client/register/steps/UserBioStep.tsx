@@ -43,6 +43,26 @@ const UserBioStep = () => {
           </div>
         )}
       </FormItem>
+
+      <FormItem name="cityOfResidence">
+        {({ field }) => (
+          <div className="flex flex-col gap-1">
+            <FormLabel>City of Residence</FormLabel>
+            <Input type="text" {...field} />
+            <FormError />
+          </div>
+        )}
+      </FormItem>
+
+      <FormItem name="foodRestrictions">
+        {({ field }) => (
+          <div className="flex flex-col gap-1">
+            <FormLabel>Food Restrictions</FormLabel>
+            <Input type="text" {...field} />
+            <FormError />
+          </div>
+        )}
+      </FormItem>
     </>
   );
 };
