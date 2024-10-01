@@ -270,31 +270,33 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                 value={field.value}
                 className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3"
               >
-                {event.ticketTypes?.map((ticketType) => (
-                  <div className="w-full" key={ticketType.konfhubId}>
-                    <Button
-                      className={cn(
-                        'w-full h-auto justify-normal p-2 transition-all',
-                        field.value === ticketType.konfhubId && 'bg-transparent hover:bg-transparent border border-primary'
-                      )}
-                      variant={'outline'}
-                      onClick={() => {
-                        field.onChange(ticketType.konfhubId);
-                        updateEventPrice(ticketType.price);
-                      }}
-                      disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
-                    >
-                      <div className="flex flex-col items-start px-4">
-                        <div className="flex flex-row justify-between w-full">
-                          <p className="text-muted-foreground font-bold text-xl">{ticketType.name}</p>
-                          <p className="font-semibold text-xl">₱ {ticketType.price}</p>
+                {event.ticketTypes
+                  ?.sort((a, b) => parseInt(a.tier) - parseInt(b.tier))
+                  .map((ticketType) => (
+                    <div className="w-full" key={ticketType.konfhubId}>
+                      <Button
+                        className={cn(
+                          'w-full h-auto justify-normal p-2 transition-all',
+                          field.value === ticketType.konfhubId && 'bg-transparent hover:bg-transparent border border-primary'
+                        )}
+                        variant={'outline'}
+                        onClick={() => {
+                          field.onChange(ticketType.konfhubId);
+                          updateEventPrice(ticketType.price);
+                        }}
+                        disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
+                      >
+                        <div className="flex flex-col items-start px-4">
+                          <div className="flex flex-row justify-between w-full">
+                            <p className="text-muted-foreground font-bold text-xl">{ticketType.name}</p>
+                            <p className="font-semibold text-xl">₱ {ticketType.price}</p>
+                          </div>
+                          <p className="text-muted-foreground text-sm text-left">{ticketType.description}</p>
                         </div>
-                        <p className="text-muted-foreground text-sm text-left">{ticketType.description}</p>
-                      </div>
-                      <RadioGroupItem className="ml-auto" value={ticketType.konfhubId} checked={field.value === ticketType.konfhubId} />
-                    </Button>
-                  </div>
-                ))}
+                        <RadioGroupItem className="ml-auto" value={ticketType.konfhubId} checked={field.value === ticketType.konfhubId} />
+                      </Button>
+                    </div>
+                  ))}
               </RadioGroup>
               <FormError />
             </div>
