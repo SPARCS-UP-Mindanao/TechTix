@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Extra, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
@@ -71,6 +72,14 @@ class Registration(Model):
     ticketTypeId = UnicodeAttribute(null=True)
     shirtSize = UnicodeAttribute(null=True)
 
+    # AWS Community Day Specific Fields
+    cityOfResidence = UnicodeAttribute(null=True)
+    industry = UnicodeAttribute(null=True)
+    levelOfAWSUsage = UnicodeAttribute(null=True)
+    awsUsecase = UnicodeAttribute(null=True)
+    awsCommunityDayInLineWith = UnicodeAttribute(null=True)
+    foodRestrictions = UnicodeAttribute(null=True)
+
 
 class RegistrationDataIn(BaseModel):
     class Config:
@@ -86,6 +95,14 @@ class RegistrationDataIn(BaseModel):
     eventId: str = Field(None, title='Event ID')
     ticketTypeId: str = Field(None, title='Ticket Type ID')
     shirtSize: str = Field(None, title='Shirt Size')
+
+    # AWS Community Day Specific Fields
+    cityOfResidence: Optional[str] = Field(None, title='City of Residence')
+    industry: Optional[str] = Field(None, title='Industry')
+    levelOfAWSUsage: Optional[str] = Field(None, title='Level of AWS Usage')
+    awsUsecase: Optional[str] = Field(None, title='AWS Use Case')
+    awsCommunityDayInLineWith: Optional[str] = Field(None, title='AWS Community Day In Line With')
+    foodRestrictions: Optional[str] = Field(None, title='Food Restrictions')
 
 
 class PreRegistrationToRegistrationIn(RegistrationDataIn):

@@ -84,6 +84,13 @@ class RegistrationUsecase:
 
         # check if ticket types in event exists
         future_registrations = event.registrationCount
+        if event.isLimitedSlot and future_registrations >= event.maximumSlots:
+            # check if registration count in event is full
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
+            )
+
         ticket_type_entry = None
         if event.hasMultipleTicketTypes:
             ticket_type_id = registration_in.ticketTypeId
@@ -104,13 +111,6 @@ class RegistrationUsecase:
                     status_code=HTTPStatus.BAD_REQUEST,
                     content={'message': f'Ticket type {ticket_type_entry.name} is sold out'},
                 )
-
-        elif event.isLimitedSlot and future_registrations >= event.maximumSlots:
-            # check if registration count in event is full
-            return JSONResponse(
-                status_code=HTTPStatus.BAD_REQUEST,
-                content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
-            )
 
         registration_id = ulid.ulid()
         discount_code = registration_in.discountCode

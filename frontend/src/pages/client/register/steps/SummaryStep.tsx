@@ -24,8 +24,19 @@ const SummaryStep = ({ event }: SummaryProps) => {
     discountedPrice,
     total,
     ticketTypeId,
-    shirtSize
+    shirtSize,
+    cityOfResidence,
+    foodRestrictions,
+    industry,
+    levelOfAWSUsage,
+    awsUsecase,
+    awsCommunityDayInLineWith
   } = watch();
+
+  const ticketType = event.ticketTypes?.find((ticket) => ticket.konfhubId === ticketTypeId);
+  const isAWSCommunityDay = event.email === 'hello@awsugdavao.ph';
+  const { hasMultipleTicketTypes } = event;
+
   return (
     <div className="space-y-2 mb-4">
       <p className="w-full text-center">Please review the information below before submitting.</p>
@@ -44,6 +55,12 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span className="font-bold">Phone number: </span>
           <span>{contactNumber}</span>
 
+          <span className="font-bold">City of Residence: </span>
+          <span>{cityOfResidence}</span>
+
+          <span className="font-bold">Food Restrictions: </span>
+          <span>{foodRestrictions || 'None'}</span>
+
           <span className="font-bold">Professional Status: </span>
           <span>{careerStatus}</span>
 
@@ -56,11 +73,31 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span className="font-bold">Title: </span>
           <span>{title}</span>
 
-          <span className="font-bold">Ticket Type: </span>
-          <span>{ticketTypeId}</span>
+          {hasMultipleTicketTypes && (
+            <>
+              <span className="font-bold">Ticket Type: </span>
+              <span>{ticketType?.name}</span>
+            </>
+          )}
 
-          <span className="font-bold">Shirt Size: </span>
-          <span>{shirtSize}</span>
+          {isAWSCommunityDay && (
+            <>
+              <span className="font-bold">Shirt Size: </span>
+              <span>{shirtSize}</span>
+
+              <span className="font-bold">Industry: </span>
+              <span>{industry}</span>
+
+              <span className="font-bold">Level of AWS Usage: </span>
+              <span>{levelOfAWSUsage}</span>
+
+              <span className="font-bold">AWS Use Case: </span>
+              <span>{awsUsecase}</span>
+
+              <span className="font-bold">AWS Community Day In Line With: </span>
+              <span>{awsCommunityDayInLineWith}</span>
+            </>
+          )}
         </div>
 
         {event.paidEvent && event.status !== 'preregistration' && <hr />}

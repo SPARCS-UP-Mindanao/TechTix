@@ -26,6 +26,12 @@ export interface RegistrationDto {
   certificatePdfObjectKey: string | null;
   ticketTypeId: string | null;
   shirtSize: string | null;
+  cityOfResidence: string | null;
+  industry: string | null;
+  levelOfAWSUsage: string | null;
+  awsUsecase: string | null;
+  awsCommunityDayInLineWith: string | null;
+  foodRestrictions: string | null;
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
