@@ -79,7 +79,7 @@ const RegisterFooter: FC<Props> = ({
 
     return (
       <>
-        <Button onClick={onPrevStep} disabled={paymentButtonDisabled} icon="ChevronLeft" className="py-6 sm:px-6">
+        <Button onClick={onPrevStep} icon="ChevronLeft" className="py-6 sm:px-6">
           Back
         </Button>
         <Button
