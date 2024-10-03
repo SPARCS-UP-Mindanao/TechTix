@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
@@ -33,6 +34,10 @@ const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
   const discountedPrice = eventPrice * (1 - (discountPercentage ?? 0));
   const total = calculateTotalPrice(eventPrice, transactionFee, discountPercentage);
 
+  useEffect(() => {
+    handleGetTransactionFee();
+  }, [eventPrice]);
+
   const getTransactionFeeContent = () => {
     if (isTransactionFeeLoading) {
       return 'Loading...';
@@ -47,7 +52,6 @@ const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
 
   const handleGetTransactionFee = async () => {
     setIsTransactionFeeLoading(true);
-    console.debug('getTransactionFee');
     await getTransactionFee();
     setIsTransactionFeeLoading(false);
   };
