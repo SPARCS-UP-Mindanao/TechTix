@@ -267,7 +267,7 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                   .map((ticketType) => (
                     <div
                       key={ticketType.konfhubId}
-                      className={`rounded-sm cursor-pointer hover:bg-gray-900 border-2 ${
+                      className={`rounded-sm cursor-pointer hover:bg-accent-secondary hover:text-accent-foreground transition-colors border-2 ${
                         field.value === ticketType.konfhubId ? 'border-primary' : 'border-gray-700'
                       }`}
                       onClick={() => {
@@ -282,13 +282,13 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                         </CardTitle>
                         {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
                           <CardDescription>
-                            <span className="line-through text-gray-500">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
-                            <span className="ml-2 text-green-400">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
+                            <span className="line-through text-gray-500 font-semibold">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
+                            <span className="ml-2 text-green-400 font-semibold">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
                           </CardDescription>
                         )}
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-300 mb-2">{ticketType.description}</p>
+                        <p className="text-sm mb-2">{ticketType.description}</p>
                       </CardContent>
                       <CardFooter className="flex justify-between items-center">
                         <Button
