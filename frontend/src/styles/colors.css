@@ -104,6 +104,7 @@
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 227, 73%, 93%;
+    --accent-secondary: 227, 73%, 93%;
     --accent-foreground: var(--neutrals-700);
 
     --negative: var(--negative-800);
@@ -173,6 +174,7 @@
     --muted-foreground: 215 20.2% 65.1%;
 
     --accent: var(--neutrals-600);
+    --accent-secondary: 220, 17%, 11%;
     --accent-foreground: var(--neutrals-300);
 
     --negative: var(--negative-500);
