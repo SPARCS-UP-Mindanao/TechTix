@@ -10,6 +10,7 @@ class TicketType(Entities, discriminator='TicketType'):
     name = UnicodeAttribute(null=False)
     description = UnicodeAttribute(null=False)
     tier = UnicodeAttribute(null=False)
+    originalPrice = NumberAttribute(null=True)
     price = NumberAttribute(null=False)
     maximumQuantity = NumberAttribute(null=False)
 
@@ -23,6 +24,7 @@ class TicketTypeIn(BaseModel):
     name: str = Field(None, title='Name')
     description: str = Field(None, title='Description')
     tier: str = Field(None, title='Tier')
+    originalPrice: float = Field(None, title='Original Price')
     price: float = Field(None, title='Price')
     maximumQuantity: int = Field(None, title='Maximum Quantity')
     eventId: str = Field(None, title='Event ID')

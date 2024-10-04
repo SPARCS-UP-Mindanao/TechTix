@@ -158,6 +158,20 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                         </div>
 
                         <div className="grid grid-cols-4 gap-2">
+                          <FormLabel htmlFor={`ticketTypes.${index}.originalPrice`} className="col-span-1">
+                            Original Price
+                          </FormLabel>
+                          <Input
+                            {...register(`ticketTypes.${index}.originalPrice`)}
+                            id={`ticketTypes.${index}.originalPrice`}
+                            type="number"
+                            step="0.01"
+                            placeholder="Original Price"
+                            className="col-span-3"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-2">
                           <FormLabel htmlFor={`ticketTypes.${index}.price`} className="col-span-1">
                             Price
                           </FormLabel>

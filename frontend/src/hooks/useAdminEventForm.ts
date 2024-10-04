@@ -52,6 +52,7 @@ const EventFormSchema = z
           tier: z.string().min(1, {
             message: 'Please enter the ticket type tier'
           }),
+          originalPrice: z.coerce.number().optional(),
           price: z.coerce.number().min(0, {
             message: 'Please enter the ticket type price'
           }),

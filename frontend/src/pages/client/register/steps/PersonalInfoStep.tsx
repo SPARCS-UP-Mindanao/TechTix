@@ -1,11 +1,13 @@
+import { Check } from 'lucide-react';
 import Button from '@/components/Button';
+import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select';
 import { Event } from '@/model/events';
-import { cn } from '@/utils/classes';
+import { formatMoney, formatPercentage } from '@/utils/functions';
 
 interface Props {
   event: Event;
@@ -257,47 +259,53 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
       {event.hasMultipleTicketTypes ? (
         <FormItem name="ticketTypeId">
           {({ field }) => (
-            <div className="flex flex-col gap-1">
-              <FormLabel>Ticket Type</FormLabel>
-              <RadioGroup
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  const selectedTicket = event.ticketTypes?.find((ticket) => ticket.konfhubId === value);
-                  if (selectedTicket) {
-                    updateEventPrice(selectedTicket.price);
-                  }
-                }}
-                value={field.value}
-                className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3"
-              >
+            <div className="flex flex-col gap-4">
+              <FormLabel className="text-xl font-bold">Ticket Type</FormLabel>
+              <div className="grid gap-2">
                 {event.ticketTypes
                   ?.sort((a, b) => parseInt(a.tier) - parseInt(b.tier))
                   .map((ticketType) => (
-                    <div className="w-full" key={ticketType.konfhubId}>
-                      <Button
-                        className={cn(
-                          'w-full h-auto justify-normal p-2 transition-all',
-                          field.value === ticketType.konfhubId && 'bg-transparent hover:bg-transparent border border-primary'
+                    <div
+                      key={ticketType.konfhubId}
+                      className={`rounded-sm cursor-pointer hover:bg-gray-900 border-2 ${
+                        field.value === ticketType.konfhubId ? 'border-primary' : 'border-gray-700'
+                      }`}
+                      onClick={() => {
+                        field.onChange(ticketType.konfhubId);
+                        updateEventPrice(ticketType.price);
+                      }}
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                          {ticketType.name}
+                          <span className="text-primary font-bold text-xl">{formatMoney(ticketType.price, 'PHP')}</span>
+                        </CardTitle>
+                        {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
+                          <CardDescription>
+                            <span className="line-through text-gray-500">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
+                            <span className="ml-2 text-green-400">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
+                          </CardDescription>
                         )}
-                        variant={'outline'}
-                        onClick={() => {
-                          field.onChange(ticketType.konfhubId);
-                          updateEventPrice(ticketType.price);
-                        }}
-                        disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
-                      >
-                        <div className="flex flex-col items-start px-4">
-                          <div className="flex flex-row justify-between w-full">
-                            <p className="text-muted-foreground font-bold text-xl">{ticketType.name}</p>
-                            <p className="font-semibold text-xl">₱ {ticketType.price}</p>
-                          </div>
-                          <p className="text-muted-foreground text-sm text-left">{ticketType.description}</p>
-                        </div>
-                        <RadioGroupItem className="ml-auto" value={ticketType.konfhubId} checked={field.value === ticketType.konfhubId} />
-                      </Button>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-300 mb-2">{ticketType.description}</p>
+                      </CardContent>
+                      <CardFooter className="flex justify-between items-center">
+                        <Button
+                          variant={field.value === ticketType.konfhubId ? 'primaryGradientNoHover' : 'default'}
+                          onClick={() => {
+                            field.onChange(ticketType.konfhubId);
+                            updateEventPrice(ticketType.price);
+                          }}
+                          disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
+                        >
+                          {field.value === ticketType.konfhubId ? <Check className="mr-2 h-4 w-4" /> : null}
+                          {field.value === ticketType.konfhubId ? 'Selected' : 'Select'}
+                        </Button>
+                      </CardFooter>
                     </div>
                   ))}
-              </RadioGroup>
+              </div>
               <FormError />
             </div>
           )}
