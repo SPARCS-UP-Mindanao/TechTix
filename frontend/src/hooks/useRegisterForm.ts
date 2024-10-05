@@ -126,7 +126,7 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const [searchParams] = useSearchParams();
-  const transactionIdFromUrl = searchParams.get('transactionId');
+  const transactionIdFromUrl = searchParams.get('paymentTransactionId');
 
   const form = useForm<RegisterFormValues | RegisterFormValuesAWS>({
     mode: 'onChange',
