@@ -7,7 +7,7 @@ import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterFormValues } from '@/hooks/useRegisterForm';
 
-export const usePayment = (baseUrlPath: string) => {
+export const usePayment = (baseUrlPath: string, eventId: string) => {
   const api = useApi();
   const { errorToast } = useNotifyToast();
   const { getValues } = useFormContext<RegisterFormValues>();
@@ -25,6 +25,7 @@ export const usePayment = (baseUrlPath: string) => {
       const response = await api.execute(
         createEwalletPaymentRequest({
           referenceId: referenceId,
+          eventId: eventId,
           amount: total,
           channelCode: paymentChannel,
           failureReturnUrl: `${baseUrlPath}?step=Payment`,
@@ -62,7 +63,8 @@ export const usePayment = (baseUrlPath: string) => {
           amount: total,
           channelCode: paymentChannel,
           failureReturnUrl: `${baseUrlPath}?step=Payment`,
-          successReturnUrl: `${baseUrlPath}?step=Success`
+          successReturnUrl: `${baseUrlPath}?step=Success`,
+          eventId: eventId
         })
       );
 

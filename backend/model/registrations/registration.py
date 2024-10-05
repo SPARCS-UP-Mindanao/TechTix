@@ -85,16 +85,16 @@ class RegistrationDataIn(BaseModel):
     class Config:
         extra = Extra.ignore
 
-    firstName: str = Field(None, title='First Name')
-    lastName: str = Field(None, title='Last Name')
-    contactNumber: str = Field(None, title='Contact Number')
-    careerStatus: str = Field(None, title='Career Status')
-    yearsOfExperience: str = Field(None, title='Years of Experience')
-    organization: str = Field(None, title='Organization')
-    title: str = Field(None, title='Title')
-    eventId: str = Field(None, title='Event ID')
-    ticketTypeId: str = Field(None, title='Ticket Type ID')
-    shirtSize: str = Field(None, title='Shirt Size')
+    firstName: Optional[str] = Field(None, title='First Name')
+    lastName: Optional[str] = Field(None, title='Last Name')
+    contactNumber: Optional[str] = Field(None, title='Contact Number')
+    careerStatus: Optional[str] = Field(None, title='Career Status')
+    yearsOfExperience: Optional[str] = Field(None, title='Years of Experience')
+    organization: Optional[str] = Field(None, title='Organization')
+    title: Optional[str] = Field(None, title='Title')
+    eventId: Optional[str] = Field(None, title='Event ID')
+    ticketTypeId: Optional[str] = Field(None, title='Ticket Type ID')
+    shirtSize: Optional[str] = Field(None, title='Shirt Size')
 
     # AWS Community Day Specific Fields
     cityOfResidence: Optional[str] = Field(None, title='City of Residence')
@@ -116,18 +116,19 @@ class RegistrationPatch(RegistrationDataIn):
     class Config:
         extra = Extra.ignore
 
-    certificateClaimed: bool = Field(None, title='Certificate Claimed')
+    certificateClaimed: Optional[bool] = Field(None, title='Certificate Claimed')
 
 
 class RegistrationIn(RegistrationPatch):
     class Config:
         extra = Extra.forbid
 
-    email: EmailStr = Field(None, title='Email')
-    discountCode: str = Field(None, title='Discount Code')
-    gcashPayment: str = Field(None, title='Gcash Payment')
-    referenceNumber: str = Field(None, title='Reference Number')
-    amountPaid: float = Field(None, title='Amount Paid')
+    email: Optional[EmailStr] = Field(None, title='Email')
+    discountCode: Optional[str] = Field(None, title='Discount Code')
+    gcashPayment: Optional[str] = Field(None, title='Gcash Payment')
+    referenceNumber: Optional[str] = Field(None, title='Reference Number')
+    amountPaid: Optional[float] = Field(None, title='Amount Paid')
+    transactionId: Optional[str] = Field(None, title='Transaction ID')
 
 
 class RegistrationOut(RegistrationIn):

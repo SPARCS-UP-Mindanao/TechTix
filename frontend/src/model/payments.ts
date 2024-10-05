@@ -28,6 +28,7 @@ interface PaymentIn {
 export interface EWalletPaymentIn extends PaymentIn {
   referenceId: string;
   channelCode: eWalletChannelCode;
+  eventId: string;
 }
 
 export interface DirectDebitPaymentIn extends PaymentIn {
@@ -35,6 +36,7 @@ export interface DirectDebitPaymentIn extends PaymentIn {
   givenNames: string;
   surname: string;
   channelCode: DirectDebitChannelCode;
+  eventId: string;
 }
 
 export interface PaymentRequestOut {

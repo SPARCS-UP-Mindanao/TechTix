@@ -31,7 +31,7 @@ export const useRegisterFooter = (
   const watchedTransactionFee = watch('transactionFee');
   const watchedPercentageDiscount = watch('discountPercentage');
 
-  const { eWalletRequest, directDebitRequest } = usePayment(baseUrl);
+  const { eWalletRequest, directDebitRequest } = usePayment(baseUrl, eventId);
 
   const currentIndex = steps.indexOf(currentStep);
 
