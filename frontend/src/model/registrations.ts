@@ -34,6 +34,7 @@ export interface Registration {
   awsUsecase?: string | null;
   awsCommunityDayInLineWith?: string | null;
   foodRestrictions?: string | null;
+  transactionId?: string | null;
 }
 
 export type RegisterMode = 'register' | 'preregister';

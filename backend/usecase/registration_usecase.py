@@ -15,6 +15,7 @@ from model.registrations.registration import (
     RegistrationPatch,
 )
 from repository.events_repository import EventsRepository
+from repository.payment_transaction_repository import PaymentTransactionRepository
 from repository.registrations_repository import RegistrationsRepository
 from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
@@ -43,6 +44,7 @@ class RegistrationUsecase:
         self.__preregistration_usecase = PreRegistrationUsecase()
         self.__ticket_type_repository = TicketTypeRepository()
         self.__konfhub_gateway = KonfHubGateway()
+        self.__payment_transaction_repository = PaymentTransactionRepository()
 
     def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
         """Creates a new registration entry.
@@ -58,18 +60,37 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        event_id = registration_in.eventId
+
         if event.isApprovalFlow:
             return self.create_registration_approval_flow(event=event, registration_in=registration_in)
 
         # Check if the event is still open
-        if event.paidEvent and event.status != EventStatus.OPEN.value:
+        if event.status != EventStatus.OPEN.value:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': 'Event is not open for registration'},
             )
 
+        if event.paidEvent:
+            transaction_id = registration_in.transactionId
+            if not transaction_id:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Transaction ID is required for paid event'},
+                )
+
+            (
+                status,
+                _,
+                message,
+            ) = self.__payment_transaction_repository.query_payment_transaction_with_payment_transaction_id(
+                event_id=event_id, payment_transaction_id=transaction_id
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
         # Check if the registration with the same email already exists
-        event_id = registration_in.eventId
         email = registration_in.email
         (
             status,

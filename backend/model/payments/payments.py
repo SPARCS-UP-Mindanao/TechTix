@@ -1,15 +1,16 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Optional
 
 from model.entities import Entities
 from pydantic import BaseModel, Field
 from pynamodb.attributes import NumberAttribute, UnicodeAttribute
 
 
-class TransactionStatus(Enum):
+class TransactionStatus(str, Enum):
     PENDING = 'PENDING'
     SUCCESS = 'SUCCESS'
     FAILED = 'FAILED'
+
 
 class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
     # hk: PaymentTransaction#<eventId>
@@ -21,9 +22,10 @@ class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
 
 
 class PaymentTransactionIn(BaseModel):
-    price: float = Field(..., title='Price')
-    eventId: str = Field(..., title='Event ID')
-    transactionStatus: TransactionStatus = Field(..., title='Transaction Status')
+    price: float = Field(None, title='Price')
+    transactionStatus: TransactionStatus = Field(None, title='Transaction Status')
+    eventId: Optional[str] = Field(None, title='Event ID')
+
 
 class PaymentTransactionOut(PaymentTransactionIn):
     entryId: str = Field(..., title='Entry ID')

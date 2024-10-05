@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { preRegisterUserInEvent } from '@/api/preregistrations';
@@ -62,7 +63,8 @@ const RegisterFormSchema = PreRegisterFormSchema.extend({
   industry: z.string().optional(),
   levelOfAWSUsage: z.string().optional(),
   awsUsecase: z.string().optional(),
-  awsCommunityDayInLineWith: z.string().optional()
+  awsCommunityDayInLineWith: z.string().optional(),
+  transactionId: z.string().optional()
 });
 
 const RegisterFormSchemaAWS = RegisterFormSchema.extend({
@@ -123,6 +125,9 @@ const getFormSchema = (mode: RegisterMode, isConference: boolean) => {
 export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnSuccess: () => void, isConference: boolean = false) => {
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
+  const [searchParams] = useSearchParams();
+  const transactionIdFromUrl = searchParams.get('transactionId');
+
   const form = useForm<RegisterFormValues | RegisterFormValuesAWS>({
     mode: 'onChange',
     resolver: zodResolver(getFormSchema(mode, isConference)),
@@ -143,7 +148,11 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
 
       const savedState = localStorage.getItem('formState');
       if (savedState) {
-        return JSON.parse(savedState);
+        const parsedState = JSON.parse(savedState);
+        return {
+          ...parsedState,
+          transactionId: transactionIdFromUrl || parsedState.transactionId
+        };
       }
 
       return {
@@ -167,7 +176,8 @@ export const useRegisterForm = (eventId: string, mode: RegisterMode, navigateOnS
         industry: '',
         levelOfAWSUsage: '',
         awsUsecase: '',
-        awsCommunityDayInLineWith: ''
+        awsCommunityDayInLineWith: '',
+        transactionId: transactionIdFromUrl || ''
       };
     }
   });

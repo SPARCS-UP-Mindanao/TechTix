@@ -32,6 +32,7 @@ export interface RegistrationDto {
   awsUsecase: string | null;
   awsCommunityDayInLineWith: string | null;
   foodRestrictions: string | null;
+  transactionId: string | null;
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({

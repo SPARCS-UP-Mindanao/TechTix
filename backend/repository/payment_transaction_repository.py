@@ -6,19 +6,20 @@ from typing import List, Tuple
 
 import pytz
 from constants.common_constants import EntryStatus
+from model.payments.payments import PaymentTransaction, PaymentTransactionIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
     PynamoDBConnectionError,
     QueryError,
-    TransactWriteError,
     TableDoesNotExist,
+    TransactWriteError,
 )
 from pynamodb.transactions import TransactWrite
-from model.payments.payments import PaymentTransaction, PaymentTransactionIn
 from repository.repository_utils import RepositoryUtils
 from ulid import ulid
 from utils.logger import logger
+
 
 class PaymentTransactionRepository:
     def __init__(self):
@@ -27,7 +28,9 @@ class PaymentTransactionRepository:
         self.latest_version = 0
         self.conn = Connection(region=os.getenv('REGION'))
 
-    def store_payment_transaction(self, payment_transaction_in: PaymentTransactionIn) -> Tuple[HTTPStatus, PaymentTransaction, str]:
+    def store_payment_transaction(
+        self, payment_transaction_in: PaymentTransactionIn
+    ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
         """Store a new payment_transaction.
 
         :param payment_transaction_in: The payment_transaction data to store.
@@ -172,7 +175,9 @@ class PaymentTransactionRepository:
             logger.info(f'[{self.core_obj}={payment_transaction_id}] Fetch PaymentTransaction data successful')
             return HTTPStatus.OK, payment_transaction_entries[0], None
 
-    def update_payment_transaction(self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn) -> Tuple[HTTPStatus, PaymentTransaction, str]:
+    def update_payment_transaction(
+        self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn
+    ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
         """Update a payment_transaction.
 
         :param payment_transaction: The payment_transaction to update.
@@ -198,8 +203,13 @@ class PaymentTransactionRepository:
             with TransactWrite(connection=self.conn) as transaction:
                 # Update Entry -----------------------------------------------------------------------------
                 # check if there's update or none
-                if updated_data:
-                    payment_transaction.update(updated_data)
+                updated_data.update(
+                    updateDate=self.current_date,
+                    updatedBy=os.getenv('CURRENT_USER'),
+                    latestVersion=new_version,
+                )
+                actions = [getattr(PaymentTransaction, k).set(v) for k, v in updated_data.items()]
+                transaction.update(payment_transaction, actions=actions)
 
                 # Store Old Entry --------------------------------------------------------------------------
                 old_payment_transaction = deepcopy(payment_transaction)
