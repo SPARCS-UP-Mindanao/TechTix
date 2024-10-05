@@ -6,6 +6,7 @@ export interface TicketType {
   name: string;
   description?: string;
   tier: string;
+  originalPrice?: number;
   price: number;
   maximumQuantity: number;
   konfhubId: string;
