@@ -95,7 +95,7 @@ export const getPathFromUrl = (url: string) => {
 export const baseUrl = getPathFromUrl(window.location.href);
 
 export const reloadPage = () => {
-  window.location.href = baseUrl;
+  window.location.href = window.location.origin + window.location.pathname;
 };
 
 export const scrollToView = () => {
