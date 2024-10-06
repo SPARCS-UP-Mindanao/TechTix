@@ -71,7 +71,8 @@ export const mapRegistrationToFormValues = (registration: Registration): Registe
   levelOfAWSUsage: registration.levelOfAWSUsage ?? undefined,
   awsUsecase: registration.awsUsecase ?? undefined,
   awsCommunityDayInLineWith: registration.awsCommunityDayInLineWith ?? undefined,
-  foodRestrictions: registration.foodRestrictions ?? undefined
+  foodRestrictions: registration.foodRestrictions ?? undefined,
+  transactionId: registration.transactionId ?? undefined
 });
 
 export type CreateRegistration = Omit<
@@ -98,7 +99,8 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   levelOfAWSUsage: registration.levelOfAWSUsage ?? null,
   awsUsecase: registration.awsUsecase ?? null,
   awsCommunityDayInLineWith: registration.awsCommunityDayInLineWith ?? null,
-  foodRestrictions: registration.foodRestrictions ?? null
+  foodRestrictions: registration.foodRestrictions ?? null,
+  transactionId: registration.transactionId ?? null
 });
 
 export type UpdateRegistration = Omit<Registration, 'type' | 'registrationId' | 'email' | 'amountPaid' | 'certificateClaimed' | 'eventId'>;
