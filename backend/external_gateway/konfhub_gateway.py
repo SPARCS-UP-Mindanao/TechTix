@@ -13,14 +13,13 @@ class KonfHubGateway:
         pass
 
     def capture_registration(
-        self, konfhub_capture_registration_in: KonfHubCaptureRegistrationIn
+        self, konfhub_capture_registration_in: KonfHubCaptureRegistrationIn, api_key: Optional[str] = None
     ) -> Tuple[HTTPStatus, Optional[Dict[str, Any]], Optional[str]]:
         try:
             url = KonfHubConstants.CAPTURE_URL
-            api_key = os.getenv('KONFHUB_API_KEY')
+            api_key = api_key or os.getenv('KONFHUB_API_KEY')
             headers = {'Content-Type': 'application/json', 'x-api-key': api_key}
             payload = konfhub_capture_registration_in.dict()
-            print(payload)
             response = requests.post(url, headers=headers, json=payload, verify=False)
             if response.status_code == 200:
                 logger.info(f'Captured registration: {response.json()}')

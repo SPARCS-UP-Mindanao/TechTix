@@ -66,7 +66,8 @@ const EventFormSchema = z
       )
       .optional(),
     hasMultipleTicketTypes: z.boolean(),
-    konfhubId: z.string().optional()
+    konfhubId: z.string().optional(),
+    konfhubApiKey: z.string().optional()
   })
   .refine(
     (data) => {
