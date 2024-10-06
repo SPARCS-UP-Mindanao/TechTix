@@ -11,7 +11,7 @@ custom:
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   preregistrations: ${self:custom.stage}-${self:custom.projectName}-preregistrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
-  frontendUrl: https://techtix.app
+  frontendUrl: ${ssm:/techtix/frontend-url-${self:custom.stage}}
   konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
   emailQueue:
     !ImportValue EmailQueue-${self:custom.stage}
