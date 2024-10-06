@@ -70,9 +70,10 @@ class Registration(Model):
     evaluationEmailSent = BooleanAttribute(default=False)
     certificateGenerated = BooleanAttribute(default=False)
     ticketTypeId = UnicodeAttribute(null=True)
-    shirtSize = UnicodeAttribute(null=True)
+    transactionId = UnicodeAttribute(null=True)
 
     # AWS Community Day Specific Fields
+    shirtSize = UnicodeAttribute(null=True)
     cityOfResidence = UnicodeAttribute(null=True)
     industry = UnicodeAttribute(null=True)
     levelOfAWSUsage = UnicodeAttribute(null=True)
