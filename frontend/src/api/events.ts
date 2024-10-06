@@ -54,6 +54,7 @@ export interface EventDto {
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketTypeDto[] | null;
   konfhubId: string | null;
+  konfhubApiKey: string | null;
 }
 
 export type OptionalEvent = Partial<Event>;

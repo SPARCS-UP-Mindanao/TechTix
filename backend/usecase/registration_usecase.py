@@ -186,7 +186,9 @@ class RegistrationUsecase:
                     registration_in.ticketTypeId: [konfhub_registration_details],
                 },
             )
-            status, _, message = self.__konfhub_gateway.capture_registration(konfhub_capture_registration_in)
+            status, _, message = self.__konfhub_gateway.capture_registration(
+                konfhub_capture_registration_in, event.konfhubApiKey
+            )
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
 

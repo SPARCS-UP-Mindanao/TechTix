@@ -41,6 +41,7 @@ export interface Event {
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketType[] | null;
   konfhubId: string | null;
+  konfhubApiKey: string | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -143,7 +144,8 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   maximumSlots: event.maximumSlots || undefined,
   hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
   ticketTypes: event.ticketTypes || undefined,
-  konfhubId: event.konfhubId || undefined
+  konfhubId: event.konfhubId || undefined,
+  konfhubApiKey: event.konfhubApiKey || undefined
 });
 
 export interface CreateEvent {
@@ -165,6 +167,7 @@ export interface CreateEvent {
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketType[] | null;
   konfhubId: string | null;
+  konfhubApiKey: string | null;
 }
 
 export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
@@ -194,7 +197,8 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
         description: ticket.description
       }))
     : null,
-  konfhubId: values.konfhubId || null
+  konfhubId: values.konfhubId || null,
+  konfhubApiKey: values.konfhubApiKey || null
 });
 
 export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {
