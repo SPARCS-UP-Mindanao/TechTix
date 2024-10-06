@@ -96,6 +96,16 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           )}
         </FormItem>
 
+        <FormItem name="konfhubApiKey">
+          {({ field }) => (
+            <FormItemContainer>
+              <FormLabel>Konfhub API Key</FormLabel>
+              <Input {...field} placeholder="Konfhub API Key" />
+              <FormError />
+            </FormItemContainer>
+          )}
+        </FormItem>
+
         <FormItem name="paidEvent">
           {({ field: { value, onChange } }) => (
             <FormItemContainer halfSpace>
