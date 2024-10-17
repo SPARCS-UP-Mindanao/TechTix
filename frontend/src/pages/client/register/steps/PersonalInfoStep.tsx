@@ -149,7 +149,7 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
           <FormItem name="shirtSize">
             {({ field }) => (
               <div className="flex flex-col gap-1">
-                <FormLabel>Shirt Size</FormLabel>
+                <FormLabel>Shirt Size (For Pro and VIP Tickets Only)</FormLabel>
                 <p className="text-muted-foreground text-sm">
                   To check shirt size, please refer to the{' '}
                   <a href={shirtSizeLink} className="text-primary underline" target="_blank">
