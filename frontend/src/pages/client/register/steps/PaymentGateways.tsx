@@ -27,7 +27,7 @@ const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, imgSrc, paymentCh
         variant={'outline'}
         onClick={onClick}
       >
-        <div className='flex flex-row justify-start items-center w-32'>
+        <div className="flex flex-row justify-start items-center w-32">
           {imgSrc && (
             <div className="h-10 mr-2">
               <img
