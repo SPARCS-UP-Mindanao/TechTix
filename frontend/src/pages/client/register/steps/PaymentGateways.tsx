@@ -27,16 +27,18 @@ const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, imgSrc, paymentCh
         variant={'outline'}
         onClick={onClick}
       >
-        {imgSrc && (
-          <div className="h-10 mr-2">
-            <img
-              src={imgSrc}
-              className={cn('w-full h-full', paymentChannelCode === 'PAYMAYA' && 'py-2 pt-3', paymentChannelCode === 'BPI' && 'py-0')}
-              alt={paymentTitle}
-            />
-          </div>
-        )}
-        <p className="text-muted-foreground">{paymentTitle}</p>
+        <div className="flex flex-row justify-start items-center w-32">
+          {imgSrc && (
+            <div className="h-10 mr-2">
+              <img
+                src={imgSrc}
+                className={cn('w-full h-full', paymentChannelCode === 'PAYMAYA' && 'py-2 pt-3', paymentChannelCode === 'BPI' && 'py-0')}
+                alt={paymentTitle}
+              />
+            </div>
+          )}
+          <p className="text-muted-foreground">{paymentTitle}</p>
+        </div>
         <RadioGroupItem className="ml-auto" value={paymentChannelCode} checked={selected} />
       </Button>
     </div>
