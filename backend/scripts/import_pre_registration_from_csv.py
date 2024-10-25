@@ -9,8 +9,6 @@ from http import HTTPStatus
 from repository.preregistrations_repository import PreRegistrationsRepository
 from model.preregistrations.preregistration import PreRegistrationIn
 
-# from .preregistrations.preregistration import PreRegistrationIn
-
 
 class CareerStatus(str, Enum):
     STUDENT = "Student"
@@ -73,7 +71,9 @@ class DevFestPreRegistrationSchema(BaseModel):
 
 
 # TODO: Refactoring
-def import_pre_registration_from_csv(csv_file_path: str = "example.csv"):
+def import_pre_registration_from_csv(
+    csv_file_path: str = "example.csv", eventId: str = "testevent"
+):
     with open(csv_file_path, mode="r") as csv_file:
         csv_reader = csv.reader(csv_file)
         headers = next(csv_reader)
@@ -143,6 +143,7 @@ def import_pre_registration_from_csv(csv_file_path: str = "example.csv"):
                     yearsOfExperience=pre_registration_csv_data.level_of_experience,
                     organization=pre_registration_csv_data.company_affiliation,
                     title=pre_registration_csv_data.job_title,
+                    eventId=eventId,
                 )
 
                 preregistrations_repository = PreRegistrationsRepository()
@@ -167,6 +168,4 @@ def import_pre_registration_from_csv(csv_file_path: str = "example.csv"):
                 print(f"Validation error for row: {line}\n{e.json()}")
 
 
-path = "/home/apactores/Projects/SPARCS/TechTix/backend/scripts/example.csv"
-
-import_pre_registration_from_csv(path)
+import_pre_registration_from_csv()
