@@ -286,3 +286,4 @@ def get_preregistration_csv(
 
     """
     preregistrations_uc = PreRegistrationUsecase()
+    return preregistrations_uc.get_preregistration_csv(event_id=event_id)

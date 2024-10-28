@@ -11,7 +11,7 @@ from pynamodb.models import Model
 
 class PreRegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
     class Meta:
-        index_name = 'PreRegistrationIdIndex'
+        index_name = "PreRegistrationIdIndex"
         projection = AllProjection()
         read_capacity_units = 1
         write_capacity_units = 1
@@ -21,7 +21,7 @@ class PreRegistrationGlobalSecondaryIndex(GlobalSecondaryIndex):
 
 class EmailLSI(LocalSecondaryIndex):
     class Meta:
-        index_name = 'EmailIndex'
+        index_name = "EmailIndex"
         projection = AllProjection()
         read_capacity_units = 1
         write_capacity_units = 1
@@ -32,9 +32,9 @@ class EmailLSI(LocalSecondaryIndex):
 
 class PreRegistration(Model):
     class Meta:
-        table_name = os.getenv('PREREGISTRATIONS_TABLE')
-        region = os.getenv('REGION')
-        billing_mode = 'PAY_PER_REQUEST'
+        table_name = os.getenv("PREREGISTRATIONS_TABLE")
+        region = os.getenv("REGION")
+        billing_mode = "PAY_PER_REQUEST"
 
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
@@ -67,47 +67,51 @@ class PreRegistrationaDataIn(BaseModel):
     class Config:
         extra = Extra.ignore
 
-    firstName: str = Field(None, title='First Name')
-    lastName: str = Field(None, title='Last Name')
-    contactNumber: str = Field(None, title='Contact Number')
-    careerStatus: str = Field(None, title='Career Status')
-    yearsOfExperience: str = Field(None, title='Years of Experience')
-    organization: str = Field(None, title='Organization')
-    title: str = Field(None, title='Title')
+    firstName: str = Field(None, title="First Name")
+    lastName: str = Field(None, title="Last Name")
+    contactNumber: str = Field(None, title="Contact Number")
+    careerStatus: str = Field(None, title="Career Status")
+    yearsOfExperience: str = Field(None, title="Years of Experience")
+    organization: str = Field(None, title="Organization")
+    title: str = Field(None, title="Title")
 
 
 class PreRegistrationPatch(PreRegistrationaDataIn):
     class Config:
         extra = Extra.forbid
 
-    acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
-    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
+    acceptanceStatus: Optional[AcceptanceStatus] = Field(
+        None, title="Acceptance Status"
+    )
+    acceptanceEmailSent: bool = Field(None, title="Acceptance Email Sent")
 
 
 class PreRegistrationIn(PreRegistrationaDataIn):
     class Config:
         extra = Extra.forbid
 
-    email: EmailStr = Field(None, title='Email')
-    eventId: str = Field(None, title='Event ID')
+    email: EmailStr = Field(None, title="Email")
+    eventId: str = Field(None, title="Event ID")
 
 
 class PreRegistrationOut(PreRegistrationIn):
     class Config:
         extra = Extra.ignore
 
-    preRegistrationId: str = Field(..., title='ID')
-    acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
-    acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
-    createDate: datetime = Field(..., title='Created At')
-    updateDate: datetime = Field(..., title='Updated At')
+    preRegistrationId: str = Field(..., title="ID")
+    acceptanceEmailSent: bool = Field(None, title="Acceptance Email Sent")
+    acceptanceStatus: Optional[AcceptanceStatus] = Field(
+        None, title="Acceptance Status"
+    )
+    createDate: datetime = Field(..., title="Created At")
+    updateDate: datetime = Field(..., title="Updated At")
 
 
 class PreRegistrationPreviewOut(BaseModel):
     class Config:
         extra = Extra.ignore
 
-    firstName: str = Field(None, title='First Name')
-    lastName: str = Field(None, title='Last Name')
-    contactNumber: str = Field(None, title='Contact Number')
-    email: EmailStr = Field(None, title='Email')
+    firstName: str = Field(None, title="First Name")
+    lastName: str = Field(None, title="Last Name")
+    contactNumber: str = Field(None, title="Contact Number")
+    email: EmailStr = Field(None, title="Email")

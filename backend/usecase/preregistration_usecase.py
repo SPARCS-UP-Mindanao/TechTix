@@ -1,6 +1,7 @@
 import json, tempfile, csv, os
 from http import HTTPStatus
 from typing import List, Union
+from model.file_uploads.file_upload import FileDownloadOut
 from utils.logger import logger
 
 import ulid
@@ -276,13 +277,14 @@ class PreRegistrationUsecase:
 
         return None
 
-    def get_preregistration_csv(self, event_id: str):
-        """
+    def get_preregistration_csv(self, event_id: str) -> FileDownloadOut:
+        """Returns the FileDownloadOut of the CSV for the specified event
+
         :param event_id: The event pre-registrations to be queried
         :type event_id: str
 
-        :return: URL to S3 bucket
-        :rtype: str
+        :return: FileDownloadOut for the CSV
+        :rtype: FileDownloadOut
         """
         # Get preregistrations for an event
         status, preregistrations, message = (
@@ -297,9 +299,11 @@ class PreRegistrationUsecase:
             with tempfile.TemporaryDirectory() as tmpdir:
                 csv_path = os.path.join(tmpdir, "preregistrations.csv")
 
-                # ...
+                with open("preregistrations.csv", "w") as temp:
+                    writer = csv.writer(temp)
+                    writer.writerows(entry.__fields__ for entry in preregistrations)
 
-                self.__s3_usecase.create_download_url(csv_path)
+                return self.__s3_usecase.create_download_url(csv_path)
 
         except Exception as e:
             logger.error(f"Error generating the CSV: {e}")
