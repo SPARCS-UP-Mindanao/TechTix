@@ -69,4 +69,4 @@ class SpecialEmails(str, Enum):
 class SpecialSenders(str, Enum):
     DURIAN_PY = 'DurianPy - Davao Python User Group'
     AWSUG_DAVAO = 'AWS User Group Davao'
-    GDG_DAVAO = 'GDG Davao'
+    GDG_DAVAO = 'Google Developer Group Davao'
