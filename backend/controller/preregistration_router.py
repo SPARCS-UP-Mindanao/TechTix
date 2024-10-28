@@ -243,7 +243,7 @@ def delete_preregistration(
 
 
 @preregistration_router.get(
-    '/{entryId}/csv_download',
+    '/{eventId}/csv_download',
     response_model=FileDownloadOut,
     responses={
         404: {'model': Message, 'description': 'Pre-registration not found'},
@@ -262,9 +262,6 @@ def get_preregistration_csv(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
 ):
     """Get the CSV for a specific event
-
-    :param entry_id: The pre-registration ID.
-    :type entry_id: str
 
     :param event_id: The event ID.
     :type event_id: str
