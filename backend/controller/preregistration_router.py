@@ -285,4 +285,4 @@ def get_preregistration_csv(
     :rtype: FileDownloadOut
 
     """
-    pass
+    preregistrations_uc = PreRegistrationUsecase()
