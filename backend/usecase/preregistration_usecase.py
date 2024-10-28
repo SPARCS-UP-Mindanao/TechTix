@@ -1,11 +1,13 @@
-import json, tempfile, csv, os
+import csv
+import json
+import os
+import tempfile
 from http import HTTPStatus
 from typing import List, Union
-from model.file_uploads.file_upload import FileDownloadOut
-from utils.logger import logger
 
 import ulid
 from model.events.events_constants import EventStatus
+from model.file_uploads.file_upload import FileDownloadOut
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
@@ -16,6 +18,7 @@ from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
+from utils.logger import logger
 
 
 class PreRegistrationUsecase:
@@ -34,9 +37,7 @@ class PreRegistrationUsecase:
         self.__email_usecase = EmailUsecase()
         self.__s3_usecase = FileS3Usecase()
 
-    def create_preregistration(
-        self, preregistration_in: PreRegistrationIn
-    ) -> Union[JSONResponse, PreRegistrationOut]:
+    def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
         """Creates a new pre-registration entry.
 
         :param preregistration_in: The data for creating the new pre-registration.
@@ -46,18 +47,16 @@ class PreRegistrationUsecase:
         :rtype: Union[JSONResponse, PreRegistrationOut]
 
         """
-        status, event, message = self.__events_repository.query_events(
-            event_id=preregistration_in.eventId
-        )
+        status, event, message = self.__events_repository.query_events(event_id=preregistration_in.eventId)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         is_preregistration = event.status == EventStatus.PRE_REGISTRATION.value
         # Check if the event is open for pre-registration
         if not (event.isApprovalFlow and is_preregistration):
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
-                content={"message": "Event is not open for pre-registration"},
+                content={'message': 'Event is not open for pre-registration'},
             )
 
         # Check if the pre-registration with the same email already exists
@@ -67,15 +66,11 @@ class PreRegistrationUsecase:
             status,
             preregistrations,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations_with_email(
-            event_id=event_id, email=email
-        )
+        ) = self.__preregistrations_repository.query_preregistrations_with_email(event_id=event_id, email=email)
         if status == HTTPStatus.OK and preregistrations:
             return JSONResponse(
                 status_code=HTTPStatus.CONFLICT,
-                content={
-                    "message": f"Pre-registration with email {email} already exists"
-                },
+                content={'message': f'Pre-registration with email {email} already exists'},
             )
 
         preregistration_id = ulid.ulid()
@@ -88,14 +83,12 @@ class PreRegistrationUsecase:
             preregistration_in=preregistration_in, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
 
         if not preregistration.preRegistrationEmailSent:
-            self.__email_usecase.send_preregistration_creation_email(
-                preregistration=preregistration, event=event
-            )
+            self.__email_usecase.send_preregistration_creation_email(preregistration=preregistration, event=event)
 
         preregistration_out = PreRegistrationOut(**preregistration_data)
         return preregistration_out
@@ -118,11 +111,9 @@ class PreRegistrationUsecase:
         :rtype: Union[JSONResponse, PreRegistrationOut]
 
         """
-        status, event, message = self.__events_repository.query_events(
-            event_id=event_id
-        )
+        status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -132,7 +123,7 @@ class PreRegistrationUsecase:
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -142,16 +133,14 @@ class PreRegistrationUsecase:
             preregistration_entry=preregistration, preregistration_in=preregistration_in
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         preregistration_data = self.__convert_data_entry_to_dict(update_preregistration)
         preregistration_out = PreRegistrationOut(**preregistration_data)
 
         return preregistration_out
 
-    def get_preregistration(
-        self, event_id: str, preregistration_id: str
-    ) -> Union[JSONResponse, PreRegistrationOut]:
+    def get_preregistration(self, event_id: str, preregistration_id: str) -> Union[JSONResponse, PreRegistrationOut]:
         """Retrieves a specific pre-registration entry by its ID.
 
         :param event_id: The ID of the event
@@ -166,7 +155,7 @@ class PreRegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -176,14 +165,12 @@ class PreRegistrationUsecase:
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
         return PreRegistrationOut(**preregistration_data)
 
-    def get_preregistration_by_email(
-        self, event_id: str, email: str
-    ) -> PreRegistrationOut:
+    def get_preregistration_by_email(self, event_id: str, email: str) -> PreRegistrationOut:
         """Retrieves a specific pre-registration entry by its email.
 
         :param event_id: The ID of the event
@@ -200,20 +187,16 @@ class PreRegistrationUsecase:
             status,
             preregistrations,
             message,
-        ) = self.__preregistrations_repository.query_preregistrations_with_email(
-            event_id=event_id, email=email
-        )
+        ) = self.__preregistrations_repository.query_preregistrations_with_email(event_id=event_id, email=email)
         if status != HTTPStatus.OK or not preregistrations:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         preregistration = preregistrations[0]
         preregistration_data = self.__convert_data_entry_to_dict(preregistration)
 
         return PreRegistrationOut(**preregistration_data)
 
-    def get_preregistrations(
-        self, event_id: str = None
-    ) -> Union[JSONResponse, List[PreRegistrationOut]]:
+    def get_preregistrations(self, event_id: str = None) -> Union[JSONResponse, List[PreRegistrationOut]]:
         """Retrieves a list of pre-registration preregistration_entries.
 
         :param event_id: If provided, only retrieves pre-registration entries for the specified event. If not provided, retrieves all pre-registration entries.
@@ -225,7 +208,7 @@ class PreRegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -233,16 +216,14 @@ class PreRegistrationUsecase:
             message,
         ) = self.__preregistrations_repository.query_preregistrations(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"messsage": message})
+            return JSONResponse(status_code=status, content={'messsage': message})
 
         return [
             PreRegistrationOut(**self.__convert_data_entry_to_dict(preregistration))
             for preregistration in preregistrations
         ]
 
-    def delete_preregistration(
-        self, event_id: str, preregistration_id: str
-    ) -> Union[None, JSONResponse]:
+    def delete_preregistration(self, event_id: str, preregistration_id: str) -> Union[None, JSONResponse]:
         """Deletes a specific preregistration entry by its ID.
 
         :param event_id: The ID of the event
@@ -257,7 +238,7 @@ class PreRegistrationUsecase:
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         (
             status,
@@ -267,13 +248,13 @@ class PreRegistrationUsecase:
             event_id=event_id, preregistration_id=preregistration_id
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         status, message = self.__preregistrations_repository.delete_preregistration(
             preregistration_entry=preregistration
         )
         if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={"message": message})
+            return JSONResponse(status_code=status, content={'message': message})
 
         return None
 
@@ -287,9 +268,7 @@ class PreRegistrationUsecase:
         :rtype: FileDownloadOut
         """
         # Get preregistrations for an event
-        status, preregistrations, message = (
-            self.__preregistrations_repository.query_preregistrations(event_id=event_id)
-        )
+        status, preregistrations, message = self.__preregistrations_repository.query_preregistrations(event_id=event_id)
 
         if status != HTTPStatus.OK:
             logger.error(message)
@@ -297,9 +276,9 @@ class PreRegistrationUsecase:
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                csv_path = os.path.join(tmpdir, "preregistrations.csv")
+                csv_path = os.path.join(tmpdir, 'preregistrations.csv')
 
-                with open("preregistrations.csv", "w") as temp:
+                with open('preregistrations.csv', 'w') as temp:
                     writer = csv.writer(temp)
 
                     # make the first row csv for the keys
@@ -312,7 +291,7 @@ class PreRegistrationUsecase:
                 return self.__s3_usecase.create_download_url(csv_path)
 
         except Exception as e:
-            logger.error(f"Error generating the CSV: {e}")
+            logger.error(f'Error generating the CSV: {e}')
             return
 
     @staticmethod
