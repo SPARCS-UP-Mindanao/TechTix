@@ -63,8 +63,10 @@ class EmailType(str, Enum):
 class SpecialEmails(str, Enum):
     DURIAN_PY = 'durianpy.davao@gmail.com'
     AWSUG_DAVAO = 'hello@awsugdavao.ph'
+    GDG_DAVAO = 'davao.gdg@gmail.com'
 
 
 class SpecialSenders(str, Enum):
     DURIAN_PY = 'DurianPy - Davao Python User Group'
     AWSUG_DAVAO = 'AWS User Group Davao'
+    GDG_DAVAO = 'GDG Davao'

@@ -24,6 +24,7 @@ class EmailUsecase:
         self.__sender_name_map = {
             SpecialEmails.DURIAN_PY.value: SpecialSenders.DURIAN_PY.value,
             SpecialEmails.AWSUG_DAVAO.value: SpecialSenders.AWSUG_DAVAO.value,
+            SpecialEmails.GDG_DAVAO.value: SpecialSenders.GDG_DAVAO.value
         }
         self.__event_email = None
 
