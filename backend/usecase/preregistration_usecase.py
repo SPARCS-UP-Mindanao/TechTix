@@ -301,7 +301,13 @@ class PreRegistrationUsecase:
 
                 with open("preregistrations.csv", "w") as temp:
                     writer = csv.writer(temp)
-                    writer.writerows(entry.__fields__ for entry in preregistrations)
+
+                    # make the first row csv for the keys
+                    writer.writerow(preregistrations[0].get_attributes().keys())
+
+                    # the remaining rows consist of the values of the attributes
+                    for entry in preregistrations:
+                        writer.writerow(entry.get_attributes().values())
 
                 return self.__s3_usecase.create_download_url(csv_path)
 
