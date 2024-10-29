@@ -116,7 +116,7 @@ def separate_first_and_last_name(name: str) -> Tuple[str, str]:
     :param name: Full name string.
     :type name: str
 
-    :return: A tuple containing the first name and last name.
+    :return: A tuple containing the first name and last name, in that order.
     :rtype: Tuple[str, str]
 
     Examples:
