@@ -68,8 +68,6 @@ class FileS3Usecase:
             return None
 
     def upload_file(self, file_name: str, object_name: str = None, verbose: bool = True) -> bool:
-        result = True
-
         # If S3 object_name was not specified, use file_name
         if object_name is None:
             object_name = file_name
