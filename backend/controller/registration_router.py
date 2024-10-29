@@ -1,11 +1,11 @@
 from http import HTTPStatus
 from typing import List
 
-from model.file_uploads.file_upload import FileDownloadOut
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
+from model.file_uploads.file_upload import FileDownloadOut
 from model.registrations.registration import (
     RegistrationIn,
     RegistrationOut,

@@ -1,18 +1,17 @@
-import json
-import tempfile
 import csv
+import json
 import os
+import tempfile
 from http import HTTPStatus
 from typing import List, Union
-from utils.logger import logger
 
 import ulid
 from constants.common_constants import CommonConstants
 from external_gateway.konfhub_gateway import KonfHubGateway
 from model.events.event import Event
 from model.events.events_constants import EventStatus
-from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.file_uploads.file_upload import FileDownloadOut
+from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
     RegistrationIn,
@@ -28,6 +27,7 @@ from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from usecase.preregistration_usecase import PreRegistrationUsecase
+from utils.logger import logger
 
 
 class RegistrationUsecase:

@@ -1,7 +1,6 @@
 import os
 from typing import Tuple
 
-from http import HTTPStatus
 from boto3 import client as boto3_client
 from botocore.config import Config
 from botocore.exceptions import ClientError
