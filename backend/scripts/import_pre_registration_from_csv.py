@@ -1,14 +1,15 @@
 import csv
 import re
 from enum import Enum
-from http import HTTPStatus
 from typing import Optional, Tuple
+from datetime import datetime
 
+import pytz
 import ulid
+from model.preregistrations.preregistrations_constants import AcceptanceStatus
+from constants.common_constants import EntryStatus
 from model.preregistrations.preregistration import PreRegistrationIn, PreRegistration
-from pydantic import BaseModel, EmailStr, Field, ValidationError, validator
-from repository.preregistrations_repository import PreRegistrationsRepository
-from utils.logger import logger
+from pydantic import BaseModel, EmailStr, Field, validator
 
 
 class CareerStatus(str, Enum):
@@ -120,6 +121,7 @@ def import_pre_registration_from_csv(
     with open(csv_file_path, mode="r") as csv_file:
         csv_reader = csv.reader(csv_file)
         headers = next(csv_reader)
+        pre_registration_data_rows: list[DevFestPreRegistrationSchema] = []
 
         for line in csv_reader:
             # Dictionary mapping of CSV columns to DevFestPreRegistrationSchema fields
@@ -159,50 +161,50 @@ def import_pre_registration_from_csv(
                 ],
             }
 
-            try:
-                pre_registration_csv_data = DevFestPreRegistrationSchema(
-                    **pre_registration_data
-                )
+            pre_registration_data_rows.append(
+                DevFestPreRegistrationSchema(**pre_registration_data)
+            )
 
+        with PreRegistration.batch_write() as batch:
+            current_date = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
+            items = []
+
+            for pre_registration in pre_registration_data_rows:
+                pre_registration_id = ulid.ulid()
                 first_name, last_name = separate_first_and_last_name(
-                    pre_registration_csv_data.name
+                    pre_registration.name
                 )
 
                 preregistration_in = PreRegistrationIn(
-                    email=pre_registration_csv_data.email,
+                    email=pre_registration.email,
                     firstName=first_name,
                     lastName=last_name,
-                    contactNumber=pre_registration_csv_data.phone_number,
-                    careerStatus=pre_registration_csv_data.career_status,
-                    yearsOfExperience=pre_registration_csv_data.level_of_experience,
-                    organization=pre_registration_csv_data.company_affiliation,
-                    title=pre_registration_csv_data.job_title,
+                    contactNumber=pre_registration.phone_number,
+                    careerStatus=pre_registration.career_status,
+                    yearsOfExperience=pre_registration.level_of_experience,
+                    organization=pre_registration.company_affiliation,
+                    title=pre_registration.job_title,
                     eventId=eventId,
                 )
 
-                preregistrations_repository = PreRegistrationsRepository()
-                preregistration_id = ulid.ulid()
-
-                (
-                    status,
-                    preregistration,
-                    message,
-                ) = preregistrations_repository.store_preregistration(
-                    preregistration_in=preregistration_in,
-                    preregistration_id=preregistration_id,
+                items.append(
+                    PreRegistration(
+                        hashKey=eventId,
+                        rangeKey=pre_registration_id,
+                        createDate=current_date,
+                        updateDate=current_date,
+                        entryStatus=EntryStatus.ACTIVE.value,
+                        preRegistrationId=pre_registration_id,
+                        acceptanceStatus=AcceptanceStatus.PENDING.value,
+                        **preregistration_in.dict(),
+                    )
                 )
 
-                if status != HTTPStatus.OK:
-                    logger.error(f"Error storing preregistration: {message}")
-                    continue
-
-                logger.info(f"Successfully stored preregistration: {preregistration}")
-
-            except ValidationError as e:
-                logger.error(f"Validation error for row: {line}\n{e.errors()}")
+            for item in items:
+                batch.save(item)
 
 
 if __name__ == "__main__":
-    event_id = "devfest"
-    csv_file_path = "input.csv"
+    event_id = "testevent"
+    csv_file_path = "scripts/input.csv"
     import_pre_registration_from_csv(csv_file_path=csv_file_path, eventId=event_id)
