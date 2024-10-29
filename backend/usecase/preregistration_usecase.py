@@ -35,7 +35,7 @@ class PreRegistrationUsecase:
         self.__preregistrations_repository = PreRegistrationsRepository()
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
-        self.__s3_usecase = FileS3Usecase()
+        self.__file_s3_usecase = FileS3Usecase()
 
     def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
         """Creates a new pre-registration entry.
@@ -277,17 +277,21 @@ class PreRegistrationUsecase:
             with tempfile.TemporaryDirectory() as tmpdir:
                 csv_path = os.path.join(tmpdir, 'preregistrations.csv')
 
-                with open('preregistrations.csv', 'w') as temp:
+                with open(csv_path, 'w') as temp:
                     writer = csv.writer(temp)
 
                     # make the first row csv for the keys
-                    writer.writerow(preregistrations[0].get_attributes().keys())
+                    writer.writerow(self.__convert_data_entry_to_dict(preregistrations[0]).keys())
 
                     # the remaining rows consist of the values of the attributes
                     for entry in preregistrations:
-                        writer.writerow(entry.get_attributes().values())
+                        writer.writerow(self.__convert_data_entry_to_dict(entry).values())
 
-                return self.__s3_usecase.create_download_url(csv_path)
+                # upload the file to s3
+                csv_object_key = f'csv/preregistrations/{event_id}.csv'
+                self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
+
+                return self.__file_s3_usecase.create_download_url(csv_object_key)
 
         except Exception as e:
             logger.error(f'Error generating the CSV: {e}')
