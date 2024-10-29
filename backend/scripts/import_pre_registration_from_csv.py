@@ -89,9 +89,16 @@ class DevFestPreRegistrationSchema(BaseModel):
         None, title=DevFestColumns.PROCESSING_OF_PERSONAL_DATA
     )
 
-    # Pre-process phone number to remove non-numeric characters
     @validator("phone_number", pre=True)
     def strip_and_clean_phone_number(cls, value):
+        """Strip and clean phone number to remove non-numeric characters before validation.
+
+        :param value: Phone number string.
+        :type value: str
+
+        :return: Cleaned phone number string.
+        :rtype: str
+        """
         if value is None or value == "":
             return None
 
@@ -101,6 +108,25 @@ class DevFestPreRegistrationSchema(BaseModel):
 
 
 def separate_first_and_last_name(name: str) -> Tuple[str, str]:
+    """Separate first and last name from a full name string, excluding any middle initials.
+
+    The last name is assumed to be the last word in the full name string, while the first name
+    consists of all preceding words before the last name.
+
+    :param name: Full name string.
+    :type name: str
+
+    :return: A tuple containing the first name and last name.
+    :rtype: Tuple[str, str]
+
+    Examples:
+        >>> separate_first_and_last_name("John Doe")
+        ('John', 'Doe')
+
+        >>> separate_first_and_last_name("Juan Manuel C. Cruz")
+        ('Juan Manuel', 'Cruz')
+    """
+
     name_parts = name.split()
 
     if len(name_parts) > 2:
@@ -118,6 +144,18 @@ def separate_first_and_last_name(name: str) -> Tuple[str, str]:
 def import_pre_registration_from_csv(
     eventId: str, csv_file_path: str = "input.csv"
 ) -> None:
+    """Import pre-registration data from a CSV file to a PreRegistration table.
+
+    :param eventId: Event ID.
+    :type eventId: str
+
+    :param csv_file_path: Path to the CSV file containing pre-registration data.
+    :type csv_file_path: str
+
+    :return: None
+    :rtype: None
+    """
+
     with open(csv_file_path, mode="r") as csv_file:
         csv_reader = csv.reader(csv_file)
         headers = next(csv_reader)
@@ -207,4 +245,4 @@ def import_pre_registration_from_csv(
 if __name__ == "__main__":
     event_id = "testevent"
     csv_file_path = "scripts/input.csv"
-    import_pre_registration_from_csv(csv_file_path=csv_file_path, eventId=event_id)
+    import_pre_registration_from_csv(eventId=event_id, csv_file_path=csv_file_path)
