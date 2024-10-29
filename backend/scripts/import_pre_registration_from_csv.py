@@ -191,7 +191,7 @@ def import_pre_registration_from_csv(eventId: str, csv_file_path: str = 'input.c
                         updateDate=current_date,
                         entryStatus=EntryStatus.ACTIVE.value,
                         preRegistrationId=pre_registration_id,
-                        acceptanceStatus=AcceptanceStatus.PENDING.value,
+                        acceptanceStatus=AcceptanceStatus.ACCEPTED.value,
                         **preregistration_in.dict(),
                     )
                 )
