@@ -280,12 +280,14 @@ class PreRegistrationUsecase:
                 with open(csv_path, 'w') as temp:
                     writer = csv.writer(temp)
 
-                    # make the first row csv for the keys
-                    writer.writerow(self.__convert_data_entry_to_dict(preregistrations[0]).keys())
+                    # make the first row csv for the keys using the dict keys of the first entry
+                    first_entry = self.__convert_data_entry_to_dict(preregistrations[0])
+                    writer.writerow(first_entry.keys())
 
                     # the remaining rows consist of the values of the attributes
                     for entry in preregistrations:
-                        writer.writerow(self.__convert_data_entry_to_dict(entry).values())
+                        entry_dict = self.__convert_data_entry_to_dict(entry)
+                        writer.writerow(entry_dict.values())
 
                 # upload the file to s3
                 csv_object_key = f'csv/preregistrations/{event_id}.csv'
@@ -294,7 +296,7 @@ class PreRegistrationUsecase:
                 return self.__file_s3_usecase.create_download_url(csv_object_key)
 
         except Exception as e:
-            logger.error(f'Error generating the CSV: {e}')
+            logger.error(f'Error generating the CSV for {event_id}: {e}')
             return
 
     @staticmethod

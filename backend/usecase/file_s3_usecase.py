@@ -75,11 +75,10 @@ class FileS3Usecase:
         try:
             self.__s3_client.upload_file(file_name, self.__bucket, object_name)
             if verbose:
-                logger.info('Stored file in S3: %s/%s', self.__bucket, object_name)
+                logger.info(f'Stored file in S3: {self.__bucket}/{object_name}')
         except Exception as e:
             message = f'Failed to upload file ({file_name}) to S3, Reason: {type(e).__name__} - {str(e)}'
             logger.error(message)
-            # raise PdfServiceInternalError(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, message=message) from e
 
     def get_values_from_object_key(self, object_key) -> Tuple[str, str]:
         """Get the entry id and upload type from the object key

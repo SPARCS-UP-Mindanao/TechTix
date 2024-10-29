@@ -214,5 +214,5 @@ def get_registration_csv(
     :rtype: FileDownloadOut
 
     """
-    preregistrations_uc = RegistrationUsecase()
-    return preregistrations_uc.get_registration_csv(event_id=event_id)
+    registrations_uc = RegistrationUsecase()
+    return registrations_uc.get_registration_csv(event_id=event_id)
