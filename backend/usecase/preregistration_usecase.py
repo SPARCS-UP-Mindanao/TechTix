@@ -271,8 +271,7 @@ class PreRegistrationUsecase:
         status, preregistrations, message = self.__preregistrations_repository.query_preregistrations(event_id=event_id)
 
         if status != HTTPStatus.OK:
-            logger.error(message)
-            return
+            return JSONResponse(status_code=status, content={'message': message})
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
