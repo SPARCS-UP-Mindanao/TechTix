@@ -1,4 +1,7 @@
+import csv
 import json
+import os
+import tempfile
 from http import HTTPStatus
 from typing import List, Union
 
@@ -7,6 +10,7 @@ from constants.common_constants import CommonConstants
 from external_gateway.konfhub_gateway import KonfHubGateway
 from model.events.event import Event
 from model.events.events_constants import EventStatus
+from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
@@ -23,6 +27,7 @@ from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from usecase.preregistration_usecase import PreRegistrationUsecase
+from utils.logger import logger
 
 
 class RegistrationUsecase:
@@ -382,6 +387,47 @@ class RegistrationUsecase:
             self.collect_pre_signed_url(RegistrationOut(**self.__convert_data_entry_to_dict(registration)))
             for registration in registrations
         ]
+
+    def get_registration_csv(self, event_id: str) -> FileDownloadOut:
+        """Returns the FileDownloadOut of the CSV for the specified event
+
+        :param event_id: The event registrations to be queried
+        :type event_id: str
+
+        :return: FileDownloadOut for the CSV
+        :rtype: FileDownloadOut
+        """
+        # Get preregistrations for an event
+        status, registrations, message = self.__registrations_repository.query_registrations(event_id=event_id)
+
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                csv_path = os.path.join(tmpdir, 'registrations.csv')
+
+                with open(csv_path, 'w') as temp:
+                    writer = csv.writer(temp)
+
+                    # make the first row csv for the keys using the dict keys of the first entry
+                    first_entry = self.__convert_data_entry_to_dict(registrations[0])
+                    writer.writerow(first_entry.keys())
+
+                    # the remaining rows consist of the values of the attributes
+                    for entry in registrations:
+                        entry_dict = self.__convert_data_entry_to_dict(entry)
+                        writer.writerow(entry_dict.values())
+
+                # upload the file to s3
+                csv_object_key = f'csv/registrations/{event_id}.csv'
+                self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
+
+                return self.__file_s3_usecase.create_download_url(csv_object_key)
+
+        except Exception as e:
+            logger.error(f'Error generating the CSV for {event_id}: {e}')
+            return
 
     def delete_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
         """Deletes a specific registration entry by its ID.

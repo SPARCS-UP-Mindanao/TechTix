@@ -5,6 +5,7 @@ from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
+from model.file_uploads.file_upload import FileDownloadOut
 from model.registrations.registration import (
     RegistrationIn,
     RegistrationOut,
@@ -183,3 +184,35 @@ def delete_registration(
     _ = current_user
     registrations_uc = RegistrationUsecase()
     return registrations_uc.delete_registration(registration_id=entry_id, event_id=event_id)
+
+
+@registration_router.get(
+    '/{eventId}/csv_download',
+    response_model=FileDownloadOut,
+    responses={
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Get CSV for registration',
+)
+@registration_router.get(
+    '/{eventId}/csv_download/',
+    response_model=FileDownloadOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_registration_csv(
+    event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+):
+    """Get the CSV for a specific event
+
+    :param event_id: The event ID.
+    :type event_id: str
+
+    :return: The csv for the corresponding event
+    :rtype: FileDownloadOut
+
+    """
+    registrations_uc = RegistrationUsecase()
+    return registrations_uc.get_registration_csv(event_id=event_id)

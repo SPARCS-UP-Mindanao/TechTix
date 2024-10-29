@@ -1,9 +1,13 @@
+import csv
 import json
+import os
+import tempfile
 from http import HTTPStatus
 from typing import List, Union
 
 import ulid
 from model.events.events_constants import EventStatus
+from model.file_uploads.file_upload import FileDownloadOut
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
@@ -13,6 +17,8 @@ from repository.events_repository import EventsRepository
 from repository.preregistrations_repository import PreRegistrationsRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
+from usecase.file_s3_usecase import FileS3Usecase
+from utils.logger import logger
 
 
 class PreRegistrationUsecase:
@@ -29,6 +35,7 @@ class PreRegistrationUsecase:
         self.__preregistrations_repository = PreRegistrationsRepository()
         self.__events_repository = EventsRepository()
         self.__email_usecase = EmailUsecase()
+        self.__file_s3_usecase = FileS3Usecase()
 
     def create_preregistration(self, preregistration_in: PreRegistrationIn) -> Union[JSONResponse, PreRegistrationOut]:
         """Creates a new pre-registration entry.
@@ -87,7 +94,10 @@ class PreRegistrationUsecase:
         return preregistration_out
 
     def update_preregistration(
-        self, event_id: str, preregistration_id: str, preregistration_in: PreRegistrationPatch
+        self,
+        event_id: str,
+        preregistration_id: str,
+        preregistration_in: PreRegistrationPatch,
     ) -> Union[JSONResponse, PreRegistrationOut]:
         """Updates an existing pre-registration entry.
 
@@ -247,6 +257,47 @@ class PreRegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         return None
+
+    def get_preregistration_csv(self, event_id: str) -> FileDownloadOut:
+        """Returns the FileDownloadOut of the CSV for the specified event
+
+        :param event_id: The event pre-registrations to be queried
+        :type event_id: str
+
+        :return: FileDownloadOut for the CSV
+        :rtype: FileDownloadOut
+        """
+        # Get preregistrations for an event
+        status, preregistrations, message = self.__preregistrations_repository.query_preregistrations(event_id=event_id)
+
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                csv_path = os.path.join(tmpdir, 'preregistrations.csv')
+
+                with open(csv_path, 'w') as temp:
+                    writer = csv.writer(temp)
+
+                    # make the first row csv for the keys using the dict keys of the first entry
+                    first_entry = self.__convert_data_entry_to_dict(preregistrations[0])
+                    writer.writerow(first_entry.keys())
+
+                    # the remaining rows consist of the values of the attributes
+                    for entry in preregistrations:
+                        entry_dict = self.__convert_data_entry_to_dict(entry)
+                        writer.writerow(entry_dict.values())
+
+                # upload the file to s3
+                csv_object_key = f'csv/preregistrations/{event_id}.csv'
+                self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
+
+                return self.__file_s3_usecase.create_download_url(csv_object_key)
+
+        except Exception as e:
+            logger.error(f'Error generating the CSV for {event_id}: {e}')
+            return
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
