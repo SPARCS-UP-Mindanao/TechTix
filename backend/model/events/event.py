@@ -70,6 +70,8 @@ class Event(Model):
     konfhubId = UnicodeAttribute(null=True)
     konfhubApiKey = UnicodeAttribute(null=True)
 
+    platformFee = NumberAttribute(null=True)
+
     eventIdIndex = EventIdIndex()
 
 
@@ -97,6 +99,8 @@ class EventDBIn(BaseModel):
     hasMultipleTicketTypes: Optional[bool] = Field(None, title='Has Multiple Ticket Types')
     konfhubId: Optional[str] = Field(None, title='Konfhub ID')
     konfhubApiKey: Optional[str] = Field(None, title='Konfhub API Key')
+
+    platformFee: Optional[float] = Field(None, title='Percent platform fee')
 
 
 class EventIn(EventDBIn):
