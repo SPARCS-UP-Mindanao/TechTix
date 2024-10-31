@@ -29,7 +29,7 @@ class EmailUsecase:
         self.__event_email = None
 
     def __send_email_handler(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
-        if self.__event_email and self.__event_email == SpecialEmails.AWSUG_DAVAO.value:
+        if self.__event_email and self.__event_email in self.__sender_name_map.values():
             logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
             return
 
