@@ -28,8 +28,8 @@ class EmailUsecase:
         }
         self.__event_email = None
 
-    def __send_email_handler(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
-        if self.__event_email and self.__event_email in self.__sender_name_map.values():
+    def __send_email_handler(self, email_in_list: List[EmailIn], event: Event) -> Tuple[HTTPStatus, str]:
+        if self.__event_email and event.konfhubId and event.konfhubApiKey:
             logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
             return
 
@@ -48,7 +48,7 @@ class EmailUsecase:
         message = f'Queue message success: {message_id}'
         logger.info(message)
 
-    def send_batch_email(self, email_in_list: List[EmailIn]) -> Tuple[HTTPStatus, str]:
+    def send_batch_email(self, email_in_list: List[EmailIn], event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue
 
         :param email_in_list: The email list to be sent
@@ -60,7 +60,7 @@ class EmailUsecase:
         """
         message = None
         try:
-            self.__send_email_handler(email_in_list=email_in_list)
+            self.__send_email_handler(email_in_list=email_in_list, event=event)
 
         except Exception as e:
             message = f'Failed to send email: {str(e)}'
@@ -70,7 +70,7 @@ class EmailUsecase:
         else:
             return HTTPStatus.OK, message
 
-    def send_email(self, email_in: EmailIn) -> Tuple[HTTPStatus, str]:
+    def send_email(self, email_in: EmailIn, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue
 
         :param email_in: The email to be sent
@@ -80,7 +80,7 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
-        return self.send_batch_email(email_in_list=[email_in])
+        return self.send_batch_email(email_in_list=[email_in], event=event)
 
     def send_event_creation_email(self, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue. If the preregistration is accepted, send an acceptance email. If the preregistration is rejected, send a rejection email.
@@ -115,7 +115,7 @@ class EmailUsecase:
             eventId=event.eventId,
             isSparcs=is_sparcs,
         )
-        return self.send_email(email_in=email_in)
+        return self.send_email(email_in=email_in, event=event)
 
     def send_registration_creation_email(self, registration: Registration, event: Event) -> Tuple[HTTPStatus, str]:
         """Send an email to the queue.
@@ -158,7 +158,7 @@ class EmailUsecase:
             isSparcs=is_sparcs,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
-        return self.send_email(email_in=email_in)
+        return self.send_email(email_in=email_in, event=event)
 
     def send_accept_reject_status_email(
         self, preregistrations: List[PreRegistration], event: Event
@@ -238,7 +238,7 @@ class EmailUsecase:
             isSparcs=is_sparcs,
         )
         logger.info(f'Sending pre-registration email to {preregistration.email}')
-        return self.send_email(email_in=email_in)
+        return self.send_email(email_in=email_in, event=event)
 
     def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event) -> EmailIn:
         """Send an acceptance email to the queue.
