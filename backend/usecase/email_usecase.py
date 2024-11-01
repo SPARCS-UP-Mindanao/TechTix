@@ -214,7 +214,7 @@ class EmailUsecase:
                 preregistration_entry=preregistration, preregistration_in=PreRegistrationPatch(acceptanceEmailSent=True)
             )
 
-        return self.send_batch_email(email_in_list=emails, event=Event)
+        return self.send_batch_email(email_in_list=emails, event=event)
 
     def send_preregistration_creation_email(
         self, preregistration: PreRegistration, event: Event
@@ -395,4 +395,4 @@ class EmailUsecase:
             for participant in participants
         ]
 
-        return self.send_batch_email(email_in_list=emails, event=Event)
+        return self.send_batch_email(email_in_list=emails, event=event)
