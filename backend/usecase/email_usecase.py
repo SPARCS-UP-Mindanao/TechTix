@@ -29,6 +29,20 @@ class EmailUsecase:
         self.__event_email = None
 
     def __send_email_handler(self, email_in_list: List[EmailIn], event: Event) -> Tuple[HTTPStatus, str]:
+        """Send an email to the queue
+
+        :param email_in_list: The email list to be sent
+        :type Event: EmailIn
+
+        :param event: The event to be sent
+        :type event: Event
+
+        :return: The status and message
+        :rtype: Tuple[HTTPStatus, str]
+
+        """
+        
+        #Check if event has konfhub and exclude it from the Email Service
         if self.__event_email and event.konfhubId and event.konfhubApiKey:
             logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
             return
@@ -54,6 +68,9 @@ class EmailUsecase:
         :param email_in_list: The email list to be sent
         :type email_in: EmailIn
 
+        :param event: The event to be sent
+        :type event: Event
+        
         :return: The status and message
         :rtype: Tuple[HTTPStatus, str]
 
@@ -75,6 +92,9 @@ class EmailUsecase:
 
         :param email_in: The email to be sent
         :type email_in: EmailIn
+
+        :param event: The event to be sent
+        :type event: Event
 
         :return: The status and message
         :rtype: Tuple[HTTPStatus, str]
@@ -194,7 +214,7 @@ class EmailUsecase:
                 preregistration_entry=preregistration, preregistration_in=PreRegistrationPatch(acceptanceEmailSent=True)
             )
 
-        return self.send_batch_email(email_in_list=emails)
+        return self.send_batch_email(email_in_list=emails, event=Event)
 
     def send_preregistration_creation_email(
         self, preregistration: PreRegistration, event: Event
@@ -375,4 +395,4 @@ class EmailUsecase:
             for participant in participants
         ]
 
-        return self.send_batch_email(email_in_list=emails)
+        return self.send_batch_email(email_in_list=emails, event=Event)
