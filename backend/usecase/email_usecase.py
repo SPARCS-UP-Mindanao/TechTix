@@ -41,8 +41,8 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
-        
-        #Check if event has konfhub and exclude it from the Email Service
+
+        # Check if event has konfhub and exclude it from the Email Service
         if self.__event_email and event.konfhubId and event.konfhubApiKey:
             logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
             return
@@ -70,7 +70,7 @@ class EmailUsecase:
 
         :param event: The event to be sent
         :type event: Event
-        
+
         :return: The status and message
         :rtype: Tuple[HTTPStatus, str]
 
