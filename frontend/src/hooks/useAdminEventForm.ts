@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { updateEvent, createEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { Event, EventStatus, EventWithRefetchEvent, mapCreateEventValues, mapEventToFormValues } from '@/model/events';
+import { Event, EventStatus, EventWithRefetchEvent, mapCreateEventValues, mapEventToFormValues, mapUpdateEventValues } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { useApi } from './useApi';
@@ -67,7 +67,9 @@ const EventFormSchema = z
       .optional(),
     hasMultipleTicketTypes: z.boolean(),
     konfhubId: z.string().optional(),
-    konfhubApiKey: z.string().optional()
+    konfhubApiKey: z.string().optional(),
+    isUsingPlatformFee: z.boolean(),
+    platformFee: z.coerce.number().optional()
   })
   .refine(
     (data) => {
@@ -143,7 +145,8 @@ export const useAdminEventForm = (event?: Event) => {
         price: 0,
         status: 'draft',
         ticketTypes: [],
-        hasMultipleTicketTypes: false
+        hasMultipleTicketTypes: false,
+        isUsingPlatformFee: false
       };
     }
   });
@@ -160,7 +163,9 @@ export const useAdminEventForm = (event?: Event) => {
     const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
 
     try {
-      const response = await (eventId ? api.execute(updateEvent(eventId, values)) : api.execute(createEvent(mapCreateEventValues(values))));
+      const response = await (eventId
+        ? api.execute(updateEvent(eventId, mapUpdateEventValues(values)))
+        : api.execute(createEvent(mapCreateEventValues(values))));
 
       if (response.status === 200) {
         const successTitle = mode === 'edit' ? 'Event updated' : 'Event created';
