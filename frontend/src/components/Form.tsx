@@ -95,7 +95,7 @@ const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>,
       <Label ref={ref} className={cn(error && 'text-negative', 'flex flex-row items-center gap-x-2', className)} htmlFor={formItemId} {...props}>
         {children}
         {optional && <p className="text-[0.8rem] text-muted-foreground text-gray-400">{`(Optional)`}</p>}
-        {toolTipContent && toolTipContent?.length > 0 && <InfoToolTip toolTipContent={toolTipContent} />}
+        {toolTipContent && toolTipContent.length > 0 && <InfoToolTip toolTipContent={toolTipContent} />}
       </Label>
     );
   }

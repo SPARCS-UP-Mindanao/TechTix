@@ -55,6 +55,7 @@ export interface EventDto {
   ticketTypes: TicketTypeDto[] | null;
   konfhubId: string | null;
   konfhubApiKey: string | null;
+  platformFee: number | null;
 }
 
 export type OptionalEvent = Partial<Event>;
