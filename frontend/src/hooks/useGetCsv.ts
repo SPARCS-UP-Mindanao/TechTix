@@ -29,7 +29,6 @@ export const useGetCsv = (eventId: string) => {
           description: errorData.message || 'An error occurred while getting CSV. Please try again.'
         });
       }
-
     } catch (e) {
       const { errorData } = e as CustomAxiosError;
       errorToast({

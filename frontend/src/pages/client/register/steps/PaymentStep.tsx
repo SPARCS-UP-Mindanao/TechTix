@@ -1,45 +1,36 @@
 import { useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import { formatMoney, formatPercentage } from '@/utils/functions';
 import { RegisterFormValues } from '@/hooks/useRegisterForm';
 import PaymentGateways from '@/pages/client/register/steps/PaymentGateways';
+import { calculateTotalPrice } from '../pricing';
 import { useDiscount } from '../useDiscount';
 import { useTransactionFee } from '../useTransactionFee';
 
 interface Props {
   eventPrice: number;
-  setIsTransactionFeeLoading: (isLoading: boolean) => void;
+  platformFee: number | null;
+  isFeesLoading: boolean;
+  setIsFeesLoading: (isLoading: boolean) => void;
 }
 
-export const calculateTotalPrice = (eventPrice: number, transactionFee?: number | null, discountPercentage?: number) => {
-  if (discountPercentage && transactionFee) {
-    return eventPrice * (1 - discountPercentage) + transactionFee;
-  }
-
-  if (!discountPercentage && transactionFee) {
-    return eventPrice + transactionFee;
-  }
-
-  return eventPrice;
-};
-
-const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
-  const { watch } = useFormContext<RegisterFormValues>();
-  const { isTransactionFeeLoading, getTransactionFee } = useTransactionFee(eventPrice);
+const PaymentStep = ({ eventPrice, platformFee, isFeesLoading, setIsFeesLoading }: Props) => {
+  const { control } = useFormContext<RegisterFormValues>();
+  const { getTransactionFee } = useTransactionFee(eventPrice, platformFee, setIsFeesLoading);
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(eventPrice);
-  const transactionFee = watch('transactionFee');
+  const [transactionFee] = useWatch({ name: ['transactionFee'], control });
   const discountedPrice = eventPrice * (1 - (discountPercentage ?? 0));
-  const total = calculateTotalPrice(eventPrice, transactionFee, discountPercentage);
+  const total = calculateTotalPrice(eventPrice, transactionFee ?? null, discountPercentage ?? null, platformFee ?? null);
 
   useEffect(() => {
-    handleGetTransactionFee();
-  }, [eventPrice]);
+    getTransactionFee();
+  }, [getTransactionFee]);
 
   const getTransactionFeeContent = () => {
-    if (isTransactionFeeLoading) {
+    if (isFeesLoading) {
       return 'Loading...';
     }
 
@@ -48,12 +39,6 @@ const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
     }
 
     return formatMoney(transactionFee, 'PHP');
-  };
-
-  const handleGetTransactionFee = async () => {
-    setIsTransactionFeeLoading(true);
-    await getTransactionFee();
-    setIsTransactionFeeLoading(false);
   };
 
   return (
@@ -75,7 +60,7 @@ const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
 
       <hr />
 
-      <PaymentGateways getTransactionFee={handleGetTransactionFee} />
+      <PaymentGateways getTransactionFee={getTransactionFee} />
 
       <hr />
       <div className="flex flex-col items-start gap-5">
@@ -89,6 +74,12 @@ const PaymentStep = ({ eventPrice, setIsTransactionFeeLoading }: Props) => {
             <p>{discountPercentage ? formatMoney(discountedPrice, 'PHP') : 'None'}</p>
             <h4>Transaction Fee:</h4>
             <p>{getTransactionFeeContent()}</p>
+            {platformFee && (
+              <>
+                <h4>Platform Fee:</h4>
+                <p>{formatMoney(eventPrice * platformFee, 'PHP')}</p>
+              </>
+            )}
             <h4>Total:</h4>
             <p>{formatMoney(total, 'PHP')}</p>
           </div>

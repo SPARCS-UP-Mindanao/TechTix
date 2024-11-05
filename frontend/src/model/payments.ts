@@ -2,12 +2,14 @@ export interface GetTransactionDetailsOut {
   ticket_price: number;
   transaction_fee: number;
   total_price: number;
+  platform_fee: number;
 }
 
 export interface TransactionDetails {
   ticket_price: number;
   payment_method: PaymentMethod;
   payment_channel: eWalletChannelCode | DirectDebitChannelCode;
+  platform_fee: number | null;
 }
 
 export type PaymentMethod = 'DIRECT_DEBIT' | 'E_WALLET';

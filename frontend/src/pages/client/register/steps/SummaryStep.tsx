@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import Separator from '@/components/Separator';
 import { Event } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
@@ -8,8 +8,8 @@ interface SummaryProps {
   event: Event;
 }
 const SummaryStep = ({ event }: SummaryProps) => {
-  const { watch } = useFormContext<RegisterFormValues>();
-  const {
+  const { control } = useFormContext<RegisterFormValues>();
+  const [
     email,
     firstName,
     lastName,
@@ -30,8 +30,35 @@ const SummaryStep = ({ event }: SummaryProps) => {
     industry,
     levelOfAWSUsage,
     awsUsecase,
-    awsCommunityDayInLineWith
-  } = watch();
+    awsCommunityDayInLineWith,
+    platformFee
+  ] = useWatch({
+    control,
+    name: [
+      'email',
+      'firstName',
+      'lastName',
+      'contactNumber',
+      'careerStatus',
+      'yearsOfExperience',
+      'organization',
+      'title',
+      'discountCode',
+      'discountPercentage',
+      'transactionFee',
+      'discountedPrice',
+      'total',
+      'ticketTypeId',
+      'shirtSize',
+      'cityOfResidence',
+      'foodRestrictions',
+      'industry',
+      'levelOfAWSUsage',
+      'awsUsecase',
+      'awsCommunityDayInLineWith',
+      'platformFee'
+    ]
+  });
 
   const ticketType = event.ticketTypes?.find((ticket) => ticket.konfhubId === ticketTypeId);
   const isAWSCommunityDay = event.email === 'hello@awsugdavao.ph';
@@ -121,6 +148,13 @@ const SummaryStep = ({ event }: SummaryProps) => {
 
             <span className="font-bold">Transaction Fee</span>
             <span>{transactionFee ? <span>{formatMoney(transactionFee, 'PHP')}</span> : 'None'}</span>
+
+            {platformFee && (
+              <>
+                <span className="font-bold">Platform Fee</span>
+                <span>{formatMoney(platformFee, 'PHP')}</span>
+              </>
+            )}
 
             <span className="font-bold">Total</span>
             <span>{formatMoney(total ?? event.price, 'PHP')}</span>
