@@ -69,7 +69,21 @@ const EventFormSchema = z
     konfhubId: z.string().optional(),
     konfhubApiKey: z.string().optional(),
     isUsingPlatformFee: z.boolean(),
-    platformFee: z.coerce.number().optional()
+    platformFee: z.coerce
+      .number()
+      .optional()
+      .refine(
+        (fee) => {
+          if (fee && fee < 0) {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'Please enter a value more than 0',
+          path: ['platformFee']
+        }
+      )
   })
   .refine(
     (data) => {
@@ -151,13 +165,14 @@ export const useAdminEventForm = (event?: Event) => {
     }
   });
 
-  const onInvalid = () =>
+  const onInvalid = () => {
     //TODO : Fix toast duplicaton
     errorToast({
       id: 'form-error',
       title: 'Form error',
       description: 'Please fill in all the required fields'
     });
+  };
 
   const submit = form.handleSubmit(async (values) => {
     const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';

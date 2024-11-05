@@ -147,7 +147,7 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   ticketTypes: event.ticketTypes || undefined,
   konfhubId: event.konfhubId || undefined,
   konfhubApiKey: event.konfhubApiKey || undefined,
-  platformFee: event.platformFee || undefined,
+  platformFee: event.platformFee ? event.platformFee * 100 : undefined,
   isUsingPlatformFee: !!event.platformFee
 });
 
@@ -205,8 +205,10 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
     : null,
   konfhubId: values.konfhubId || null,
   konfhubApiKey: values.konfhubApiKey || null,
-  platformFee: values.isUsingPlatformFee ? values.platformFee ?? null : null
+  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee)
 });
+
+const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);
 
 export const mapUpdateEventValues = mapCreateEventValues;
 

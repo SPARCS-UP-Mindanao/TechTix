@@ -57,6 +57,7 @@ const RegisterFormSchema = PreRegisterFormSchema.extend({
   discountedPrice: z.number().optional(),
   total: z.number().optional(),
   foodRestrictions: z.string().optional(),
+  platformFee: z.number().optional(),
 
   ticketTypeId: z.string().optional(),
   shirtSize: z.string().optional(),

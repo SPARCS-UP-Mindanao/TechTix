@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
 import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
@@ -9,7 +9,7 @@ import { baseUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '@/hooks/useRegisterForm';
-import { calculateTotalPrice } from '../steps/PaymentStep';
+import { calculateTotalPrice } from '../pricing';
 import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS } from '../steps/RegistrationSteps';
 import { usePayment } from '../usePayment';
 
@@ -23,19 +23,19 @@ export const useRegisterFooter = (
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { errorToast } = useNotifyToast();
-  const { trigger, setValue, getValues, watch, reset } = useFormContext<RegisterFormValues>();
+  const { trigger, setValue, getValues, control, reset } = useFormContext<RegisterFormValues>();
   const api = useApi();
   const { eventId } = event;
-  const watchedPaymentChannel = watch('paymentChannel');
-  const watchedPaymentMethod = watch('paymentMethod');
-  const watchedTransactionFee = watch('transactionFee');
-  const watchedPercentageDiscount = watch('discountPercentage');
+  const [paymentChannel, paymentMethod, transactionFee, percentageDiscount] = useWatch({
+    control,
+    name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage']
+  });
 
   const { eWalletRequest, directDebitRequest } = usePayment(baseUrl, eventId);
 
   const currentIndex = steps.indexOf(currentStep);
 
-  const paymentButtonDisabled = isEmpty(watchedPaymentChannel) || isEmpty(watchedPaymentMethod) || isEmpty(watchedTransactionFee);
+  const paymentButtonDisabled = isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
 
   const validateEmail = async () => {
     const email = getValues('email');
@@ -148,12 +148,12 @@ export const useRegisterFooter = (
     }
   };
 
+  // Function to set the total price
   const setPaymentTotal = () => {
-    const total = Number(calculateTotalPrice(event.price, watchedTransactionFee, watchedPercentageDiscount).toFixed(2));
+    const total = Number(calculateTotalPrice(event.price, transactionFee ?? null, percentageDiscount ?? null, event.platformFee).toFixed(2));
     setValue('total', total);
   };
 
-  // If onNextStep is taking too long to load, add a loading state
   const onNextStep = async () => {
     const moveToNextStep = () => {
       if (currentIndex < steps.length - 1) {
@@ -217,7 +217,7 @@ export const useRegisterFooter = (
   };
 
   const onSummaryStep = () => {
-    if (!watchedTransactionFee) {
+    if (!transactionFee) {
       return;
     }
 
