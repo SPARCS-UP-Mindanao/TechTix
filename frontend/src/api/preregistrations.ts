@@ -4,8 +4,8 @@ import { createApi } from './utils/createApi';
 interface PreRegistrationDto extends PreRegistration {}
 
 interface CsvResponse {
-  downloadLink: string,
-  objectKey: string
+  downloadLink: string;
+  objectKey: string;
 }
 
 const mapPreRegistrationToDto = (preRegistration: PreRegistrationDto): PreRegistration => ({
@@ -71,5 +71,5 @@ export const getCsvPreRegistrations = (eventId: string) =>
   createApi<CsvResponse>({
     authorize: true,
     method: 'get',
-    url: `/preregistrations/${eventId}/csv_download`,
+    url: `/preregistrations/${eventId}/csv_download`
   });

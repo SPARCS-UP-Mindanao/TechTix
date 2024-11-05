@@ -8,8 +8,8 @@ import { getEventPreRegistrations } from '@/api/preregistrations';
 import { getEventRegistrations } from '@/api/registrations';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
-import { getRegistrationColumns } from './RegistrationsColumns';
 import { useGetCsv } from '@/hooks/useGetCsv';
+import { getRegistrationColumns } from './RegistrationsColumns';
 
 const AdminEventRegistrations: FC = () => {
   const { isApprovalFlow, status, eventId } = useOutletContext<Event>();
@@ -34,7 +34,9 @@ const AdminEventRegistrations: FC = () => {
                 Registrations
               </TabsTrigger>
             </TabsList>
-            <Button variant="positive" disabled={isGettingCsv} onClick={() => getCsv()}>Export CSV</Button>
+            <Button variant="positive" disabled={isGettingCsv} onClick={() => getCsv()}>
+              Export CSV
+            </Button>
           </div>
         )}
         <TabsContent value="preregistrations" className="w-full">
