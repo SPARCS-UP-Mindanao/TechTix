@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { getCsvPreRegistrations } from '@/api/preregistrations';
+import { getCsvRegistrations } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
-import { getCsvRegistrations } from '@/api/registrations';
 
 type ApiResponse = {
   data: {
@@ -22,19 +22,18 @@ export const useGetCsv = (eventId: string) => {
   const getCsv = async (reg_status: 'preregistrations' | 'registrations') => {
     try {
       setIsGettingCsv(true);
-      
-      let response: ApiResponse; 
 
-      if( reg_status === 'preregistrations') {
+      let response: ApiResponse;
+
+      if (reg_status === 'preregistrations') {
         response = await api.execute(getCsvPreRegistrations(eventId));
-      }
-      else if (reg_status === 'registrations') {
+      } else if (reg_status === 'registrations') {
         response = await api.execute(getCsvRegistrations(eventId));
       } else {
         console.error('Invalid reg_status');
         return;
       }
-      
+
       if (response.status === 200) {
         const { data } = response;
         const link = document.createElement('a');
