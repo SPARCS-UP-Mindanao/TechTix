@@ -207,8 +207,6 @@ export const useRegisterFooter = (
         return;
       }
 
-      // TODO: registration to form values
-      preregistrationData && setValue('');
       setCurrentStep(STEP_PAYMENT);
       return;
     }
