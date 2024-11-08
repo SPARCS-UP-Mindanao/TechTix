@@ -1,18 +1,18 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
 
 class RegistrationDetail(BaseModel):
-    name: str = Field(..., description='Name of the registrant')
-    email_id: EmailStr = Field(..., description='Email ID of the registrant')
-    quantity: int = Field(..., description='Quantity of the registrant')
-    designation: str = Field(..., description='Designation of the registrant')
-    organisation: str = Field(..., description='Organisation of the registrant')
-    t_shirt_size: str = Field(..., description='T-shirt size of the registrant')
-    phone_number: str = Field(..., description='Phone number of the registrant')
-    dial_code: str = Field(..., description='Dial code of the registrant')
-    country_code: str = Field(..., description='Country code of the registrant')
+    name: Optional[str] = Field(None, description='Name of the registrant')
+    email_id: Optional[EmailStr] = Field(None, description='Email ID of the registrant')
+    quantity: Optional[int] = Field(None, description='Quantity of the registrant')
+    designation: Optional[str] = Field(None, description='Designation of the registrant')
+    organisation: Optional[str] = Field(None, description='Organisation of the registrant')
+    phone_number: Optional[str] = Field(None, description='Phone number of the registrant')
+    dial_code: Optional[str] = Field(None, description='Dial code of the registrant')
+    country_code: Optional[str] = Field(None, description='Country code of the registrant')
+    t_shirt_size: Optional[str] = Field(None, description='T-shirt size of the registrant')
 
 
 class KonfHubCaptureRegistrationIn(BaseModel):
