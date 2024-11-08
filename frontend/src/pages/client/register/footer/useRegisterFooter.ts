@@ -124,27 +124,37 @@ export const useRegisterFooter = (
       const response = await api.execute(checkPreRegistration(eventId, email));
       switch (response.status) {
         case 200:
-          return checkAcceptanceStatus(response.data);
+          return {
+            isSuccess: checkAcceptanceStatus(response.data),
+            preregistrationData: response.data
+          };
 
         case 404:
           errorToast({
             title: 'Email not found',
             description: 'The email you entered was not found. Please enter a different email.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
 
         default:
           errorToast({
             title: 'Please try again',
             description: 'There was an error. Please try again.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
       }
     } catch (error) {
       errorToast({
         title: 'Please try again',
         description: 'There was an error. Please try again.'
       });
+      return {
+        isSuccess: false
+      };
     }
   };
 
@@ -186,7 +196,7 @@ export const useRegisterFooter = (
         return;
       }
 
-      const hasPreRegistered = await getAndSetPreRegistration();
+      const { isSuccess: hasPreRegistered, preregistrationData } = await getAndSetPreRegistration();
       const hasRegistered = await validateEmail();
       if (!hasPreRegistered || !hasRegistered) {
         return;
@@ -197,6 +207,8 @@ export const useRegisterFooter = (
         return;
       }
 
+      // TODO: registration to form values
+      preregistrationData && setValue('');
       setCurrentStep(STEP_PAYMENT);
       return;
     }
