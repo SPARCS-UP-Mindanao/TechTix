@@ -26,19 +26,21 @@ const AdminEventRegistrations: FC = () => {
   return (
     <section>
       <Tabs defaultValue={getDefaultValue()} className="flex flex-col items-center">
-        {isApprovalFlow && (
-          <div className="self-start flex justify-between w-full items-center">
-            <TabsList>
-              <TabsTrigger value="preregistrations">Pre-registrations</TabsTrigger>
-              <TabsTrigger value="registrations" disabled={status === 'preregistration'}>
-                Registrations
-              </TabsTrigger>
-            </TabsList>
-            <Button variant="positive" disabled={isGettingCsv} onClick={() => getCsv()}>
-              Export CSV
-            </Button>
+        <div className="self-start flex justify-between w-full items-center">
+          <div>
+            {isApprovalFlow && (
+              <TabsList>
+                <TabsTrigger value="preregistrations">Pre-registrations</TabsTrigger>
+                <TabsTrigger value="registrations" disabled={status === 'preregistration'}>
+                  Registrations
+                </TabsTrigger>
+              </TabsList>
+            )}
           </div>
-        )}
+          <Button variant="positive" disabled={isGettingCsv} onClick={() => getCsv(getDefaultValue())}>
+            Export CSV
+          </Button>
+        </div>
         <TabsContent value="preregistrations" className="w-full">
           <PreRegistrations />
         </TabsContent>
