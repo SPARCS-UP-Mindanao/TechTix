@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, UseFormSetValue, useWatch } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
 import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
@@ -124,27 +124,37 @@ export const useRegisterFooter = (
       const response = await api.execute(checkPreRegistration(eventId, email));
       switch (response.status) {
         case 200:
-          return checkAcceptanceStatus(response.data);
+          return {
+            isSuccess: checkAcceptanceStatus(response.data),
+            preregistrationData: response.data
+          };
 
         case 404:
           errorToast({
             title: 'Email not found',
             description: 'The email you entered was not found. Please enter a different email.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
 
         default:
           errorToast({
             title: 'Please try again',
             description: 'There was an error. Please try again.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
       }
     } catch (error) {
       errorToast({
         title: 'Please try again',
         description: 'There was an error. Please try again.'
       });
+      return {
+        isSuccess: false
+      };
     }
   };
 
@@ -186,7 +196,7 @@ export const useRegisterFooter = (
         return;
       }
 
-      const hasPreRegistered = await getAndSetPreRegistration();
+      const { isSuccess: hasPreRegistered, preregistrationData } = await getAndSetPreRegistration();
       const hasRegistered = await validateEmail();
       if (!hasPreRegistered || !hasRegistered) {
         return;
@@ -197,11 +207,24 @@ export const useRegisterFooter = (
         return;
       }
 
+      // TODO: registration to form values
+      preregistrationData && setRegistrationValues(preregistrationData, setValue);
       setCurrentStep(STEP_PAYMENT);
       return;
     }
 
     onNextStep();
+  };
+
+  const setRegistrationValues = (preregistrationData: PreRegistration, setValue: UseFormSetValue<RegisterFormValues>) => {
+    Object.keys(preregistrationData).forEach((key) => {
+      if (Object.keys(getValues()).includes(key)) {
+        const value = preregistrationData[key as keyof PreRegistration];
+        if (typeof value === 'string' || typeof value === 'number' || value === null || value === undefined) {
+          setValue(key as keyof RegisterFormValues, value);
+        }
+      }
+    });
   };
 
   const onCheckEmailNextStep = async () => {

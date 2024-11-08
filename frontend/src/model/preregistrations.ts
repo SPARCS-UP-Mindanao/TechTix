@@ -42,7 +42,7 @@ export const mapCreatePreregistrationValues = (registration: RegisterFormValues,
   careerStatus: registration.careerStatus,
   yearsOfExperience: registration.yearsOfExperience,
   organization: registration.organization,
-  title: registration.title,
+  title: registration.title ?? '',
   eventId
 });
 
@@ -68,7 +68,7 @@ export const mapPreRegistrationToFormValues = (preRegistration: PreRegistration)
   careerStatus: preRegistration.careerStatus,
   yearsOfExperience: preRegistration.yearsOfExperience,
   organization: preRegistration.organization,
-  title: preRegistration.title
+  title: preRegistration.title ?? ''
 });
 
 export const mapUpdatePreregistrationValues = (
