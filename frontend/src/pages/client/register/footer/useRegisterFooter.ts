@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, UseFormSetValue, useWatch } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
 import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
@@ -207,11 +207,24 @@ export const useRegisterFooter = (
         return;
       }
 
+      // TODO: registration to form values
+      preregistrationData && setRegistrationValues(preregistrationData, setValue);
       setCurrentStep(STEP_PAYMENT);
       return;
     }
 
     onNextStep();
+  };
+
+  const setRegistrationValues = (preregistrationData: PreRegistration, setValue: UseFormSetValue<RegisterFormValues>) => {
+    Object.keys(preregistrationData).forEach((key) => {
+      if (Object.keys(getValues()).includes(key)) {
+        const value = preregistrationData[key as keyof PreRegistration];
+        if (typeof value === 'string' || typeof value === 'number' || value === null || value === undefined) {
+          setValue(key as keyof RegisterFormValues, value);
+        }
+      }
+    });
   };
 
   const onCheckEmailNextStep = async () => {
