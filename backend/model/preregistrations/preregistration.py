@@ -78,7 +78,7 @@ class PreRegistrationaDataIn(BaseModel):
 
 class PreRegistrationPatch(PreRegistrationaDataIn):
     class Config:
-        extra = Extra.forbid
+        extra = Extra.ignore
 
     acceptanceStatus: Optional[AcceptanceStatus] = Field(None, title='Acceptance Status')
     acceptanceEmailSent: bool = Field(None, title='Acceptance Email Sent')
