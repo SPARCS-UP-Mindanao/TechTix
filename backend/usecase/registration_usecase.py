@@ -252,6 +252,12 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         if event.konfhubId:
+            ticket_type_id = registration_in.ticketTypeId
+            if not ticket_type_id:
+                _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
+                ticket_types_list = [ticket_type.konfhubId for ticket_type in ticket_types_entries or []]
+                ticket_type_id = ticket_types_list[0]
+
             phone_number_with_no_zero = registration_in.contactNumber.lstrip('0')
             konfhub_registration_details = RegistrationDetail(
                 name=f'{registration_in.firstName} {registration_in.lastName}',
@@ -268,7 +274,7 @@ class RegistrationUsecase:
                 event_id=event.konfhubId,
                 registration_tz=CommonConstants.PH_TIMEZONE,
                 registration_details={
-                    registration_in.ticketTypeId: [konfhub_registration_details],
+                    ticket_type_id: [konfhub_registration_details],
                 },
             )
             status, _, message = self.__konfhub_gateway.capture_registration(
