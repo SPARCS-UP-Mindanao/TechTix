@@ -38,9 +38,7 @@ const EditRegistrationFormSchema = z.object({
   organization: z.string().min(1, {
     message: 'Please enter the organization'
   }),
-  title: z.string().min(1, {
-    message: 'Please enter the title'
-  }),
+  title: z.string().optional(),
   cityOfResidence: z.string().optional(),
   industry: z.string().optional(),
   levelOfAWSUsage: z.string().optional(),
