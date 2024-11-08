@@ -251,6 +251,32 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        if event.konfhubId:
+            phone_number_with_no_zero = registration_in.contactNumber.lstrip('0')
+            konfhub_registration_details = RegistrationDetail(
+                name=f'{registration_in.firstName} {registration_in.lastName}',
+                email_id=registration_in.email,
+                quantity=1,
+                designation=registration_in.title,
+                organisation=registration_in.organization,
+                t_shirt_size=registration_in.shirtSize,
+                phone_number=phone_number_with_no_zero,
+                dial_code=CommonConstants.PH_DIAL_CODE,
+                country_code=CommonConstants.PH_COUNTRY_CODE,
+            )
+            konfhub_capture_registration_in = KonfHubCaptureRegistrationIn(
+                event_id=event.konfhubId,
+                registration_tz=CommonConstants.PH_TIMEZONE,
+                registration_details={
+                    registration_in.ticketTypeId: [konfhub_registration_details],
+                },
+            )
+            status, _, message = self.__konfhub_gateway.capture_registration(
+                konfhub_capture_registration_in, event.konfhubApiKey
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
         registration_data = self.__convert_data_entry_to_dict(registration)
 
         if not registration.registrationEmailSent:
