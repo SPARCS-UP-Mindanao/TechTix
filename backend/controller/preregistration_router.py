@@ -5,6 +5,7 @@ from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
+from model.file_uploads.file_upload import FileDownloadOut
 from model.preregistrations.preregistration import (
     PreRegistrationIn,
     PreRegistrationOut,
@@ -197,7 +198,9 @@ def update_preregistration(
     _ = current_user
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.update_preregistration(
-        event_id=event_id, preregistration_id=entry_id, preregistration_in=preregistration
+        event_id=event_id,
+        preregistration_id=entry_id,
+        preregistration_in=preregistration,
     )
 
 
@@ -237,3 +240,35 @@ def delete_preregistration(
     _ = current_user
     preregistrations_uc = PreRegistrationUsecase()
     return preregistrations_uc.delete_preregistration(preregistration_id=entry_id, event_id=event_id)
+
+
+@preregistration_router.get(
+    '/{eventId}/csv_download',
+    response_model=FileDownloadOut,
+    responses={
+        404: {'model': Message, 'description': 'Pre-registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Get CSV for pre-registration',
+)
+@preregistration_router.get(
+    '/{eventId}/csv_download/',
+    response_model=FileDownloadOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_preregistration_csv(
+    event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+):
+    """Get the CSV for a specific event
+
+    :param event_id: The event ID.
+    :type event_id: str
+
+    :return: The csv for the corresponding event
+    :rtype: FileDownloadOut
+
+    """
+    preregistrations_uc = PreRegistrationUsecase()
+    return preregistrations_uc.get_preregistration_csv(event_id=event_id)

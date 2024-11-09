@@ -42,6 +42,7 @@ export interface Event {
   ticketTypes: TicketType[] | null;
   konfhubId: string | null;
   konfhubApiKey: string | null;
+  platformFee: number | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -145,7 +146,9 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
   ticketTypes: event.ticketTypes || undefined,
   konfhubId: event.konfhubId || undefined,
-  konfhubApiKey: event.konfhubApiKey || undefined
+  konfhubApiKey: event.konfhubApiKey || undefined,
+  platformFee: event.platformFee ? event.platformFee * 100 : undefined,
+  isUsingPlatformFee: !!event.platformFee
 });
 
 export interface CreateEvent {
@@ -168,7 +171,10 @@ export interface CreateEvent {
   ticketTypes: TicketType[] | null;
   konfhubId: string | null;
   konfhubApiKey: string | null;
+  platformFee: number | null;
 }
+
+export type UpdateEvent = CreateEvent;
 
 export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   name: values.name,
@@ -198,8 +204,13 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
       }))
     : null,
   konfhubId: values.konfhubId || null,
-  konfhubApiKey: values.konfhubApiKey || null
+  konfhubApiKey: values.konfhubApiKey || null,
+  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee)
 });
+
+const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);
+
+export const mapUpdateEventValues = mapCreateEventValues;
 
 export const removeFAQIds = (value: FAQsFormValues): FAQUpdateValues => {
   const faqsWithNoId =

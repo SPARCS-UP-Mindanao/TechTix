@@ -67,6 +67,19 @@ class FileS3Usecase:
             logger.error('Error creating presigned url: %s', e)
             return None
 
+    def upload_file(self, file_name: str, object_name: str = None, verbose: bool = True) -> bool:
+        # If S3 object_name was not specified, use file_name
+        if object_name is None:
+            object_name = file_name
+
+        try:
+            self.__s3_client.upload_file(file_name, self.__bucket, object_name)
+            if verbose:
+                logger.info(f'Stored file in S3: {self.__bucket}/{object_name}')
+        except Exception as e:
+            message = f'Failed to upload file ({file_name}) to S3, Reason: {type(e).__name__} - {str(e)}'
+            logger.error(message)
+
     def get_values_from_object_key(self, object_key) -> Tuple[str, str]:
         """Get the entry id and upload type from the object key
 

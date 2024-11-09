@@ -35,6 +35,11 @@ export interface RegistrationDto {
   transactionId: string | null;
 }
 
+interface CsvResponse {
+  downloadLink: string;
+  objectKey: string;
+}
+
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
   ...registration,
   type: 'registration'
@@ -100,4 +105,11 @@ export const deleteRegistration = (eventId: string, registrationId: string) =>
     authorize: true,
     url: `/registrations/${registrationId}`,
     queryParams: { eventId, entryId: registrationId }
+  });
+
+export const getCsvRegistrations = (eventId: string) =>
+  createApi<CsvResponse>({
+    authorize: true,
+    method: 'get',
+    url: `/registrations/${eventId}/csv_download`
   });

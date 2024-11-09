@@ -40,15 +40,11 @@ const PreRegisterFormSchema = z.object({
   organization: z.string().min(1, {
     message: 'Please enter your organization'
   }),
-  title: z.string().min(1, {
-    message: 'Please enter your title'
-  })
+  title: z.string().optional()
 });
 
 const RegisterFormSchema = PreRegisterFormSchema.extend({
-  cityOfResidence: z.string().min(1, {
-    message: 'Please enter your city of residence'
-  }),
+  cityOfResidence: z.string().optional(),
   discountCode: z.string().optional(),
   discountPercentage: z.number().optional(),
   transactionFee: z.number().optional().nullish(),
@@ -57,6 +53,7 @@ const RegisterFormSchema = PreRegisterFormSchema.extend({
   discountedPrice: z.number().optional(),
   total: z.number().optional(),
   foodRestrictions: z.string().optional(),
+  platformFee: z.number().optional(),
 
   ticketTypeId: z.string().optional(),
   shirtSize: z.string().optional(),

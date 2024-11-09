@@ -13,19 +13,10 @@ interface Props {
   isRegisterSuccessful: boolean;
   setCurrentStep: (step: RegisterStep) => void;
   retryRegister: () => void;
-  isTransactionFeeLoading: boolean;
+  isFeesLoading: boolean;
 }
 
-const RegisterFooter: FC<Props> = ({
-  event,
-  steps,
-  currentStep,
-  fieldsToCheck,
-  isRegisterSuccessful,
-  setCurrentStep,
-  retryRegister,
-  isTransactionFeeLoading
-}) => {
+const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, isRegisterSuccessful, setCurrentStep, retryRegister, isFeesLoading }) => {
   const {
     paymentButtonDisabled,
     isValidatingEmail,
@@ -85,7 +76,7 @@ const RegisterFooter: FC<Props> = ({
         <Button
           onClick={onSummaryStep}
           disabled={paymentButtonDisabled}
-          loading={isTransactionFeeLoading}
+          loading={isFeesLoading}
           icon="ChevronRight"
           iconPlacement="right"
           className="py-6 sm:px-6"

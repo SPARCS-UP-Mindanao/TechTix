@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, UseFormSetValue, useWatch } from 'react-hook-form';
 import { getEventRegCountStatus } from '@/api/events';
 import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
@@ -9,7 +9,7 @@ import { baseUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '@/hooks/useRegisterForm';
-import { calculateTotalPrice } from '../steps/PaymentStep';
+import { calculateTotalPrice } from '../pricing';
 import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS } from '../steps/RegistrationSteps';
 import { usePayment } from '../usePayment';
 
@@ -23,19 +23,19 @@ export const useRegisterFooter = (
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { errorToast } = useNotifyToast();
-  const { trigger, setValue, getValues, watch, reset } = useFormContext<RegisterFormValues>();
+  const { trigger, setValue, getValues, control, reset } = useFormContext<RegisterFormValues>();
   const api = useApi();
   const { eventId } = event;
-  const watchedPaymentChannel = watch('paymentChannel');
-  const watchedPaymentMethod = watch('paymentMethod');
-  const watchedTransactionFee = watch('transactionFee');
-  const watchedPercentageDiscount = watch('discountPercentage');
+  const [paymentChannel, paymentMethod, transactionFee, percentageDiscount] = useWatch({
+    control,
+    name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage']
+  });
 
   const { eWalletRequest, directDebitRequest } = usePayment(baseUrl, eventId);
 
   const currentIndex = steps.indexOf(currentStep);
 
-  const paymentButtonDisabled = isEmpty(watchedPaymentChannel) || isEmpty(watchedPaymentMethod) || isEmpty(watchedTransactionFee);
+  const paymentButtonDisabled = isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
 
   const validateEmail = async () => {
     const email = getValues('email');
@@ -124,36 +124,46 @@ export const useRegisterFooter = (
       const response = await api.execute(checkPreRegistration(eventId, email));
       switch (response.status) {
         case 200:
-          return checkAcceptanceStatus(response.data);
+          return {
+            isSuccess: checkAcceptanceStatus(response.data),
+            preregistrationData: response.data
+          };
 
         case 404:
           errorToast({
             title: 'Email not found',
             description: 'The email you entered was not found. Please enter a different email.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
 
         default:
           errorToast({
             title: 'Please try again',
             description: 'There was an error. Please try again.'
           });
-          return false;
+          return {
+            isSuccess: false
+          };
       }
     } catch (error) {
       errorToast({
         title: 'Please try again',
         description: 'There was an error. Please try again.'
       });
+      return {
+        isSuccess: false
+      };
     }
   };
 
+  // Function to set the total price
   const setPaymentTotal = () => {
-    const total = Number(calculateTotalPrice(event.price, watchedTransactionFee, watchedPercentageDiscount).toFixed(2));
+    const total = Number(calculateTotalPrice(event.price, transactionFee ?? null, percentageDiscount ?? null, event.platformFee).toFixed(2));
     setValue('total', total);
   };
 
-  // If onNextStep is taking too long to load, add a loading state
   const onNextStep = async () => {
     const moveToNextStep = () => {
       if (currentIndex < steps.length - 1) {
@@ -186,7 +196,7 @@ export const useRegisterFooter = (
         return;
       }
 
-      const hasPreRegistered = await getAndSetPreRegistration();
+      const { isSuccess: hasPreRegistered, preregistrationData } = await getAndSetPreRegistration();
       const hasRegistered = await validateEmail();
       if (!hasPreRegistered || !hasRegistered) {
         return;
@@ -197,11 +207,24 @@ export const useRegisterFooter = (
         return;
       }
 
+      // TODO: registration to form values
+      preregistrationData && setRegistrationValues(preregistrationData, setValue);
       setCurrentStep(STEP_PAYMENT);
       return;
     }
 
     onNextStep();
+  };
+
+  const setRegistrationValues = (preregistrationData: PreRegistration, setValue: UseFormSetValue<RegisterFormValues>) => {
+    Object.keys(preregistrationData).forEach((key) => {
+      if (Object.keys(getValues()).includes(key)) {
+        const value = preregistrationData[key as keyof PreRegistration];
+        if (typeof value === 'string' || typeof value === 'number' || value === null || value === undefined) {
+          setValue(key as keyof RegisterFormValues, value);
+        }
+      }
+    });
   };
 
   const onCheckEmailNextStep = async () => {
@@ -217,7 +240,7 @@ export const useRegisterFooter = (
   };
 
   const onSummaryStep = () => {
-    if (!watchedTransactionFee) {
+    if (!transactionFee) {
       return;
     }
 

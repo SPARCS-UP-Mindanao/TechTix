@@ -3,6 +3,11 @@ import { createApi } from './utils/createApi';
 
 interface PreRegistrationDto extends PreRegistration {}
 
+interface CsvResponse {
+  downloadLink: string;
+  objectKey: string;
+}
+
 const mapPreRegistrationToDto = (preRegistration: PreRegistrationDto): PreRegistration => ({
   ...preRegistration,
   acceptanceStatus: preRegistration.acceptanceStatus || 'PENDING',
@@ -60,4 +65,11 @@ export const deletePreRegistration = (eventId: string, entryId: string) =>
     method: 'delete',
     url: `/preregistrations/${entryId}`,
     queryParams: { eventId }
+  });
+
+export const getCsvPreRegistrations = (eventId: string) =>
+  createApi<CsvResponse>({
+    authorize: true,
+    method: 'get',
+    url: `/preregistrations/${eventId}/csv_download`
   });

@@ -48,7 +48,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
-  const [isTransactionFeeLoading, setIsTransactionFeeLoading] = useState(false);
+  const [isFeesLoading, setIsFeesLoading] = useState(false);
 
   const isConference = eventInfo?.email === 'hello@awsugdavao.ph';
   const { form, onSubmit } = useRegisterForm(eventId!, mode, navigateOnSuccess, isConference);
@@ -166,7 +166,14 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'UserBio' && <UserBioStep />}
               {currentStep.id === 'PersonalInfo' && <PersonalInfoStep event={eventInfo} updateEventPrice={updateEventPrice} />}
-              {currentStep.id === 'Payment' && <PaymentStep eventPrice={eventInfo.price} setIsTransactionFeeLoading={setIsTransactionFeeLoading} />}
+              {currentStep.id === 'Payment' && (
+                <PaymentStep
+                  eventPrice={eventInfo.price}
+                  platformFee={eventInfo.platformFee}
+                  isFeesLoading={isFeesLoading}
+                  setIsFeesLoading={setIsFeesLoading}
+                />
+              )}
             </div>
 
             {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
@@ -194,7 +201,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
               isRegisterSuccessful={isRegisterSuccessful}
               retryRegister={retryRegister}
               setCurrentStep={setCurrentStep}
-              isTransactionFeeLoading={isTransactionFeeLoading}
+              isFeesLoading={isFeesLoading}
             />
 
             {showFAQs && <FAQs />}

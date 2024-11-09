@@ -8,10 +8,12 @@ import { getEventPreRegistrations } from '@/api/preregistrations';
 import { getEventRegistrations } from '@/api/registrations';
 import { Event } from '@/model/events';
 import { useApiQuery } from '@/hooks/useApi';
+import { useGetCsv } from '@/hooks/useGetCsv';
 import { getRegistrationColumns } from './RegistrationsColumns';
 
 const AdminEventRegistrations: FC = () => {
-  const { isApprovalFlow, status } = useOutletContext<Event>();
+  const { isApprovalFlow, status, eventId } = useOutletContext<Event>();
+  const { getCsv, isGettingCsv } = useGetCsv(eventId);
 
   const getDefaultValue = () => {
     if (isApprovalFlow && status === 'preregistration') {
@@ -24,14 +26,21 @@ const AdminEventRegistrations: FC = () => {
   return (
     <section>
       <Tabs defaultValue={getDefaultValue()} className="flex flex-col items-center">
-        {isApprovalFlow && (
-          <TabsList className="self-start">
-            <TabsTrigger value="preregistrations">Pre-registrations</TabsTrigger>
-            <TabsTrigger value="registrations" disabled={status === 'preregistration'}>
-              Registrations
-            </TabsTrigger>
-          </TabsList>
-        )}
+        <div className="self-start flex justify-between w-full items-center">
+          <div>
+            {isApprovalFlow && (
+              <TabsList>
+                <TabsTrigger value="preregistrations">Pre-registrations</TabsTrigger>
+                <TabsTrigger value="registrations" disabled={status === 'preregistration'}>
+                  Registrations
+                </TabsTrigger>
+              </TabsList>
+            )}
+          </div>
+          <Button variant="positive" disabled={isGettingCsv} onClick={() => getCsv(getDefaultValue())}>
+            Export CSV
+          </Button>
+        </div>
         <TabsContent value="preregistrations" className="w-full">
           <PreRegistrations />
         </TabsContent>

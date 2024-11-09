@@ -25,8 +25,8 @@ const AdminEventForm: FC<Props> = ({ event }) => {
     control,
     name: 'ticketTypes'
   });
-  const paidEvent = useWatch({ name: 'paidEvent', control });
-  const isLimitedSlot = useWatch({ name: 'isLimitedSlot', control });
+
+  const [paidEvent, isLimitedSlot, isUsingPlatformFee] = useWatch({ name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee'], control });
   const { isSubmitting, isDirty } = useFormState({ control });
 
   const hasMultipleTicketTypes = watch('hasMultipleTicketTypes');
@@ -291,6 +291,34 @@ const AdminEventForm: FC<Props> = ({ event }) => {
             </FormItemContainer>
           )}
         </FormItem>
+
+        <Separator className="my-4" />
+
+        <FormItem name="isUsingPlatformFee">
+          {({ field }) => (
+            <FormItemContainer halfSpace>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Will there be a platform fee?</FormLabel>
+                <Switch id="" checked={field.value} onCheckedChange={field.onChange} />
+              </div>
+              <FormError />
+            </FormItemContainer>
+          )}
+        </FormItem>
+
+        {isUsingPlatformFee ? (
+          <FormItem name="platformFee">
+            {({ field }) => (
+              <FormItemContainer halfSpace>
+                <FormLabel>Platform Fee Percentage (%)</FormLabel>
+                <Input type="number" {...field} />
+                <FormError />
+              </FormItemContainer>
+            )}
+          </FormItem>
+        ) : (
+          <FormItemSpacer />
+        )}
 
         <Separator className="my-4" />
 
