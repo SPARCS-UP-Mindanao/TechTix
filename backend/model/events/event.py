@@ -124,7 +124,7 @@ class EventDataIn(EventIn):
     lastEmailSent: datetime = Field(None, title='Last Email Sent')
 
 
-class EventOut(EventDataIn):
+class EventAdminOut(EventDataIn):
     class Config:
         extra = Extra.ignore
 
@@ -137,3 +137,11 @@ class EventOut(EventDataIn):
     logoUrl: Optional[str] = Field(None, title='Logo Pre-signed URL')
     certificateTemplateUrl: Optional[str] = Field(None, title='Certificate Template Pre-signed URL')
     ticketTypes: Optional[List[TicketTypeOut]] = Field(None, title='Ticket Types')
+
+
+class EventOut(EventAdminOut):
+    class Config:
+        extra = Extra.ignore
+
+    konfhubId: Optional[str] = Field(None, title='Konfhub ID', exclude=True)
+    konfhubApiKey: Optional[str] = Field(None, title='Konfhub API Key', exclude=True)
