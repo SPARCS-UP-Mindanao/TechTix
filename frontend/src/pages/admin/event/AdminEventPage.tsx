@@ -1,12 +1,12 @@
 import { Outlet as AdminEventRoute, useParams } from 'react-router-dom';
 import { TECHTIX_72 } from '@/assets/techtix';
-import { getEvent } from '@/api/events';
+import { getAdminEvent } from '@/api/events';
 import { useApiQuery } from '@/hooks/useApi';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
 
-  const { data: response, isFetching, refetch: refetchEvent } = useApiQuery(getEvent(eventId!));
+  const { data: response, isFetching, refetch: refetchEvent } = useApiQuery(getAdminEvent(eventId!));
 
   if (isFetching) {
     return (

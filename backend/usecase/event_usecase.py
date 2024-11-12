@@ -7,7 +7,7 @@ from typing import List, Union
 from urllib.parse import unquote_plus
 
 from constants.common_constants import CommonConstants
-from model.events.event import EventIn, EventOut
+from model.events.event import EventAdminOut, EventIn, EventOut
 from model.events.events_constants import EventStatus
 from model.ticket_types.ticket_types import TicketTypeOut
 from repository.events_repository import EventsRepository
@@ -165,22 +165,24 @@ class EventUsecase:
 
         return self.collect_pre_signed_url(event_out)
 
-    def get_event(self, event_id: str) -> Union[JSONResponse, EventOut]:
+    def get_event(self, event_id: str) -> Union[JSONResponse, EventOut, EventAdminOut]:
         """Get an event by its ID
 
         :param event_id: The ID of the event to get.
         :type event_id: str
 
         :return: The requested event or an error message.
-        :rtype: Union[JSONResponse, EventOut]
+        :rtype: Union[JSONResponse, EventOut, EventAdminOut]
 
         """
+        current_user = os.getenv('CURRENT_USER')
         status, event, message = self.__events_repository.query_events(event_id=event_id)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         event_data = self.__convert_data_entry_to_dict(event)
-        event_out = EventOut(**event_data)
+        event_model = EventAdminOut if current_user else EventOut
+        event_out = event_model(**event_data)
 
         if event.hasMultipleTicketTypes:
             _, ticket_types, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
@@ -202,6 +204,8 @@ class EventUsecase:
         :rtype: Union[JSONResponse, List[EventOut]]
 
         """
+        current_user = os.getenv('CURRENT_USER')
+
         if admin_id:
             status, events, message = self.__events_repository.query_events_by_admin_id(admin_id)
         else:
@@ -211,7 +215,8 @@ class EventUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         events_data = [self.__convert_data_entry_to_dict(event) for event in events]
-        return [self.collect_pre_signed_url(EventOut(**event_data)) for event_data in events_data]
+        event_model = EventAdminOut if current_user else EventOut
+        return [self.collect_pre_signed_url(event_model(**event_data)) for event_data in events_data]
 
     def delete_event(self, event_id: str) -> Union[None, JSONResponse]:
         """Delete an event by its ID

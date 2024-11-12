@@ -136,6 +136,14 @@ export const getEvent = (entryId: string) =>
     output: mapEventDtoToEvent
   });
 
+export const getAdminEvent = (entryId: string) =>
+  createApi<EventDto, Event>({
+    method: 'get',
+    authorize: true,
+    url: `/events/admin/${entryId}`,
+    output: mapEventDtoToEvent
+  });
+
 export const updateEvent = (entryId: string, event: OptionalEvent) =>
   createApi<EventDto, Event>({
     method: 'put',

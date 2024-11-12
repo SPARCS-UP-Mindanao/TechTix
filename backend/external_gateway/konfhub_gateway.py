@@ -28,8 +28,11 @@ class KonfHubGateway:
                 raise Exception(f'Failed to capture registration: {response.status_code} - {response.text}')
 
         except requests.exceptions.SSLError as ssl_err:
-            logger.error(f'SSL certificate verification failed: {ssl_err}')
-            return HTTPStatus.BAD_GATEWAY, None, str(ssl_err)
+            error_message = f'SSL certificate verification failed: {ssl_err}'
+            logger.error(error_message)
+            return HTTPStatus.BAD_GATEWAY, None, error_message
+
         except Exception as e:
-            logger.error(f'Failed to capture registration: {e}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR, None, str(e)
+            error_message = f'Failed to capture registration: {e}'
+            logger.error(error_message)
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, error_message
