@@ -57,7 +57,6 @@ class DevFestPreRegistrationSchema(BaseModel):
     phone_number: str = Field(
         None,
         title=DevFestColumns.PHONE_NUMBER,
-        regex=r'^(09)\d{9}$',  # Philippine mobile number
     )
     career_status: Optional[CareerStatus] = Field(None, title=DevFestColumns.CAREER_STATUS)
     developer_status: Optional[DeveloperStatus] = Field(None, title=DevFestColumns.DEVELOPER_STATUS)
@@ -85,6 +84,12 @@ class DevFestPreRegistrationSchema(BaseModel):
             return None
 
         value = re.sub(r'\D', '', value)
+
+        if re.match(r'^(63)\d{10}$', value):
+            value = '0' + value[2:]
+
+        if re.match(r'^9\d{9}$', value):
+            value = '0' + value
 
         return value
 
@@ -201,6 +206,6 @@ def import_pre_registration_from_csv(eventId: str, csv_file_path: str = 'input.c
 
 
 if __name__ == '__main__':
-    event_id = 'testevent'
+    event_id = 'event_id'
     csv_file_path = 'scripts/input.csv'
     import_pre_registration_from_csv(eventId=event_id, csv_file_path=csv_file_path)
