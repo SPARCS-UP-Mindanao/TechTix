@@ -1,8 +1,8 @@
-service: sparcs-events-api
+service: durianpy-events-api
 frameworkVersion: '>=3.25.0'
 
 custom:
-  projectName: sparcs-events
+  projectName: durianpy-events
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
@@ -29,7 +29,7 @@ custom:
       - boto3
       - botocore
     layer:
-      name: sparcs-events-${self:custom.stage}-python-requirements
+      name: durianpy-events-${self:custom.stage}-python-requirements
       compatibleRuntimes:
         - python3.11
     slim: true
