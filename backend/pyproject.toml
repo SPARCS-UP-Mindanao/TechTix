@@ -1,0 +1,85 @@
+[project]
+name = "TechTix"
+version = "0.1.0"
+description = "Test"
+requires-python = ">=3.11,<3.12"
+
+dependencies = [
+    "pynamodb==5.2.1",
+    "ulid==1.1",
+    "fastapi==0.96.0",
+    "fastapi-cloudauth==0.4.3",
+    "mangum==0.15.0",
+    "lambda-warmer-py==0.6.0",
+    "typing-extensions==4.8.0",
+    "pydantic[email]>=1.10.0,<2.0.0",
+    "lambda-decorators==0.6.0",
+    "python-dateutil==2.9.0.post0",
+    "requests==2.32.3",
+    "pytz==2024.2",
+]
+
+[dependency-groups]
+dev = [
+    "boto3==1.22.7",
+    "python-dotenv==1.0.0",
+    "uvicorn==0.22.0",
+    "pre-commit==3.3.3",
+    "pytest==7.1.1",
+    "pytest-cov==3.0.0",
+    "pytest-mock==3.10.0",
+    "moto==3.1.1",
+    "pylint==2.13.8",
+    "pylint-pydantic==0.1.8",
+    "httpx==0.23.3",
+    "ruff==0.12.2",
+]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py311"
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    ".serverless"
+]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"

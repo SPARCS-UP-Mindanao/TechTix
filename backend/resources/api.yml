@@ -17,7 +17,7 @@ app:
         path: /docs
         method: get
         authorizer:
-          arn: arn:aws:lambda:${self:provider.region}:192218445313:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
+          arn: arn:aws:lambda:${self:provider.region}:285637954943:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
           resultTtlInSeconds: 0
   iamRoleStatements:
     - Effect: Allow
@@ -74,8 +74,8 @@ app:
       Action:
         - "sqs:*"
       Resource:
-        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
-        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-certificate-queue.fifo
+        - arn:aws:sqs:ap-southeast-1:285637954943:${self:custom.stage}-sparcs-events-email-queue.fifo
+        - arn:aws:sqs:ap-southeast-1:285637954943:${self:custom.stage}-sparcs-events-certificate-queue.fifo
     - Effect: Allow
       Action:
         - s3:PutObject
