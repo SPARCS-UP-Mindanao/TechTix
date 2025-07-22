@@ -214,7 +214,7 @@ class TicketTypeRepository:
                 transaction.save(old_ticket_type_entry)
 
             ticket_type_entry.refresh()
-            logger.info(f'[{ticket_type_entry.rangeKey}] ' f'Update ticket_type data successful')
+            logger.info(f'[{ticket_type_entry.rangeKey}] Update ticket_type data successful')
             return HTTPStatus.OK, ticket_type_entry, ''
 
         except TransactWriteError as e:
@@ -249,7 +249,7 @@ class TicketTypeRepository:
             ticket_type_entry.entryStatus = EntryStatus.DELETED.value
             ticket_type_entry.save()
 
-            logger.info(f'[{ticket_type_entry.rangeKey}] ' f'Delete ticket_type data successful')
+            logger.info(f'[{ticket_type_entry.rangeKey}] Delete ticket_type data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete ticket_type data: {str(e)}'

@@ -213,7 +213,7 @@ class EvaluationRepository:
                 transaction.update(evaluation_entry, actions=actions)
 
             evaluation_entry.refresh()
-            logger.info(f'[{evaluation_entry.rangeKey}] ' f'Update evaluation data successful')
+            logger.info(f'[{evaluation_entry.rangeKey}] Update evaluation data successful')
             return HTTPStatus.OK, evaluation_entry, None
 
         except TransactWriteError as e:

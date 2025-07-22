@@ -234,7 +234,7 @@ class EventsRepository:
                 transaction.save(old_event_entry)
 
             event_entry.refresh()
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
@@ -269,7 +269,7 @@ class EventsRepository:
             event_entry.entryStatus = EntryStatus.DELETED.value
             event_entry.save()
 
-            logger.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Delete event data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
@@ -305,7 +305,7 @@ class EventsRepository:
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:

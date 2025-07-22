@@ -206,7 +206,7 @@ class DiscountsRepository:
                 transaction.save(old_discount_entry)
 
             discount_entry.refresh()
-            logger.info(f'[{discount_entry.rangeKey}] ' f'Update discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] Update discount data successful')
             return HTTPStatus.OK, discount_entry, ''
 
         except TransactWriteError as e:
@@ -241,7 +241,7 @@ class DiscountsRepository:
             discount_entry.entryStatus = EntryStatus.DELETED.value
             discount_entry.save()
 
-            logger.info(f'[{discount_entry.rangeKey}] ' f'Delete discount data successful')
+            logger.info(f'[{discount_entry.rangeKey}] Delete discount data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete discount data: {str(e)}'

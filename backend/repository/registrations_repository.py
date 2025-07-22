@@ -266,7 +266,7 @@ class RegistrationsRepository:
                 transaction.update(registration_entry, actions=actions)
 
             registration_entry.refresh()
-            logger.info(f'[{registration_entry.rangeKey}] ' f'Update event data succesful')
+            logger.info(f'[{registration_entry.rangeKey}] Update event data succesful')
             return HTTPStatus.OK, registration_entry, ''
 
         except TransactWriteError as e:
@@ -286,7 +286,7 @@ class RegistrationsRepository:
         """
         try:
             registration_entry.delete()
-            logger.info(f'[{registration_entry.rangeKey}] ' f'Delete registration data successful')
+            logger.info(f'[{registration_entry.rangeKey}] Delete registration data successful')
             return HTTPStatus.OK, None
 
         except DeleteError as e:
