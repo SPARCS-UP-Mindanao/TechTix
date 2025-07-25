@@ -18,6 +18,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
 
 1. **Pre-requisites:**
    - Ensure Python 3.11 is installed
+   - Ensure that you are in the `backend` directory of the project.
 
 2. **Install uv**
    ```shell
@@ -82,6 +83,10 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
 ## Setup Serverless Framework
 1. **Prerequisites:**
    - Node.js 14 or later
+   - Ensure that you are in the `backend` directory of the project by running:
+   ```shell
+   cd backend
+   ```
 2. **Install Serverless Framework:**
    ```shell
    npm install --save-dev serverless@3
@@ -92,13 +97,13 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```
 4. **Install plugins:**
    ```shell
-   sls plugin install -n serverless-python-requirements serverless-better-credentials
+   npx sls plugin install -n serverless-python-requirements serverless-better-credentials
    ```
 
 ## Deploy to AWS
 1. **Setup Docker (Non-Linux users only):**
    - [Docker Installation Guide](https://docs.docker.com/engine/install)
-   - Ensure Docker is running
+   - Ensure Docker is running, **especially for non-Linux users**, as it is required for building the Python dependencies.
 2. **Activate virtual environment:**
    ```shell
    # Linux/Mac
@@ -109,7 +114,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```
 3. **Deploy:**
    ```shell
-   AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --aws-profile <profile-name> --verbose
+   AWS_SDK_LOAD_CONFIG=1 npx sls deploy --stage dev --aws-profile <profile-name> --verbose
    ```
 
 ## Docstrings
