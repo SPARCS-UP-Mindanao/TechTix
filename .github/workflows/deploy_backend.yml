@@ -27,16 +27,6 @@ jobs:
           role-to-assume: arn:aws:iam::285637954943:role/techtix-github-action-oidc-role
           role-session-name: GithubActionSession
 
-      - name: Get OIDC Token (for debugging)
-        id: get-token
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const idToken = await core.getIDToken();
-            core.info(`OIDC Token: ${idToken}`);
-            const decoded = JSON.parse(Buffer.from(idToken.split('.')[1], 'base64').toString());
-            core.info(`Decoded OIDC Token Claims: ${JSON.stringify(decoded, null, 2)}`);
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
