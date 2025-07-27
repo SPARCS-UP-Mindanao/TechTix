@@ -17,31 +17,41 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
 ## Setup Local Environment
 
 1. **Pre-requisites:**
-   - Ensure Python 3.8 is installed
+   - Ensure Python 3.11 is installed
+   - Ensure that you are in the `backend` directory of the project.
 
-2. **Install pipenv:**
+2. **Install uv**
    ```shell
-   pip install pipenv==2023.4.29 --user
+   # Follow installation guide: https://docs.astral.sh/uv/getting-started/installation/
    ```
 
-3. **Install Python Dependencies:**
+3. **Create virtual environment**
    ```shell
-   pipenv install
+   uv venv
    ```
 
-4. **Activate Virtual Environment:**
+4. **Install dependencies**
    ```shell
-   pipenv shell
+   uv sync
    ```
 
-5. **Add Environment Variables:**
-    -  Add the `.env` file provided to you in the `backend` directory
+5. **Activate environment**
+   ```shell
+   # Windows
+   .venv\Scripts\activate
+   
+   # Linux/Mac
+   source .venv/bin/activate
+   ```
+
+6. **Add environment variables**
+   - Place the provided `.env` file in the `backend` directory
 
 ## Run Locally
 
 1. **Activate Virtual Environment:**
    ```shell
-   pipenv shell
+   source .venv/bin/activate
    ```
 
 2. **Start Local Server:**
@@ -50,52 +60,63 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```
 
 ## Setup AWS CLI
-
 1. **Download and Install AWS CLI:**
    - [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-
-2. **Create AWS Profile:**
+2. **Configure SSO Login:**
    ```shell
-   aws configure --profile sparcs
+   aws configure sso --profile <profile-name>
    ```
-
-   - **Input your AWS Access Key ID and AWS Secret Access Key provided to you.**
-   - **Input `ap-southeast-1` for the default region name.**
-   - **Leave blank for the default output format.**
-
+   - Enter SSO Session Name (could be same as `<profile-name>`)
+   - Enter SSO Start URL: `https://durianpy-root.awsapps.com/start/#`
+   - Enter SSO region: `ap-southeast-1`
+   - Enter Default client Region: `ap-southeast-1`
+   - Leave blank for `SSO registration scopes` and `CLI default output format`
+3. **Verify login:**
+   ```shell
+   aws sts get-caller-identity --profile <profile-name>
+   ```
+4. **SSO Login:**
+   ```shell
+   aws sso login --profile <profile-name>
+   ```
 
 ## Setup Serverless Framework
-
-1. **Pre-requisites:**
-   - Ensure `Node 14` or later is installed
-
-2. **Install serverless framework:**
+1. **Prerequisites:**
+   - Node.js 14 or later
+   - Ensure that you are in the `backend` directory of the project by running:
    ```shell
-   npm install -g serverless
+   cd backend
    ```
-
-3. **Install serverless plugins:**
+2. **Install Serverless Framework:**
+   ```shell
+   npm install --save-dev serverless@3
+   ```
+3. **Install dependencies:**
    ```shell
    npm install
    ```
-
-3. **Install Python Requirements Plugin:**
+4. **Install plugins:**
    ```shell
-   sls plugin install -n serverless-python-requirements
+   npx sls plugin install -n serverless-python-requirements serverless-better-credentials
    ```
 
 ## Deploy to AWS
-1. Setup Docker (Only for Non-Linux Users)
+1. **Setup Docker (Non-Linux users only):**
    - [Docker Installation Guide](https://docs.docker.com/engine/install)
-   - Make sure Docker is Running on your Machine
-2.
+   - Ensure Docker is running, **especially for non-Linux users**, as it is required for building the Python dependencies.
+2. **Activate virtual environment:**
    ```shell
-   pipenv shell
+   # Linux/Mac
+   source .venv/bin/activate
+   
+   # Windows
+   .venv\Scripts\activate
    ```
-3.
+3. **Deploy:**
    ```shell
-   serverless deploy --stage 'dev' --aws-profile 'sparcs' --verbose
+   AWS_SDK_LOAD_CONFIG=1 npx sls deploy --stage dev --aws-profile <profile-name> --verbose
    ```
+
 ## Docstrings
 1. There are many Python docstring formats, but reStructuredText (reST) is recommended by the PEP 287.
 2. Read more here. [reStructuredText (reST)](http://daouzli.com/blog/docstring.html#restructuredtext)

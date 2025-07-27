@@ -219,7 +219,7 @@ class PaymentTransactionRepository:
                 transaction.save(old_payment_transaction)
 
             payment_transaction.refresh()
-            logger.info(f'[{payment_transaction.rangeKey}] ' f'Update payment_transaction data successful')
+            logger.info(f'[{payment_transaction.rangeKey}] Update payment_transaction data successful')
             return HTTPStatus.OK, payment_transaction, ''
 
         except TransactWriteError as e:

@@ -2,7 +2,7 @@ Resources:
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: ${self:custom.bucket}
+      BucketName: ${self:custom.bucket}-asds42
       VersioningConfiguration:
         Status: Enabled
       CorsConfiguration:
