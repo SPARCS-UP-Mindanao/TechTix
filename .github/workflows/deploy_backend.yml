@@ -24,7 +24,7 @@ jobs:
         with:
           audience: sts.amazonaws.com
           aws-region: ap-southeast-1
-          role-to-assume: arn:aws:iam::285637954943:role/techtix-github-action-oidc-role
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
           role-session-name: GithubActionSession
 
       - name: Set up Python
