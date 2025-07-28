@@ -15,10 +15,10 @@ custom:
   konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
   betterCredentials:
     enabled: true
-  # emailQueue:
-  #   !ImportValue EmailQueue-${self:custom.stage}
-  # certificateQueue:
-  #   !ImportValue CertificateQueue-${self:custom.stage}
+  emailQueue:
+    !ImportValue EmailQueue-${self:custom.stage}
+  certificateQueue:
+    !ImportValue CertificateQueue-${self:custom.stage}
   basicAuthorizerARN:
     !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
@@ -59,8 +59,8 @@ provider:
     PREREGISTRATIONS_TABLE: ${self:custom.preregistrations}
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EVENTS_TABLE: ${self:custom.events}
-    # EMAIL_QUEUE: ${self:custom.emailQueue}
-    # CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
+    EMAIL_QUEUE: ${self:custom.emailQueue}
+    CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
     KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
     USER_POOL_ID:
