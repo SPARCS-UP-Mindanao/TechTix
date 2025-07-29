@@ -17,6 +17,7 @@ dependencies = [
     "python-dateutil==2.9.0.post0",
     "requests==2.32.3",
     "pytz==2024.2",
+    "commitizen>=4.8.3",
 ]
 
 [dependency-groups]
@@ -33,6 +34,23 @@ dev = [
     "pylint-pydantic==0.1.8",
     "httpx==0.23.3",
     "ruff==0.12.2",
+    "mypy>=1.17.0",
+    "detect-secrets>=1.5.0",
+]
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+allow_untyped_defs = false
+disallow_untyped_calls = true
+no_implicit_optional = true
+check_untyped_defs = true
+strict = false
+exclude = [
+  '^.venv/',
+  '.*/site-packages/',
+  '^.serverless/',
 ]
 
 [tool.ruff]
@@ -83,3 +101,10 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "uv"
+major_version_zero = true

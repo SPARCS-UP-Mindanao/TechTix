@@ -39,7 +39,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```shell
    # Windows
    .venv\Scripts\activate
-   
+
    # Linux/Mac
    source .venv/bin/activate
    ```
@@ -108,7 +108,7 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    ```shell
    # Linux/Mac
    source .venv/bin/activate
-   
+
    # Windows
    .venv\Scripts\activate
    ```
