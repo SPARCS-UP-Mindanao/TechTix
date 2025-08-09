@@ -55,8 +55,8 @@ class EmailUsecase:
         response = self.__sqs_client.send_message(
             QueueUrl=self.__sqs_url,
             MessageBody=json.dumps(payload),
-            MessageDeduplicationId=f'sparcs-event-{event_id}-{timestamp}-{message_id}',
-            MessageGroupId=f'sparcs-event-{event_id}',
+            MessageDeduplicationId=f'durianpy-event-{event_id}-{timestamp}-{message_id}',
+            MessageGroupId=f'durianpy-event-{event_id}',
         )
         message_id = response.get('MessageId')
         message = f'Queue message success: {message_id}'
@@ -114,7 +114,7 @@ class EmailUsecase:
         """
         subject = f'Event {event.name} has been created'
         body = [f'Event {event.name} has been created. Please check the event page for more details.']
-        salutation = 'Dear Sparcs ,'
+        salutation = 'Dear DurianPy ,'
         regards = ['Best,']
 
         self.__event_email = event.email
@@ -124,7 +124,7 @@ class EmailUsecase:
             regards.append(special_sender)
 
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         email_in = EmailIn(
             to=[event.email],
             subject=subject,
@@ -133,7 +133,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.EVENT_CREATION_EMAIL.value,
             eventId=event.eventId,
-            isSparcs=is_sparcs,
+            isDurianPy=is_durianpy,
         )
         return self.send_email(email_in=email_in, event=event)
 
@@ -151,7 +151,7 @@ class EmailUsecase:
 
         """
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         self.__event_email = event.email
 
         subject = f'{event.name} Registration Confirmation'
@@ -175,7 +175,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.REGISTRATION_EMAIL.value,
             eventId=event.eventId,
-            isSparcs=is_sparcs,
+            isDurianPy=is_durianpy,
         )
         logger.info(f'Sending registration confirmation email to {registration.email}')
         return self.send_email(email_in=email_in, event=event)
@@ -233,7 +233,7 @@ class EmailUsecase:
         """
         self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         subject = f'Welcome to {event.name} Pre-Registration!'
         body = [
             'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
@@ -255,7 +255,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
-            isSparcs=is_sparcs,
+            isDurianPy=is_durianpy,
         )
         logger.info(f'Sending pre-registration email to {preregistration.email}')
         return self.send_email(email_in=email_in, event=event)
@@ -273,7 +273,7 @@ class EmailUsecase:
         """
         self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
         salutation = f'Good day {preregistration.firstName},'
         body = [
@@ -295,7 +295,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
-            isSparcs=is_sparcs,
+            isDurianPy=is_durianpy,
         )
         logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
         return email_in
@@ -314,7 +314,7 @@ class EmailUsecase:
         """
         self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
             f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
@@ -338,7 +338,7 @@ class EmailUsecase:
             regards=regards,
             emailType=EmailType.PREREGISTRATION_EMAIL.value,
             eventId=event.eventId,
-            isSparcs=is_sparcs,
+            isDurianPy=is_durianpy,
         )
         logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
         return email_in
@@ -365,7 +365,7 @@ class EmailUsecase:
         event_name = event.name
         event_id = event.eventId
         is_special_email = event.email in [email.value for email in SpecialEmails]
-        is_sparcs = not is_special_email
+        is_durianpy = not is_special_email
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [
@@ -390,7 +390,7 @@ class EmailUsecase:
                 regards=regards,
                 emailType=EmailType.EVALUATION_EMAIL.value,
                 eventId=event_id,
-                isSparcs=is_sparcs,
+                isDurianPy=is_durianpy,
             )
             for participant in participants
         ]
