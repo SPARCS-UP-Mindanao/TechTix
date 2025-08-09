@@ -12,10 +12,10 @@ root_path = f'/{STAGE}' if STAGE else '/'
 
 app = FastAPI(
     root_path=root_path,
-    title='SPARCS Event Service',
+    title='DURIANPY Event Service',
     contact={
         'name': 'Society of Programmers and Refined Computer Scientists',
-        'email': 'contact@sparcsup.com',
+        'email': 'contact@durianpy.org',
     },
 )
 
@@ -25,10 +25,10 @@ def welcome():
     html_content = """
     <html>
         <head>
-            <title>Welcome to the SPARCS Events API</title>
+            <title>Welcome to the DURIANPY Events API</title>
         </head>
         <body>
-            <h1>Welcome to the SPARCS Events API</h1>
+            <h1>Welcome to the DURIANPY Events API</h1>
         </body>
     </html>
     """
