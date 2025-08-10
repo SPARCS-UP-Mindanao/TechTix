@@ -1,0 +1,28 @@
+version: 1
+applications:
+    -
+        frontend:
+            phases:
+                preBuild:
+                    commands:
+                        - npm ci --cache .npm --prefer-offline
+                        - |
+                          if [ "$AWS_BRANCH" = "main" ]; then
+                            echo "VITE_AWS_ACCESS_KEY_ID=$(aws ssm get-parameter --name /techtix/frontend/aws-access-key-id-prod --query Parameter.Value --output text)" >> .env
+                            echo "VITE_AWS_SECRET_ACCESS_KEY=$(aws ssm get-parameter --name /techtix/frontend/aws-secret-access-key-prod --query Parameter.Value --output text)" >> .env
+                          elif [ "$AWS_BRANCH" = "stage" ]; then
+                            echo "VITE_AWS_ACCESS_KEY_ID=$(aws ssm get-parameter --name /techtix/frontend/aws-access-key-id-dev --query Parameter.Value --output text)" >> .env
+                            echo "VITE_AWS_SECRET_ACCESS_KEY=$(aws ssm get-parameter --name /techtix/frontend/aws-secret-access-key-dev --query Parameter.Value --output text)" >> .env
+                          fi
+                build:
+                    commands:
+                        - npm run build
+            artifacts:
+                baseDirectory: dist
+                files:
+                    - '**/*'
+            cache:
+                paths:
+                    - '.npm/**/*'
+                    -  node_modules/**/*
+        appRoot: frontend
