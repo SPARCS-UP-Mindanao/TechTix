@@ -137,12 +137,14 @@ class DiscountUsecase:
             )
 
         discount_data = self.__convert_data_entry_to_dict(discount_entry)
-        
+
         # reusable discount code
         if discount_entry.isReusable:
-            if (discount_entry.maxDiscountUses is not None and 
-                discount_entry.remainingUses is not None and 
-                discount_entry.remainingUses <= 0):
+            if (
+                discount_entry.maxDiscountUses is not None
+                and discount_entry.remainingUses is not None
+                and discount_entry.remainingUses <= 0
+            ):
                 return JSONResponse(
                     status_code=HTTPStatus.BAD_REQUEST,
                     content={'message': 'Discount has no remaining uses'},

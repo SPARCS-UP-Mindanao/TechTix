@@ -247,11 +247,11 @@ class DiscountsRepository:
             message = f'Failed to delete discount data: {str(e)}'
             logger.error(f'[{discount_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
-    
+
     def append_claim_discount(self, discount_entry: Discount, append_count: int = 1):
         """
         Adds to the discountUses attribute and decreases remainingUses
-        
+
         :param discount_entry: Discount object to be updated.
         :type discount_entry: Discount
         :param append_count: The count to be appended.
@@ -263,19 +263,19 @@ class DiscountsRepository:
             # Check if there are remaining uses available
             if discount_entry.remainingUses is not None and discount_entry.remainingUses <= 0:
                 return HTTPStatus.BAD_REQUEST, None, 'No remaining uses available for this discount'
-            
+
             with TransactWrite(connection=self.conn) as transaction:
-                actions = [
-                    Discount.currentDiscountUses.add(append_count), 
-                    Discount.remainingUses.add(-append_count) 
-                ]
+                actions = [Discount.currentDiscountUses.add(append_count), Discount.remainingUses.add(-append_count)]
                 transaction.update(discount_entry, actions=actions)
-                
+
             discount_entry.refresh()
-            
-            logger.info(f'[{discount_entry.rangeKey}] Update discount uses successful. 'f'Uses: {discount_entry.currentDiscountUses}, Remaining: {discount_entry.remainingUses}')
+
+            logger.info(
+                f'[{discount_entry.rangeKey}] Update discount uses successful. '
+                f'Uses: {discount_entry.currentDiscountUses}, Remaining: {discount_entry.remainingUses}'
+            )
             return HTTPStatus.OK, discount_entry, ''
-            
+
         except TransactWriteError as e:
             message = f'Failed to update discount uses: {str(e)}'
             logger.error(f'[{discount_entry.rangeKey}] {message}')
