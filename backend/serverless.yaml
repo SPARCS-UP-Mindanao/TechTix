@@ -5,6 +5,7 @@ custom:
   projectName: durianpy-events
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
+  paymentQueue: ${self:custom.stage}-${self:custom.projectName}-payment-queue.fifo
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   events: ${self:custom.stage}-${self:custom.projectName}
   bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
@@ -22,7 +23,7 @@ custom:
   basicAuthorizerARN:
     !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: true
     usePoetry: false
     noDeploy:
       - requests
@@ -60,6 +61,7 @@ provider:
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EVENTS_TABLE: ${self:custom.events}
     EMAIL_QUEUE: ${self:custom.emailQueue}
+    PAYMENT_QUEUE: ${self:custom.paymentQueue}
     CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
     # KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
@@ -75,10 +77,11 @@ resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
   - ${file(resources/s3.yml)}
+  - ${file(resources/sqs.yml)}
 
 functions:
   - ${file(resources/api.yml)}
-  # - ${file(resources/functions.yml)}
+  - ${file(resources/functions.yml)}
 
 plugins:
   - serverless-better-credentials
