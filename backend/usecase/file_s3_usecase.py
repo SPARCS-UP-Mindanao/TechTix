@@ -65,7 +65,7 @@ class FileS3Usecase:
             return FileDownloadOut(**url_data)
         except ClientError as e:
             logger.error('Error creating presigned url: %s', e)
-            return None
+            return JSONResponse(status_code=500, content={'message': 'Error fetching donwload url'})
 
     def upload_file(self, file_name: str, object_name: str = None, verbose: bool = True) -> bool:
         # If S3 object_name was not specified, use file_name

@@ -30,6 +30,8 @@ class CommonConstants:
     REGISTRATION_ID = 'registrationId'
     PREREGISTRATION_ID = 'preRegistrationId'
 
+    OBJECT_KEY = 'objectKey'
+
     # Exclude to Comparison Keys
     EXCLUDE_COMPARISON_KEYS = [
         CLS,
