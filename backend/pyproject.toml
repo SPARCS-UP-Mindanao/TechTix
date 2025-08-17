@@ -5,7 +5,7 @@ description = "Test"
 requires-python = ">=3.11,<3.12"
 
 dependencies = [
-    "pynamodb==5.2.1",
+    "pynamodb==6.1.0",
     "ulid==1.1",
     "fastapi==0.96.0",
     "fastapi-cloudauth==0.4.3",
@@ -22,7 +22,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "boto3==1.22.7",
+    "boto3==1.40.11",
     "python-dotenv==1.0.0",
     "uvicorn==0.22.0",
     "pre-commit==3.3.3",
