@@ -5,8 +5,12 @@ import { reloadPage } from '@/utils/functions';
 // import shareToLinkedIn from './shareToLinkedIn';
 import { useClaimCertificate } from './useClaimCertificate';
 
-const ClaimCertificate: FC = () => {
-  const { certificateImgDataURL, isLoading, onDownloadImg, onDownloadPdf } = useClaimCertificate();
+interface Props {
+  eventId: string;
+}
+
+const ClaimCertificate: FC<Props> = ({ eventId }) => {
+  const { certificateImgDataURL, isLoading, onDownloadImg, onDownloadPdf } = useClaimCertificate(eventId);
 
   // const onShareToLinkedIn = () => {
   //   const LinkedInParams = {

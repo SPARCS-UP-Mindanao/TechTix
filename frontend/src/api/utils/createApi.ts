@@ -3,10 +3,6 @@ import { getCookie } from 'typescript-cookie';
 import { refreshOnIntercept } from '@/utils/refreshToken';
 import { QueryKey } from '@tanstack/react-query';
 
-type SearchParamType = string | string[] | number | number[] | boolean | Record<string, any> | Date | null | undefined;
-
-type SearchParams = Record<string, SearchParamType>;
-
 interface ErrorStringResponse {
   message: string;
 }
@@ -27,7 +23,7 @@ export interface CustomAxiosError extends Omit<AxiosResponse, 'data'> {
   errorData: ErrorResponse;
 }
 
-export const createQueryKey = (url: string, body?: SearchParams) => [url, body];
+export const createQueryKey = (url: string, body?: any) => [url, body];
 export type ApiService = 'auth' | 'events' | 'payments';
 interface createApiProps<D, T = D> {
   method?: 'get' | 'post' | 'delete' | 'patch' | 'put';
@@ -35,7 +31,8 @@ interface createApiProps<D, T = D> {
   apiService?: ApiService;
   url: string;
   queryParams?: any;
-  body?: SearchParams;
+  headers?: object;
+  body?: any;
   timeout?: number;
   output?: (dto: D) => T;
 }
@@ -53,7 +50,7 @@ const getUrl = (apiService: ApiService) => {
 export type GenericReturn<T> = AxiosResponse<T> & CustomAxiosError;
 
 export function createApi<D, T = D>(
-  { method = 'get', url, authorize = false, apiService = 'events', queryParams = {}, body, timeout = 1000 * 60, output }: createApiProps<D, T>,
+  { method = 'get', url, authorize = false, apiService = 'events', queryParams = {}, headers, body, timeout = 1000 * 60, output }: createApiProps<D, T>,
   staleTime?: number,
   cacheTime?: number
 ) {
@@ -75,7 +72,8 @@ export function createApi<D, T = D>(
           'Content-Type': 'application/json',
           ...(authorize && {
             Authorization: `Bearer ${accessToken}`
-          })
+          }),
+          ...headers
         }
       });
 
@@ -103,7 +101,7 @@ export function createApi<D, T = D>(
   authorize && refreshOnIntercept(api);
 
   return {
-    queryKey: createQueryKey(url, body) as unknown as QueryKey,
+    queryKey: createQueryKey(url, body ?? queryParams) as unknown as QueryKey,
     queryFn,
     staleTime,
     cacheTime

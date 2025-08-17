@@ -22,10 +22,10 @@ interface CardHeaderProps {
 }
 
 const EventCardHeader: React.FC<CardHeaderProps> = ({ event, isDeleteEnabled, isDeletingEvent, setDeleteModalOpen }) => {
-  const { fileUrl: imageUrl, isFetching } = useFileUrl(event.bannerLink!);
+  const { fileUrl, isFetching } = useFileUrl(event.eventId, event.bannerLink);
 
   return (
-    <div className="h-1/2 group-hover:opacity-70 transition" style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}>
+    <div className="h-1/2 group-hover:opacity-70 transition" style={{ backgroundImage: `url(${fileUrl})`, backgroundSize: 'cover' }}>
       {isFetching && <Skeleton className="w-full h-full rounded-b-none" />}
       {isDeleteEnabled && (
         <div className="w-full flex p-2 justify-end">
