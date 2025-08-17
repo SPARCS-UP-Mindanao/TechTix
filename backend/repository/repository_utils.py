@@ -96,9 +96,7 @@ class RepositoryUtils:
         :rtype: dict
 
         """
-        json_str = model.to_json()
-        hub_dict = json.loads(json_str)
-        return hub_dict
+        return model.to_simple_dict()
 
     @staticmethod
     def load_data(pydantic_schema_in, exclude_unset=False):
