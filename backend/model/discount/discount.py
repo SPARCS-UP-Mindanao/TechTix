@@ -17,7 +17,7 @@ class Discount(Entities, discriminator='Discount'):
     organizationId = UnicodeAttribute(null=True)
     isReusable = BooleanAttribute(null=True)
     maxDiscountUses = NumberAttribute(null=True)
-    discountUses = NumberAttribute(default=0)
+    currentDiscountUses = NumberAttribute(default=0)
     remainingUses = NumberAttribute(default=0)
     discountName = UnicodeAttribute(null=True)
 
@@ -32,9 +32,9 @@ class DiscountDBIn(BaseModel):
     discountPercentage: float = Field(..., title='Discount Percentage')
     entryId: str = Field(..., title='Entry ID')
     organizationId: str = Field(..., title='Organization ID')
-    isReusable: bool
+    isReusable: bool = Field(..., title='Is Discount Reusable')
     maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
-    discountUses: Optional[int] = 0
+    currentDiscountUses: Optional[int] = Field(0, title='Current Discount Uses')
     remainingUses: Optional[int] = Field(default=0, title='Remaining Discount Uses')
     discountName: Optional[str] = Field(None, title='Discount Name')
 
@@ -49,6 +49,8 @@ class DiscountIn(BaseModel):
     organizationName: str = Field(..., title='Organization ID')
     isReusable: bool
     maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
+    currentDiscountUses: Optional[int] = Field(0, title='Current Discount Uses')
+    remainingUses: Optional[int] = Field(default=0, title='Remaining Discount Uses')
     discountName: Optional[str] = Field(None, title='Discount Name')
 
 
@@ -65,6 +67,7 @@ class DiscountOut(BaseModel):
     registration: RegistrationOut = Field(None, title='Registration ID')
     organizationId: str = Field(..., title='Organization ID')
     maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
+    currentDiscountUses: Optional[int] = Field(0, title='Current Discount Uses')
     remainingUses: Optional[int] = Field(None, title='Discount Remaining Uses')
 
 

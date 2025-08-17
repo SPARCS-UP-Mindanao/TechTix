@@ -130,9 +130,24 @@ class DiscountUsecase:
                 content={'message': 'Discount Does Not Exist'},
             )
 
-        discount_data = self.__convert_data_entry_to_dict(discount_entry)
+        if discount_entry.registrationId == registration_id:
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': 'Discount already claimed'},
+            )
 
+        discount_data = self.__convert_data_entry_to_dict(discount_entry)
+        
+        # reusable discount code
         if discount_entry.isReusable:
+            if (discount_entry.maxDiscountUses is not None and 
+                discount_entry.remainingUses is not None and 
+                discount_entry.remainingUses <= 0):
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Discount has no remaining uses'},
+                )
+
             status, updated_discount, message = self.__discounts_repository.append_claim_discount(
                 discount_entry=discount_entry, append_count=1
             )
@@ -141,14 +156,15 @@ class DiscountUsecase:
 
             discount_data = self.__convert_data_entry_to_dict(updated_discount)
             discount_data.update(registrationId=registration_id)
-
             discount_in = DiscountDBIn(**discount_data)
+
             status, discount, message = self.__discounts_repository.update_discount(
                 discount_entry=updated_discount, discount_in=discount_in
             )
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
 
+        # for single-use discount code
         else:
             if discount_entry.claimed:
                 return JSONResponse(
@@ -197,7 +213,8 @@ class DiscountUsecase:
                 entryId=discount_in.discountName,
                 isReusable=True,
                 maxDiscountUses=discount_in.maxDiscountUses or discount_in.quantity,
-                uses=0,
+                currentDiscountUses=0,
+                remainingUses=discount_in.remainingUses or discount_in.quantity,
             )
             status, discount, message = self.__discounts_repository.store_discount(discount_in=discount_db_in)
             if status != HTTPStatus.OK:
