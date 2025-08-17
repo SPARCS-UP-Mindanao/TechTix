@@ -247,3 +247,30 @@ class DiscountsRepository:
             message = f'Failed to delete discount data: {str(e)}'
             logger.error(f'[{discount_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
+    
+    def append_claim_discount(self, discount_entry: Discount, append_count: int = 1):
+        """Adds the registrationCount attribute of the event_entry by append_count
+
+        :param discount_entry: Discount object to be updated.
+        :type discount_entry: Discount
+
+        :param append_count: The count to be appended.
+        :type append_count: int
+
+        :return: Tuple containing the HTTP status, the updated Discount object, and a message.
+        :rtype: Tuple[HTTPStatus, Event, str]
+
+        """
+        try:
+            with TransactWrite(connection=self.conn) as transaction: 
+                actions = [Discount.discountUses.add(append_count)]
+                transaction.update(discount_entry, actions=actions)
+
+                discount_entry.refresh()
+            logger.info(f'[{discount_entry.rangeKey}] Update event data successful')
+            return HTTPStatus.OK, discount_entry, ''
+                                                                
+        except TransactWriteError as e:
+            message = f'Failed to append event registration count: {str(e)}'
+            logger.error(f'[{discount_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message

@@ -130,24 +130,43 @@ class DiscountUsecase:
                 content={'message': 'Discount Does Not Exist'},
             )
 
-        if discount_entry.claimed:
-            return JSONResponse(
-                status_code=HTTPStatus.BAD_REQUEST,
-                content={'message': 'Discount already claimed'},
-            )
-
         discount_data = self.__convert_data_entry_to_dict(discount_entry)
-        discount_data.update(claimed=True)
-        discount_data.update(registrationId=registration_id)
 
-        discount_in = DiscountDBIn(
-            **discount_data,
-        )
-        status, discount, message = self.__discounts_repository.update_discount(
-            discount_entry=discount_entry, discount_in=discount_in
-        )
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
+        if discount_entry.isReusable:
+            status, updated_discount, message = self.__discounts_repository.append_claim_discount(
+                discount_entry=discount_entry, append_count=1
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+            discount_data = self.__convert_data_entry_to_dict(updated_discount)
+            discount_data.update(registrationId=registration_id)
+
+            discount_in = DiscountDBIn(**discount_data)
+            status, discount, message = self.__discounts_repository.update_discount(
+                discount_entry=updated_discount, discount_in=discount_in
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+        else:
+            if discount_entry.claimed:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Discount already claimed'},
+                )
+
+            discount_data.update(claimed=True)
+            discount_data.update(registrationId=registration_id)
+
+            discount_in = DiscountDBIn(
+                **discount_data,
+            )
+            status, discount, message = self.__discounts_repository.update_discount(
+                discount_entry=discount_entry, discount_in=discount_in
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
 
         discount_data = self.__convert_data_entry_to_dict(discount)
         return DiscountOut(**discount_data)
@@ -162,29 +181,50 @@ class DiscountUsecase:
         :rtype: Union[JSONResponse, List[DiscountOut]]
 
         """
-        status, _, __ = self.__events_repository.query_events(discount_in.eventId)
+        status, *_ = self.__events_repository.query_events(discount_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': 'Event does not exist'})
 
         discount_list = []
         organization_id = Utils.convert_to_slug(discount_in.organizationName)
-        for _ in range(discount_in.quantity):
-            discount_in = DiscountDBIn(
+
+        if discount_in.isReusable:
+            discount_db_in = DiscountDBIn(
                 organizationId=organization_id,
                 eventId=discount_in.eventId,
-                claimed=False,
                 registrationId=None,
                 discountPercentage=discount_in.discountPercentage,
-                entryId=self.__generate_discount_code(),
+                entryId=discount_in.discountName,
+                isReusable=True,
+                maxDiscountUses=discount_in.maxDiscountUses or discount_in.quantity,
+                uses=0,
             )
-
-            status, discount, message = self.__discounts_repository.store_discount(discount_in=discount_in)
+            status, discount, message = self.__discounts_repository.store_discount(discount_in=discount_db_in)
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
 
             discount_data = self.__convert_data_entry_to_dict(discount)
             discount_out = DiscountOut(**discount_data)
             discount_list.append(discount_out)
+
+        else:
+            for _ in range(discount_in.quantity):
+                discount_db_in = DiscountDBIn(
+                    organizationId=organization_id,
+                    eventId=discount_in.eventId,
+                    claimed=False,
+                    registrationId=None,
+                    discountPercentage=discount_in.discountPercentage,
+                    entryId=self.__generate_discount_code(),
+                    isReusable=False,
+                )
+                status, discount, message = self.__discounts_repository.store_discount(discount_in=discount_db_in)
+                if status != HTTPStatus.OK:
+                    return JSONResponse(status_code=status, content={'message': message})
+
+                discount_data = self.__convert_data_entry_to_dict(discount)
+                discount_out = DiscountOut(**discount_data)
+                discount_list.append(discount_out)
 
         return discount_list
 

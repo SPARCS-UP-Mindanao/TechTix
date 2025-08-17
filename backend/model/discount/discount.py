@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from model.entities import Entities
 from model.registrations.registration import RegistrationOut
@@ -15,6 +15,11 @@ class Discount(Entities, discriminator='Discount'):
     registrationId = UnicodeAttribute(null=True)
     discountPercentage = NumberAttribute(null=True)
     organizationId = UnicodeAttribute(null=True)
+    isReusable = BooleanAttribute(null=True)
+    maxDiscountUses = NumberAttribute(null=True)
+    discountUses = NumberAttribute(default=0)
+    remainingUses = NumberAttribute(default=0)
+    discountName = UnicodeAttribute(null=True)
 
 
 class DiscountDBIn(BaseModel):
@@ -22,11 +27,16 @@ class DiscountDBIn(BaseModel):
         extra = Extra.ignore
 
     eventId: str = Field(..., title='Event ID')
-    claimed: bool = Field(..., title='Claimed')
+    claimed: Optional[bool] = Field(None, title='Claimed')
     registrationId: str = Field(None, title='Registration ID')
     discountPercentage: float = Field(..., title='Discount Percentage')
     entryId: str = Field(..., title='Entry ID')
     organizationId: str = Field(..., title='Organization ID')
+    isReusable: bool
+    maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
+    discountUses: Optional[int] = 0
+    remainingUses: Optional[int] = Field(default=0, title='Remaining Discount Uses')
+    discountName: Optional[str] = Field(None, title='Discount Name')
 
 
 class DiscountIn(BaseModel):
@@ -35,8 +45,11 @@ class DiscountIn(BaseModel):
 
     eventId: str = Field(..., title='Event ID')
     discountPercentage: float = Field(..., title='Discount Percentage')
-    quantity: int = Field(..., title='Quantity')
+    quantity: Optional[int] = Field(None, title='Quantity')
     organizationName: str = Field(..., title='Organization ID')
+    isReusable: bool
+    maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
+    discountName: Optional[str] = Field(None, title='Discount Name')
 
 
 class DiscountOut(BaseModel):
@@ -47,10 +60,12 @@ class DiscountOut(BaseModel):
     createDate: datetime = Field(..., title='Created At')
     updateDate: datetime = Field(..., title='Updated At')
     eventId: str = Field(..., title='Event ID')
-    claimed: bool = Field(..., title='Claimed')
+    claimed: Optional[bool] = Field(None, title='Claimed')
     discountPercentage: float = Field(..., title='Discount Percentage')
     registration: RegistrationOut = Field(None, title='Registration ID')
     organizationId: str = Field(..., title='Organization ID')
+    maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
+    remainingUses: Optional[int] = Field(None, title='Discount Remaining Uses')
 
 
 class DiscountOrganization(BaseModel):
