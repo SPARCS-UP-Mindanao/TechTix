@@ -24,6 +24,18 @@ class PaymentUsecase:
         payment_transaction_dict = self.__convert_data_entry_to_dict(payment_transaction)
         return PaymentTransactionOut(**payment_transaction_dict)
 
+    def update_payment_transaction(
+        self, payment_transaction_id: str, payment_transaction: PaymentTransactionIn
+    ) -> PaymentTransactionOut:
+        status, payment_transaction, message = self.payment_repo.update_payment_transaction(
+            payment_transaction_id, payment_transaction
+        )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        payment_transaction_dict = self.__convert_data_entry_to_dict(payment_transaction)
+        return PaymentTransactionOut(**payment_transaction_dict)
+
     def query_pending_payment_transactions(self) -> list[PaymentTransactionOut]:
         status, payment_transactions, message = self.payment_repo.query_pending_payment_transactions()
         if status != HTTPStatus.OK:
