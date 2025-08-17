@@ -1,5 +1,4 @@
 import csv
-import json
 import os
 import tempfile
 from http import HTTPStatus
@@ -310,4 +309,4 @@ class PreRegistrationUsecase:
         :rtype: dict
 
         """
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

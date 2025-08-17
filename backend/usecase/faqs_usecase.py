@@ -1,4 +1,3 @@
-import json
 from http import HTTPStatus
 from typing import Union
 
@@ -86,4 +85,4 @@ class FAQsUsecase:
         :rtype: dict
 
         """
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

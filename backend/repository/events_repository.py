@@ -167,6 +167,7 @@ class EventsRepository:
             message = f'Failed to query event: {str(e)}'
             logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logger.error(f'[{self.core_obj}={event_id}] {message}')
