@@ -46,4 +46,4 @@ repos:
     hooks:
       - id: commitizen
       - id: commitizen-branch
-        stages: [commit-msg]
+        stages: [manual]

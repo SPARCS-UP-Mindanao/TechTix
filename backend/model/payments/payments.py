@@ -20,11 +20,31 @@ class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
     eventId = UnicodeAttribute(null=False)
     transactionStatus = UnicodeAttribute(null=False)
 
+    # registration data
+    firstName: str = Field(None, title='First Name')
+    lastName: str = Field(None, title='Last Name')
+    contactNumber: str = Field(None, title='Contact Number')
+    careerStatus: str = Field(None, title='Career Status')
+    yearsOfExperience: str = Field(None, title='Years of Experience')
+    organization: str = Field(None, title='Organization')
+    title: str = Field(None, title='Title')
+    paymentRequestId: str = Field(None, title='Payment Request ID')
+
 
 class PaymentTransactionIn(BaseModel):
     price: float = Field(None, title='Price')
     transactionStatus: TransactionStatus = Field(None, title='Transaction Status')
     eventId: Optional[str] = Field(None, title='Event ID')
+
+    # registration data
+    firstName: str = Field(None, title='First Name')
+    lastName: str = Field(None, title='Last Name')
+    contactNumber: str = Field(None, title='Contact Number')
+    careerStatus: str = Field(None, title='Career Status')
+    yearsOfExperience: str = Field(None, title='Years of Experience')
+    organization: str = Field(None, title='Organization')
+    title: str = Field(None, title='Title')
+    paymentRequestId: str = Field(None, title='Payment Request ID')
 
 
 class PaymentTransactionOut(PaymentTransactionIn):
