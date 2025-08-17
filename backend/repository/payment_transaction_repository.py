@@ -6,7 +6,11 @@ from typing import List, Tuple
 
 import pytz
 from constants.common_constants import EntryStatus
-from model.payments.payments import PaymentTransaction, PaymentTransactionIn
+from model.payments.payments import (
+    PaymentTransaction,
+    PaymentTransactionIn,
+    TransactionStatus,
+)
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     PutError,
@@ -227,3 +231,50 @@ class PaymentTransactionRepository:
             logger.error(f'[{payment_transaction.rangeKey}] {message}')
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+    def query_pending_payment_transactions_with_event_id(
+        self, event_id: str
+    ) -> Tuple[HTTPStatus, List[PaymentTransaction], str]:
+        """Query PENDING payment_transactions by event_id.
+
+        :param event_id: The ID of the event to query payment_transactions for.
+        :type event_id: str
+
+        :return: The HTTP status, the queried payment_transactions or None, and a message.
+        :rtype: Tuple[HTTPStatus, List[PaymentTransaction], str]
+
+        """
+        try:
+            hash_key = f'{self.core_obj}#{event_id}'
+            range_key_prefix = f'v{self.latest_version}#'
+            range_key_condition = PaymentTransaction.rangeKey.startswith(range_key_prefix)
+
+            filter_condition = PaymentTransaction.transactionStatus == TransactionStatus.PENDING.value
+            filter_condition &= PaymentTransaction.entryStatus == EntryStatus.ACTIVE.value
+
+            payment_transaction_entries = list(
+                PaymentTransaction.query(
+                    hash_key=hash_key,
+                    range_key_condition=range_key_condition,
+                    filter_condition=filter_condition,
+                )
+            )
+
+            if not payment_transaction_entries:
+                message = 'No payment_transactions found'
+                logger.error(f'[{self.core_obj}] {message}')
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except QueryError as e:
+            message = f'Failed to query payment_transaction: {str(e)}'
+            logger.error(f'[{self.core_obj}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        else:
+            logger.info(f'[{self.core_obj}] Fetch PaymentTransaction data successful')
+            return HTTPStatus.OK, payment_transaction_entries, None

@@ -1,4 +1,3 @@
-import json
 import random
 import string
 from http import HTTPStatus
@@ -212,4 +211,4 @@ class DiscountUsecase:
         :return: The converted data entry.
         :rtype: dict
         """
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

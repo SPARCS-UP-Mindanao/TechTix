@@ -40,6 +40,25 @@ def create_payment_transaction(
 
 
 @payment_router.get(
+    '/pending',
+    response_model=list[PaymentTransactionOut],
+    responses={
+        404: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Get pending payment transactions',
+)
+def get_pending_payment_transactions(
+    event_id: str = Query(..., description='Get Payment Transactions with PENDING Status', alias='eventId'),
+):
+    """
+    Get Payment Transaction with pending Status
+    """
+    payment_uc = PaymentUsecase()
+    return payment_uc.query_pending_payment_transactions(event_id=event_id)
+
+
+@payment_router.get(
     '/callback',
     status_code=302,
     response_class=JSONResponse,

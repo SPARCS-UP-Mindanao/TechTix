@@ -1,4 +1,3 @@
-import json
 import os
 import re
 from copy import deepcopy
@@ -310,4 +309,4 @@ class EventUsecase:
         :rtype: dict
 
         """
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

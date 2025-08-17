@@ -8,3 +8,4 @@ my.secrets
 .DS_STORE
 
 .ruff_cache
+.DS_Store
