@@ -1,0 +1,15 @@
+Resources:
+  PaymentQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:custom.paymentQueue}
+      FifoQueue: true
+      MessageRetentionPeriod: 86400 # 1 day
+      VisibilityTimeout: 900
+      ReceiveMessageWaitTimeSeconds: 20
+
+Outputs:
+  PaymentQueueUrl:
+    Value: !Ref PaymentQueue
+    Export:
+      Name: PaymentQueue-${self:custom.stage}

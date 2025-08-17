@@ -1,17 +1,32 @@
-eventsUploadHandler:
-  handler: functions/events_upload_handler.handler
+# eventsUploadHandler:
+#   handler: functions/events_upload_handler.handler
+#   layers:
+#     - { Ref: PythonRequirementsLambdaLayer }
+#   events:
+#     - s3:
+#         bucket: ${self:custom.bucket}
+#         event: s3:ObjectCreated:*
+#         rules:
+#           - prefix: events/
+#         existing: true
+#   iamRoleStatements:
+#     - Effect: Allow
+#       Action:
+#         - "dynamodb:*"
+#       Resource:
+#         - { "Fn::GetAtt": [Entities, Arn] }
+
+paymentHandler:
+  handler: functions/payment_handling.handler
   layers:
     - { Ref: PythonRequirementsLambdaLayer }
   events:
-    - s3:
-        bucket: ${self:custom.bucket}
-        event: s3:ObjectCreated:*
-        rules:
-          - prefix: events/
-        existing: true
+    - sqs:
+        arn:
+          "Fn::GetAtt": [ PaymentQueue, Arn ]
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - "dynamodb:*"
+        - "sqs:*"
       Resource:
-        - { "Fn::GetAtt": [Entities, Arn] }
+        - "Fn::GetAtt": [ PaymentQueue, Arn ]

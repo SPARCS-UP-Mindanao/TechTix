@@ -54,7 +54,10 @@ jobs:
           npm install -g serverless@3.40.0
         working-directory: backend
 
-      - name: Deploy with Serverless
+      - name: Create requirements.txt
+        run: uv export --format requirements-txt --no-hashes --output-file requirements.txt --no-dev
+
+      - name: Deploy with Serverless v3
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           sls deploy --stage prod --verbose
