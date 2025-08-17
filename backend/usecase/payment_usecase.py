@@ -24,14 +24,8 @@ class PaymentUsecase:
         payment_transaction_dict = self.__convert_data_entry_to_dict(payment_transaction)
         return PaymentTransactionOut(**payment_transaction_dict)
 
-    def query_pending_payment_transactions(self, event_id: str) -> list[PaymentTransactionOut]:
-        status, _, message = self.events_repo.query_events(event_id=event_id)
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
-
-        status, payment_transactions, message = self.payment_repo.query_pending_payment_transactions_with_event_id(
-            event_id
-        )
+    def query_pending_payment_transactions(self) -> list[PaymentTransactionOut]:
+        status, payment_transactions, message = self.payment_repo.query_pending_payment_transactions()
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 

@@ -48,14 +48,12 @@ def create_payment_transaction(
     },
     summary='Get pending payment transactions',
 )
-def get_pending_payment_transactions(
-    event_id: str = Query(..., description='Get Payment Transactions with PENDING Status', alias='eventId'),
-):
+def get_pending_payment_transactions():
     """
     Get Payment Transaction with pending Status
     """
     payment_uc = PaymentUsecase()
-    return payment_uc.query_pending_payment_transactions(event_id=event_id)
+    return payment_uc.query_pending_payment_transactions()
 
 
 @payment_router.get(
