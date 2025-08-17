@@ -56,6 +56,26 @@ def get_pending_payment_transactions():
     return payment_uc.query_pending_payment_transactions()
 
 
+@payment_router.put(
+    '/{paymentTransactionId}',
+    response_model=PaymentTransactionOut,
+    responses={
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Update payment transaction',
+)
+def update_payment_transaction(
+    payment_transaction_id: str,
+    payment_transaction: PaymentTransactionIn,
+):
+    """
+    Update payment transaction
+    """
+    payment_uc = PaymentUsecase()
+    return payment_uc.update_payment_transaction(payment_transaction_id, payment_transaction)
+
+
 @payment_router.get(
     '/callback',
     status_code=302,

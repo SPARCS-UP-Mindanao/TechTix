@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from model.entities import Entities
+from model.pycon_registrations.pycon_registration import PyconRegistration
 from pydantic import BaseModel, Field
 from pynamodb.attributes import NumberAttribute, UnicodeAttribute
 
@@ -39,15 +40,7 @@ class PaymentTransactionIn(BaseModel):
     transactionStatus: TransactionStatus = Field(None, title='Transaction Status')
     eventId: Optional[str] = Field(None, title='Event ID')
     paymentRequestId: Optional[str] = Field(None, title='Payment Request ID')
-
-    # Registration Data
-    firstName: Optional[str] = Field(None, title='First Name')
-    lastName: Optional[str] = Field(None, title='Last Name')
-    contactNumber: Optional[str] = Field(None, title='Contact Number')
-    careerStatus: Optional[str] = Field(None, title='Career Status')
-    yearsOfExperience: Optional[str] = Field(None, title='Years of Experience')
-    organization: Optional[str] = Field(None, title='Organization')
-    title: Optional[str] = Field(None, title='Title')
+    registrationData: Optional[PyconRegistration] = Field(None, title='Registration Data')
 
 
 class PaymentTransactionOut(PaymentTransactionIn):
