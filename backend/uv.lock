@@ -1029,7 +1029,6 @@ name = "techtix"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "commitizen" },
     { name = "fastapi" },
     { name = "fastapi-cloudauth" },
     { name = "lambda-decorators" },
@@ -1047,6 +1046,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "boto3" },
+    { name = "commitizen" },
     { name = "detect-secrets" },
     { name = "httpx" },
     { name = "moto" },
@@ -1064,7 +1064,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "commitizen", specifier = ">=4.8.3" },
     { name = "fastapi", specifier = "==0.96.0" },
     { name = "fastapi-cloudauth", specifier = "==0.4.3" },
     { name = "lambda-decorators", specifier = "==0.6.0" },
@@ -1082,6 +1081,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "boto3", specifier = "==1.40.11" },
+    { name = "commitizen", specifier = ">=4.8.3" },
     { name = "detect-secrets", specifier = ">=1.5.0" },
     { name = "httpx", specifier = "==0.23.3" },
     { name = "moto", specifier = "==3.1.1" },

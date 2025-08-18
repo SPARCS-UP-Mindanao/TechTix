@@ -88,3 +88,8 @@ class PyconRegistration(BaseModel):
         if values.get('availTShirt') and (values.get('shirtType') is None or values.get('shirtSize') is None):
             raise ValueError('If availTShirt is True, then shirtType and shirtSize must be provided.')
         return values
+
+
+class PyconRegistrationOut(PyconRegistration):
+    class Config:
+        extra = 'ignore'

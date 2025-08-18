@@ -2,9 +2,12 @@ from enum import Enum
 from typing import Optional
 
 from model.entities import Entities
-from model.pycon_registrations.pycon_registration import PyconRegistration
+from model.pycon_registrations.pycon_registration import (
+    PyconRegistration,
+    PyconRegistrationOut,
+)
 from pydantic import BaseModel, Field
-from pynamodb.attributes import NumberAttribute, UnicodeAttribute
+from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 
 
 class TransactionStatus(str, Enum):
@@ -21,15 +24,40 @@ class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
     eventId = UnicodeAttribute(null=False)
     transactionStatus = UnicodeAttribute(null=False)
 
-    # registration data
-    firstName: str = Field(None, title='First Name')
-    lastName: str = Field(None, title='Last Name')
-    contactNumber: str = Field(None, title='Contact Number')
-    careerStatus: str = Field(None, title='Career Status')
-    yearsOfExperience: str = Field(None, title='Years of Experience')
-    organization: str = Field(None, title='Organization')
-    title: str = Field(None, title='Title')
-    paymentRequestId: str = Field(None, title='Payment Request ID')
+    # registration data - core info
+    firstName = UnicodeAttribute(null=True)
+    lastName = UnicodeAttribute(null=True)
+    nickname = UnicodeAttribute(null=True)
+    pronouns = UnicodeAttribute(null=True)
+    email = UnicodeAttribute(null=True)
+    contactNumber = UnicodeAttribute(null=True)
+    organization = UnicodeAttribute(null=True)
+    jobTitle = UnicodeAttribute(null=True)
+
+    # social media (will be stored as JSON string)
+    socials = UnicodeAttribute(null=True)
+
+    # ticket and event preferences
+    ticketType = UnicodeAttribute(null=True)
+    sprintDay = BooleanAttribute(null=True)
+
+    # t-shirt preferences
+    availTShirt = BooleanAttribute(null=True)
+    shirtType = UnicodeAttribute(null=True)
+    shirtSize = UnicodeAttribute(null=True)
+
+    # community and preferences
+    communityInvolvement = BooleanAttribute(null=True)
+    futureVolunteer = BooleanAttribute(null=True)
+    dietaryRestrictions = UnicodeAttribute(null=True)
+    accessibilityNeeds = UnicodeAttribute(null=True)
+
+    # discount and files
+    discountCode = UnicodeAttribute(null=True)
+    imageId = UnicodeAttribute(null=True)
+
+    # payment specific
+    paymentRequestId = UnicodeAttribute(null=True)
 
 
 class PaymentTransactionIn(BaseModel):
@@ -48,3 +76,4 @@ class PaymentTransactionOut(PaymentTransactionIn):
         extra = 'ignore'
 
     entryId: str = Field(..., title='Entry ID')
+    registrationData: Optional[PyconRegistrationOut] = Field(None, title='Registration Data')
