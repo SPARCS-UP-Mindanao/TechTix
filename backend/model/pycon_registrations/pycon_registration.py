@@ -94,6 +94,11 @@ class PyconRegistration(BaseModel):
         return values
 
 
+class PyconRegistrationOut(PyconRegistration):
+    class Config:
+        extra = 'ignore'
+
+
 class Registration(Model):
     class Meta:
         table_name = os.getenv('REGISTRATIONS_TABLE')
