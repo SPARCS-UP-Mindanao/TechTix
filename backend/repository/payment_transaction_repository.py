@@ -46,6 +46,8 @@ class PaymentTransactionRepository:
 
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=payment_transaction_in)
+        registration_data = data.pop('registrationData', {}) or {}
+
         event_id = payment_transaction_in.eventId
         entry_id = ulid()
         hash_key = f'{self.core_obj}#{event_id}'
@@ -62,6 +64,7 @@ class PaymentTransactionRepository:
                 entryStatus=EntryStatus.ACTIVE.value,
                 entryId=entry_id,
                 **data,
+                **registration_data,
             )
             payment_transaction_entry.save()
 
@@ -180,6 +183,54 @@ class PaymentTransactionRepository:
             logger.info(f'[{self.core_obj}={payment_transaction_id}] Fetch PaymentTransaction data successful')
             return HTTPStatus.OK, payment_transaction_entries[0], None
 
+    def query_payment_transaction_by_id_only(
+        self, payment_transaction_id: str
+    ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
+        """Query payment_transaction by payment_transaction ID only (using scan).
+
+        :param payment_transaction_id: The ID of the payment_transaction to query.
+        :type payment_transaction_id: str
+
+        :return: The HTTP status, the queried payment_transaction or None, and a message.
+        :rtype: Tuple[HTTPStatus, PaymentTransaction, str]
+
+        """
+        try:
+            # Use scan to find payment transaction by ID across all events
+            range_key_suffix = f'#{payment_transaction_id}'
+
+            filter_condition = PaymentTransaction.rangeKey.contains(range_key_suffix)
+            filter_condition &= PaymentTransaction.entryStatus == EntryStatus.ACTIVE.value
+            filter_condition &= PaymentTransaction.rangeKey.startswith(f'v{self.latest_version}#')
+
+            payment_transaction_entries = list(
+                PaymentTransaction.scan(
+                    filter_condition=filter_condition,
+                )
+            )
+            if not payment_transaction_entries:
+                message = f'PaymentTransaction with ID = {payment_transaction_id} not found'
+                logger.error(f'[{self.core_obj} = {payment_transaction_id}] {message}')
+                return HTTPStatus.NOT_FOUND, None, message
+
+        except ScanError as e:
+            message = f'Failed to scan payment_transaction: {str(e)}'
+            logger.error(f'[{self.core_obj}={payment_transaction_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except TableDoesNotExist as db_error:
+            message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
+            logger.error(f'[{self.core_obj}={payment_transaction_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
+        except PynamoDBConnectionError as db_error:
+            message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
+            logger.error(f'[{self.core_obj}={payment_transaction_id}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+        else:
+            logger.info(f'[{self.core_obj}={payment_transaction_id}] Fetch PaymentTransaction by ID successful')
+            return HTTPStatus.OK, payment_transaction_entries[0], None
+
     def update_payment_transaction(
         self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn
     ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
@@ -199,11 +250,15 @@ class PaymentTransactionRepository:
         new_version = current_version + 1
 
         data = RepositoryUtils.load_data(pydantic_schema_in=payment_transaction_in, exclude_unset=True)
+        registration_data = data.pop('registrationData', {}) or {}
+        merged_data = {**data, **registration_data}
+
         has_update, updated_data = RepositoryUtils.get_update(
-            old_data=RepositoryUtils.db_model_to_dict(payment_transaction), new_data=data
+            old_data=RepositoryUtils.db_model_to_dict(payment_transaction), new_data=merged_data
         )
         if not has_update:
             return HTTPStatus.OK, payment_transaction, 'no update'
+
         try:
             with TransactWrite(connection=self.conn) as transaction:
                 # Update Entry -----------------------------------------------------------------------------
