@@ -1,14 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import (
-    BaseModel,
-    EmailStr,
-    Field,
-    HttpUrl,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 
 
 class SocialMedia(BaseModel):
@@ -78,15 +71,14 @@ class PyconRegistration(BaseModel):
     )
     imageId: Optional[str] = Field(None, title='Image ID Object Key')
 
-    @field_validator('firstName', 'lastName', 'nickname')
-    @classmethod
+    @validator('firstName', 'lastName', 'nickname')
     def normalize_names(cls, v: str) -> str:
         if not v.strip():
             raise ValueError('Name fields cannot be empty')
         return ' '.join(word.capitalize() for word in v.split())
 
-    @model_validator(mode='after')
-    def check_shirt_availability(self):
-        if self.availTShirt and (self.shirtType is None or self.shirtSize is None):
+    @root_validator(pre='false')
+    def check_shirt_availability(cls, values):
+        if values.get('availTShirt') and (values.get('shirtType') is None or values.get('shirtSize') is None):
             raise ValueError('If availTShirt is True, then shirtType and shirtSize must be provided.')
-        return self
+        return values
