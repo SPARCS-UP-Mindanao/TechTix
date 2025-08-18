@@ -314,7 +314,7 @@ def get_presigned_url(
     include_in_schema=False,
 )
 def get_download_url(
-    object_key: str = Query(None, title='Object key', alias=CommonConstants.OBJECT_KEY),
+    object_key: str = Query(..., title='Object key', alias=CommonConstants.OBJECT_KEY),
 ):
     """Get download URL
 
