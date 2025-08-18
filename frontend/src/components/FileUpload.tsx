@@ -1,4 +1,5 @@
 import { forwardRef, useMemo } from 'react';
+import { UploadType } from '@/model/events';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { CardContainer, CardFooter, CardHeader } from './Card';
 import ImageViewer from './ImageViewer';
@@ -9,7 +10,7 @@ import Progress from './Progress';
 interface FileUploadProps {
   name?: string;
   eventId: string;
-  uploadType: string;
+  uploadType: UploadType;
   value: string;
   onChange: (value: string) => void;
 }
@@ -36,7 +37,7 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ name, eventI
   return (
     <CardContainer className="p-0 border-none shadow-none">
       <CardHeader className="items-center">
-        <ImageViewer objectKey={value} className="h-40 w-min object-cover" alt="" />
+        <ImageViewer eventId={eventId} objectKey={value} className="h-40 w-min object-cover" alt="" />
       </CardHeader>
       <CardFooter className="flex flex-wrap px-0 pb-2 gap-2 items-center w-full">
         <Input id={`upload-custom-${uploadType}`} ref={ref} onChange={onFileChange} type="file" accept="image/*" className="hidden" />

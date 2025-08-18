@@ -1,9 +1,10 @@
 import { ChangeEvent, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { getPresignedUrl } from '@/api/events';
+import { createApi } from '@/api/utils/createApi';
+import { UploadType } from '@/model/events';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
-import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 const MAX_FILE_UPLOAD_SIZE = 1e7; // 10MB
 
@@ -26,15 +27,15 @@ const isExtensionAllowed = (fileName: string) => {
   }
 };
 
-export const useFileUpload = (eventId: string, uploadType: string, onChange: (key: string) => void, name?: string) => {
+export const useFileUpload = (eventId: string, uploadType: UploadType, onChange: (key: string) => void, name?: string) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
   const formContext = useFormContext();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const getPresignedUrlTrigger = async (entryId: string, fileName: string, fileType: string) => {
-    const response = await api.execute(getPresignedUrl(entryId, fileName, fileType));
+  const getPresignedUrlTrigger = async (entryId: string, file: File, uploadType: UploadType) => {
+    const response = await api.execute(getPresignedUrl(entryId, file.name, uploadType));
     return response.data;
   };
 
@@ -77,33 +78,29 @@ export const useFileUpload = (eventId: string, uploadType: string, onChange: (ke
       return;
     }
 
-    setIsUploading(true);
-    await uploadFile(selectedFileObj);
-    setIsUploading(false);
-    setUploadProgress(0);
+    try {
+      setIsUploading(true);
+      await uploadFile(selectedFileObj);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const uploadFile = async (file: File) => {
-    const s3Client = new S3Client({
-      region: 'ap-southeast-1',
-      credentials: {
-        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
-        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!
-      }
+    const { uploadLink, objectKey } = await getPresignedUrlTrigger(eventId, file, uploadType);
+
+    const uploadApi = createApi({
+      method: 'put',
+      url: uploadLink,
+      headers: { 'Content-Type': file.type },
+      body: file
     });
 
-    const { objectKey } = await getPresignedUrlTrigger(eventId, file.name, uploadType);
-
-    // Function to upload a file to S3
-    const uploadParams: PutObjectCommandInput = {
-      Bucket: import.meta.env.VITE_S3_BUCKET!,
-      Key: objectKey,
-      Body: file
-    };
-
     try {
-      const command = new PutObjectCommand(uploadParams);
-      await s3Client.send(command);
+      await api.execute(uploadApi);
       setUploadProgress(100);
 
       successToast({
@@ -113,6 +110,7 @@ export const useFileUpload = (eventId: string, uploadType: string, onChange: (ke
 
       onChange(objectKey);
     } catch (err) {
+      setIsUploading(false);
       console.error('Error', err);
       errorToast({
         title: 'File Upload Failed',
