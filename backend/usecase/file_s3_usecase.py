@@ -1,4 +1,5 @@
 import os
+from http import HTTPStatus
 from typing import Tuple
 
 from boto3 import client as boto3_client
@@ -65,7 +66,9 @@ class FileS3Usecase:
             return FileDownloadOut(**url_data)
         except ClientError as e:
             logger.error('Error creating presigned url: %s', e)
-            return None
+            return JSONResponse(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR, content={'message': 'Error fetching download url'}
+            )
 
     def upload_file(self, file_name: str, object_name: str = None, verbose: bool = True) -> bool:
         # If S3 object_name was not specified, use file_name

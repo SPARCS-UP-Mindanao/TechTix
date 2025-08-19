@@ -1,6 +1,6 @@
 import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventFAQs, EventStatus, FAQ } from '@/model/events';
+import { Event, EventFAQs, EventStatus, FAQ, UploadType } from '@/model/events';
 
 export interface TicketType {
   name: string;
@@ -62,6 +62,11 @@ export type OptionalEvent = Partial<Event>;
 
 export interface PresignedUrl {
   uploadLink: string;
+  objectKey: string;
+}
+
+export interface DownloadUrl {
+  downloadLink: string;
   objectKey: string;
 }
 
@@ -161,12 +166,19 @@ export const deleteEvent = (entryId: string) =>
     output: mapEventDtoToEvent
   });
 
-export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
+export const getPresignedUrl = (entryId: string, fileName: string, uploadType: UploadType, headers?: object) =>
   createApi<PresignedUrl>({
     method: 'put',
-    authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
+    headers,
     body: { fileName }
+  });
+
+export const getDownloadUrl = (entryId: string, objectKey: string) =>
+  createApi<DownloadUrl>({
+    method: 'get',
+    url: `/events/${entryId}/download`,
+    queryParams: { objectKey }
   });
 
 export const getEventRegCountStatus = (entryId: string) =>

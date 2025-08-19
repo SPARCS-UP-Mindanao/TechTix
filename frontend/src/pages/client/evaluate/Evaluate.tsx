@@ -83,7 +83,7 @@ const Evaluate = () => {
             />
           </main>
 
-          {currentStep.id === 'ClaimCertificate' && <ClaimCertificate />}
+          {currentStep.id === 'ClaimCertificate' && <ClaimCertificate eventId={eventId!} />}
         </FormProvider>
       </div>
     </section>
