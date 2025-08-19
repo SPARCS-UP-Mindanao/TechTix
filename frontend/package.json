@@ -44,6 +44,7 @@
     "@tiptap/pm": "^2.1.13",
     "@tiptap/react": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
+    "aws-amplify": "^6.15.5",
     "axios": "^1.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -64,10 +65,12 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-cli": "^1.8.0",
     "@tanstack/eslint-plugin-query": "^4.36.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.1",
     "@types/node": "^20.8.2",
-    "@types/react": "^18.2.15",
+    "@types/react": "^18.3.23",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
@@ -79,7 +82,7 @@
     "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.0.2",
+    "typescript": "^5.9.2",
     "vite": "^4.4.5",
     "vite-plugin-pwa": "^0.20.5"
   }

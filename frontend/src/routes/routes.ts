@@ -4,7 +4,7 @@ import ErrorPage from '@/components/ErrorPage';
 export const routes = createBrowserRouter([
   {
     path: '',
-    lazy: () => import('@/pages/landingPage/HomePage')
+    lazy: () => import('@/pages/landingPage/Auth')
   },
   {
     path: '/events',
