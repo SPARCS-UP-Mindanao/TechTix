@@ -79,7 +79,6 @@ class PyconRegistration(BaseModel):
     )
     imageId: Optional[str] = Field(None, title='Image ID Object Key')
 
-
     @validator('firstName', 'lastName', 'nickname')
     def normalize_names(cls, v: str) -> str:
         if not v.strip():
