@@ -1,14 +1,10 @@
+import os
 from enum import Enum
 from typing import Optional
 
-import os
-from datetime import datetime
-from pydantic import BaseModel, EmailStr, Extra, Field
-from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
-from pynamodb.indexes import AllProjection, GlobalSecondaryIndex, LocalSecondaryIndex
-from pynamodb.models import Model
-
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
+from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
+from pynamodb.models import Model
 
 
 class SocialMedia(BaseModel):
@@ -91,12 +87,13 @@ class PyconRegistration(BaseModel):
             raise ValueError('If availTShirt is True, then shirtType and shirtSize must be provided.')
         return values
 
+
 class Registration(Model):
     class Meta:
         table_name = os.getenv('REGISTRATIONS_TABLE')
         region = os.getenv('REGION')
         billing_mode = 'PAY_PER_REQUEST'
-    
+
     registrationId = UnicodeAttribute(null=False)
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
@@ -105,23 +102,23 @@ class Registration(Model):
     lastName = UnicodeAttribute(null=True)
     nickname = UnicodeAttribute(null=True)
     pronouns = UnicodeAttribute(null=True)
-    
+
     email = UnicodeAttribute(null=True)
     contactNumber = UnicodeAttribute(null=True)
 
     organization = UnicodeAttribute(null=True)
     jobTitle = UnicodeAttribute(null=True)
 
-    socials=UnicodeAttribute(null=True)
+    socials = UnicodeAttribute(null=True)
 
     ticketType = UnicodeAttribute(null=True)
-    sprintDay=UnicodeAttribute(null=True)
-    availTShirt=UnicodeAttribute(null=True)
-    shirtType=UnicodeAttribute(null=True)
-    shirtSize=UnicodeAttribute(null=True)
+    sprintDay = UnicodeAttribute(null=True)
+    availTShirt = UnicodeAttribute(null=True)
+    shirtType = UnicodeAttribute(null=True)
+    shirtSize = UnicodeAttribute(null=True)
 
-    communityInvolvement=UnicodeAttribute(null=True)
-    futureVolunteer=UnicodeAttribute(null=True)
+    communityInvolvement = UnicodeAttribute(null=True)
+    futureVolunteer = UnicodeAttribute(null=True)
 
     dietaryRestrictions = UnicodeAttribute(null=True)
     accessibilityNeeds = UnicodeAttribute(null=True)
@@ -135,15 +132,15 @@ class Registration(Model):
     referenceNumber = UnicodeAttribute(null=True)
     amountPaid = NumberAttribute(null=True)
     transactionId = UnicodeAttribute(null=True)
-    
+
     registrationEmailSent = BooleanAttribute(default=False)
     confirmationEmailSent = BooleanAttribute(default=False)
 
     createDate = UnicodeAttribute(null=False)
     updateDate = UnicodeAttribute(null=False)
 
-class PyconRegistrationIn(PyconRegistration):
 
+class PyconRegistrationIn(PyconRegistration):
     gcashPayment = UnicodeAttribute(null=True)
     referenceNumber = UnicodeAttribute(null=True)
     amountPaid = NumberAttribute(null=True)
