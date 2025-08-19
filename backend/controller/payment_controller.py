@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Body, Path, Query
 from fastapi.responses import JSONResponse
 from model.common import Message
 from model.payments.payments import PaymentTransactionIn, PaymentTransactionOut
@@ -54,6 +54,28 @@ def get_pending_payment_transactions():
     """
     payment_uc = PaymentUsecase()
     return payment_uc.query_pending_payment_transactions()
+
+
+@payment_router.put(
+    '/{paymentTransactionId}',
+    response_model=PaymentTransactionOut,
+    responses={
+        400: {'model': Message, 'description': 'Bad request'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Update payment transaction',
+)
+def update_payment_transaction(
+    payment_transaction_id: str = Path(
+        ..., description='The ID of the payment transaction', alias='paymentTransactionId'
+    ),
+    payment_transaction: PaymentTransactionIn = Body(..., description='The payment transaction data'),
+):
+    """
+    Update payment transaction
+    """
+    payment_uc = PaymentUsecase()
+    return payment_uc.update_payment_transaction(payment_transaction_id, payment_transaction)
 
 
 @payment_router.get(

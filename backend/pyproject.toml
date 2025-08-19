@@ -17,11 +17,11 @@ dependencies = [
     "python-dateutil==2.9.0.post0",
     "requests==2.32.3",
     "pytz==2024.2",
-    "commitizen>=4.8.3",
 ]
 
 [dependency-groups]
 dev = [
+    "commitizen>=4.8.3",
     "boto3==1.40.11",
     "python-dotenv==1.0.0",
     "uvicorn==0.22.0",
