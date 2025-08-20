@@ -61,7 +61,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
           variant="ghost"
           disabled={disabled}
         >
-          {iconName && <Icon name={iconName} className={cn('flex-shrink-0', isSidebarOpen && 'mr-3')} />}
+          {iconName && <Icon name={iconName} className={cn('shrink-0', isSidebarOpen && 'mr-3')} />}
           <p className={cn(!isSidebarOpen && 'hidden')}>{optionName}</p>
         </Button>
       </li>
@@ -87,7 +87,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
     );
 
     return (
-      <nav className="flex flex-shrink-0 justify-center items-center p-2 bg-primary-700">
+      <nav className="flex shrink-0 justify-center items-center p-2 bg-primary-700">
         <Button
           variant="ghost"
           className="text-primary-foreground absolute left-2"
@@ -106,7 +106,7 @@ const AdminSideBar: FC<AdminSideBarProps> = ({
 
   return (
     <CollapsibleSidebar
-      className="max-h-screen h-full left-0 p-4 bg-primary-700 flex-shrink-0 relative z-0 mr-[-25px]"
+      className="max-h-screen h-full left-0 p-4 bg-primary-700 shrink-0 relative z-0 mr-[-25px]"
       open={isSidebarOpen}
       openSidebarWidth={openSidebarWidth}
       collapsedSidebarWidth={collapsedSidebarWidth}
