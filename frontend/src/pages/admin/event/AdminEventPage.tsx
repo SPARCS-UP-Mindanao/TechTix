@@ -2,6 +2,7 @@ import { Outlet as AdminEventRoute, useParams } from 'react-router-dom';
 import { TECHTIX_72 } from '@/assets/techtix';
 import { getAdminEvent } from '@/api/events';
 import { useApiQuery } from '@/hooks/useApi';
+import AdminEventContextProvider from '@/context/AdminEventContext';
 
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
@@ -27,12 +28,14 @@ const AdminEventPageContent = () => {
     );
   }
 
-  const event = { ...response.data, refetchEvent };
+  const event = response.data;
 
   return (
     <div>
       <h4 className="mb-8">{event.name}</h4>
-      <AdminEventRoute context={event} />
+      <AdminEventContextProvider event={event} refetchEvent={refetchEvent}>
+        <AdminEventRoute />
+      </AdminEventContextProvider>
     </div>
   );
 };

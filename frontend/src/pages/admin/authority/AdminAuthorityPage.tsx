@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Navigate, useOutletContext } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
@@ -7,15 +7,11 @@ import { FormLabel, FormItem, FormError } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import { getAllAdmins } from '@/api/admin';
-import { CurrentUser } from '@/model/auth';
 import { useApiQuery } from '@/hooks/useApi';
+import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
 import { useAdminForm } from '@/hooks/useInviteAdminForm';
 import { useMetaData } from '@/hooks/useMetaData';
 import { adminColumns } from './AdminColumns';
-
-interface AdminAuthorityContext {
-  userGroups: CurrentUser['cognito:groups'];
-}
 
 interface InviteAdmintModalProps {
   disabled: boolean;
@@ -117,11 +113,11 @@ const AdminAuthority: FC = () => {
   const setMetaData = useMetaData();
   setMetaData({});
 
-  const { userGroups } = useOutletContext<AdminAuthorityContext>();
+  const auth = useCurrentAdminUser();
 
-  const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins(), { active: !!userGroups });
+  const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins(), { active: !!auth?.user?.isSuperAdmin });
 
-  if (userGroups && !userGroups.includes('super_admin')) {
+  if (!auth?.user?.isSuperAdmin) {
     return <Navigate to="/admin/events" />;
   }
 

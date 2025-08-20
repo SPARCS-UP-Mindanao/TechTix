@@ -1,6 +1,7 @@
+import { fetchAuthSession } from 'aws-amplify/auth';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { getCookie } from 'typescript-cookie';
-import { refreshOnIntercept } from '@/utils/refreshToken';
+// import { refreshOnIntercept } from '@/utils/refreshToken';
 import { QueryKey } from '@tanstack/react-query';
 
 interface ErrorStringResponse {
@@ -58,7 +59,12 @@ export function createApi<D, T = D>(
 
   const api = axios.create();
   const queryFn = async (signal?: AbortSignal) => {
-    const accessToken = getCookie('_auth')!;
+    const test = await fetchAuthSession();
+    const accessToken = test?.tokens?.accessToken;
+    // const accessToken = (await fetchAuthSession())?.tokens?.accessToken;
+
+    console.log({ test, accessToken });
+
     try {
       const response = await api({
         baseURL,
@@ -98,7 +104,8 @@ export function createApi<D, T = D>(
     }
   };
 
-  authorize && refreshOnIntercept(api);
+  // TODO: Should fix?
+  // authorize && refreshOnIntercept(api);
 
   return {
     queryKey: createQueryKey(url, body ?? queryParams) as unknown as QueryKey,

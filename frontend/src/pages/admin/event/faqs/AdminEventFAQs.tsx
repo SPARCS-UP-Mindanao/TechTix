@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { FormProvider, useFormState } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import BlockNavigateModal from '@/components/BlockNavigateModal/BlockNavigateModal';
@@ -8,13 +7,14 @@ import { FormError, FormItem, FormLabel } from '@/components/Form';
 import Switch from '@/components/Switch';
 import { Textarea } from '@/components/TextArea';
 import { getFAQs } from '@/api/events';
-import { Event, EventFAQs } from '@/model/events';
+import { EventFAQs } from '@/model/events';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
 import { useFAQsForm } from '@/hooks/useFAQsForm';
 
 const AdminFAQs = () => {
-  const { eventId } = useOutletContext<Event>();
-  const { data: response, isFetching } = useApiQuery(getFAQs(eventId!));
+  const { eventId } = useAdminEvent();
+  const { data: response, isFetching } = useApiQuery(getFAQs(eventId));
 
   if (isFetching) {
     // TODO: Add skeleton

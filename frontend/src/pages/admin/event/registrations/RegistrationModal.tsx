@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { FormProvider, useFormState } from 'react-hook-form';
 import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
@@ -12,6 +11,7 @@ import { Event } from '@/model/events';
 import { PreRegistration } from '@/model/preregistrations';
 import { Registration } from '@/model/registrations';
 import { formatMoney } from '@/utils/functions';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useEditRegistrationForm } from './useEditRegistrationForm';
 
 interface Props {
@@ -22,7 +22,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
-  const { paidEvent, eventId, status } = useOutletContext<Event>();
+  const { paidEvent, eventId, status } = useAdminEvent();
 
   const { form, onUpdate, onDelete, onApprove, onReject } = useEditRegistrationForm(eventId, registrationInfo);
   const { isSubmitting, isDirty } = useFormState({ control: form.control });

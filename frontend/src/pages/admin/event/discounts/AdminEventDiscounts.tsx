@@ -1,5 +1,4 @@
 import { FC, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
@@ -10,6 +9,7 @@ import Tooltip from '@/components/Tooltip';
 import { getAllDiscounts } from '@/api/discounts';
 import { Discount, OrganizationDiscount, enabledDiscountStatus } from '@/model/discount';
 import { Event, EventStatus } from '@/model/events';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
 import { useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
@@ -208,7 +208,7 @@ const DiscountTables = ({ organizations, status, isPaidEvent, isFetching }: Disc
 };
 
 const AdminEventDiscounts: FC = () => {
-  const { eventId, paidEvent, status } = useOutletContext<Event>();
+  const { eventId, paidEvent, status } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId));
 
   const discountsDisabled = isFetching || !paidEvent || !enabledDiscountStatus.includes(status);

@@ -1,14 +1,13 @@
-import { useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { deletePreRegistration, updatePreRegistration } from '@/api/preregistrations';
 import { deleteRegistration, updateRegistration } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { EventWithRefetchEvent } from '@/model/events';
 import { PreRegistration, mapPreRegistrationToFormValues, mapUpdatePreregistrationValues } from '@/model/preregistrations';
 import { PreRegistrationUpdate } from '@/model/preregistrations';
 import { Registration, mapRegistrationToFormValues, mapUpdateRegistrationValues } from '@/model/registrations';
 import { isValidContactNumber } from '@/utils/functions';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,7 +50,7 @@ export type EditRegistrationFormValues = z.infer<typeof EditRegistrationFormSche
 
 export const useEditRegistrationForm = (eventId: string, registrationInfo: Registration | PreRegistration) => {
   const api = useApi();
-  const { refetchEvent } = useOutletContext<EventWithRefetchEvent>();
+  const { refetchEvent } = useAdminEvent();
   const { errorToast, successToast } = useNotifyToast();
 
   const registrationId = registrationInfo.type === 'registration' ? registrationInfo.registrationId : registrationInfo.preRegistrationId;

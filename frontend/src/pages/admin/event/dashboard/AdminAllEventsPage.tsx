@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from 'typescript-cookie';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion';
 import { getAdminEvents } from '@/api/events';
 import { Event } from '@/model/events';
@@ -11,8 +10,7 @@ import EventCard from '../../../../components/EventCard/EventCard';
 import AdminAllEventsPageSkeleton from './AdminAllEventsPageSkeleton';
 
 const AdminAllEvents = () => {
-  const adminId = getCookie('_auth_user');
-  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents(adminId!));
+  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents('adminId'));
 
   if (isFetching) {
     return <AdminAllEventsPageSkeleton />;
@@ -29,6 +27,8 @@ const AdminAllEvents = () => {
 
   const events: Event[] = response.data;
   return <DashboardContent events={events} refetch={refetch} />;
+
+  // return <h1>test</h1>
 };
 
 interface DashboardProps {
