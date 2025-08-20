@@ -150,3 +150,6 @@ class PyconRegistrationIn(PyconRegistration):
     referenceNumber = UnicodeAttribute(null=True)
     amountPaid = NumberAttribute(null=True)
     transactionId = UnicodeAttribute(null=True)
+
+    class Config:
+        arbitrary_types_allowed = True
