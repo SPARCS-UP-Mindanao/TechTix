@@ -143,7 +143,7 @@ const LoginForm = () => {
                   <Input type={showPassword ? 'text' : 'password'} {...field} className="pr-8" />
                   <Icon
                     name={showPassword ? 'EyeOff' : 'Eye'}
-                    className="ml-[-2rem] cursor-pointer hover:text-muted-foreground transition-colors"
+                    className="-ml-8 cursor-pointer hover:text-muted-foreground transition-colors"
                     onClick={onShowPassword}
                   />
                 </div>

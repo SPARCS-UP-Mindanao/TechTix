@@ -47,7 +47,7 @@ export const DatePicker = ({ value, className, includeTime = false, onChange }: 
         <Button
           variant="outline"
           className={cn(
-            'w-full justify-start text-left font-normal text-foreground border-border bg-input hover:bg-accent hover:text-accent-foreground hover:border-border file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+            'w-full justify-start text-left font-normal text-foreground border-border bg-input hover:bg-accent hover:text-accent-foreground hover:border-border file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring',
             className
           )}
         >

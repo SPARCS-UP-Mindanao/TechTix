@@ -115,7 +115,7 @@ const EventCard: FC<EventCardProps> = ({ event, className = '', isDeleteEnabled 
       <CardContainer
         key={event.eventId}
         className={cn(
-          'group overflow-hidden w-[245px] h-[220px] flex flex-col flex-shrink-0 shadow-lg hover:cursor-pointer',
+          'group overflow-hidden w-[245px] h-[220px] flex flex-col shrink-0 shadow-lg hover:cursor-pointer',
           isDeletingEvent && 'pointer-events-none',
           className
         )}

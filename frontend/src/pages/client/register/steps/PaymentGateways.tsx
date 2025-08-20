@@ -24,7 +24,7 @@ const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, imgSrc, paymentCh
           selected && 'bg-transparent hover:bg-transparent border border-primary',
           paymentChannelCode === 'BPI' && 'pl-0'
         )}
-        variant={'outline'}
+        variant="outline"
         onClick={onClick}
       >
         <div className="flex flex-row justify-start items-center w-32">

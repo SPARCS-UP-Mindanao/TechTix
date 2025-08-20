@@ -31,7 +31,7 @@ const ClaimCertificate: FC<Props> = ({ eventId }) => {
   }
 
   if (!certificateImgDataURL) {
-    <p className="font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500">
+    <p className="font-subjectivity font-bold text-transparent gradient-text bg-linear-to-br from-secondary-pink-400 to-primary-500">
       Please refresh the page
     </p>;
   }

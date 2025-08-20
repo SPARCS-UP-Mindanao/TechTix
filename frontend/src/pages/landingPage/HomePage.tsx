@@ -29,7 +29,7 @@ const Hero = () => {
           <img
             src={Robot}
             alt="Robot"
-            className="absolute bottom-[-1rem] md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-[90%] md:pr-32"
+            className="absolute -bottom-4 md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-[90%] md:pr-32"
           />
         </div>
         <div className="pb-10 row-span-3 md:col-span-4 flex flex-col justify-start md:justify-center gap-10 items-center md:items-start md:gap-20 w-full z-20">
@@ -57,7 +57,7 @@ const MakeYourOwnEvent = () => {
         <img
           src={MakeEvent}
           alt="Make Event"
-          className="absolute top-[-4rem] md:top-[-6rem] left-1/2 transform -translate-x-1/2 md:-translate-x-0 md:left-0 w-full max-w-sm md:max-w-none"
+          className="absolute -top-16 md:-top-24 left-1/2 transform -translate-x-1/2 md:-translate-x-0 md:left-0 w-full max-w-sm md:max-w-none"
         />
       </div>
       <div className="flex flex-col text-primary-foreground text-center items-center md:text-left md:items-start gap-4 w-full md:w-fit">
@@ -93,7 +93,7 @@ const HomePageComponent = () => {
       <Header />
       <Hero />
       <section className="bg-white px-5 py-20 flex flex-col items-center">
-        <h1 className="text-center !text-primary-700">Upcoming Events</h1>
+        <h1 className="text-center text-primary-700!">Upcoming Events</h1>
         <EventCardList allEvents={response?.data} isFetching={isFetching} isLoadAll={false} initialCount={initCount} />
       </section>
       <MakeYourOwnEvent />

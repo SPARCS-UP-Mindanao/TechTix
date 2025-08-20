@@ -33,7 +33,7 @@ const ErrorPage = <T,>({ error, customErrors, errorTitle, message }: Props<T>) =
       <div className="flex flex-col items-center h-full" style={{ paddingTop: '15rem' }}>
         <div
           className={cn(
-            'font-subjectivity font-bold text-transparent gradient-text bg-gradient-to-br from-secondary-pink-400 to-primary-500',
+            'font-subjectivity font-bold text-transparent gradient-text bg-linear-to-br from-secondary-pink-400 to-primary-500',
             errorTitle ? 'text-5xl' : 'text-8xl'
           )}
         >

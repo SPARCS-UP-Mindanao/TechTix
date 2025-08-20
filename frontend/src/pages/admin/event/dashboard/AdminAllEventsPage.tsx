@@ -74,7 +74,7 @@ const DashboardContent: FC<DashboardProps> = ({ events, refetch }) => {
           <AccordionItem value={category.id} key={category.id} disabled={!category.events.length}>
             <AccordionTrigger className={cn(category.events.length && 'font-bold')}>
               <div className="inline-flex space-x-1">
-                <p className={cn('text-xl hover:!no-underline', category.events.length && 'text-primary-400')}>{getEventCount(category.events)}</p>
+                <p className={cn('text-xl hover:no-underline!', category.events.length && 'text-primary-400')}>{getEventCount(category.events)}</p>
                 <p className={cn('text-xl')}>{category.name}</p>
               </div>
             </AccordionTrigger>
