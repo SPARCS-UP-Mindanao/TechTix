@@ -1,5 +1,4 @@
 import { IconName } from '@/components/Icon';
-import { UserGroup } from '@/model/auth';
 
 export interface AdminRouteConfigProps {
   optionName: string;
@@ -14,11 +13,11 @@ export interface AdminRouteConfigProps {
 
 interface Props {
   eventId?: string;
-  userGroups?: UserGroup[];
+  isSuperAdmin: boolean;
   setLogoutOpen: (open: boolean) => void;
 }
 
-export const getAdminRouteConfig = ({ eventId, userGroups, setLogoutOpen }: Props): AdminRouteConfigProps[] => [
+export const getAdminRouteConfig = ({ eventId, isSuperAdmin = false, setLogoutOpen }: Props): AdminRouteConfigProps[] => [
   {
     optionName: 'Dashboard',
     iconName: 'Home',
@@ -70,7 +69,7 @@ export const getAdminRouteConfig = ({ eventId, userGroups, setLogoutOpen }: Prop
   {
     optionName: 'Admins',
     iconName: 'Users',
-    visible: userGroups && userGroups.includes('super_admin'),
+    visible: isSuperAdmin,
     route: `/admin/authority`,
     location: 'lower'
   },

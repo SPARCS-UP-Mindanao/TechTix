@@ -1,7 +1,7 @@
 {
-  "name": "sparcs-certificate",
+  "name": "durianpy-techtix",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -52,7 +52,6 @@
     "lucide-react": "^0.291.0",
     "moment": "^2.29.4",
     "react": "^18.2.0",
-    "react-auth-kit": "^2.12.7",
     "react-day-picker": "^8.9.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",

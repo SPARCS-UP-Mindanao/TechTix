@@ -6,37 +6,43 @@ import { createQueryKey } from '@/api/utils/createApi';
 import { CurrentUser, getUserAttributes } from '@/model/auth';
 import { useQuery } from '@tanstack/react-query';
 
-type AuthContext = {
+type AdminAuthContext = {
   user: CurrentUser;
   refetchUser: () => void;
 } | null;
 
-export const AuthContext = React.createContext<AuthContext>(null);
+export const AdminAuthContext = React.createContext<AdminAuthContext>(null);
 
-const currentUser = null;
-const AuthContextProvider = () => {
+//TODO: Fix this
+const AdminAuthContextProvider = () => {
   const { data, isFetching, refetch } = useQuery({
-    queryKey: createQueryKey('getCurrentUser'),
-    // queryFn: async () => await fetchAuthSession(),
-    queryFn: async () => ({
-      user: true
-    }),
+    queryKey: createQueryKey('getCurrentAdminUser'),
+    queryFn: async () => await fetchAuthSession(),
+    // queryFn: async () => ({
+    //   user: true
+    // }),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false
   });
 
-  // const currentUser = getUserAttributes(data);
+  const currentUser = getUserAttributes(data);
+  // const currentUser = {
+  //   id: '1',
+  //   email: '2@gmal.com',
+  //   groups: ['admin'],
+  //   isAdmin: true
+  // };
 
   if (isFetching) {
     return <Skeleton className="w-full h-full rounded-none" />;
   }
 
   return (
-    <AuthContext.Provider value={{ user: currentUser, refetchUser: refetch }}>
+    <AdminAuthContext.Provider value={{ user: currentUser, refetchUser: refetch }}>
       <Outlet />
-    </AuthContext.Provider>
+    </AdminAuthContext.Provider>
   );
 };
 
-export default AuthContextProvider;
+export default AdminAuthContextProvider;

@@ -1,18 +1,17 @@
 import { FC } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import Tooltip from '@/components/Tooltip';
 import { getEventPreRegistrations } from '@/api/preregistrations';
 import { getEventRegistrations } from '@/api/registrations';
-import { Event } from '@/model/events';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
 import { useGetCsv } from '@/hooks/useGetCsv';
 import { getRegistrationColumns } from './RegistrationsColumns';
 
 const AdminEventRegistrations: FC = () => {
-  const { isApprovalFlow, status, eventId } = useOutletContext<Event>();
+  const { isApprovalFlow, status, eventId } = useAdminEvent();
   const { getCsv, isGettingCsv } = useGetCsv(eventId);
 
   const getDefaultValue = () => {
@@ -53,7 +52,7 @@ const AdminEventRegistrations: FC = () => {
 };
 
 const Registrations = () => {
-  const { eventId } = useOutletContext<Event>();
+  const { eventId } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getEventRegistrations(eventId));
   return (
     <>
@@ -69,7 +68,7 @@ const Registrations = () => {
 };
 
 const PreRegistrations = () => {
-  const { eventId } = useOutletContext<Event>();
+  const { eventId } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getEventPreRegistrations(eventId));
   return (
     <>
