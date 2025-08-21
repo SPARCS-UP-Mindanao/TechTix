@@ -71,13 +71,46 @@ provider:
       !ImportValue AppClientId-${self:custom.stage}
     SPARCS_GMAIL: sparcsup@gmail.com
   logs:
-    restApi: true
+    restApi:
+      role: !GetAtt ApiGatewayCloudWatchRole.Arn
+
 
 resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
   - ${file(resources/s3.yml)}
   - ${file(resources/sqs.yml)}
+  - Resources:
+      ApiGatewayCloudWatchRole:
+        Type: AWS::IAM::Role
+        Properties:
+          RoleName: serverlessApiGatewayCloudWatchRole-${self:custom.stage}
+          AssumeRolePolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Principal:
+                Service: apigateway.amazonaws.com
+              Action: sts:AssumeRole
+          Policies:
+            - PolicyName: AllowCloudWatchLogs
+              PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:DescribeLogGroups
+                    - logs:DescribeLogStreams
+                    - logs:PutLogEvents
+                  Resource: "*"
+    Outputs:
+      ApiGatewayCloudWatchRoleArn:
+        Value: !GetAtt ApiGatewayCloudWatchRole.Arn
+        Export:
+          Name: ApiGatewayCloudWatchRole-${self:custom.stage}
+
 
 functions:
   - ${file(resources/api.yml)}
