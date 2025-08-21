@@ -84,7 +84,7 @@ resources:
       ApiGatewayCloudWatchRole:
         Type: AWS::IAM::Role
         Properties:
-          RoleName: serverlessApiGatewayCloudWatchRole-${self:custom.stage}
+          RoleName: serverlessApiGatewayCloudWatchRole-${self:custom.serviceName}-${self:custom.stage}
           AssumeRolePolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -109,7 +109,7 @@ resources:
       ApiGatewayCloudWatchRoleArn:
         Value: !GetAtt ApiGatewayCloudWatchRole.Arn
         Export:
-          Name: ApiGatewayCloudWatchRole-${self:custom.stage}
+          Name: ApiGatewayCloudWatchRole-${self:custom.serviceName}-${self:custom.stage}
 
 
 functions:
