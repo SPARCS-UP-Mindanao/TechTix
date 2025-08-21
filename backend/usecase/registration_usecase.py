@@ -11,6 +11,10 @@ from model.events.event import Event
 from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
+from model.pycon_registrations.pycon_registration import (
+    PyconRegistrationIn,
+    PyconRegistrationOut,
+)
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
     RegistrationIn,
@@ -50,7 +54,7 @@ class RegistrationUsecase:
         self.__konfhub_gateway = KonfHubGateway()
         self.__payment_transaction_repository = PaymentTransactionRepository()
 
-    def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
+    def create_registration(self, registration_in: PyconRegistrationIn) -> Union[JSONResponse, PyconRegistrationOut]:
         """Creates a new registration entry.
 
         :param registration_in: The data for creating the new registration.
@@ -118,7 +122,7 @@ class RegistrationUsecase:
 
         ticket_type_entry = None
         if event.hasMultipleTicketTypes:
-            ticket_type_id = registration_in.ticketTypeId
+            ticket_type_id = registration_in.ticketType
             if not ticket_type_id:
                 return JSONResponse(
                     status_code=HTTPStatus.BAD_REQUEST,
@@ -170,17 +174,17 @@ class RegistrationUsecase:
                 return JSONResponse(status_code=status, content={'message': message})
 
         # Capture registration to KonfHub
-        if event.konfhubId:
-            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-            if konfhub_response != HTTPStatus.OK:
-                return konfhub_response
+        # if event.konfhubId:
+        #     konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
+        #     if konfhub_response != HTTPStatus.OK:
+        #         return konfhub_response
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 
         if not registration.registrationEmailSent:
             self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
 
-        registration_out = RegistrationOut(**registration_data)
+        registration_out = PyconRegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 
     def create_registration_approval_flow(
@@ -445,7 +449,7 @@ class RegistrationUsecase:
 
         return None
 
-    def collect_pre_signed_url(self, registration: RegistrationOut):
+    def collect_pre_signed_url(self, registration: PyconRegistrationOut):
         """Collects the pre-signed URL for the GCash payment image.
 
         :param registration: The registration entry to be updated.
@@ -461,8 +465,8 @@ class RegistrationUsecase:
 
         return registration
 
-    def register_konfhub(self, registration_in: RegistrationIn, event_id: str, event: Event):
-        ticket_type_id = registration_in.ticketTypeId
+    def register_konfhub(self, registration_in: PyconRegistrationIn, event_id: str, event: Event):
+        ticket_type_id = registration_in.ticketType
         if not ticket_type_id:
             _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
             ticket_types_list = [ticket_type.konfhubId for ticket_type in ticket_types_entries or []]
@@ -473,7 +477,7 @@ class RegistrationUsecase:
             name=f'{registration_in.firstName} {registration_in.lastName}',
             email_id=registration_in.email,
             quantity=1,
-            designation=registration_in.title,
+            designation=registration_in.jobTitle,
             organisation=registration_in.organization,
             t_shirt_size=registration_in.shirtSize,
             phone_number=phone_number_with_no_zero,

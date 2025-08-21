@@ -6,6 +6,10 @@ from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.file_uploads.file_upload import FileDownloadOut
+from model.pycon_registrations.pycon_registration import (
+    PyconRegistrationIn,
+    PyconRegistrationOut,
+)
 from model.registrations.registration import (
     RegistrationIn,
     RegistrationOut,
@@ -216,3 +220,15 @@ def get_registration_csv(
     """
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registration_csv(event_id=event_id)
+
+
+@registration_router.post('/pycon/register', response_model=PyconRegistrationOut, summary='Register for pycon davao')
+def register_pycon(
+    registration_in: PyconRegistrationIn,
+    # current_user: AccessUser = Depends(get_current_user),
+):
+    """
+    Create a new registration entry for pycon davao.
+    """
+    registrations_uc = RegistrationUsecase()
+    return registrations_uc.create_registration(registration_in)

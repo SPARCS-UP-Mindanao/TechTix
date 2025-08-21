@@ -6,7 +6,12 @@ from typing import List, Tuple
 import pytz
 import ulid
 from constants.common_constants import EntryStatus
-from model.registrations.registration import Registration, RegistrationIn
+
+# from model.registrations.registration import Registration, RegistrationIn
+from model.pycon_registrations.pycon_registration import (
+    PyconRegistrationIn,
+    Registration,
+)
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     DeleteError,
@@ -19,6 +24,8 @@ from pynamodb.exceptions import (
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 from utils.logger import logger
+
+# from model.pycon_registrations.pycon_registration import Registration as PyconRegistration
 
 
 class RegistrationsRepository:
@@ -39,7 +46,7 @@ class RegistrationsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_registration(
-        self, registration_in: RegistrationIn, registration_id: str = None
+        self, registration_in: PyconRegistrationIn, registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Store a registration record in the database.
 
@@ -235,7 +242,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(
-        self, registration_entry: Registration, registration_in: RegistrationIn
+        self, registration_entry: Registration, registration_in: PyconRegistrationIn
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Update a registration record in the database.
 

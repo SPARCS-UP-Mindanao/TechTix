@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
+from pynamodb.indexes import AllProjection, LocalSecondaryIndex
 from pynamodb.models import Model
 
 
@@ -32,12 +33,24 @@ class TShirtSize(Enum):
     XXXL = 'XXXL'
 
 
+class EmailLSI(LocalSecondaryIndex):
+    class Meta:
+        index_name = 'EmailIndex'
+        projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
+
+    hashKey = UnicodeAttribute(hash_key=True)
+    email = UnicodeAttribute(range_key=True)
+
+
 class PyconRegistration(BaseModel):
     firstName: str = Field(..., title='First Name')
     lastName: str = Field(..., title='Last Name')
     nickname: str = Field(..., title='Nickname')
     pronouns: str = Field(..., title='Pronouns')
     email: EmailStr = Field(..., title='Email')
+    eventId: str = Field(..., title='Pycon Event Id')
     contactNumber: str = Field(..., title='Contact Number')
     organization: str = Field(..., title='Affiliated Company or Organization')
     jobTitle: str = Field(..., title='Job Title', description='Your current job title or role in tech')
@@ -76,6 +89,7 @@ class PyconRegistration(BaseModel):
         None, title='Discount Code', description='If you have a discount code, please enter it here'
     )
     imageId: Optional[str] = Field(None, title='Image ID Object Key')
+    gcashPayment: Optional[str] = Field(None, title='GCash Payment Image ID')
 
     @validator('firstName', 'lastName', 'nickname')
     def normalize_names(cls, v: str) -> str:
@@ -105,7 +119,9 @@ class Registration(Model):
     registrationId = UnicodeAttribute(null=False)
     hashKey = UnicodeAttribute(hash_key=True)
     rangeKey = UnicodeAttribute(range_key=True)
+    eventId = UnicodeAttribute(null=False)
 
+    emailLSI = EmailLSI()
     firstName = UnicodeAttribute(null=True)
     lastName = UnicodeAttribute(null=True)
     nickname = UnicodeAttribute(null=True)
@@ -149,10 +165,9 @@ class Registration(Model):
 
 
 class PyconRegistrationIn(PyconRegistration):
-    gcashPayment = UnicodeAttribute(null=True)
-    referenceNumber = UnicodeAttribute(null=True)
-    amountPaid = NumberAttribute(null=True)
-    transactionId = UnicodeAttribute(null=True)
+    referenceNumber: Optional[str] = Field(None, title='Reference Number')
+    amountPaid: Optional[float] = Field(None, title='Amount Paid')
+    transactionId: Optional[str] = Field(None, title='Transaction ID')
 
     class Config:
         arbitrary_types_allowed = True

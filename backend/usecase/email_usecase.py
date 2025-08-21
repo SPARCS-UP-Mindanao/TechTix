@@ -11,7 +11,7 @@ from model.email.email import EmailIn
 from model.events.event import Event
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
-from model.registrations.registration import Registration
+from model.pycon_registrations.pycon_registration import Registration
 from repository.preregistrations_repository import PreRegistrationsRepository
 from utils.logger import logger
 
