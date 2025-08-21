@@ -64,6 +64,6 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           sls deploy --stage prod --verbose
           elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
-          sls deploy --stage dev --verbose
+          sls deploy --stage staging --verbose
           fi
         working-directory: backend
