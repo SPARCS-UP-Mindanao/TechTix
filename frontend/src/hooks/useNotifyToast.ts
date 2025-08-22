@@ -23,7 +23,7 @@ export const useNotifyToast = () => {
       duration
     });
 
-  const successToast = ({ id = '', title = 'Success', description, icon = 'CheckCircle', iconClassname = 'text-green-400', duration = 5000 }: ToastProps) =>
+  const successToast = ({ id = '', title = 'Success', description, icon = 'CircleCheckBig', iconClassname = 'text-green-400', duration = 5000 }: ToastProps) =>
     toast({
       id,
       title,
@@ -33,7 +33,7 @@ export const useNotifyToast = () => {
       duration
     });
 
-  const errorToast = ({ id = '', title = 'Error', description, icon = 'XCircle', iconClassname = 'text-negative', duration = 5000 }: ToastProps) =>
+  const errorToast = ({ id = '', title = 'Error', description, icon = 'CircleX', iconClassname = 'text-negative', duration = 5000 }: ToastProps) =>
     toast({
       id,
       title,

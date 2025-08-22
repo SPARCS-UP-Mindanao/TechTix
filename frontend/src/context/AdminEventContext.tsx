@@ -1,17 +1,15 @@
 import { createContext, PropsWithChildren } from 'react';
 import { Event } from '@/model/events';
 
-type AdminEventContext = (Event & { refetchEvent: () => void }) | null;
-
-export const AdminEventContext = createContext<AdminEventContext>(null);
-
-interface Props extends PropsWithChildren {
+interface AdminEventContext {
   event: Event;
   refetchEvent: () => void;
 }
 
-const AdminEventContextProvider = ({ event, refetchEvent, children }: Props) => {
-  return <AdminEventContext.Provider value={{ ...event, refetchEvent }}>{children}</AdminEventContext.Provider>;
+export const AdminEventContext = createContext<AdminEventContext | null>(null);
+
+const AdminEventContextProvider = ({ event, refetchEvent, children }: PropsWithChildren<AdminEventContext>) => {
+  return <AdminEventContext.Provider value={{ event, refetchEvent }}>{children}</AdminEventContext.Provider>;
 };
 
 export default AdminEventContextProvider;

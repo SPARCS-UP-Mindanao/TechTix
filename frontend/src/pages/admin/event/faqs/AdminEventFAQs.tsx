@@ -13,7 +13,9 @@ import { useApiQuery } from '@/hooks/useApi';
 import { useFAQsForm } from '@/hooks/useFAQsForm';
 
 const AdminFAQs = () => {
-  const { eventId } = useAdminEvent();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const { data: response, isFetching } = useApiQuery(getFAQs(eventId));
 
   if (isFetching) {
@@ -119,7 +121,7 @@ const FAQsForm: FC<FAQsFormProps> = ({ eventFAQs }) => {
             );
           })}
         </ol>
-        <Button icon="PlusCircle" disabled={isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
+        <Button icon="CirclePlus" disabled={isSubmitting} variant="ghost" className="flex self-start" onClick={onAddFAQ}>
           Add FAQ
         </Button>
         <FormItem name="faqs">{() => <FormError />}</FormItem>

@@ -59,11 +59,8 @@ export function createApi<D, T = D>(
 
   const api = axios.create();
   const queryFn = async (signal?: AbortSignal) => {
-    const test = await fetchAuthSession();
-    const accessToken = test?.tokens?.accessToken;
-    // const accessToken = (await fetchAuthSession())?.tokens?.accessToken;
-
-    console.log({ test, accessToken });
+    const authSession = await fetchAuthSession();
+    const accessToken = authSession?.tokens?.accessToken;
 
     try {
       const response = await api({

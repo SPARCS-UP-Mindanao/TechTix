@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useNavigateTo } from '@/utils/routing';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useNavigateTo } from '@/hooks/useNavigateTo';
 
 const ClientAuthRouteLayout = () => {
-  const { user } = useCurrentUser();
+  const auth = useCurrentUser();
   const { toUrl } = useNavigateTo();
 
-  if (user) {
+  if (auth?.user) {
     return <Navigate replace to={{ pathname: toUrl.pathname, search: toUrl.search, hash: toUrl.hash }} />;
   }
 

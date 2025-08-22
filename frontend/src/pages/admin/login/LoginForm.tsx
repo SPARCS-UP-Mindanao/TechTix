@@ -51,7 +51,7 @@ const ResetPasswordModal = () => {
       modalTitle="Reset Password"
       modalDescription={getModalDescription()}
       visible={showModal}
-      closable={step === 'email'}
+      showCloseButton={step === 'email'}
       onOpenChange={toggleModal}
       modalFooter={ModalFooter()}
       trigger={

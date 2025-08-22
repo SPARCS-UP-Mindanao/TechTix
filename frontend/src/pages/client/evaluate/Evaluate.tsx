@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { FC, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import ErrorPage from '@/components/ErrorPage';
 import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
@@ -17,12 +16,15 @@ import ClaimCertificate from './steps/ClaimCertificate';
 import { EvaluateStep, EvaluateSteps, STEP_CLAIM_CERTIFICATE, STEP_EVENT_DETAILS } from './steps/EvaluationSteps';
 import { useEvaluatePage } from './useEvaluatePage';
 
-const Evaluate = () => {
-  const { eventId } = useParams();
-  const [currentStep, setCurrentStep] = useState<EvaluateStep>(STEP_EVENT_DETAILS);
-  const { response, isFetching } = useEvaluatePage(eventId!);
+interface Props {
+  eventId: string;
+}
 
-  const { form, EVALUATE_FIELDS, submit } = useEvaluationForm([...EVALUTATION_QUESTIONS_1, ...EVALUTATION_QUESTIONS_2], eventId!);
+const Evaluate: FC<Props> = ({ eventId }) => {
+  const [currentStep, setCurrentStep] = useState<EvaluateStep>(STEP_EVENT_DETAILS);
+  const { response, isFetching } = useEvaluatePage(eventId);
+
+  const { form, EVALUATE_FIELDS, submit } = useEvaluationForm([...EVALUTATION_QUESTIONS_1, ...EVALUTATION_QUESTIONS_2], eventId);
 
   if (isFetching) {
     return <EvaluateFormSkeleton />;

@@ -22,7 +22,7 @@ const FAQSchema = z.object(
     })
   },
   {
-    required_error: 'Please enter a question and answer'
+    error: 'Please enter a question and answer'
   }
 );
 
@@ -50,7 +50,9 @@ type FAQ = z.infer<typeof FAQSchema>;
 export const useFAQsForm = (eventFAQs: FAQsFormValues) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
-  const { eventId } = useAdminEvent();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const form = useForm<FAQsFormValues>({
     mode: 'onChange',
     resolver: zodResolver(FAQsFormSchema),

@@ -1,16 +1,18 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useNavigateTo } from '@/utils/routing';
 import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
+import { useNavigateTo } from '@/hooks/useNavigateTo';
 
 const AdminAuthRouteLayout = () => {
-  const { user } = useCurrentAdminUser();
+  const auth = useCurrentAdminUser();
   const { toUrl } = useNavigateTo();
 
-  console.log({ user });
+  if (auth?.user && auth?.user.isAdmin) {
+    if (toUrl.pathname === '/' && !toUrl.search) {
+      return <Navigate replace to="/admin/events" />;
+    }
 
-  // if (user) {
-  //   return <Navigate replace to={{ pathname: toUrl.pathname, search: toUrl.search, hash: toUrl.hash }} />;
-  // }
+    return <Navigate replace to={{ pathname: toUrl.pathname, search: toUrl.search, hash: toUrl.hash }} />;
+  }
 
   return <Outlet />;
 };

@@ -138,7 +138,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
         modalTitle="Create Discount"
         trigger={<Button disabled={disabled}>Create Discount</Button>}
         modalFooter={footer}
-        closable={!form.formState.isSubmitting && !showDiscountCodes}
+        showCloseButton={!form.formState.isSubmitting && !showDiscountCodes}
         visible={isModalOpen}
         onOpenChange={setIsModalOpen}
       >
@@ -208,7 +208,9 @@ const DiscountTables = ({ organizations, status, isPaidEvent, isFetching }: Disc
 };
 
 const AdminEventDiscounts: FC = () => {
-  const { eventId, paidEvent, status } = useAdminEvent();
+  const {
+    event: { eventId, paidEvent, status }
+  } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId));
 
   const discountsDisabled = isFetching || !paidEvent || !enabledDiscountStatus.includes(status);

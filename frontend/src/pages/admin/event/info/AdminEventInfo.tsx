@@ -4,7 +4,7 @@ import useAdminEvent from '@/hooks/useAdminEvent';
 import AdminEventForm from '../AdminEventForm';
 
 const AdminEventInfo: FC = () => {
-  const event = useAdminEvent();
+  const { event } = useAdminEvent();
   const { eventId } = event;
 
   const redirectToPreRegistration = () => {

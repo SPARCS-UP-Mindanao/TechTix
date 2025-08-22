@@ -5,12 +5,14 @@ import { getAdminEvents } from '@/api/events';
 import { Event } from '@/model/events';
 import { cn } from '@/utils/classes';
 import { useApiQuery } from '@/hooks/useApi';
+import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
 import { useDashboardEvents } from '@/hooks/useDashboardEvents';
 import EventCard from '../../../../components/EventCard/EventCard';
 import AdminAllEventsPageSkeleton from './AdminAllEventsPageSkeleton';
 
 const AdminAllEvents = () => {
-  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents('adminId'));
+  const auth = useCurrentAdminUser();
+  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents(auth?.user?.id!));
 
   if (isFetching) {
     return <AdminAllEventsPageSkeleton />;

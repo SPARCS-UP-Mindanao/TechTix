@@ -98,10 +98,6 @@ export type FAQ = {
   answer: string;
 };
 
-export interface EventWithRefetchEvent extends Event {
-  refetchEvent: () => void;
-}
-
 export const mapEventToFormValues = (event: Event): EventFormValues => ({
   name: event.name,
   description: event.description,

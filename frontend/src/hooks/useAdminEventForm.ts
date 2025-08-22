@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { updateEvent, createEvent } from '@/api/events';
+import { updateEvent, createEvent, getAdminEvent } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { Event, EventStatus, mapCreateEventValues, mapEventToFormValues, mapUpdateEventValues } from '@/model/events';
 import { isEmpty } from '@/utils/functions';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
-import useAdminEvent from './useAdminEvent';
 import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -18,7 +17,7 @@ const EventFormSchema = z
     description: z.string().min(1, {
       message: 'Please enter the event description'
     }),
-    email: z.string().email({
+    email: z.email({
       message: 'Please enter a valid email address'
     }),
     startDate: z.string().min(1, {
@@ -31,7 +30,7 @@ const EventFormSchema = z
       message: 'Please enter the event venue'
     }),
     paidEvent: z.boolean(),
-    price: z.coerce.number().min(0, {
+    price: z.coerce.number<number>().min(0, {
       message: 'Please enter the event price'
     }),
     status: z.custom<EventStatus>().refine((value) => !isEmpty(value), {
@@ -42,7 +41,7 @@ const EventFormSchema = z
     certificateTemplate: z.string().optional(),
     isLimitedSlot: z.boolean(),
     isApprovalFlow: z.boolean(),
-    maximumSlots: z.coerce.number().optional(),
+    maximumSlots: z.coerce.number<number>().optional(),
     ticketTypes: z
       .array(
         z.object({
@@ -53,11 +52,11 @@ const EventFormSchema = z
           tier: z.string().min(1, {
             message: 'Please enter the ticket type tier'
           }),
-          originalPrice: z.coerce.number().optional(),
-          price: z.coerce.number().min(0, {
+          originalPrice: z.coerce.number<number>().optional(),
+          price: z.coerce.number<number>().min(0, {
             message: 'Please enter the ticket type price'
           }),
-          maximumQuantity: z.coerce.number().min(0, {
+          maximumQuantity: z.coerce.number<number>().min(0, {
             message: 'Please enter the ticket type maximum quantity'
           }),
           konfhubId: z.string().min(1, {
@@ -71,7 +70,7 @@ const EventFormSchema = z
     konfhubApiKey: z.string().optional(),
     isUsingPlatformFee: z.boolean(),
     platformFee: z.coerce
-      .number()
+      .number<number>()
       .optional()
       .refine(
         (fee) => {
@@ -132,7 +131,6 @@ export type EventFormValues = z.infer<typeof EventFormSchema>;
 
 export const useAdminEventForm = (event?: Event) => {
   const formSchema = event ? extendRegisterFormSchema(event) : EventFormSchema;
-  const eventContext = useAdminEvent();
 
   const navigate = useNavigate();
   const eventId = event?.eventId;
@@ -199,7 +197,7 @@ export const useAdminEventForm = (event?: Event) => {
 
         if (mode === 'edit') {
           form.reset(values);
-          eventContext.refetchEvent();
+          api.invalidateQueries(getAdminEvent(eventId!));
         }
       } else {
         errorToast({

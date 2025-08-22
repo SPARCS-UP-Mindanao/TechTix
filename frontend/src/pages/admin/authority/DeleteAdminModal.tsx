@@ -15,7 +15,7 @@ const DeleteAdminModalTrigger: FC<DropdownMenuItemProps> = ({ setIsModalOpen }) 
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" className="h-8 w-8 p-0 self-end bg-bg">
         <span className="sr-only">Open menu</span>
-        <Icon name="MoreVertical" className="h-4 w-4" />
+        <Icon name="EllipsisVertical" className="h-4 w-4" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
