@@ -56,6 +56,7 @@ class PaymentUsecase:
         status, existing_payment_transaction, message = self.payment_repo.query_payment_transaction_by_id_only(
             payment_transaction_id=payment_transaction_id
         )
+
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
