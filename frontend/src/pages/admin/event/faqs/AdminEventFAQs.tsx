@@ -16,9 +16,9 @@ const AdminFAQs = () => {
   const {
     event: { eventId }
   } = useAdminEvent();
-  const { data: response, isFetching } = useApiQuery(getFAQs(eventId));
+  const { data: response, isPending } = useApiQuery(getFAQs(eventId));
 
-  if (isFetching) {
+  if (isPending) {
     // TODO: Add skeleton
     return <div>Loading...</div>;
   }

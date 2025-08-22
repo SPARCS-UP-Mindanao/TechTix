@@ -11,8 +11,8 @@ interface FileViewerProps {
 }
 
 const ImageViewer: FC<FileViewerProps> = ({ eventId, objectKey, className, alt }) => {
-  const { fileUrl, isFetching } = useFileUrl(eventId, objectKey);
-  if (isFetching) {
+  const { fileUrl, isPending } = useFileUrl(eventId, objectKey);
+  if (isPending) {
     return <Skeleton className={cn('h-full', className)} />;
   }
 

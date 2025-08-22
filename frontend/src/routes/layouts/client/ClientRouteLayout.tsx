@@ -17,7 +17,7 @@ const ClientRouteLayout = () => {
 
   return (
     <>
-      <header className="py-2 px-8 md:px16">
+      <header style={{ boxShadow: '0px 8px 12px 0px hsla(0, 0%, 12%, 0.04)' }} className="py-2 px-8 md:px16 border-b ">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="size-8 ms-auto" fallback={extractNameInitials(userName ?? 'User')} src={picture} />

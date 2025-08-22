@@ -3,7 +3,7 @@ import { useApiQuery } from '@/hooks/useApi';
 import { useMetaData } from '@/hooks/useMetaData';
 
 export const useEvaluatePage = (eventId: string) => {
-  const { data: response, isFetching } = useApiQuery(getEvent(eventId));
+  const { data: response, isPending } = useApiQuery(getEvent(eventId));
   const setMetaData = useMetaData();
 
   setMetaData({
@@ -13,6 +13,6 @@ export const useEvaluatePage = (eventId: string) => {
 
   return {
     response,
-    isFetching
+    isPending
   };
 };

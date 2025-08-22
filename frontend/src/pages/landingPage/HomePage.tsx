@@ -26,11 +26,7 @@ const Hero = () => {
       <div className="absolute h-full w-full bg-white opacity-80 z-0" />
       <div className="pt-20 relative z-10 min-h-screen md:px-28 grid grid-rows-5 md:grid-rows-none md:grid-cols-6 md:justify-center w-full">
         <div className="relative md:absolute md:right-0 md:w-1/2 max-w-3xl row-span-2 w-full md:h-full">
-          <img
-            src={Robot}
-            alt="Robot"
-            className="absolute -bottom-4 md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-[90%] md:pr-32"
-          />
+          <img src={Robot} alt="Robot" className="absolute -bottom-4 md:bottom-1/2 left-1/2 transform -translate-x-1/2 md:translate-y-1/2 h-[90%] md:pr-32" />
         </div>
         <div className="pb-10 row-span-3 md:col-span-4 flex flex-col justify-start md:justify-center gap-10 items-center md:items-start md:gap-20 w-full z-20">
           <div className="px-2">
@@ -74,7 +70,7 @@ const MakeYourOwnEvent = () => {
 const HomePageComponent = () => {
   const setMetaData = useMetaData();
   setMetaData({});
-  const { data: response, isFetching } = useApiQuery(getAllEvents());
+  const { data: response, isPending } = useApiQuery(getAllEvents());
   const location = useLocation();
   const initCount = 4;
 
@@ -94,7 +90,7 @@ const HomePageComponent = () => {
       <Hero />
       <section className="bg-white px-5 py-20 flex flex-col items-center">
         <h1 className="text-center text-primary-700!">Upcoming Events</h1>
-        <EventCardList allEvents={response?.data} isFetching={isFetching} isLoadAll={false} initialCount={initCount} />
+        <EventCardList allEvents={response?.data} isPending={isPending} isLoadAll={false} initialCount={initCount} />
       </section>
       <MakeYourOwnEvent />
       <Footer />

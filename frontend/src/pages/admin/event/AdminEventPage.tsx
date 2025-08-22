@@ -7,9 +7,9 @@ import AdminEventContextProvider from '@/context/AdminEventContext';
 const AdminEventPageContent = () => {
   const { eventId } = useParams();
 
-  const { data: response, isFetching, refetch: refetchEvent } = useApiQuery(getAdminEvent(eventId!));
+  const { data: response, isPending, refetch: refetchEvent } = useApiQuery(getAdminEvent(eventId!));
 
-  if (isFetching) {
+  if (isPending) {
     return (
       // TODO: Add skeleton page
       <div className="flex justify-center pt-40">

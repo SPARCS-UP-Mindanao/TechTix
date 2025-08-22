@@ -175,11 +175,11 @@ interface DiscountTablesProps {
   organizations: OrganizationDiscount[];
   status: EventStatus;
   isPaidEvent: boolean;
-  isFetching: boolean;
+  isPending: boolean;
 }
 
-const DiscountTables = ({ organizations, status, isPaidEvent, isFetching }: DiscountTablesProps) => {
-  if (isFetching || !organizations.length) {
+const DiscountTables = ({ organizations, status, isPaidEvent, isPending }: DiscountTablesProps) => {
+  if (isPending || !organizations.length) {
     const getNoDataText = () => {
       if (isPaidEvent) {
         return 'No discounts found';
@@ -192,7 +192,7 @@ const DiscountTables = ({ organizations, status, isPaidEvent, isFetching }: Disc
       return 'Discounts are disabled for free events';
     };
 
-    return <DataTable columns={discountColumns} data={[]} loading={isFetching} noDataText={getNoDataText()} />;
+    return <DataTable columns={discountColumns} data={[]} loading={isPending} noDataText={getNoDataText()} />;
   }
 
   return (
@@ -211,20 +211,20 @@ const AdminEventDiscounts: FC = () => {
   const {
     event: { eventId, paidEvent, status }
   } = useAdminEvent();
-  const { data: response, isFetching, refetch } = useApiQuery(getAllDiscounts(eventId));
+  const { data: response, isPending, refetch } = useApiQuery(getAllDiscounts(eventId));
 
-  const discountsDisabled = isFetching || !paidEvent || !enabledDiscountStatus.includes(status);
+  const discountsDisabled = isPending || !paidEvent || !enabledDiscountStatus.includes(status);
 
   return (
     <section className="flex flex-col gap-6 items-center">
       <div className="inline-flex justify-center items-center space-x-4">
         <h2>Discounts</h2>
         <Tooltip toolTipContent="Refresh discounts" side="right">
-          <Button variant="outline" disabled={!paidEvent} loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+          <Button variant="outline" disabled={!paidEvent} loading={isPending} size="icon" icon="RotateCw" onClick={() => refetch()} />
         </Tooltip>
       </div>
       <CreateDiscountModal disabled={discountsDisabled} eventId={eventId} refetch={refetch} />
-      <DiscountTables organizations={response?.data || []} status={status} isPaidEvent={paidEvent} isFetching={isFetching} />
+      <DiscountTables organizations={response?.data || []} status={status} isPaidEvent={paidEvent} isPending={isPending} />
     </section>
   );
 };
