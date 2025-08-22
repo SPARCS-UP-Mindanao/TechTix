@@ -9,16 +9,16 @@ const HIDE_STATUS: EventStatus[] = ['draft'];
 
 interface EventCardListProps {
   allEvents?: Event[];
-  isFetching?: boolean;
+  isPending?: boolean;
   isLoadAll?: boolean;
   initialCount?: number;
 }
 
-const EventCardList: FC<EventCardListProps> = ({ allEvents, isFetching = false, isLoadAll = true, initialCount = 8 }) => {
+const EventCardList: FC<EventCardListProps> = ({ allEvents, isPending = false, isLoadAll = true, initialCount = 8 }) => {
   const navigate = useNavigate();
   const [eventCount, setEventCount] = useState(initialCount);
 
-  if (isFetching) {
+  if (isPending) {
     return (
       <div className="w-full flex items-center justify-center p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-5 items-center justify-center justify-items-center md:w-auto">

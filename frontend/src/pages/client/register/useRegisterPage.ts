@@ -7,7 +7,7 @@ import { useMetaData } from '@/hooks/useMetaData';
 import { RegisterStep, RegisterStepId, STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
 
 export const useRegisterPage = (eventId: string, setCurrentStep: (step: RegisterStep) => void) => {
-  const { data: response, isFetching } = useApiQuery(getEvent(eventId));
+  const { data: response, isPending } = useApiQuery(getEvent(eventId));
   const setMetaData = useMetaData();
   const [searchParams] = useSearchParams();
   const stepFromUrl = searchParams.get('step');
@@ -41,6 +41,6 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
 
   return {
     response,
-    isFetching
+    isPending
   };
 };

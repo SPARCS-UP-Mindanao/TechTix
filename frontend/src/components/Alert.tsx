@@ -44,7 +44,7 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   closable?: boolean;
 }
 
-const Alert = ({ title, description, icon = 'Info', className, children, variant = 'default', closable = false }: AlertProps) => {
+const Alert = ({ title, description, icon = 'Info', className, variant = 'default', closable = false }: AlertProps) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   const handleDelete = () => {
@@ -55,13 +55,14 @@ const Alert = ({ title, description, icon = 'Info', className, children, variant
     <>
       <AlertContainer variant={variant} className={cn('space-x-2', className)} ref={ref}>
         <Icon name={icon} className="h-4 w-4" />
-        <AlertTitle>
+        <AlertTitle className="flex justify-between">
           {title}
           {closable && (
             <Icon
               name="X"
               onClick={handleDelete}
-              className="w-4 h-4 absolute right-0 top-0 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-hidden focus:ring-1 group-hover:opacity-100 cursor-pointer"
+              // absolute right-0 top-0
+              className="size-6 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-hidden focus:ring-1 group-hover:opacity-100 cursor-pointer"
             />
           )}
         </AlertTitle>

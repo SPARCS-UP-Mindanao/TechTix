@@ -115,7 +115,7 @@ const AdminAuthority: FC = () => {
 
   const auth = useCurrentAdminUser();
 
-  const { data: response, isFetching, refetch } = useApiQuery(getAllAdmins(), { active: !!auth?.user?.isSuperAdmin });
+  const { data: response, isPending, refetch } = useApiQuery(getAllAdmins(), { active: !!auth?.user?.isSuperAdmin });
 
   if (!auth?.user?.isSuperAdmin) {
     return <Navigate to="/admin/events" />;
@@ -124,8 +124,8 @@ const AdminAuthority: FC = () => {
   return (
     <section className="flex flex-col items-center">
       <h2>Admins</h2>
-      <InviteAdminModal refetch={refetch} disabled={isFetching} />
-      <DataTable columns={adminColumns(refetch)} data={response?.data} loading={isFetching} noDataText="No Admins" />
+      <InviteAdminModal refetch={refetch} disabled={isPending} />
+      <DataTable columns={adminColumns(refetch)} data={response?.data} loading={isPending} noDataText="No Admins" />
     </section>
   );
 };

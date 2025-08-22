@@ -52,7 +52,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   const isConference = eventInfo?.email === 'hello@awsugdavao.ph';
   const { form, onSubmit } = useRegisterForm(eventId!, mode, navigateOnSuccess, isConference);
-  const { response, isFetching } = useRegisterPage(eventId!, setCurrentStep);
+  const { response, isPending } = useRegisterPage(eventId!, setCurrentStep);
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
 
   const updateEventPrice = (newPrice: number) => {
@@ -61,7 +61,7 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
     }
   };
 
-  if (isFetching) {
+  if (isPending || isSuccessLoading) {
     return <RegisterFormLoading />;
   }
 
@@ -112,10 +112,6 @@ const Register: FC<Props> = ({ mode = 'register' }) => {
 
   if (eventInfo.status === 'completed') {
     return <ErrorPage errorTitle="Registration is Closed" message={`Thank you for your interest but ${eventInfo.name} is no longer open for registration.`} />;
-  }
-
-  if (isSuccessLoading) {
-    return <RegisterFormLoading />;
   }
 
   const getSteps = () => {

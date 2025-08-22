@@ -22,11 +22,11 @@ interface Props {
 
 const Evaluate: FC<Props> = ({ eventId }) => {
   const [currentStep, setCurrentStep] = useState<EvaluateStep>(STEP_EVENT_DETAILS);
-  const { response, isFetching } = useEvaluatePage(eventId);
+  const { response, isPending } = useEvaluatePage(eventId);
 
   const { form, EVALUATE_FIELDS, submit } = useEvaluationForm([...EVALUTATION_QUESTIONS_1, ...EVALUTATION_QUESTIONS_2], eventId);
 
-  if (isFetching) {
+  if (isPending) {
     return <EvaluateFormSkeleton />;
   }
 

@@ -12,9 +12,9 @@ import AdminAllEventsPageSkeleton from './AdminAllEventsPageSkeleton';
 
 const AdminAllEvents = () => {
   const auth = useCurrentAdminUser();
-  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents(auth?.user?.id!));
+  const { data: response, isPending, refetch } = useApiQuery(getAdminEvents(auth?.user?.id!));
 
-  if (isFetching) {
+  if (isPending) {
     return <AdminAllEventsPageSkeleton />;
   }
 

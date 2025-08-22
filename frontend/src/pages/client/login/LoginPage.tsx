@@ -13,7 +13,7 @@ const LoginPage = () => {
   const toParams = decodeURIComponent(searchParams.get('to')!);
   const [_, eventId] = toParams.split('/');
 
-  const { data: response, isFetching: isFetchingEventInfo } = useApiQuery(getEvent(eventId), { active: !!eventId });
+  const { data: response, isPending: isPendingEventInfo } = useApiQuery(getEvent(eventId), { active: !!eventId });
   const event = response?.data;
   const isValidId = !!event;
 
@@ -25,12 +25,12 @@ const LoginPage = () => {
     if (event) {
       setMetaData({
         title: event.name,
-        iconUrl: event.bannerUrl
+        iconUrl: event.logoUrl
       });
     }
   }, [event]);
 
-  if (isFetchingEventInfo) {
+  if (isPendingEventInfo) {
     return <Skeleton className="w-full h-full" />;
   }
 

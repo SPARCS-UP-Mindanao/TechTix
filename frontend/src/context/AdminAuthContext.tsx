@@ -17,7 +17,7 @@ export const AdminAuthContext = React.createContext<AdminAuthContext>({
 });
 
 const AdminAuthContextProvider = () => {
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isPending, refetch } = useQuery({
     queryKey: createQueryKey('getCurrentAdminUser'),
     queryFn: async () => await fetchAuthSession(),
     refetchOnWindowFocus: false,
@@ -27,7 +27,7 @@ const AdminAuthContextProvider = () => {
 
   const currentUser = getUserAttributes(data);
 
-  if (isFetching) {
+  if (isPending) {
     return <Skeleton className="w-full h-full rounded-none" />;
   }
 

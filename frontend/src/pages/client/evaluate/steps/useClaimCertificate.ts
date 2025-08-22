@@ -9,10 +9,10 @@ export const useClaimCertificate = (eventId: string) => {
 
   const { certificateTemplateKey, certificatePDFTemplateKey } = certificate;
 
-  const { fileUrl: certificateImgDataURL, isFetching: isFetchingImg } = useFileUrl(eventId, certificateTemplateKey);
-  const { fileUrl: certificatePdfDataURL, isFetching: isFetchingPdf } = useFileUrl(eventId, certificatePDFTemplateKey);
+  const { fileUrl: certificateImgDataURL, isPending: isPendingImg } = useFileUrl(eventId, certificateTemplateKey);
+  const { fileUrl: certificatePdfDataURL, isPending: isPendingPdf } = useFileUrl(eventId, certificatePDFTemplateKey);
 
-  const isLoading = isFetchingImg || isFetchingPdf;
+  const isLoading = isPendingImg || isPendingPdf;
 
   const onDownloadImg = () => {
     if (certificateImgDataURL && certificateTemplateKey) {

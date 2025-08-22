@@ -7,9 +7,9 @@ import { useApiQuery } from '@/hooks/useApi';
 
 const FAQs: FC = () => {
   const { eventId } = useParams();
-  const { data: response /*isFetching*/ } = useApiQuery(getFAQs(eventId!));
+  const { data: response /*isPending*/ } = useApiQuery(getFAQs(eventId!));
 
-  //   if (isFetching) {
+  //   if (isPending) {
   //     return (
   //       <div className="space-y-4">
   //         <Skeleton className="h-16" />

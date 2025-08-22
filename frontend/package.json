@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:dummy": "tsc && vite build --mode dummy",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
+    "start": "vite preview",
     "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,scss,sass,css}\""
   },
   "dependencies": {

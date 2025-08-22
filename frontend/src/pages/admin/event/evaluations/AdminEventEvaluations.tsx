@@ -12,17 +12,17 @@ const AdminEventEvaluations: FC = () => {
   const {
     event: { eventId }
   } = useAdminEvent();
-  const { data: response, isFetching, refetch } = useApiQuery(getEvaluations(eventId!));
+  const { data: response, isPending, refetch } = useApiQuery(getEvaluations(eventId!));
 
   return (
     <section className="flex flex-col items-center">
       <div className="inline-flex justify-center items-center space-x-4">
         <h2>Evaluations</h2>
         <Tooltip toolTipContent="Refresh evaluations" side="right">
-          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+          <Button variant="outline" loading={isPending} size="icon" icon="RotateCw" onClick={() => refetch()} />
         </Tooltip>
       </div>
-      <DataTable columns={evaluationColumns} data={response?.data} loading={isFetching} noDataText="No Evaluations" />
+      <DataTable columns={evaluationColumns} data={response?.data} loading={isPending} noDataText="No Evaluations" />
     </section>
   );
 };

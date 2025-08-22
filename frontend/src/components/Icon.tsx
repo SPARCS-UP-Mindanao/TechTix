@@ -1,4 +1,4 @@
-import { ComponentProps, RefAttributes, SVGProps } from 'react';
+import { ComponentProps } from 'react';
 import { icons, LucideProps } from 'lucide-react';
 import { DynamicIcon, IconName as _IconName, dynamicIconImports } from 'lucide-react/dynamic';
 
