@@ -21,7 +21,7 @@ export const routes = createBrowserRouter(
     //   lazy: () => import('@/pages/landingPage/EventsPage')
     // },
     {
-      path: 'signin/callback',
+      path: '/signin/callback',
       element: <Callback />
     },
 
