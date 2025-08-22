@@ -41,11 +41,9 @@ class PyconRegistration(BaseModel):
     contactNumber: str = Field(..., title='Contact Number')
     organization: str = Field(..., title='Affiliated Company or Organization')
     jobTitle: str = Field(..., title='Job Title', description='Your current job title or role in tech')
-
     socials: Optional[SocialMedia] = Field(
         None, title='Social Media Profiles', description='Links to your social media profiles'
     )
-
     ticketType: TicketTypes = Field(title='Ticket Type', description='Type of ticket you are registering for')
     sprintDay: bool = Field(
         ..., title='Sprint Day Participation', description='Will you be participating in the sprint day?'
@@ -155,3 +153,6 @@ class PyconRegistrationIn(PyconRegistration):
     referenceNumber = UnicodeAttribute(null=True)
     amountPaid = NumberAttribute(null=True)
     transactionId = UnicodeAttribute(null=True)
+
+    class Config:
+        arbitrary_types_allowed = True
