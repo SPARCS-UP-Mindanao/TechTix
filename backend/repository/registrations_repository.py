@@ -25,8 +25,6 @@ from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 from utils.logger import logger
 
-# from model.pycon_registrations.pycon_registration import Registration as PyconRegistration
-
 
 class RegistrationsRepository:
     """

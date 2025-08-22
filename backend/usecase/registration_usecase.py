@@ -174,10 +174,10 @@ class RegistrationUsecase:
                 return JSONResponse(status_code=status, content={'message': message})
 
         # Capture registration to KonfHub
-        # if event.konfhubId:
-        #     konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-        #     if konfhub_response != HTTPStatus.OK:
-        #         return konfhub_response
+        if event.konfhubId:
+            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
+            if konfhub_response != HTTPStatus.OK:
+                return konfhub_response
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 

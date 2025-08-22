@@ -11,10 +11,10 @@ def api_controller(app):
 
     app.include_router(event_router, prefix='/events', tags=['Events'])
     app.include_router(registration_router, prefix='/registrations', tags=['Registrations'])
+    app.include_router(pycon_router, prefix='/pycon/registrations', tags=['PyCon Registrations'])
     app.include_router(preregistration_router, prefix='/preregistrations', tags=['PreRegistrations'])
     app.include_router(certificate_router, prefix='/certificates', tags=['Certificates'])
     app.include_router(evaluation_router, prefix='/evaluations', tags=['Evaluations'])
     app.include_router(discount_router, prefix='/discounts', tags=['Discounts'])
     app.include_router(faqs_router, prefix='/faqs', tags=['FAQs'])
     app.include_router(payment_router, prefix='/payments', tags=['Payments'])
-    app.include_router(pycon_router, prefix='/pycon/registrations', tags=['PyCon Davao'])
