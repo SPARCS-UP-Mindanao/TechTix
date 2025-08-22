@@ -2,7 +2,15 @@ import os
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, HttpUrl, root_validator, validator
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Extra,
+    Field,
+    HttpUrl,
+    root_validator,
+    validator,
+)
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
 from pynamodb.models import Model
@@ -171,3 +179,8 @@ class PyconRegistrationIn(PyconRegistration):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class PyconRegistrationPatch(PyconRegistration):
+    class Config:
+        extra = Extra.ignore
