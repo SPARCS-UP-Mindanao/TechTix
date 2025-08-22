@@ -18,7 +18,7 @@ import AdminAuthContextProvider from '@/context/AdminAuthContext';
 
 const adminRoutes: RouteObject[] = [
   {
-    path: '',
+    path: '/admin',
     element: <AdminAuthContextProvider />,
     children: [
       {
@@ -26,11 +26,11 @@ const adminRoutes: RouteObject[] = [
         element: <AdminAuthRouteLayout />,
         children: [
           {
-            path: '/admin/login',
+            path: 'login',
             element: <AdminLoginPage />
           },
           {
-            path: 'admin/update-password',
+            path: 'update-password',
             element: <UpdatePasswordPage />
           }
         ]
@@ -40,7 +40,6 @@ const adminRoutes: RouteObject[] = [
         element: <AdminRouteLayout />,
         children: [
           {
-            path: '/admin',
             element: <AdminPage />,
             children: [
               {
@@ -88,6 +87,10 @@ const adminRoutes: RouteObject[] = [
             ]
           }
         ]
+      },
+      {
+        path: '*',
+        element: ErrorPage({})
       }
     ]
   }

@@ -1,11 +1,13 @@
 import { AuthError, signIn } from 'aws-amplify/auth';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useNavigateTo } from '@/hooks/useNavigateTo';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
+import { useCurrentAdminUser } from './useCurrentUser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const LoginFormSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: 'Please enter a valid email address'
   }),
   password: z.string().min(8, {
@@ -14,7 +16,9 @@ const LoginFormSchema = z.object({
 });
 
 export const useAdminLoginForm = () => {
+  const auth = useCurrentAdminUser();
   const { errorToast } = useNotifyToast();
+  const { navigate } = useNavigateTo();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     mode: 'onChange',
@@ -27,7 +31,12 @@ export const useAdminLoginForm = () => {
 
   const submit = form.handleSubmit(async ({ email, password }) => {
     try {
-      await signIn({ username: email, password });
+      await signIn({
+        username: email,
+        password
+      });
+      await auth.refetchUser?.();
+      navigate('/admin/events');
     } catch (e) {
       if (e instanceof AuthError) {
         errorToast({

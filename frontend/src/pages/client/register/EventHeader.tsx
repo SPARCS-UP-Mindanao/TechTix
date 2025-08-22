@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import ImageViewer from '@/components/ImageViewer';
 import { Event } from '@/model/events';
 
 interface Props {
@@ -10,10 +9,10 @@ interface Props {
 export const EventHeader: FC<Props> = ({ event, showBanner = true }) => {
   return (
     <>
-      <ImageViewer eventId={event.eventId} objectKey={event.logoLink} className="w-12! h-12! rounded-full overflow-hidden" />
+      <img src={event.logoUrl} className="w-12 h-12 rounded-full overflow-hidden" alt="" />
       {showBanner && (
         <div className="flex w-full max-h-[448px] justify-center relative overflow-hidden">
-          <ImageViewer eventId={event.eventId} objectKey={event.bannerLink || ''} className="w-full max-w-md object-contain z-10" />
+          <img src={event.bannerUrl} className="h-full w-full max-w-md object-contain z-10" alt="" />
           <div className="blur-2xl absolute w-full h-full inset-0 bg-center" style={{ backgroundImage: `url(${event.bannerUrl})` }}></div>
         </div>
       )}

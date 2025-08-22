@@ -22,7 +22,9 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
-  const { paidEvent, eventId, status } = useAdminEvent();
+  const {
+    event: { paidEvent, eventId, status }
+  } = useAdminEvent();
 
   const { form, onUpdate, onDelete, onApprove, onReject } = useEditRegistrationForm(eventId, registrationInfo);
   const { isSubmitting, isDirty } = useFormState({ control: form.control });
@@ -39,7 +41,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
       modalTitle="Registration Info"
       visible={showModal}
       onOpenChange={setShowModal}
-      trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
+      trigger={<Button variant="ghost" size="icon" icon="Ellipsis" />}
       className="md:max-w-[80%]"
       modalFooter={
         <Button onClick={() => setShowModal(false)} variant="ghost">

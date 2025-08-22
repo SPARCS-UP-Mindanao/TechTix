@@ -10,14 +10,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const DiscountFormSchema = z.object({
   discountPercentage: z.coerce
-    .number()
+    .number<number>()
     .min(1, {
       message: 'Enter number between 1-100'
     })
     .max(100, {
       message: 'Enter number between 1-100'
     }),
-  quantity: z.coerce.number().min(1, {
+  quantity: z.coerce.number<number>().min(1, {
     message: 'Please enter a valid quantity'
   }),
   organizationName: z.string().min(1, {

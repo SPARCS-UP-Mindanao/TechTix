@@ -7,7 +7,7 @@ import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const UpdatePasswordFormSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: 'Please enter a valid email address'
   }),
   prevPassword: z.string().min(8, {

@@ -5,16 +5,14 @@ import { QueryClient, useQuery } from '@tanstack/react-query';
 
 interface QueryOptions {
   active?: boolean;
-  suspense?: boolean;
-  keepPreviousData?: boolean;
 }
 
-export const useApiQuery = <T>(request: createApiReturn<T>, { active = true, suspense = false, keepPreviousData = false }: QueryOptions = {}) => {
+export const useApiQuery = <T>(request: createApiReturn<T>, { active = true }: QueryOptions = {}) => {
   const api = useApi();
-  return useQuery(request.queryKey, ({ signal }) => api.execute(request, signal), {
+  return useQuery({
+    queryKey: request.queryKey,
+    queryFn: ({ signal }) => api.execute(request, signal),
     enabled: active,
-    suspense,
-    keepPreviousData,
     refetchOnWindowFocus: false,
     retry: 3
   });
@@ -30,12 +28,8 @@ export class ApiClient {
     return request.queryFn(signal);
   }
 
-  query<T>(request: createApiReturn<T>, signal?: AbortSignal) {
-    return this.queryClient.fetchQuery(request.queryKey, () => this.execute(request, signal), { staleTime: request.staleTime, cacheTime: request.cacheTime });
-  }
-
   invalidateQueries<T>(request: createApiReturn<T>) {
-    return this.queryClient.invalidateQueries(request.queryKey);
+    return this.queryClient.invalidateQueries({ queryKey: request.queryKey });
   }
 }
 

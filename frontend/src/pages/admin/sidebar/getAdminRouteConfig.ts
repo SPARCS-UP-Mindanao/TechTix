@@ -20,7 +20,7 @@ interface Props {
 export const getAdminRouteConfig = ({ eventId, isSuperAdmin = false, setLogoutOpen }: Props): AdminRouteConfigProps[] => [
   {
     optionName: 'Dashboard',
-    iconName: 'Home',
+    iconName: 'House',
     route: '/admin/events',
     location: 'upper'
   },
@@ -61,7 +61,7 @@ export const getAdminRouteConfig = ({ eventId, isSuperAdmin = false, setLogoutOp
   },
   {
     optionName: 'FAQs',
-    iconName: 'HelpCircle',
+    iconName: 'CircleQuestionMark',
     visible: !!eventId,
     route: `/admin/events/${eventId}/faqs`,
     location: 'upper'

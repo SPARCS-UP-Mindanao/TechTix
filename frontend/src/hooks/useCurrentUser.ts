@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 import { AdminAuthContext } from '@/context/AdminAuthContext';
-import { AuthContext } from '@/context/AuthContext';
+import { ClientAuthContext } from '@/context/ClientAuthContext';
 
 export const useCurrentUser = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(ClientAuthContext);
 
   return context;
 };

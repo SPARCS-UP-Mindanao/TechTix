@@ -20,17 +20,27 @@ export const getUserAttributes = (session?: AuthSession) => {
   }
 
   const userAttributes = session?.tokens?.idToken?.payload;
-  const id = userAttributes?.[COGNITO_CUSTOM_ATTRIBUTES.id]?.toString();
+  // const id = userAttributes?.[COGNITO_CUSTOM_ATTRIBUTES.id]?.toString(); //TODO: Utilize ID
+  const id = userAttributes?.sub;
   const email = userAttributes?.['email']?.toString();
 
   const groups = userAttributes?.['cognito:groups'];
   const isAdmin = Array.isArray(groups) && groups.some((x): x is CognitoGroupType => COGNITO_GROUPS.includes((x?.toString() || '') as CognitoGroupType));
   const isSuperAdmin = Array.isArray(groups) && groups.some((x) => x === 'super_admin');
 
+  const picture = userAttributes?.picture?.toString();
+  const userName = userAttributes?.name?.toString();
+
+  if (!id || !email || !groups) {
+    return null;
+  }
+
   return {
     id,
     email,
     groups,
+    picture,
+    userName,
     isAdmin,
     isSuperAdmin
   };

@@ -44,7 +44,7 @@ const InviteAdminModal: FC<InviteAdmintModalProps> = ({ disabled, refetch }) => 
       }
       visible={isModalOpen}
       onOpenChange={setIsModalOpen}
-      closable={!isSubmitting}
+      showCloseButton={!isSubmitting}
       modal={true}
     >
       <FormProvider {...form}>

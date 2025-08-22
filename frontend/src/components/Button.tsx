@@ -3,7 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import Icon, { IconName } from '@/components/Icon';
 import { cn } from '@/utils/classes';
-import { Slot } from '@radix-ui/react-slot';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
@@ -51,19 +50,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, children, icon, iconClassname, iconPlacement = 'left', asChild = false, loading = false, disabled = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button';
-    const iconStyles = cn(
-      'shrink-0',
-      size !== 'icon' && children && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'),
-      iconClassname,
-      loading && 'animate-spin'
-    );
+    const iconStyles = cn('shrink-0', size !== 'icon' && children && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'), iconClassname, loading && 'animate-spin');
 
     const getButtonContent = () => {
       if (icon) {
         return (
           <>
-            <Icon name={loading ? 'Loader2' : icon} className={iconStyles} />
+            <Icon name={loading ? 'LoaderCircle' : icon} className={iconStyles} />
             {children}
           </>
         );
@@ -77,14 +70,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, loading, className }), iconPlacement === 'right' && 'flex-row-reverse')}
         ref={ref}
         disabled={disabled || loading}
         {...props}
       >
         {getButtonContent()}
-      </Comp>
+      </button>
     );
   }
 );

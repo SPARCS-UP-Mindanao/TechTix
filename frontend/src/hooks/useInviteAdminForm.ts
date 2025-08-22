@@ -9,7 +9,7 @@ import { useApi } from './useApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const AdminFormSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: 'Please enter a valid email address'
   }),
   firstName: z.string().min(1, {

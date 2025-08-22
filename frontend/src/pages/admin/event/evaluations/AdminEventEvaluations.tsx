@@ -3,12 +3,15 @@ import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import Tooltip from '@/components/Tooltip';
 import { getEvaluations } from '@/api/evaluations';
+import { Event } from '@/model/events';
 import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
 import { evaluationColumns } from './EvaluationColumns';
 
 const AdminEventEvaluations: FC = () => {
-  const { eventId } = useAdminEvent();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getEvaluations(eventId!));
 
   return (

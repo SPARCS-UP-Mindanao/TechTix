@@ -28,7 +28,7 @@ export const useDiscount = (eventPrice: number) => {
 
     try {
       setIsValidatingDiscountCode(true);
-      const response = await api.query(getDiscount(discountCode, eventId!));
+      const response = await api.execute(getDiscount(discountCode, eventId!));
       const discount = response.data;
       switch (response.status) {
         case 200:

@@ -4,7 +4,7 @@ import { AdminEventContext } from '@/context/AdminEventContext';
 const useAdminEvent = () => {
   const context = useContext(AdminEventContext);
 
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAdminEvent should be used within a AdminEventContextProvider');
   }
 

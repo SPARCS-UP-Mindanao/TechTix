@@ -33,7 +33,7 @@ function Badge({ className, variant, onClick, children, loading = false, ...prop
       className={cn(badgeVariants({ variant }), 'flex justify-center items-center p-2', className, onClick && 'cursor-pointer')}
       {...props}
     >
-      {loading && <Icon name="Loader2" className="w-3 h-3 animate-spin mr-1" />}
+      {loading && <Icon name="LoaderCircle" className="w-3 h-3 animate-spin mr-1" />}
       {children}
     </div>
   );

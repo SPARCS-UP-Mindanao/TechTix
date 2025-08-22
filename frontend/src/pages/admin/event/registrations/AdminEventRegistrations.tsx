@@ -11,7 +11,9 @@ import { useGetCsv } from '@/hooks/useGetCsv';
 import { getRegistrationColumns } from './RegistrationsColumns';
 
 const AdminEventRegistrations: FC = () => {
-  const { isApprovalFlow, status, eventId } = useAdminEvent();
+  const {
+    event: { isApprovalFlow, status, eventId }
+  } = useAdminEvent();
   const { getCsv, isGettingCsv } = useGetCsv(eventId);
 
   const getDefaultValue = () => {
@@ -52,7 +54,9 @@ const AdminEventRegistrations: FC = () => {
 };
 
 const Registrations = () => {
-  const { eventId } = useAdminEvent();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getEventRegistrations(eventId));
   return (
     <>
@@ -68,7 +72,9 @@ const Registrations = () => {
 };
 
 const PreRegistrations = () => {
-  const { eventId } = useAdminEvent();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const { data: response, isFetching, refetch } = useApiQuery(getEventPreRegistrations(eventId));
   return (
     <>

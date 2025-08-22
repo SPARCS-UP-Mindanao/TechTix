@@ -30,7 +30,7 @@ const EvaluationInfoModal: FC<Props> = ({ fullName, evaluationList }) => {
       visible={showModal}
       onOpenChange={setShowModal}
       className="md:max-w-[80%]"
-      trigger={<Button variant="ghost" size="icon" icon="MoreHorizontal" />}
+      trigger={<Button variant="ghost" size="icon" icon="Ellipsis" />}
       modalFooter={
         <Button onClick={() => setShowModal(false)} variant="ghost">
           Close

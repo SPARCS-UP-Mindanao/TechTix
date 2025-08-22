@@ -9,7 +9,7 @@ import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const ForgetPasswordSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: 'Please enter a valid email address'
   }),
   confirmationCode: z.string(),

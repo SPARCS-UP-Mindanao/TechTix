@@ -22,7 +22,7 @@ export type DefaultEvaluateFieldMap = Partial<Record<EvaluateStepId, DefaultEval
 
 export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: string) => {
   const EvaluateFormSchema = questionSchemaBuilder(questions).extend({
-    email: z.string().email({
+    email: z.email({
       message: 'Please enter a valid email address'
     }),
     certificate: z.custom<ClaimCertificateResponse>().refine((value) => !isEmpty(value), {
@@ -30,7 +30,9 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
     })
   });
 
-  type EvaluateFormValues = z.infer<typeof EvaluateFormSchema>;
+  type EvaluateFormValues = z.infer<typeof EvaluateFormSchema> & {
+    certificate?: ClaimCertificateResponse;
+  };
 
   const api = useApi();
   const { errorToast, successToast } = useNotifyToast();
@@ -61,7 +63,12 @@ export const useEvaluationForm = (questions: QuestionConfigItem[], eventId: stri
 
   const submit = form.handleSubmit(async (values) => {
     const { certificate } = values;
-    const { registrationId } = certificate!;
+
+    if (!certificate) {
+      throw Error('Certificate information is missing!');
+    }
+
+    const { registrationId } = certificate;
 
     try {
       const response = await api.execute(postEvaluation(eventId, registrationId, mapFormValuesToEvaluateCreate(values)));
