@@ -1,4 +1,3 @@
-
 from http import HTTPStatus
 from typing import List
 
@@ -6,13 +5,11 @@ from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
-from model.file_uploads.file_upload import FileDownloadOut
 from model.pycon_registrations.pycon_registration import (
     PyconRegistrationIn,
     PyconRegistrationOut,
-    PyconRegistrationPatch
+    PyconRegistrationPatch,
 )
-from pydantic import EmailStr
 from usecase.registration_usecase import RegistrationUsecase
 
 pycon_router = APIRouter()
@@ -28,6 +25,7 @@ def register_pycon(
     """
     registrations_uc = RegistrationUsecase()
     return registrations_uc.create_registration(registration_in)
+
 
 @pycon_router.get(
     '',
@@ -54,6 +52,7 @@ def get_registrations(
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registrations(event_id=event_id)
 
+
 @pycon_router.get(
     '/{entryId}',
     response_model=PyconRegistrationOut,
@@ -79,6 +78,7 @@ def get_registration(
     """
     registrations_uc = RegistrationUsecase()
     return registrations_uc.get_registration(event_id=event_id, registration_id=entry_id)
+
 
 @pycon_router.put(
     '/{entryId}',
@@ -121,7 +121,6 @@ def update_registration(
     },
     summary='Delete registration',
 )
-
 @pycon_router.delete(
     '{entryId}/',
     status_code=HTTPStatus.NO_CONTENT,
