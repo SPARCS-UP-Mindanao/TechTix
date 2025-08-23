@@ -30,4 +30,6 @@ applications:
         paths:
           - ".npm/**/*"
           - node_modules/**/*
+        runtime-versions:
+          nodejs: 22.15
     appRoot: frontend
