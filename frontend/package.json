@@ -9,7 +9,11 @@
     "build:dummy": "tsc && vite build --mode dummy",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start": "vite preview",
-    "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,scss,sass,css}\""
+    "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,scss,sass,css}\"",
+    "format:check": "prettier --check .",
+    "format:check:ci": "./node_modules/.bin/prettier --check .",
+    "generate:env": "node scripts/generate-amplify-outputs.mjs",
+    "generate:outputs": "node scripts/generate-env.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

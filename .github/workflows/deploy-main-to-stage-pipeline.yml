@@ -1,0 +1,38 @@
+name: Deploy main to stage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-main-to-stage:
+    name: Deploy main to stage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Code Format
+        run: npm run format:check:ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Sync stage to main
+        uses: connor-baer/action-sync-branch@main
+        with:
+          branch: stage
+          token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
