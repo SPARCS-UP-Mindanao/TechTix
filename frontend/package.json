@@ -69,6 +69,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@aws-sdk/client-ssm": "^3.873.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@tanstack/eslint-plugin-query": "^5.83.1",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
