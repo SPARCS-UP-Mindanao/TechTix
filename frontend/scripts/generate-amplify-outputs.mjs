@@ -86,6 +86,7 @@ function buildAmplifyOutputs(vars) {
         domain: vars.COGNITO_DOMAIN_URL,
         scopes: ['email', 'openid', 'phone', 'profile', 'aws.cognito.signin.user.admin'],
         redirect_sign_in_uri: [vars.COGNITO_REDIRECT_SIGNIN_URI],
+        redirect_sign_out_uri: [],
         response_type: 'token'
       },
       user_pool_id: vars.COGNITO_USER_POOL_ID,
