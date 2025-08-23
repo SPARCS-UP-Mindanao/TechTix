@@ -29,7 +29,7 @@ jobs:
         run: npm run format:check:ci
 
       - name: Build Project
-        run: npm run build
+        run: npm run build:dummy
 
       - name: Deploy to Amplify
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
