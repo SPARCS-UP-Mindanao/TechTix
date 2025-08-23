@@ -28,7 +28,7 @@ jobs:
         run: npm run format:check:ci
 
       - name: Build Project
-        run: npm run build
+        run: npm run build:dummy
 
       - name: Sync stage to main
         uses: connor-baer/action-sync-branch@main

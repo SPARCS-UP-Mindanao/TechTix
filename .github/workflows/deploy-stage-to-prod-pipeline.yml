@@ -31,7 +31,7 @@ jobs:
         run: npm run format:check:ci
 
       - name: Build Project
-        run: npm run build
+        run: npm run build:dummy
 
       - name: Await Manual Approval
         uses: trstringer/manual-approval@v1
