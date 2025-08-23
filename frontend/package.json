@@ -12,8 +12,8 @@
     "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,scss,sass,css}\"",
     "format:check": "prettier --check .",
     "format:check:ci": "./node_modules/.bin/prettier --check .",
-    "generate:env": "node scripts/generate-amplify-outputs.mjs",
-    "generate:outputs": "node scripts/generate-env.mjs"
+    "generate:outputs": "node scripts/generate-amplify-outputs.mjs",
+    "generate:env": "node scripts/generate-env.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

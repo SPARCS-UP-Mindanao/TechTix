@@ -17,6 +17,9 @@ applications:
               fi
               echo "Using STAGE=$STAGE (branch=$AWS_BRANCH, region=$AWS_REGION)"
 
+              echo "npm run generate:outputs $STAGE --region $AWS_REGION"
+              echo "npm run generate:env $STAGE --region $AWS_REGION"
+
               npm run generate:outputs "$STAGE" --region "$AWS_REGION"
               npm run generate:env "$STAGE" --region "$AWS_REGION"
         build:

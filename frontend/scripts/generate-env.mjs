@@ -108,6 +108,8 @@ async function main() {
     throw new Error(lines.join('\n'));
   }
 
+  console.log({ envOut });
+
   // Optional sanity: ensure these look like URLs
   mustBeUrl('VITE_API_AUTH_BASE_URL', envOut.VITE_API_AUTH_BASE_URL);
   mustBeUrl('VITE_API_EVENTS_BASE_URL', envOut.VITE_API_EVENTS_BASE_URL);
