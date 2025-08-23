@@ -1,11 +1,11 @@
-name: Deploy main to stage
+name: Deploy dev to stage
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy-main-to-stage:
-    name: Deploy main to stage
+  deploy-dev-to-stage:
+    name: Deploy dev to stage
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,7 +30,7 @@ jobs:
       - name: Build Project
         run: npm run build:dummy
 
-      - name: Sync stage to main
+      - name: Sync stage to dev
         uses: connor-baer/action-sync-branch@main
         with:
           branch: stage

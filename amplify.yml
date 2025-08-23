@@ -6,11 +6,11 @@ applications:
           commands:
             - npm ci --cache .npm --prefer-offline
             - |
-              if [ "$AWS_BRANCH" = "main" ]; then
+              if [ "$AWS_BRANCH" = "dev" ]; then
                   STAGE=dev
               elif [ "$AWS_BRANCH" = "stage" ]; then
                   STAGE=staging
-              elif [ "$AWS_BRANCH" = "prod" ]; then
+              elif [ "$AWS_BRANCH" = "main" ]; then
                   STAGE=prod
               else
                   STAGE=dev
