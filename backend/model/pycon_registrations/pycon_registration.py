@@ -12,11 +12,6 @@ from pydantic import (
 )
 
 
-class SocialMedia(BaseModel):
-    facebook: HttpUrl = Field(..., title='Facebook Profile URL')
-    linkedIn: Optional[HttpUrl] = Field(None, title='LinkedIn Profile URL')
-
-
 class TicketTypes(Enum):
     CODER = 'coder'
     KASOSYO = 'kasosyo'

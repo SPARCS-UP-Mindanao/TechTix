@@ -35,7 +35,8 @@ class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
     jobTitle = UnicodeAttribute(null=True)
 
     # social media (will be stored as JSON string)
-    socials = UnicodeAttribute(null=True)
+    facebookLink = UnicodeAttribute(null=True)
+    linkedInLink = UnicodeAttribute(null=True)
 
     # ticket and event preferences
     ticketType = UnicodeAttribute(null=True)

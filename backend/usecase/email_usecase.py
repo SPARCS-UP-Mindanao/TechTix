@@ -43,9 +43,9 @@ class EmailUsecase:
         """
 
         # Check if event has konfhub and exclude it from the Email Service
-        # if self.__event_email and event.konfhubId and event.konfhubApiKey:
-        #     logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
-        #     return
+        if self.__event_email and event.konfhubId and event.konfhubApiKey:
+            logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
+            return
 
         timestamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
         payload = [email_in.dict() for email_in in email_in_list]
