@@ -1,15 +1,13 @@
 import os
 from datetime import datetime
 from http import HTTPStatus
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import pytz
 import ulid
 from constants.common_constants import EntryStatus
-
-# from model.registrations.registration import Registration, RegistrationIn
 from model.pycon_registrations.pycon_registration import PyconRegistrationIn
-from model.registrations.registration import Registration
+from model.registrations.registration import Registration, RegistrationIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     DeleteError,
@@ -42,7 +40,7 @@ class RegistrationsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_registration(
-        self, registration_in: PyconRegistrationIn, registration_id: str = None
+        self, registration_in: Union[PyconRegistrationIn, RegistrationIn], registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Store a registration record in the database.
 
@@ -238,7 +236,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(
-        self, registration_entry: Registration, registration_in: PyconRegistrationIn
+        self, registration_entry: Registration, registration_in: Union[PyconRegistrationIn, RegistrationIn]
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Update a registration record in the database.
 

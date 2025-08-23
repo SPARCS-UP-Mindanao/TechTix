@@ -13,8 +13,8 @@ from pydantic import (
 
 
 class SocialMedia(BaseModel):
+    facebook: HttpUrl = Field(..., title='Facebook Profile URL')
     linkedIn: Optional[HttpUrl] = Field(None, title='LinkedIn Profile URL')
-    facebook: Optional[HttpUrl] = Field(None, title='Facebook Profile URL')
 
 
 class TicketTypes(Enum):
@@ -47,14 +47,13 @@ class PyconRegistration(BaseModel):
     contactNumber: str = Field(..., title='Contact Number')
     organization: str = Field(..., title='Affiliated Company or Organization')
     jobTitle: str = Field(..., title='Job Title', description='Your current job title or role in tech')
-    socials: Optional[SocialMedia] = Field(
-        None, title='Social Media Profiles', description='Links to your social media profiles'
-    )
+    facebookLink: HttpUrl = Field(..., title='Facebook Profile URL')
+    linkedInLink: Optional[HttpUrl] = Field(None, title='LinkedIn Profile URL')
+
     ticketType: TicketTypes = Field(title='Ticket Type', description='Type of ticket you are registering for')
     sprintDay: bool = Field(
         ..., title='Sprint Day Participation', description='Will you be participating in the sprint day?'
     )
-
     availTShirt: bool = Field(
         ..., title='T-Shirt Availability', description='Do you want to buy an exclusive PyCon T-shirt?'
     )
@@ -71,17 +70,17 @@ class PyconRegistration(BaseModel):
     futureVolunteer: bool = Field(
         ..., title='Future Volunteer Interest', description='Would you like to volunteer in the future?'
     )
-    dietaryRestrictions: str = Field(
-        ..., title='Dietary Restrictions', description='Any dietary restrictions or allergies'
+    dietaryRestrictions: Optional[str] = Field(
+        None, title='Dietary Restrictions', description='Any dietary restrictions or allergies'
     )
-    accessibilityNeeds: str = Field(
-        ..., title='Accessibility Needs', description='Any specific accessibility needs or requests'
+    accessibilityNeeds: Optional[str] = Field(
+        None, title='Accessibility Needs', description='Any specific accessibility needs or requests'
     )
 
     discountCode: Optional[str] = Field(
         None, title='Discount Code', description='If you have a discount code, please enter it here'
     )
-    imageId: Optional[str] = Field(None, title='Image ID Object Key')
+    validIdObjectKey: str = Field(..., title='Image ID Object Key')
 
     @validator('firstName', 'lastName', 'nickname')
     def normalize_names(cls, v: str) -> str:
@@ -105,7 +104,6 @@ class PyconRegistrationOut(PyconRegistration):
 
 
 class PyconRegistrationIn(PyconRegistration):
-    referenceNumber: Optional[str] = Field(None, title='Reference Number')
     amountPaid: Optional[float] = Field(None, title='Amount Paid')
     transactionId: Optional[str] = Field(None, title='Transaction ID')
 

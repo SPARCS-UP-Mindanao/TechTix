@@ -54,7 +54,7 @@ class PaymentTransaction(Entities, discriminator='PaymentTransaction'):
 
     # discount and files
     discountCode = UnicodeAttribute(null=True)
-    imageId = UnicodeAttribute(null=True)
+    validIdObjectKey = UnicodeAttribute(null=True)
 
     # payment specific
     paymentRequestId = UnicodeAttribute(null=True)

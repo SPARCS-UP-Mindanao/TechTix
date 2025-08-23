@@ -54,8 +54,10 @@ class RegistrationUsecase:
         self.__konfhub_gateway = KonfHubGateway()
         self.__payment_transaction_repository = PaymentTransactionRepository()
 
-    def create_registration(self, registration_in: PyconRegistrationIn) -> Union[JSONResponse, PyconRegistrationOut]:
-        """Creates a new registration entry.
+    def create_pycon_registration(
+        self, registration_in: PyconRegistrationIn
+    ) -> Union[JSONResponse, PyconRegistrationOut]:
+        """Creates a new PyCon registration entry.
 
         :param registration_in: The data for creating the new registration.
         :type registration_in: RegistrationIn
@@ -69,9 +71,6 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         event_id = registration_in.eventId
-
-        if event.isApprovalFlow:
-            return self.create_registration_approval_flow(event=event, registration_in=registration_in)
 
         # Check if the event is still open
         if event.status != EventStatus.OPEN.value:
@@ -173,18 +172,145 @@ class RegistrationUsecase:
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
 
-        # Capture registration to KonfHub
-        # if event.konfhubId:
-        #     konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-        #     if konfhub_response != HTTPStatus.OK:
-        #         return konfhub_response
-
         registration_data = self.__convert_data_entry_to_dict(registration)
 
         if not registration.registrationEmailSent:
             self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
 
         registration_out = PyconRegistrationOut(**registration_data)
+        return self.collect_pre_signed_url_pycon(registration_out)
+
+    def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
+        """Creates a new registration entry.
+
+        :param registration_in: The data for creating the new registration.
+        :type registration_in: RegistrationIn
+
+        :return: If successful, returns the created registration entry. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: Union[JSONResponse, RegistrationOut]
+
+        """
+        status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        event_id = registration_in.eventId
+
+        if event.isApprovalFlow:
+            return self.create_registration_approval_flow(event=event, registration_in=registration_in)
+
+        # Check if the event is still open
+        if event.status != EventStatus.OPEN.value:
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': 'Event is not open for registration'},
+            )
+
+        if event.paidEvent:
+            transaction_id = registration_in.transactionId
+            if not transaction_id:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Transaction ID is required for paid event'},
+                )
+
+            (
+                status,
+                _,
+                message,
+            ) = self.__payment_transaction_repository.query_payment_transaction_with_payment_transaction_id(
+                event_id=event_id, payment_transaction_id=transaction_id
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+        # Check if the registration with the same email already exists
+        email = registration_in.email
+        (
+            status,
+            registrations,
+            message,
+        ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
+        if status == HTTPStatus.OK and registrations:
+            return JSONResponse(
+                status_code=HTTPStatus.CONFLICT,
+                content={'message': f'Registration with email {email} already exists'},
+            )
+
+        # check if ticket types in event exists
+        future_registrations = event.registrationCount
+        if event.isLimitedSlot and future_registrations >= event.maximumSlots:
+            # check if registration count in event is full
+            return JSONResponse(
+                status_code=HTTPStatus.BAD_REQUEST,
+                content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
+            )
+
+        ticket_type_entry = None
+        if event.hasMultipleTicketTypes:
+            ticket_type_id = registration_in.ticketTypeId
+            if not ticket_type_id:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': 'Ticket type ID is required for multiple ticket types event'},
+                )
+
+            status, ticket_type_entry, message = self.__ticket_type_repository.query_ticket_type_with_ticket_type_id(
+                event_id=event_id, ticket_type_id=ticket_type_id
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+            if ticket_type_entry.currentSales >= ticket_type_entry.maximumQuantity:
+                return JSONResponse(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    content={'message': f'Ticket type {ticket_type_entry.name} is sold out'},
+                )
+
+        registration_id = ulid.ulid()
+        discount_code = registration_in.discountCode
+        if discount_code:
+            claimed_discount = self.__discount_usecase.claim_discount(
+                entry_id=discount_code,
+                registration_id=registration_id,
+                event_id=event_id,
+            )
+            if isinstance(claimed_discount, JSONResponse):
+                return claimed_discount
+
+        (
+            status,
+            registration,
+            message,
+        ) = self.__registrations_repository.store_registration(
+            registration_in=registration_in, registration_id=registration_id
+        )
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        if ticket_type_entry:
+            status, __, message = self.__ticket_type_repository.append_ticket_type_sales(
+                ticket_type_entry=ticket_type_entry
+            )
+            if status != HTTPStatus.OK:
+                return JSONResponse(status_code=status, content={'message': message})
+
+        # Capture registration to KonfHub
+        if event.konfhubId:
+            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
+            if konfhub_response != HTTPStatus.OK:
+                return konfhub_response
+
+        registration_data = self.__convert_data_entry_to_dict(registration)
+
+        if not registration.registrationEmailSent:
+            self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
+
+        registration_out = RegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 
     def create_registration_approval_flow(
@@ -233,10 +359,10 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        # if event.konfhubId:
-        #     konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-        #     if konfhub_response != HTTPStatus.OK:
-        #         return konfhub_response
+        if event.konfhubId:
+            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
+            if konfhub_response != HTTPStatus.OK:
+                return konfhub_response
 
         registration_data = self.__convert_data_entry_to_dict(registration)
 
@@ -449,7 +575,7 @@ class RegistrationUsecase:
 
         return None
 
-    def collect_pre_signed_url(self, registration: PyconRegistrationOut):
+    def collect_pre_signed_url(self, registration: RegistrationOut) -> RegistrationOut:
         """Collects the pre-signed URL for the GCash payment image.
 
         :param registration: The registration entry to be updated.
@@ -459,14 +585,30 @@ class RegistrationUsecase:
         :rtype: RegistrationOut
 
         """
-        if registration.imageId:
-            image_id_url = self.__file_s3_usecase.create_download_url(registration.imageId)
+        if registration.gcashPaymentId:
+            image_id_url = self.__file_s3_usecase.create_download_url(registration.gcashPaymentId)
+            registration.gcashPaymentUrl = image_id_url.downloadLink
+
+        return registration
+
+    def collect_pre_signed_url_pycon(self, registration: PyconRegistrationOut) -> PyconRegistrationOut:
+        """Collects the pre-signed URL for the valid ID image.
+
+        :param registration: The registration entry to be updated.
+        :type registration: PyconRegistrationOut
+
+        :return: The updated registration entry with the pre-signed URL for the GCash payment image.
+        :rtype: PyconRegistrationOut
+
+        """
+        if registration.validIdObjectKey:
+            image_id_url = self.__file_s3_usecase.create_download_url(registration.validIdObjectKey)
             registration.imageIdUrl = image_id_url.downloadLink
 
         return registration
 
-    def register_konfhub(self, registration_in: PyconRegistrationIn, event_id: str, event: Event):
-        ticket_type_id = registration_in.ticketType
+    def register_konfhub(self, registration_in: RegistrationIn, event_id: str, event: Event):
+        ticket_type_id = registration_in.ticketTypeId
         if not ticket_type_id:
             _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
             ticket_types_list = [ticket_type.konfhubId for ticket_type in ticket_types_entries or []]
@@ -477,7 +619,7 @@ class RegistrationUsecase:
             name=f'{registration_in.firstName} {registration_in.lastName}',
             email_id=registration_in.email,
             quantity=1,
-            designation=registration_in.jobTitle,
+            designation=registration_in.title,
             organisation=registration_in.organization,
             t_shirt_size=registration_in.shirtSize,
             phone_number=phone_number_with_no_zero,

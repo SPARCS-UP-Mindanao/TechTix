@@ -85,7 +85,8 @@ class Registration(Model):
     nickname = UnicodeAttribute(null=True)
     pronouns = UnicodeAttribute(null=True)
     jobTitle = UnicodeAttribute(null=True)
-    socials = UnicodeAttribute(null=True)
+    facebookLink = UnicodeAttribute(null=True)
+    linkedInLink = UnicodeAttribute(null=True)
     ticketType = UnicodeAttribute(null=True)
     sprintDay = BooleanAttribute(null=True)
     availTShirt = BooleanAttribute(null=True)
@@ -94,7 +95,7 @@ class Registration(Model):
     futureVolunteer = BooleanAttribute(null=True)
     dietaryRestrictions = UnicodeAttribute(null=True)
     accessibilityNeeds = UnicodeAttribute(null=True)
-    imageId = UnicodeAttribute(null=True)
+    validIdObjectKey = UnicodeAttribute(null=True)
 
 
 class RegistrationDataIn(BaseModel):
