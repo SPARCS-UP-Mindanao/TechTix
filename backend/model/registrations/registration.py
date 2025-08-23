@@ -81,6 +81,21 @@ class Registration(Model):
     awsCommunityDayInLineWith = UnicodeAttribute(null=True)
     foodRestrictions = UnicodeAttribute(null=True)
 
+    # PyCon Specific Fields
+    nickname = UnicodeAttribute(null=True)
+    pronouns = UnicodeAttribute(null=True)
+    jobTitle = UnicodeAttribute(null=True)
+    socials = UnicodeAttribute(null=True)
+    ticketType = UnicodeAttribute(null=True)
+    sprintDay = BooleanAttribute(null=True)
+    availTShirt = BooleanAttribute(null=True)
+    shirtType = UnicodeAttribute(null=True)
+    communityInvolvement = BooleanAttribute(null=True)
+    futureVolunteer = BooleanAttribute(null=True)
+    dietaryRestrictions = UnicodeAttribute(null=True)
+    accessibilityNeeds = UnicodeAttribute(null=True)
+    imageId = UnicodeAttribute(null=True)
+
 
 class RegistrationDataIn(BaseModel):
     class Config:

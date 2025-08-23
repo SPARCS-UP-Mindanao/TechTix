@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 from typing import Optional
 
@@ -11,9 +10,6 @@ from pydantic import (
     root_validator,
     validator,
 )
-from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
-from pynamodb.indexes import AllProjection, LocalSecondaryIndex
-from pynamodb.models import Model
 
 
 class SocialMedia(BaseModel):
@@ -39,17 +35,6 @@ class TShirtSize(Enum):
     XL = 'XL'
     XXL = 'XXL'
     XXXL = 'XXXL'
-
-
-class EmailLSI(LocalSecondaryIndex):
-    class Meta:
-        index_name = 'EmailIndex'
-        projection = AllProjection()
-        read_capacity_units = 1
-        write_capacity_units = 1
-
-    hashKey = UnicodeAttribute(hash_key=True)
-    email = UnicodeAttribute(range_key=True)
 
 
 class PyconRegistration(BaseModel):
@@ -97,7 +82,6 @@ class PyconRegistration(BaseModel):
         None, title='Discount Code', description='If you have a discount code, please enter it here'
     )
     imageId: Optional[str] = Field(None, title='Image ID Object Key')
-    gcashPayment: Optional[str] = Field(None, title='GCash Payment Image ID')
 
     @validator('firstName', 'lastName', 'nickname')
     def normalize_names(cls, v: str) -> str:
@@ -117,59 +101,7 @@ class PyconRegistrationOut(PyconRegistration):
     class Config:
         extra = 'ignore'
 
-
-class Registration(Model):
-    class Meta:
-        table_name = os.getenv('REGISTRATIONS_TABLE')
-        region = os.getenv('REGION')
-        billing_mode = 'PAY_PER_REQUEST'
-
-    registrationId = UnicodeAttribute(null=False)
-    hashKey = UnicodeAttribute(hash_key=True)
-    rangeKey = UnicodeAttribute(range_key=True)
-    eventId = UnicodeAttribute(null=False)
-
-    emailLSI = EmailLSI()
-    firstName = UnicodeAttribute(null=True)
-    lastName = UnicodeAttribute(null=True)
-    nickname = UnicodeAttribute(null=True)
-    pronouns = UnicodeAttribute(null=True)
-
-    email = UnicodeAttribute(null=True)
-    contactNumber = UnicodeAttribute(null=True)
-
-    organization = UnicodeAttribute(null=True)
-    jobTitle = UnicodeAttribute(null=True)
-
-    socials = UnicodeAttribute(null=True)
-
-    ticketType = UnicodeAttribute(null=True)
-    sprintDay = UnicodeAttribute(null=True)
-    availTShirt = UnicodeAttribute(null=True)
-    shirtType = UnicodeAttribute(null=True)
-    shirtSize = UnicodeAttribute(null=True)
-
-    communityInvolvement = UnicodeAttribute(null=True)
-    futureVolunteer = UnicodeAttribute(null=True)
-
-    dietaryRestrictions = UnicodeAttribute(null=True)
-    accessibilityNeeds = UnicodeAttribute(null=True)
-
-    imageId = UnicodeAttribute(null=False)
-
-    discountCode = UnicodeAttribute(null=True)
-
-    paymentId = UnicodeAttribute(null=True)
-    gcashPayment = UnicodeAttribute(null=True)
-    referenceNumber = UnicodeAttribute(null=True)
-    amountPaid = NumberAttribute(null=True)
-    transactionId = UnicodeAttribute(null=True)
-
-    registrationEmailSent = BooleanAttribute(default=False)
-    confirmationEmailSent = BooleanAttribute(default=False)
-
-    createDate = UnicodeAttribute(null=False)
-    updateDate = UnicodeAttribute(null=False)
+    imageIdUrl: Optional[HttpUrl] = Field(None, title='Image ID URL')
 
 
 class PyconRegistrationIn(PyconRegistration):

@@ -11,7 +11,7 @@ from model.email.email import EmailIn
 from model.events.event import Event
 from model.preregistrations.preregistration import PreRegistration, PreRegistrationPatch
 from model.preregistrations.preregistrations_constants import AcceptanceStatus
-from model.pycon_registrations.pycon_registration import Registration
+from model.registrations.registration import Registration
 from repository.preregistrations_repository import PreRegistrationsRepository
 from utils.logger import logger
 
@@ -43,9 +43,9 @@ class EmailUsecase:
         """
 
         # Check if event has konfhub and exclude it from the Email Service
-        if self.__event_email and event.konfhubId and event.konfhubApiKey:
-            logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
-            return
+        # if self.__event_email and event.konfhubId and event.konfhubApiKey:
+        #     logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
+        #     return
 
         timestamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
         payload = [email_in.dict() for email_in in email_in_list]

@@ -8,10 +8,8 @@ import ulid
 from constants.common_constants import EntryStatus
 
 # from model.registrations.registration import Registration, RegistrationIn
-from model.pycon_registrations.pycon_registration import (
-    PyconRegistrationIn,
-    Registration,
-)
+from model.pycon_registrations.pycon_registration import PyconRegistrationIn
+from model.registrations.registration import Registration
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
     DeleteError,
