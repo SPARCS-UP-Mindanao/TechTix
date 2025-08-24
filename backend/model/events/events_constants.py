@@ -10,15 +10,16 @@ class EventStatus(str, Enum):
     COMPLETED = 'completed'
 
 
+class EventUploadField(str, Enum):
+    BANNER = 'bannerLink'
+    LOGO = 'logoLink'
+    CERTIFICATE_TEMPLATE = 'certificateTemplate'
+
+
 class EventUploadType(str, Enum):
     BANNER = 'banner'
     LOGO = 'logo'
     CERTIFICATE_TEMPLATE = 'certificateTemplate'
     PAYMENT_PROOF = 'proofOfPayment'
     GCASH_QR = 'gcashQRCode'
-
-
-class EventUploadField(str, Enum):
-    BANNER = 'bannerLink'
-    LOGO = 'logoLink'
-    CERTIFICATE_TEMPLATE = 'certificateTemplate'
+    VALID_ID = 'validId'
