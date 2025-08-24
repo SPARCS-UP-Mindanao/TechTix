@@ -13,7 +13,8 @@
     "format:check": "prettier --check .",
     "format:check:ci": "./node_modules/.bin/prettier --check .",
     "generate:outputs": "node scripts/generate-amplify-outputs.mjs",
-    "generate:env": "node scripts/generate-env.mjs"
+    "generate:env": "node scripts/generate-env.mjs",
+    "generate": "node scripts/generate-all.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

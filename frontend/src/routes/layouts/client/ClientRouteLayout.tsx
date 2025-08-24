@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'aws-amplify/auth';
 import Avatar, { extractNameInitials } from '@/components/Avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/DropdownMenu';
@@ -7,6 +7,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 const ClientRouteLayout = () => {
   const auth = useCurrentUser();
   const loc = useLocation();
+  const navigate = useNavigate();
   const to = encodeURIComponent(loc.pathname + loc.search + loc.hash);
 
   if (!auth?.user) {
@@ -14,6 +15,12 @@ const ClientRouteLayout = () => {
   }
 
   const { userName, picture } = auth.user;
+
+  const onSignOut = () => {
+    signOut();
+    navigate({ pathname: '/login', search: `?to=${to}` });
+    location.reload();
+  };
 
   return (
     <>
@@ -26,7 +33,7 @@ const ClientRouteLayout = () => {
             <DropdownMenuLabel>{userName ?? 'User'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => signOut()}>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={onSignOut}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
