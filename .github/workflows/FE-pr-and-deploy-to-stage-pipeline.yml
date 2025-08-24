@@ -1,15 +1,15 @@
-name: Build and Deploy PR to dev
+name: Build and Deploy PR to stage
 
 on:
   push:
-    branches: [dev]
+    branches: [stage]
   pull_request:
-    branches: [dev]
+    branches: [stage]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy PR to dev
+    name: Build and Deploy PR to stage
     runs-on: ubuntu-latest
     defaults:
       run:
