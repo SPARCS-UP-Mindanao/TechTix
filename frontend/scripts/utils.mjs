@@ -73,3 +73,29 @@ export function deepScanForUndefinedStrings(obj, base = 'config') {
   }
   return errs;
 }
+
+export function mustBeUrl(key, val) {
+  try {
+    new URL(val);
+  } catch {
+    throw new Error(`${key} is not a valid URL: ${val}`);
+  }
+}
+
+export function chunk(a, n) {
+  const out = [];
+  for (let i = 0; i < a.length; i += n) out.push(a.slice(i, i + n));
+  return out;
+}
+
+export function isBad(val) {
+  if (val == null) return 'missing';
+  const t = String(val).trim();
+  if (!t) return 'empty';
+  if (['undefined', 'null'].includes(t.toLowerCase())) return `invalid ('${val}')`;
+  return null;
+}
+
+export function toArray(x) {
+  return Array.isArray(x) ? x : [x];
+}

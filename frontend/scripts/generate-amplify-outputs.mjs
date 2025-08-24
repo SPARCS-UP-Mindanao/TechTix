@@ -1,8 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import url from 'url';
-import { parseArgs, validateRequiredPaths, deepScanForUndefinedStrings } from './utils.mjs';
+import { parseArgs, validateRequiredPaths, deepScanForUndefinedStrings, chunk, toArray } from './utils.mjs';
 import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
+
+// Tiny args: node scripts/generate-dotenv.mjs staging --region ap-southeast-1 --out .env
 
 const args = parseArgs(process.argv);
 
@@ -35,16 +37,6 @@ const parameterNames = {
   COGNITO_USER_POOL_ID: `/techtix/cognito-user-pool-id-${STAGE}`,
   COGNITO_CLIENT_ID: `/techtix/cognito-user-pool-client-id-${STAGE}`
 };
-
-function toArray(x) {
-  return Array.isArray(x) ? x : [x];
-}
-
-function chunk(arr, n) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
-  return out;
-}
 
 async function getByNames(map) {
   const allNames = [...new Set(Object.values(map).flatMap(toArray))];

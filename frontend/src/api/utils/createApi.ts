@@ -1,7 +1,5 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { getCookie } from 'typescript-cookie';
-// import { refreshOnIntercept } from '@/utils/refreshToken';
 import { QueryKey } from '@tanstack/react-query';
 
 interface ErrorStringResponse {
@@ -100,9 +98,6 @@ export function createApi<D, T = D>(
       } as unknown as GenericReturn<T>;
     }
   };
-
-  // TODO: Should fix?
-  // authorize && refreshOnIntercept(api);
 
   return {
     queryKey: createQueryKey(url, body ?? queryParams) as unknown as QueryKey,
