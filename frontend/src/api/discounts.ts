@@ -5,12 +5,16 @@ import { Registration } from '@/model/registrations';
 export interface DiscountDto {
   entryId: string;
   eventId: string;
-  claimed: boolean;
+  claimed?: boolean;
   discountPercentage: number;
   registration?: Registration;
   organizationId: string;
   createDate: string;
   updateDate: string;
+  isReusable?: boolean;
+  maxDiscountUses?: number;
+  currentDiscountUses?: number; 
+  remainingUses?: number;
 }
 
 export type OptionalDiscount = Partial<Discount>;

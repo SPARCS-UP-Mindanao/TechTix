@@ -1,52 +1,98 @@
 import { FC, useState } from 'react';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, useFormContext } from 'react-hook-form';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { FormItem, FormLabel, FormError, FormDescription } from '@/components/Form';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
+import Switch from '@/components/Switch';
 import Tooltip from '@/components/Tooltip';
 import { getAllDiscounts } from '@/api/discounts';
 import { Discount, OrganizationDiscount, enabledDiscountStatus } from '@/model/discount';
 import { Event, EventStatus } from '@/model/events';
 import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
-import { useDiscountForm } from '@/hooks/useDiscountForm';
+import { DiscountFormValues, useDiscountForm } from '@/hooks/useDiscountForm';
 import { discountColumns } from './DiscountColumns';
 
-const CreateDiscoutFormItems = () => (
-  <>
-    <FormItem name="organizationName">
-      {({ field }) => (
-        <div className="flex flex-col space-y-2">
-          <FormLabel>Discount Recipient</FormLabel>
-          <Input type="text" {...field} />
-          <FormDescription>Enter the organization you want to give discounts to</FormDescription>
-          <FormError />
+const CreateDiscountFormItems = () => {
+  const { watch } = useFormContext<DiscountFormValues>();
+  const isReusable = watch('isReusable');
+
+  return (
+    <>
+      <FormItem name="organizationName">
+        {({ field }) => (
+          <div className="flex flex-col space-y-2">
+            <FormLabel>Discount Recipient</FormLabel>
+            <Input type="text" {...field} />
+            <FormDescription>Enter the organization you want to give discounts to</FormDescription>
+            <FormError />
+          </div>
+        )}
+      </FormItem>
+
+      <FormItem name="discountPercentage">
+        {({ field }) => (
+          <div className="flex flex-col space-y-2">
+            <FormLabel>Discount Percentage (%)</FormLabel>
+            <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value) || 0)} />
+            <FormError />
+          </div>
+        )}
+      </FormItem>
+
+      <FormItem name="quantity">
+        {({ field }) => (
+          <div className="flex flex-col space-y-2">
+            <FormLabel>Quantity</FormLabel>
+            <Input type="number" min="1" step="1" {...field} onChange={(e) => field.onChange(Number(e.target.value) || 0)} disabled={isReusable} />
+            <FormDescription>Enter the number of discounts you want to give</FormDescription>
+            <FormError />
+          </div>
+        )}
+      </FormItem>
+
+      <FormItem name="isReusable">
+        {({ field }) => (
+          <div className="flex space-y-6">
+            <div className="flex gap-10 items-center">
+              <FormLabel>Is reusable</FormLabel>
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            </div>
+            <FormError />
+          </div>
+        )}
+      </FormItem>
+
+      {isReusable && (
+        <div className="flex flex-col">
+          <FormItem name="discountName">
+            {({ field }) => (
+              <div className="flex flex-col space-y-2">
+                <FormLabel>Discount Name</FormLabel>
+                <Input type="text" {...field} />
+                <FormDescription>Enter a name for this reusable discount</FormDescription>
+                <FormError />
+              </div>
+            )}
+          </FormItem>
+
+          <FormItem name="maxDiscountUses">
+            {({ field }) => (
+              <div className="flex flex-col space-y-2">
+                <FormLabel>Maximum Uses</FormLabel>
+                <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value) || 0)} />
+                <FormDescription>Maximum number of times this discount can be used</FormDescription>
+                <FormError />
+              </div>
+            )}
+          </FormItem>
         </div>
       )}
-    </FormItem>
-    <FormItem name="discountPercentage">
-      {({ field }) => (
-        <div className="flex flex-col space-y-2">
-          <FormLabel>Discount Percentage (%)</FormLabel>
-          <Input type="number" {...field} />
-          <FormError />
-        </div>
-      )}
-    </FormItem>
-    <FormItem name="quantity">
-      {({ field }) => (
-        <div className="flex flex-col space-y-2">
-          <FormLabel>Quantity</FormLabel>
-          <Input type="number" min="0" step="1" {...field} />
-          <FormDescription>Enter the number of discounts you want to give</FormDescription>
-          <FormError />
-        </div>
-      )}
-    </FormItem>
-  </>
-);
+    </>
+  );
+};
 
 interface DiscountCodeListProps {
   discounts: Discount[];
@@ -147,7 +193,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
         ) : (
           <FormProvider {...form}>
             <main className="w-full">
-              <CreateDiscoutFormItems />
+              <CreateDiscountFormItems />
             </main>
           </FormProvider>
         )}

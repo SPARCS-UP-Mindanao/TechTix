@@ -4,10 +4,14 @@ import { EventStatus } from './events';
 export interface Discount {
   entryId: string;
   eventId: string;
-  claimed: boolean;
+  claimed?: boolean;
   discountPercentage: number;
   registration?: Registration;
   organizationId: string;
+  isReusable?: boolean;
+  maxDiscountUses?: number;
+  currentDiscountUses?: number;
+  remainingUses?: number;
 }
 
 export interface OrganizationDiscount {
@@ -17,8 +21,12 @@ export interface OrganizationDiscount {
 
 export interface CreateDiscount {
   discountPercentage: number;
-  quantity: number;
+  quantity?: number;
   organizationName: string;
+  isReusable?: boolean;
+  maxDiscountUses?: number;
+  discountName?: string;
+  remainingUses?: number;
 }
 
 export interface Pricing {
