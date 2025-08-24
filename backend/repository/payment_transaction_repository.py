@@ -47,6 +47,7 @@ class PaymentTransactionRepository:
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=payment_transaction_in)
         registration_data = data.pop('registrationData', {}) or {}
+        data.pop('eventId')
 
         event_id = payment_transaction_in.eventId
         entry_id = ulid()
