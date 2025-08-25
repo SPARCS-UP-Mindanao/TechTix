@@ -6,6 +6,7 @@ import boto3
 import ulid
 from constants.common_constants import EmailType
 from model.email.email import EmailIn
+from model.entities import Entities
 from model.payments.payments import PaymentTransactionOut, TransactionStatus
 from model.registrations.registration import Registration
 from pydantic import BaseModel
@@ -37,6 +38,7 @@ def handler(event, context):
             logger.info(f'Processing message: {message_body}')
             payment_tracking_body = PaymentTrackingBody(**message_body)
             registration_details = payment_tracking_body.registration_details
+            payment_entry_id = registration_details.entryId
             status = payment_tracking_body.status
             registration_data = registration_details.registrationData
 
@@ -68,10 +70,20 @@ def handler(event, context):
                 registration_id = str(ulid.ulid())
                 current_date = datetime.now(timezone.utc).isoformat()
                 hash_key = str(ulid.ulid())
+                # Update Entities Payment Transaction Table
+                payment_transaction_details = Entities.get(
+                    hash_key=f'PaymentTransaction#-{registration_details.eventId}', range_key=f'v0#{payment_entry_id}'
+                )
+                payment_transaction_details.update(
+                    actions=[
+                        Entities.transactionStatus.set(TransactionStatus.SUCCESS.value),
+                    ]
+                )
 
+                # Append Obtained Details to Registration Tabls
                 registration_item = Registration(
                     hashKey=registration_data.eventId or registration_id,
-                    rangeKey=hash_key,
+                    rangeKey=payment_entry_id or hash_key,
                     registrationId=registration_id,
                     createDate=current_date,
                     updateDate=current_date,
@@ -106,6 +118,9 @@ def handler(event, context):
                 )
                 registration_item.save()
                 logger.info(f'Successfully saved registration for {registration_data.email}')
+
+        except Entities.DoesNotExist:
+            logger.error(f'Payment transaction with entryId {payment_entry_id} not found.')
 
         except Exception as e:
             logger.error(f"Failed to process message for {record.get('receiptHandle', 'N/A')}: {e}")
