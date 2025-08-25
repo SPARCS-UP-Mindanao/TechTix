@@ -12,18 +12,26 @@ class PaymentTrackingSQSUsecase:
         self.PAYMENT_QUEUE = os.environ.get('PAYMENT_QUEUE')
         self.payment_tracking_usecase = PaymentTrackingUsecase()
 
-    def process_payment_message(self, event):
+    def process_payment_message(self, event: dict) -> None:
+        """
+        Processes payment messages received from an AWS SQS event and updates the transactionStatus of a payment_transaction.
+
+        :param event: The AWS SQS event containing message records.
+        :return: None
+
+        Logs errors encountered during message processing and successful deletion of SQS messages.
+        """
         for record in event.get('Records', []):
             receipt_handle = record.get('receiptHandle')
-            try:
-                message_body = json.loads(record['body'])
+            # try:
+            message_body = json.loads(record['body'])
 
-                self.payment_tracking_usecase.process_payment_event(message_body)
+            self.payment_tracking_usecase.process_payment_event(message_body)
 
-            except Exception as e:
-                logger.error(f'Failed to process message with receipt handle {receipt_handle}: {e}')
+            # except Exception as e:
+            # logger.error(f'Failed to process message with receipt handle {receipt_handle}: {e}')
 
-            finally:
-                if receipt_handle:
-                    self.SQS_CLIENT.delete_message(QueueUrl=self.PAYMENT_QUEUE, ReceiptHandle=receipt_handle)
-                    logger.info(f'SQS message with receipt handle {receipt_handle} deleted.')
+            # finally:
+            if receipt_handle:
+                self.SQS_CLIENT.delete_message(QueueUrl=self.PAYMENT_QUEUE, ReceiptHandle=receipt_handle)
+                logger.info(f'SQS message with receipt handle {receipt_handle} deleted.')

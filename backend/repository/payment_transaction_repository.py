@@ -233,19 +233,48 @@ class PaymentTransactionRepository:
             return HTTPStatus.OK, payment_transaction_entries[0], None
 
     def update_payment_transaction_status(
-        self, payment_transaction: PaymentTransaction, status: TransactionStatus
+        self, event_id: str, payment_transaction_id: str, status: TransactionStatus
     ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
+        """Update the transactionStatus of a payment_transaction.
+        
+        :param event_id: The event ID.
+        :param payment_transaction_id: The payment transaction ID to update.
+        :param status: The new transaction status.
+        :return: The HTTP status, the updated payment_transaction, and a message.
+
+        :rtype: Tuple[HTTPStatus, PaymentTransaction, str]
+        """
         try:
-            payment_transaction.transactionStatus = status.value
-            payment_transaction.updateDate = self.current_date
-            payment_transaction.updatedBy = os.getenv('CURRENT_USER')
-            payment_transaction.save()
-            logger.info(f'[{payment_transaction.rangeKey}] Update payment_transaction status successful')
+            hash_key = f'{self.core_obj}#{event_id}'
+            range_key = f'v{self.latest_version}#{payment_transaction_id}'
+
+            payment_transaction = PaymentTransaction.get(
+                hash_key=hash_key,
+                range_key=range_key,
+            )
+
+            with TransactWrite(connection=self.conn) as transaction:
+                transaction.update(
+                    payment_transaction,
+                    actions=[
+                        PaymentTransaction.transactionStatus.set(status.value),
+                        PaymentTransaction.updateDate.set(self.current_date),
+                        PaymentTransaction.updatedBy.set(os.getenv('CURRENT_USER')),
+                    ],
+                )
+
+            logger.info(f'[{payment_transaction_id}] Update payment transaction status successful')
             return HTTPStatus.OK, payment_transaction, ''
 
+        except (PutError, TransactWriteError, TableDoesNotExist, PynamoDBConnectionError) as e:
+            logger.error(f'[{payment_transaction_id}] Failed to update payment transaction status: {e}')
+            error_message = f'{e.__class__.__name__}: {str(e)}'
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, error_message
         except Exception as e:
-            logger.error(f'[{payment_transaction.rangeKey}] Failed to update payment_transaction status: {e}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR, None, str(e)
+            logger.error(f'[{payment_transaction_id}] An unexpected error occurred: {e}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, f'Unexpected error: {str(e)}'
+
+
 
     def update_payment_transaction(
         self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn
