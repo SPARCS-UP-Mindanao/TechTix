@@ -10,20 +10,20 @@ export interface RegistrationDto {
   contactNumber: string;
   organization: string;
   jobTitle: string;
-  facebookLink: string ;
+  facebookLink: string;
   linkedInLink: string | null;
-  ticketTyope: string;
+  ticketType: string;
   sprintDay: boolean;
   availTShirt: boolean;
   shirtType: string | null;
   shirtSize: string | null;
   communityInvolvement: boolean;
   futureVolunteer: boolean;
-  dietaryRestrictions : string | null;
+  dietaryRestrictions: string | null;
   accessibilityNeeds: string | null;
-  discountCode : string | null;
+  discountCode: string | null;
   validIdObjectKey: string;
-  amountPaid: number | null;  
+  amountPaid: number | null;
   transactionId: string | null;
 }
 
@@ -33,8 +33,7 @@ interface CsvResponse {
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
-  ...registration,
-  type: 'registration'
+  ...registration
 });
 
 const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): Registration[] =>
@@ -68,7 +67,7 @@ export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
   createApi<RegistrationDto, Registration>({
     method: 'get',
     authorize: true,
-    url: `/pycon/registrations/${email}/email`,
+    url: `/registrations/${email}/email`,
     queryParams: { eventId },
     output: mapRegistrationDtoToRegistration
   });
@@ -103,5 +102,5 @@ export const getCsvRegistrations = (eventId: string) =>
   createApi<CsvResponse>({
     authorize: true,
     method: 'get',
-    url: `/pycon/registrations/${eventId}/csv_download`
+    url: `/registrations/${eventId}/csv_download`
   });

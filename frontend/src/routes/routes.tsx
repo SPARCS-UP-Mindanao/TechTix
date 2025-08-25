@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ErrorPage from '@/components/ErrorPage';
-import ClientPage from '@/pages/client/ClientPage';
 import EvaluatePage from '@/pages/client/evaluate/EvaluatePage';
 import LoginPage from '@/pages/client/login/LoginPage';
 import PreRegisterPage from '@/pages/client/preregister/PreRegisterPage';
-import RegisterPage from '@/pages/client/register/RegisterPage';
+import PyconClientPage from '@/pages/client/pycon/PyconClientPage';
+import RegisterPage from '@/pages/client/pycon/register/RegisterPage';
 import Callback from './Callback';
 import ClientAuthRouteLayout from './layouts/client/ClientAuthRouteLayout';
 import ClientRouteLayout from './layouts/client/ClientRouteLayout';
@@ -46,7 +46,7 @@ export const routes = createBrowserRouter(
           children: [
             {
               path: '/:eventId',
-              element: <ClientPage />,
+              element: <PyconClientPage />,
               children: [
                 {
                   path: 'preregister',

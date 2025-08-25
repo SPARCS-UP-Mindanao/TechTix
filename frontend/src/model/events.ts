@@ -78,15 +78,16 @@ export const EVENT_STATUSES: EventStatusItem[] = [
   }
 ];
 
-export type UploadType = 'banner' | 'logo' | 'certificateTemplate' | 'proofOfPayment' | 'gcashQRCode';
+export type UploadType = 'banner' | 'logo' | 'certificateTemplate' | 'proofOfPayment' | 'gcashQRCode' | 'validId';
 
 export const EVENT_UPLOAD_TYPE: Record<string, UploadType> = {
   BANNER: 'banner',
   LOGO: 'logo',
   CERTIFICATE_TEMPLATE: 'certificateTemplate',
   PROOF_OF_PAYMENT: 'proofOfPayment',
-  GCASH_QR: 'gcashQRCode'
-};
+  GCASH_QR: 'gcashQRCode',
+  VALID_ID: 'validId'
+} as const;
 export type EventFAQs = {
   isActive: boolean;
   faqs: FAQ[];

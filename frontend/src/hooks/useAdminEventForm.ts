@@ -173,46 +173,53 @@ export const useAdminEventForm = (event?: Event) => {
     });
   };
 
-  const submit = form.handleSubmit(async (values) => {
-    const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
+  const submit = form.handleSubmit(
+    async (values) => {
+      const toastMessage = mode === 'edit' ? 'Error in updating an event' : 'Error in creating an event';
 
-    try {
-      const response = await (eventId
-        ? api.execute(updateEvent(eventId, mapUpdateEventValues(values)))
-        : api.execute(createEvent(mapCreateEventValues(values))));
+      try {
+        const response = await (eventId
+          ? api.execute(updateEvent(eventId, mapUpdateEventValues(values)))
+          : api.execute(createEvent(mapCreateEventValues(values))));
 
-      if (response.status === 200) {
-        const successTitle = mode === 'edit' ? 'Event updated' : 'Event created';
-        const successMessage = mode === 'edit' ? 'Event updated successfully' : 'Event created successfully';
-        successToast({
-          title: successTitle,
-          description: successMessage
-        });
+        if (response.status === 200) {
+          const successTitle = mode === 'edit' ? 'Event updated' : 'Event created';
+          const successMessage = mode === 'edit' ? 'Event updated successfully' : 'Event created successfully';
+          successToast({
+            title: successTitle,
+            description: successMessage
+          });
 
-        if (mode === 'create') {
-          form.reset();
-          const { eventId: newEventId } = response.data;
-          navigate(`/admin/events/${newEventId}`);
+          if (mode === 'create') {
+            form.reset();
+            const { eventId: newEventId } = response.data;
+            navigate(`/admin/events/${newEventId}`);
+          }
+
+          if (mode === 'edit') {
+            form.reset(values);
+            api.invalidateQueries(getAdminEvent(eventId!));
+          }
+        } else {
+          errorToast({
+            title: toastMessage,
+            description: response.errorData.message || 'An error occurred while submitting. Please try again.'
+          });
         }
-
-        if (mode === 'edit') {
-          form.reset(values);
-          api.invalidateQueries(getAdminEvent(eventId!));
-        }
-      } else {
+      } catch (e) {
+        const { errorData } = e as CustomAxiosError;
         errorToast({
           title: toastMessage,
-          description: response.errorData.message || 'An error occurred while submitting. Please try again.'
+          description: errorData.message || errorData.detail[0].msg
         });
       }
-    } catch (e) {
-      const { errorData } = e as CustomAxiosError;
-      errorToast({
-        title: toastMessage,
-        description: errorData.message || errorData.detail[0].msg
-      });
+    },
+    (e) => {
+      console.log({ e });
+
+      onInvalid();
     }
-  }, onInvalid);
+  );
 
   const cancel = () => {
     if (eventId) {

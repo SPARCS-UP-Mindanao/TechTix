@@ -1,8 +1,7 @@
-import { RegisterFormValues } from '@/hooks/useRegisterForm';
 import { EditRegistrationFormValues } from '@/pages/admin/event/registrations/useEditRegistrationForm';
+import { RegisterFormValues } from '@/pages/client/pycon/hooks/useRegisterForm';
 
 export interface Registration {
-  type: 'registration';
   firstName: string;
   lastName: string;
   nickname: string;
@@ -11,20 +10,20 @@ export interface Registration {
   contactNumber: string;
   organization: string;
   jobTitle: string;
-  facebookLink: string ;
+  facebookLink: string;
   linkedInLink: string | null;
-  ticketTyope: string;
+  ticketType: string;
   sprintDay: boolean;
   availTShirt: boolean;
   shirtType: string | null;
   shirtSize: string | null;
   communityInvolvement: boolean;
   futureVolunteer: boolean;
-  dietaryRestrictions : string | null;
+  dietaryRestrictions: string | null;
   accessibilityNeeds: string | null;
-  discountCode : string | null;
+  discountCode: string | null;
   validIdObjectKey: string;
-  amountPaid: number | null;  
+  amountPaid: number | null;
   transactionId: string | null;
 }
 
@@ -33,7 +32,6 @@ export type RegisterMode = 'register' | 'preregister';
 type AcceptanceStatusConfig = {
   displayName: string;
 };
-
 
 // export const mapRegistrationToFormValues = (registration: Registration): RegisterFormValues => ({
 //   email: registration.email,
@@ -48,36 +46,40 @@ type AcceptanceStatusConfig = {
 //   transactionId: registration.transactionId ?? undefined
 // });
 
-export type CreateRegistration = Omit<
-  Registration,
-  'type' | 'registrationId' | 'certificateGenerated' | 'certificateClaimed' | 'certificateImgObjectKey' | 'certificatePdfObjectKey'
->;
+export type CreateRegistration = Registration & {
+  eventId: string;
+};
 
-// export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string): CreateRegistration => ({
-//     firstName:registration.firstName,
-//     lastName:registration.lastName,
-//     nickname:registration.nickname,
-//     pronouns:registration.,
-//     email:registration.,
-//     contactNumber:registration.,
-//     organization:registration.,
-//     jobTitle:registration.,
-//     facebookLink:registration.,
-//     linkedInLink:registration.,
-//     ticketTyope:registration.,
-//     sprintDay:registration.,
-//     availTShirt:registration.,
-//     shirtType:registration.,
-//     shirtSize:registration.,
-//     communityInvolvement:registration.,
-//     futureVolunteer:registration.,
-//     dietaryRestrictions :registration.,
-//     accessibilityNeeds:registration.,
-//     discountCode :registration.,
-//     validIdObjectKey:registration.,
-//     amountPaid:registration.,  
-//     transactionId:registration.,
-// });
+export const mapCreateRegistrationDataForPayment = (registration: RegisterFormValues, eventId: string) => ({
+  eventId: eventId,
+  firstName: registration.firstName,
+  lastName: registration.lastName,
+  nickname: registration.nickname ?? '',
+  pronouns: registration.pronouns,
+  email: registration.email,
+  contactNumber: registration.contactNumber,
+  organization: registration.organization,
+  jobTitle: registration.jobTitle,
+  facebookLink: registration.facebookLink ?? '',
+  linkedInLink: registration.linkedInLink ?? '',
+  ticketType: registration.ticketType,
+  sprintDay: registration.sprintDay,
+  availTShirt: registration.availTshirt,
+  shirtType: registration.shirtType ?? null,
+  shirtSize: registration.shirtSize ?? null,
+  communityInvolvement: registration.communityInvolvement,
+  futureVolunteer: registration.futureVolunteer,
+  dietaryRestrictions: registration.dietaryRestrictions ?? '',
+  accessibilityNeeds: registration.accessibilityNeeds ?? '',
+  discountCode: registration.discountCode ?? '',
+  validIdObjectKey: registration.validIdObjectKey
+});
+
+export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string): CreateRegistration => ({
+  ...mapCreateRegistrationDataForPayment(registration, eventId),
+  amountPaid: registration.amountPaid,
+  transactionId: registration.transactionId
+});
 
 export type UpdateRegistration = Omit<Registration, 'type' | 'registrationId' | 'email' | 'amountPaid' | 'certificateClaimed' | 'eventId'>;
 
