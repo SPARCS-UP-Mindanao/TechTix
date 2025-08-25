@@ -5,7 +5,7 @@ import { checkPreRegistration } from '@/api/preregistrations';
 import { getEventRegistrationWithEmail } from '@/api/registrations';
 import { Event } from '@/model/events';
 import { AcceptanceStatus, PreRegistration, mapPreRegistrationToFormValues } from '@/model/preregistrations';
-import { baseUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
+import { getPathFromUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '../../hooks/useRegisterForm';
@@ -30,6 +30,8 @@ export const useRegisterFooter = (
     control,
     name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage']
   });
+
+  const baseUrl = getPathFromUrl(window.location.href);
 
   const { eWalletRequest, directDebitRequest } = usePayment(baseUrl, eventId);
 
