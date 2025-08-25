@@ -7,6 +7,7 @@ export interface RegistrationDto {
   nickname: string;
   pronouns: string;
   email: string;
+  eventId: string;
   contactNumber: string;
   organization: string;
   jobTitle: string;
@@ -23,8 +24,7 @@ export interface RegistrationDto {
   accessibilityNeeds: string | null;
   discountCode: string | null;
   validIdObjectKey: string;
-  amountPaid: number | null;
-  transactionId: string | null;
+  imageIdUrl: string;
 }
 
 interface CsvResponse {
@@ -33,7 +33,27 @@ interface CsvResponse {
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
-  ...registration
+  firstName: registration.firstName,
+  lastName: registration.lastName,
+  nickname: registration.nickname ?? '',
+  pronouns: registration.pronouns,
+  email: registration.email,
+  contactNumber: registration.contactNumber,
+  organization: registration.organization,
+  jobTitle: registration.jobTitle,
+  facebookLink: registration.facebookLink ?? '',
+  linkedInLink: registration.linkedInLink ?? '',
+  ticketType: registration.ticketType,
+  sprintDay: registration.sprintDay,
+  availTShirt: registration.availTShirt,
+  shirtType: registration.shirtType ?? null,
+  shirtSize: registration.shirtSize ?? null,
+  communityInvolvement: registration.communityInvolvement,
+  futureVolunteer: registration.futureVolunteer,
+  dietaryRestrictions: registration.dietaryRestrictions ?? '',
+  accessibilityNeeds: registration.accessibilityNeeds ?? '',
+  discountCode: registration.discountCode ?? '',
+  validIdObjectKey: registration.validIdObjectKey
 });
 
 const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): Registration[] =>

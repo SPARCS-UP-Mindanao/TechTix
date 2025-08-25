@@ -22,7 +22,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
   const shirtSizeLink = import.meta.env.VITE_COMMDAY_SHIRT_SIZE_LINK;
 
   const { control } = useFormContext<RegisterFormValues>();
-  const [availTshirt] = useWatch({ control, name: ['availTshirt'] });
+  const [availTShirt] = useWatch({ control, name: ['availTShirt'] });
 
   return (
     <>
@@ -98,17 +98,17 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
         )}
       </FormItem>
 
-      <FormItem name="availTshirt">
+      <FormItem name="availTShirt">
         {({ field }) => (
           <div className="flex flex-col gap-1">
             <FormLabel>Will you avail a shirt?</FormLabel>
             <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem id="availTshirt-yes" checked={!!field.value} value={'true'} />
-                <Label htmlFor={`availTshirt-yes`}>Yes</Label>
+                <RadioGroupItem id="availTShirt-yes" checked={!!field.value} value={'true'} />
+                <Label htmlFor={`availTShirt-yes`}>Yes</Label>
 
-                <RadioGroupItem id="availTshirt-no" checked={!field.value} value="" />
-                <Label htmlFor={`availTshirt-no`}>No</Label>
+                <RadioGroupItem id="availTShirt-no" checked={!field.value} value="" />
+                <Label htmlFor={`availTShirt-no`}>No</Label>
               </div>
             </RadioGroup>
             <FormError />
@@ -116,7 +116,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
         )}
       </FormItem>
 
-      {availTshirt && (
+      {availTShirt && (
         <>
           <FormItem name="shirtType">
             {({ field }) => (

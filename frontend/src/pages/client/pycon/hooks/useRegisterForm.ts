@@ -44,7 +44,7 @@ const RegisterFormSchema = z
     linkedInLink: z.string().optional(),
     ticketType: z.string(),
     sprintDay: z.boolean(),
-    availTshirt: z.boolean(),
+    availTShirt: z.boolean(),
     shirtType: z.string().optional(),
     shirtSize: z.string().optional(),
     communityInvolvement: z.boolean(),
@@ -67,7 +67,7 @@ const RegisterFormSchema = z
   })
   .refine(
     (data) => {
-      if (data.availTshirt && (!data.shirtType || data.shirtSize)) {
+      if (data.availTShirt && (!data.shirtType || data.shirtSize)) {
         return false;
       }
 
@@ -124,7 +124,7 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
         linkedInLink: '',
         ticketType: '',
         sprintDay: false,
-        availTshirt: false,
+        availTShirt: false,
         shirtType: '',
         shirtSize: '',
         communityInvolvement: false,

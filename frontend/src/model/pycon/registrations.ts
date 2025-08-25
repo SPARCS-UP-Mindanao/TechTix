@@ -23,31 +23,41 @@ export interface Registration {
   accessibilityNeeds: string | null;
   discountCode: string | null;
   validIdObjectKey: string;
-  amountPaid: number | null;
-  transactionId: string | null;
 }
 
-export type RegisterMode = 'register' | 'preregister';
-
-type AcceptanceStatusConfig = {
-  displayName: string;
-};
-
-// export const mapRegistrationToFormValues = (registration: Registration): RegisterFormValues => ({
-//   email: registration.email,
-//   firstName: registration.firstName,
-//   lastName: registration.lastName,
-//   contactNumber: registration.contactNumber,
-//   careerStatus: registration.careerStatus,
-//   yearsOfExperience: registration.yearsOfExperience,
-//   organization: registration.organization,
-//   shirtSize: registration.shirtSize ?? undefined,
-
-//   transactionId: registration.transactionId ?? undefined
-// });
+export const mapRegistrationToFormValues = (registration: Registration): RegisterFormValues => ({
+  firstName: registration.firstName,
+  lastName: registration.lastName,
+  nickname: registration.nickname ?? '',
+  pronouns: registration.pronouns,
+  email: registration.email,
+  contactNumber: registration.contactNumber,
+  organization: registration.organization,
+  jobTitle: registration.jobTitle,
+  facebookLink: registration.facebookLink ?? '',
+  linkedInLink: registration.linkedInLink ?? '',
+  ticketType: registration.ticketType,
+  sprintDay: registration.sprintDay,
+  availTShirt: registration.availTShirt,
+  shirtType: registration.shirtType ?? undefined,
+  shirtSize: registration.shirtSize ?? undefined,
+  communityInvolvement: registration.communityInvolvement,
+  futureVolunteer: registration.futureVolunteer,
+  dietaryRestrictions: registration.dietaryRestrictions ?? '',
+  accessibilityNeeds: registration.accessibilityNeeds ?? '',
+  discountCode: registration.discountCode ?? '',
+  validIdObjectKey: registration.validIdObjectKey,
+  amountPaid: 0,
+  transactionId: '',
+  paymentMethod: null,
+  paymentChannel: null,
+  total: 0
+});
 
 export type CreateRegistration = Registration & {
   eventId: string;
+  amountPaid: number | null;
+  transactionId: string | null;
 };
 
 export const mapCreateRegistrationDataForPayment = (registration: RegisterFormValues, eventId: string) => ({
@@ -64,7 +74,7 @@ export const mapCreateRegistrationDataForPayment = (registration: RegisterFormVa
   linkedInLink: registration.linkedInLink ?? '',
   ticketType: registration.ticketType,
   sprintDay: registration.sprintDay,
-  availTShirt: registration.availTshirt,
+  availTShirt: registration.availTShirt,
   shirtType: registration.shirtType ?? null,
   shirtSize: registration.shirtSize ?? null,
   communityInvolvement: registration.communityInvolvement,

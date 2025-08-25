@@ -17,27 +17,27 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
     iconUrl: response?.data?.logoUrl
   });
 
-  // useEffect(() => {
-  //   const savedState = localStorage.getItem('formState');
+  useEffect(() => {
+    const savedState = localStorage.getItem('formState');
 
-  //   if (savedState) {
-  //     if (stepFromUrl) {
-  //       switch (stepFromUrl as RegisterStepId) {
-  //         case 'Success':
-  //           setCurrentStep(STEP_SUCCESS);
-  //           break;
-  //         case 'Payment&Verification':
-  //           setCurrentStep(STEP_PAYMENT);
-  //           break;
-  //         default:
-  //           reloadPage();
-  //           break;
-  //       }
-  //     }
-  //   } else {
-  //     setCurrentStep(STEP_BASIC_INFO);
-  //   }
-  // }, [setCurrentStep, stepFromUrl]);
+    if (savedState) {
+      if (stepFromUrl) {
+        switch (stepFromUrl as RegisterStepId) {
+          case 'Success':
+            setCurrentStep(STEP_SUCCESS);
+            break;
+          case 'Payment&Verification':
+            setCurrentStep(STEP_PAYMENT);
+            break;
+          default:
+            reloadPage();
+            break;
+        }
+      }
+    } else {
+      setCurrentStep(STEP_BASIC_INFO);
+    }
+  }, [setCurrentStep, stepFromUrl]);
 
   return {
     response,

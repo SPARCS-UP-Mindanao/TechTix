@@ -26,7 +26,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
     transactionFee,
     discountedPrice,
     total,
-    availTshirt,
+    availTShirt,
     shirtType,
     shirtSize,
     communityInvolvement,
@@ -52,7 +52,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
       'transactionFee',
       'discountedPrice',
       'total',
-      'availTshirt',
+      'availTShirt',
       'shirtType',
       'shirtSize',
       'communityInvolvement',
@@ -112,9 +112,9 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span>{sprintDay ? 'Yes' : 'No'}</span>
 
           <span className="font-bold">Will avail tshirt?: </span>
-          <span>{availTshirt ? 'Yes' : 'No'}</span>
+          <span>{availTShirt ? 'Yes' : 'No'}</span>
 
-          {availTshirt && (
+          {availTShirt && (
             <>
               <span className="font-bold">Tshirt Type: </span>
               <span>{shirtType}</span>

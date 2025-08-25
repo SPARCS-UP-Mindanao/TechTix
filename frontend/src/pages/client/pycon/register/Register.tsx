@@ -16,7 +16,7 @@ import RegisterFooter from './footer/RegisterFooter';
 import BasicInfoStep from './steps/BasicInfoStep';
 import MiscellaneousStep from './steps/MiscellaneousStep';
 import PaymentAndVerificationStep from './steps/PaymentAndVerificationStep';
-import { RegisterStep, RegisterStepsWithPayment, STEP_EVENT_DETAILS, CURRENT_STEP, STEP_SUCCESS } from './steps/RegistrationSteps';
+import { RegisterStep, RegisterStepsWithPayment, STEP_EVENT_DETAILS, STEP_SUCCESS } from './steps/RegistrationSteps';
 import SuccessStep from './steps/SuccessStep';
 import SummaryStep from './steps/SummaryStep';
 import TicketSelectionStep from './steps/TicketSelectionStep';
@@ -28,8 +28,8 @@ const Register: FC = () => {
 
   const navigateOnSuccess = () => setCurrentStep(STEP_SUCCESS);
 
-  // const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
-  const [currentStep, setCurrentStep] = useState<RegisterStep>(CURRENT_STEP);
+  const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
+  // const [currentStep, setCurrentStep] = useState<RegisterStep>(CURRENT_STEP);
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
   const [isFeesLoading, setIsFeesLoading] = useState(false);
 
