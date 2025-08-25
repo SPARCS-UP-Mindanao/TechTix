@@ -30,3 +30,12 @@ paymentHandler:
         - "sqs:*"
       Resource:
         - "Fn::GetAtt": [ PaymentQueue, Arn ]
+    - Effect: Allow
+      Action:
+        - "dynamodb:PutItem"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/staging-durianpy-events-registrations"
+
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:staging-durianpy-events-email-queue.fifo"

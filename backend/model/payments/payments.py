@@ -78,3 +78,9 @@ class PaymentTransactionOut(PaymentTransactionIn):
 
     entryId: str = Field(..., title='Entry ID')
     registrationData: Optional[PyconRegistrationOut] = Field(None, title='Registration Data')
+
+    amountPaid: Optional[float] = Field(None, title='Amount Paid')
+    transactionId: Optional[str] = Field(None, title='Transaction ID')
+    paymentId: Optional[str] = Field(None, title='Payment ID')
+    referenceNumber: Optional[str] = Field(None, title='Reference Number')
+    gcashPayment: Optional[dict] = Field(None, title='GCash Payment Details')
