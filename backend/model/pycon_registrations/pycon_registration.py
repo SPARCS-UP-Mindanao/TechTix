@@ -42,7 +42,7 @@ class PyconRegistration(BaseModel):
     contactNumber: str = Field(..., title='Contact Number')
     organization: str = Field(..., title='Affiliated Company or Organization')
     jobTitle: str = Field(..., title='Job Title', description='Your current job title or role in tech')
-    facebookLink: HttpUrl = Field(..., title='Facebook Profile URL')
+    facebookLink: Optional[HttpUrl] = Field(None, title='Facebook Profile URL')
     linkedInLink: Optional[HttpUrl] = Field(None, title='LinkedIn Profile URL')
 
     ticketType: TicketTypes = Field(title='Ticket Type', description='Type of ticket you are registering for')
