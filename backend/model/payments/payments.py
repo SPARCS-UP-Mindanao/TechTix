@@ -84,3 +84,11 @@ class PaymentTransactionOut(PaymentTransactionIn):
     paymentId: Optional[str] = Field(None, title='Payment ID')
     referenceNumber: Optional[str] = Field(None, title='Reference Number')
     gcashPayment: Optional[dict] = Field(None, title='GCash Payment Details')
+
+
+class PaymentTrackingBody(BaseModel):
+    class Config:
+        extra = 'ignore'
+
+    registration_details: PaymentTransactionOut
+    status: TransactionStatus
