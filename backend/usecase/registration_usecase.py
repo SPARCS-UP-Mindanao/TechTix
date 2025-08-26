@@ -12,7 +12,6 @@ from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.pycon_registrations.pycon_registration import (
-    PyconRegistrationIn,
     PyconRegistrationOut,
     PyconRegistrationPatch,
 )
