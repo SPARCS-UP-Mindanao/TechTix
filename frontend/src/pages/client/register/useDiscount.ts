@@ -32,7 +32,7 @@ export const useDiscount = (eventPrice: number) => {
       const discount = response.data;
       switch (response.status) {
         case 200:
-          if (discount.claimed) {
+          if (!discount.remainingUses) {
             errorToast({
               title: 'Discount Code Already Claimed',
               description: 'The discount code you entered has already been claimed. Please enter a different discount code.'

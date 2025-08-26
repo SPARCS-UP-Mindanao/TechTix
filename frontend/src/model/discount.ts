@@ -1,23 +1,8 @@
-import { Registration } from '@/model/registrations';
+import { DiscountDto } from '@/api/discounts';
 import { EventStatus } from './events';
 
-export interface Discount {
-  entryId: string;
-  eventId: string;
-  claimed?: boolean;
-  discountPercentage: number;
-  registration?: Registration;
-  organizationId: string;
-  isReusable?: boolean;
-  maxDiscountUses?: number;
-  currentDiscountUses?: number;
-  remainingUses?: number;
-}
-
-export interface OrganizationDiscount {
-  organizationId: string;
-  discounts: Discount[];
-}
+export type Discount = DiscountDto['discounts'][number];
+export type OrganizationDiscount = DiscountDto;
 
 export interface CreateDiscount {
   discountPercentage: number;

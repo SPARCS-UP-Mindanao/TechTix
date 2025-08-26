@@ -32,10 +32,10 @@ export const useDiscount = (eventPrice: number) => {
       const discount = response.data;
       switch (response.status) {
         case 200:
-          if (discount.claimed) {
+          if (!discount.remainingUses) {
             errorToast({
-              title: 'Discount Code Already Claimed',
-              description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
+              title: 'Discount Code is already used up',
+              description: 'The discount code you entered has already been claimed to its maximum. Please enter a different discount code.'
             });
           } else {
             setValue('discountPercentage', discount.discountPercentage);

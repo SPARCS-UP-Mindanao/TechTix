@@ -33,17 +33,16 @@ export const discountColumns: ColumnDef<Discount>[] = [
     enableHiding: getEnableHiding('entryId')
   },
   {
-    accessorKey: 'claimed',
+    accessorKey: 'stillAvailable',
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Claimed?
+          Has available uses?
           <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <Icon name={row.original.claimed ? 'Check' : 'X'} />,
-    enableHiding: getEnableHiding('claimed')
+    cell: ({ row }) => <Icon name={row.original.remainingUses ? 'Check' : 'X'} />
   },
   {
     accessorKey: 'createDate',
@@ -125,7 +124,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
         return remainingUses !== undefined && remainingUses !== null ? remainingUses : 'N/A';
       }
 
-      return discount.claimed ? 'Used' : '1';
+      return discount.remainingUses ? 'Used' : '1';
     }
   }
 ];

@@ -50,7 +50,7 @@ const DiscountFormSchema = z.object({
 export type DiscountFormValues = z.infer<typeof DiscountFormSchema>;
 
 export const useDiscountForm = (eventId: string) => {
-  const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [discountCodes, setDiscountCodes] = useState<string[]>([]);
   const [showDiscountCodes, setShowDiscountCodes] = useState(false);
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
@@ -105,20 +105,7 @@ export const useDiscountForm = (eventId: string) => {
           description: `Discount Created for ${values.organizationName}`
         });
 
-        const mappedDiscounts: Discount[] = response.data.map((discount: any) => ({
-          entryId: discount.entryId,
-          eventId: discount.eventId,
-          claimed: discount.claimed,
-          discountPercentage: discount.discountPercentage,
-          registration: discount.registration,
-          organizationId: discount.organizationId,
-          isReusable: discount.maxDiscountUses ? true : false,
-          maxDiscountUses: discount.maxDiscountUses,
-          currentDiscountUses: discount.currentDiscountUses,
-          remainingUses: discount.remainingUses
-        }));
-
-        setDiscounts(mappedDiscounts);
+        setDiscountCodes(response.data.map(({ entryId }) => entryId));
         setShowDiscountCodes(true);
 
         form.reset({
@@ -146,7 +133,7 @@ export const useDiscountForm = (eventId: string) => {
   });
 
   return {
-    discounts,
+    discountCodes,
     showDiscountCodes,
     setShowDiscountCodes,
     form,

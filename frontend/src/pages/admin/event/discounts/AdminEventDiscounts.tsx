@@ -24,7 +24,7 @@ const CreateDiscountFormItems = () => {
       <FormItem name="organizationName">
         {({ field }) => (
           <div className="flex flex-col space-y-2">
-            <FormLabel>Discount Recipient</FormLabel>
+            <FormLabel>Organization name</FormLabel>
             <Input type="text" {...field} />
             <FormDescription>Enter the organization you want to give discounts to</FormDescription>
             <FormError />
@@ -70,9 +70,9 @@ const CreateDiscountFormItems = () => {
           <FormItem name="discountName">
             {({ field }) => (
               <div className="flex flex-col space-y-2">
-                <FormLabel>Discount Name</FormLabel>
+                <FormLabel>Discount code</FormLabel>
                 <Input type="text" {...field} />
-                <FormDescription>Enter a name for this reusable discount</FormDescription>
+                <FormDescription>Enter the codename for this reusable discount</FormDescription>
                 <FormError />
               </div>
             )}
@@ -95,33 +95,19 @@ const CreateDiscountFormItems = () => {
 };
 
 interface DiscountCodeListProps {
-  discounts: Discount[];
+  discountCodes: string[];
 }
 
-const copyDiscountCodes = (organization: OrganizationDiscount | null, discounts?: Discount[]) => {
-  if (organization && !discounts) {
-    const discountCodes = organization.discounts.reduce((acc, discount) => {
-      return `${acc}${discount.entryId}${discount.claimed ? ` (Claimed)` : ''}\n`;
-    }, `Here are the discount codes for ${organization.organizationId}:\n\n`);
+const copyDiscountCodes = (discountCodes: string[]) => navigator.clipboard.writeText(discountCodes.join('\n'));
 
-    return navigator.clipboard.writeText(discountCodes);
-  } else if (discounts) {
-    const message = organization ? `Here are the discount codes for ${organization.organizationId}:\n\n` : 'Here are the discount codes:\n\n';
-    const discountCodes = discounts.reduce((acc, discount) => {
-      return `${acc}${discount.entryId}${discount.claimed ? ` (Claimed)` : ''}\n`;
-    }, message);
-    return navigator.clipboard.writeText(discountCodes);
-  }
-};
-
-const DiscountCodeList = ({ discounts }: DiscountCodeListProps) => {
+const DiscountCodeList = ({ discountCodes }: DiscountCodeListProps) => {
   return (
     <div>
       <ul>
-        {discounts.map((discount) => {
+        {discountCodes.map((code) => {
           return (
-            <li key={discount.entryId} className="w-full">
-              {discount.entryId}
+            <li key={code} className="w-full">
+              {code}
             </li>
           );
         })}
@@ -138,7 +124,7 @@ interface CreateDiscountModalProps {
 const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCopyClicked, setIsCopyClicked] = useState(false);
-  const { form, submit, discounts, showDiscountCodes, setShowDiscountCodes } = useDiscountForm(eventId);
+  const { form, submit, discountCodes, showDiscountCodes, setShowDiscountCodes } = useDiscountForm(eventId);
 
   const handleSubmit = async () => await submit();
   const handleClose = () => {
@@ -153,7 +139,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
     if (showDiscountCodes) {
       const onClick = () => {
         setIsCopyClicked(true);
-        copyDiscountCodes(null, discounts);
+        copyDiscountCodes(discountCodes);
       };
       return (
         <Button onClick={onClick} type="submit" icon={isCopyClicked ? 'Check' : 'Copy'}>
@@ -189,7 +175,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
         onOpenChange={setIsModalOpen}
       >
         {showDiscountCodes ? (
-          <DiscountCodeList discounts={discounts} />
+          <DiscountCodeList discountCodes={discountCodes} />
         ) : (
           <FormProvider {...form}>
             <main className="w-full">
@@ -209,9 +195,9 @@ interface DiscountHeaderProps {
 const DiscountHeader: FC<DiscountHeaderProps> = ({ organization }) => {
   return (
     <div className="inline-flex justify-center items-center">
-      <h3>{`Recipient: ${organization.organizationId}`}</h3>
+      <h3>{`Organization: ${organization.organizationId}`}</h3>
       <Tooltip toolTipContent="Copy discount codes" side="right">
-        <Button size="icon" icon="Copy" variant="ghost" className="ml-4" onClick={() => copyDiscountCodes(organization)} />
+        <Button size="icon" icon="Copy" variant="ghost" className="ml-4" onClick={() => copyDiscountCodes(organization.discounts.map((x) => x.entryId))} />
       </Tooltip>
     </div>
   );
