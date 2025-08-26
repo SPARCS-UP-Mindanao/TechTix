@@ -33,9 +33,12 @@ paymentHandler:
     - Effect: Allow
       Action:
         - "dynamodb:PutItem"
-      Resource: "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/staging-durianpy-events-registrations"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.stage}-durianpy-events-registrations"
 
     - Effect: Allow
       Action:
         - "sqs:SendMessage"
-      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:staging-durianpy-events-email-queue.fifo"
+        - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
+      Resource:
+        - "Fn::GetAtt": [ EmailQueue, Arn ]
