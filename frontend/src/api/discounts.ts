@@ -13,7 +13,7 @@ export interface DiscountDto {
   updateDate: string;
   isReusable?: boolean;
   maxDiscountUses?: number;
-  currentDiscountUses?: number; 
+  currentDiscountUses?: number;
   remainingUses?: number;
 }
 
