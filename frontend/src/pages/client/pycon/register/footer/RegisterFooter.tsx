@@ -19,38 +19,23 @@ interface Props {
 const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, isRegisterSuccessful, setCurrentStep, retryRegister, isFeesLoading }) => {
   const {
     paymentButtonDisabled,
-    isValidatingEmail,
     isFormSubmitting,
     onNextStep,
     onPrevStep,
-    onStartRegister,
-    onCheckEmailNextStep,
+
     onSummaryStep,
     onSignUpOther,
     onSubmitForm
   } = useRegisterFooter(event, steps, currentStep, fieldsToCheck, setCurrentStep);
   const eventDetailsFooter = () => {
     return (
-      <Button onClick={onStartRegister} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-10">
+      <Button onClick={onNextStep} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-10">
         Register
       </Button>
     );
   };
 
-  const userBioFooter = () => {
-    return (
-      <>
-        <Button onClick={onPrevStep} disabled={isValidatingEmail} icon="ChevronLeft" className="py-6 sm:px-6">
-          Back
-        </Button>
-        <Button onClick={onCheckEmailNextStep} loading={isValidatingEmail} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-6">
-          Next
-        </Button>
-      </>
-    );
-  };
-
-  const personalInformationFooter = () => {
+  const defaultFooter = () => {
     return (
       <>
         <Button onClick={onPrevStep} icon="ChevronLeft" className="py-6 sm:px-6">
@@ -131,9 +116,9 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
 
   const footerButtons: Record<RegisterStep['id'], () => JSX.Element> = {
     EventDetails: eventDetailsFooter,
-    BasicInfo: userBioFooter,
-    TicketSelection: personalInformationFooter,
-    Miscellaneous: personalInformationFooter,
+    BasicInfo: defaultFooter,
+    TicketSelection: defaultFooter,
+    Miscellaneous: defaultFooter,
     'Payment&Verification': paymentFooter,
     Summary: summaryFooter,
     Success: successFooter

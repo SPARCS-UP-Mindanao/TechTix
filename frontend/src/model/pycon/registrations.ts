@@ -1,7 +1,9 @@
-import { EditRegistrationFormValues } from '@/pages/admin/event/registrations/useEditRegistrationForm';
+import { EditRegistrationFormValues } from '@/pages/admin/event/pycon/registrations/useEditRegistrationForm';
 import { RegisterFormValues } from '@/pages/client/pycon/hooks/useRegisterForm';
 
 export interface Registration {
+  registrationId: string;
+  transactionId: string;
   firstName: string;
   lastName: string;
   nickname: string;
@@ -23,9 +25,11 @@ export interface Registration {
   accessibilityNeeds: string | null;
   discountCode: string | null;
   validIdObjectKey: string;
+  createDate: string;
+  updateDate: string;
 }
 
-export const mapRegistrationToFormValues = (registration: Registration): RegisterFormValues => ({
+export const mapRegistrationToFormValues = (registration: Registration): RegisterFormValues | EditRegistrationFormValues => ({
   firstName: registration.firstName,
   lastName: registration.lastName,
   nickname: registration.nickname ?? '',
@@ -54,7 +58,7 @@ export const mapRegistrationToFormValues = (registration: Registration): Registe
   total: 0
 });
 
-export type CreateRegistration = Registration & {
+export type CreateRegistration = Omit<Registration, 'registrationId' | 'createDate' | 'updateDate'> & {
   eventId: string;
   amountPaid: number | null;
   transactionId: string | null;
@@ -64,24 +68,24 @@ export const mapCreateRegistrationDataForPayment = (registration: RegisterFormVa
   eventId: eventId,
   firstName: registration.firstName,
   lastName: registration.lastName,
-  nickname: registration.nickname ?? '',
+  nickname: registration.nickname || '',
   pronouns: registration.pronouns,
   email: registration.email,
   contactNumber: registration.contactNumber,
   organization: registration.organization,
   jobTitle: registration.jobTitle,
-  facebookLink: registration.facebookLink ?? '',
-  linkedInLink: registration.linkedInLink ?? '',
+  facebookLink: registration.facebookLink || 'https://www.example.com', // TODO: Update links or have a function to map to a proper link
+  linkedInLink: registration.linkedInLink || 'https://www.example.com', // TODO: Update links or have a function to map to a proper link
   ticketType: registration.ticketType,
   sprintDay: registration.sprintDay,
   availTShirt: registration.availTShirt,
-  shirtType: registration.shirtType ?? null,
-  shirtSize: registration.shirtSize ?? null,
+  shirtType: registration.shirtType || null,
+  shirtSize: registration.shirtSize || null,
   communityInvolvement: registration.communityInvolvement,
   futureVolunteer: registration.futureVolunteer,
-  dietaryRestrictions: registration.dietaryRestrictions ?? '',
-  accessibilityNeeds: registration.accessibilityNeeds ?? '',
-  discountCode: registration.discountCode ?? '',
+  dietaryRestrictions: registration.dietaryRestrictions || null,
+  accessibilityNeeds: registration.accessibilityNeeds || null,
+  discountCode: registration.discountCode || null,
   validIdObjectKey: registration.validIdObjectKey
 });
 
@@ -91,31 +95,27 @@ export const mapCreateRegistrationValues = (registration: RegisterFormValues, ev
   transactionId: registration.transactionId
 });
 
-export type UpdateRegistration = Omit<Registration, 'type' | 'registrationId' | 'email' | 'amountPaid' | 'certificateClaimed' | 'eventId'>;
+export type UpdateRegistration = Omit<Registration, 'registrationId' | 'amountPaid' | 'transactionId' | 'discountCode' | 'createDate' | 'updateDate'>;
 
-// export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrationFormValues, previousRegistration: Registration) => ({
-//   firstName: newRegistrationValues.firstName,
-//   lastName: newRegistrationValues.lastName,
-//   contactNumber: newRegistrationValues.contactNumber,
-//   careerStatus: newRegistrationValues.careerStatus,
-//   yearsOfExperience: newRegistrationValues.yearsOfExperience,
-//   organization: newRegistrationValues.organization,
-//   title: newRegistrationValues.title ?? '',
-//   certificateClaimed: previousRegistration.certificateClaimed,
-//   discountCode: previousRegistration.discountCode,
-//   gcashPayment: previousRegistration.gcashPayment,
-//   referenceNumber: previousRegistration.referenceNumber,
-//   amountPaid: previousRegistration.amountPaid,
-//   certificatePdfObjectKey: previousRegistration.certificatePdfObjectKey,
-//   certificateImgObjectKey: previousRegistration.certificateImgObjectKey,
-//   certificateGenerated: previousRegistration.certificateGenerated,
-//   eventId: previousRegistration.eventId,
-//   ticketTypeId: previousRegistration.ticketTypeId,
-//   shirtSize: previousRegistration.shirtSize,
-//   cityOfResidence: previousRegistration.cityOfResidence ?? '',
-//   industry: previousRegistration.industry,
-//   levelOfAWSUsage: previousRegistration.levelOfAWSUsage,
-//   awsUsecase: previousRegistration.awsUsecase,
-//   awsCommunityDayInLineWith: previousRegistration.awsCommunityDayInLineWith,
-//   foodRestrictions: previousRegistration.foodRestrictions
-// });
+export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrationFormValues): UpdateRegistration => ({
+  email: newRegistrationValues.email,
+  firstName: newRegistrationValues.firstName,
+  lastName: newRegistrationValues.lastName,
+  nickname: newRegistrationValues.nickname ?? '',
+  pronouns: newRegistrationValues.pronouns,
+  contactNumber: newRegistrationValues.contactNumber,
+  organization: newRegistrationValues.organization,
+  jobTitle: newRegistrationValues.jobTitle,
+  facebookLink: newRegistrationValues.facebookLink ?? '',
+  linkedInLink: newRegistrationValues.linkedInLink ?? '',
+  ticketType: newRegistrationValues.ticketType,
+  sprintDay: newRegistrationValues.sprintDay,
+  availTShirt: newRegistrationValues.availTShirt,
+  shirtType: newRegistrationValues.shirtType ?? '',
+  shirtSize: newRegistrationValues.shirtSize ?? '',
+  communityInvolvement: newRegistrationValues.communityInvolvement,
+  futureVolunteer: newRegistrationValues.futureVolunteer,
+  dietaryRestrictions: newRegistrationValues.dietaryRestrictions ?? null,
+  accessibilityNeeds: newRegistrationValues.accessibilityNeeds ?? null,
+  validIdObjectKey: newRegistrationValues.validIdObjectKey
+});

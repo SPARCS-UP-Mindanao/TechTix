@@ -1,7 +1,12 @@
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
 import Input from '@/components/Input';
+import { RegisterFormValues } from '../../hooks/useRegisterForm';
 
 const BasicInfoStep = () => {
+  const { control } = useFormContext<RegisterFormValues>();
+  const [email] = useWatch({ control, name: ['email'] });
+
   return (
     <>
       <FormItem name="firstName">
@@ -44,15 +49,17 @@ const BasicInfoStep = () => {
         )}
       </FormItem>
 
-      <FormItem name="email">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Email</FormLabel>
-            <Input type="email" {...field} />
-            <FormError />
-          </div>
-        )}
-      </FormItem>
+      {!email && (
+        <FormItem name="email">
+          {({ field }) => (
+            <div className="flex flex-col gap-1">
+              <FormLabel>Email</FormLabel>
+              <Input type="email" {...field} />
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+      )}
 
       <FormItem name="contactNumber">
         {({ field }) => (

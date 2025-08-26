@@ -9,7 +9,8 @@ import AdminEventDiscounts from '@/pages/admin/event/discounts/AdminEventDiscoun
 import AdminEventEvaluations from '@/pages/admin/event/evaluations/AdminEventEvaluations';
 import AdminEventFAQs from '@/pages/admin/event/faqs/AdminEventFAQs';
 import AdminEventInfo from '@/pages/admin/event/info/AdminEventInfo';
-import AdminEventRegistrations from '@/pages/admin/event/registrations/AdminEventRegistrations';
+import AdminEventRegistrations from '@/pages/admin/event/pycon/registrations/AdminEventRegistrations';
+// import AdminEventRegistrations from '@/pages/admin/event/registrations/AdminEventRegistrations';
 import AdminLoginPage from '@/pages/admin/login/AdminLoginPage';
 import UpdatePasswordPage from '@/pages/admin/updatePassword/UpdatePasswordPage';
 import AdminAuthRouteLayout from './layouts/admin/AdminAuthRouteLayout';

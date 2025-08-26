@@ -62,7 +62,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
     ]
   });
 
-  const ticketType = event.ticketTypes?.find((ticket) => ticket.konfhubId === ticketTypeId);
+  const ticketType = event.ticketTypes?.find((ticket) => ticket.id === ticketTypeId);
   const { hasMultipleTicketTypes } = event;
 
   return (
@@ -90,7 +90,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span>{dietaryRestrictions || 'None'}</span>
 
           <span className="font-bold">Facebook Link: </span>
-          <span>{facebookLink || 'None'}</span>
+          <span>{facebookLink}</span>
 
           <span className="font-bold">Linkedin Link: </span>
           <span>{linkedInLink || 'None'}</span>

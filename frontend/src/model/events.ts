@@ -3,14 +3,14 @@ import { EventFormValues } from '@/hooks/useAdminEventForm';
 import { FAQsFormValues } from '@/hooks/useFAQsForm';
 
 export interface TicketType {
+  id: string;
   name: string;
-  description?: string;
+  description: string | null;
   tier: string;
-  originalPrice?: number;
+  originalPrice: number | null;
   price: number;
   maximumQuantity: number;
-  konfhubId: string;
-  currentSales?: number | null;
+  currentSales: number;
 }
 
 export interface Event {
@@ -40,8 +40,6 @@ export interface Event {
   certificateTemplateUrl?: string;
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketType[] | null;
-  konfhubId: string | null;
-  konfhubApiKey: string | null;
   platformFee: number | null;
 }
 
@@ -116,9 +114,13 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined,
   hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
-  ticketTypes: event.ticketTypes || undefined,
-  konfhubId: event.konfhubId || undefined,
-  konfhubApiKey: event.konfhubApiKey || undefined,
+  ticketTypes:
+    event.ticketTypes?.map((x) => ({
+      ...x,
+      description: x.description ?? undefined,
+      originalPrice: x.originalPrice ?? undefined
+    })) ?? undefined,
+
   platformFee: event.platformFee ? event.platformFee * 100 : undefined,
   isUsingPlatformFee: !!event.platformFee
 });
@@ -140,9 +142,7 @@ export interface CreateEvent {
   maximumSlots: number | null;
   status: EventStatus;
   hasMultipleTicketTypes: boolean;
-  ticketTypes: TicketType[] | null;
-  konfhubId: string | null;
-  konfhubApiKey: string | null;
+  ticketTypes: Omit<TicketType, 'currentSales' | 'id'>[] | null;
   platformFee: number | null;
 }
 
@@ -168,15 +168,13 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   ticketTypes: values.ticketTypes
     ? values.ticketTypes.map((ticket) => ({
         name: ticket.name,
+        originalPrice: ticket.originalPrice ?? null,
+        description: ticket.description ?? null,
         price: ticket.price,
         tier: ticket.tier,
-        maximumQuantity: ticket.maximumQuantity,
-        konfhubId: ticket.konfhubId,
-        description: ticket.description
+        maximumQuantity: ticket.maximumQuantity
       }))
     : null,
-  konfhubId: values.konfhubId || null,
-  konfhubApiKey: values.konfhubApiKey || null,
   platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee)
 });
 

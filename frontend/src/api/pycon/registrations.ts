@@ -1,3 +1,4 @@
+import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
 import { CreateRegistration, Registration, UpdateRegistration } from '@/model/pycon/registrations';
 
@@ -25,6 +26,8 @@ export interface RegistrationDto {
   discountCode: string | null;
   validIdObjectKey: string;
   imageIdUrl: string;
+  createDate: string;
+  updateDate: string;
 }
 
 interface CsvResponse {
@@ -33,6 +36,8 @@ interface CsvResponse {
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
+  registrationId: `registration-${ulid()}`, // TODO: Update to actual ID
+  transactionId: `transaction-${ulid()}`, // TODO: Update to actual ID
   firstName: registration.firstName,
   lastName: registration.lastName,
   nickname: registration.nickname ?? '',
@@ -53,7 +58,9 @@ const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Regist
   dietaryRestrictions: registration.dietaryRestrictions ?? '',
   accessibilityNeeds: registration.accessibilityNeeds ?? '',
   discountCode: registration.discountCode ?? '',
-  validIdObjectKey: registration.validIdObjectKey
+  validIdObjectKey: registration.validIdObjectKey,
+  createDate: registration.createDate,
+  updateDate: registration.updateDate
 });
 
 const mapRegistrationsDtoToRegistrations = (registrations: RegistrationDto[]): Registration[] =>
@@ -64,14 +71,6 @@ export const registerUserInEvent = (userInfo: CreateRegistration) =>
     method: 'post',
     url: '/pycon/registrations',
     body: { ...userInfo }
-  });
-
-export const getAllRegistrations = () =>
-  createApi<RegistrationDto[], Registration[]>({
-    method: 'get',
-    authorize: true,
-    url: '/pycon/registrations',
-    output: mapRegistrationsDtoToRegistrations
   });
 
 export const getEventRegistrations = (eventId: string) =>
@@ -107,7 +106,7 @@ export const updateRegistration = (eventId: string, registrationId: string, user
     authorize: true,
     url: `/pycon/registrations/${registrationId}`,
     queryParams: { eventId, entryId: registrationId },
-    body: { ...userInfo }
+    body: { eventId, ...userInfo }
   });
 
 export const deleteRegistration = (eventId: string, registrationId: string) =>

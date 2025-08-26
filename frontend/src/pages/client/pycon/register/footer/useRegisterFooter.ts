@@ -20,7 +20,6 @@ export const useRegisterFooter = (
   fieldsToCheck: RegisterField[],
   setCurrentStep: (step: RegisterStep) => void
 ) => {
-  const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { errorToast } = useNotifyToast();
   const { trigger, setValue, getValues, control, reset } = useFormContext<RegisterFormValues>();
@@ -39,41 +38,41 @@ export const useRegisterFooter = (
 
   const paymentButtonDisabled = isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
 
-  const validateEmail = async () => {
-    const email = getValues('email');
+  // const validateEmail = async () => {
+  //   const email = getValues('email');
 
-    try {
-      setIsValidatingEmail(true);
-      const response =
-        event.status === 'preregistration'
-          ? await api.execute(checkPreRegistration(eventId, email))
-          : await api.execute(getEventRegistrationWithEmail(eventId, email));
-      switch (response.status) {
-        case 200:
-          errorToast({
-            title: 'Email already registered',
-            description: 'The email you entered has already been used. Please enter a different email.'
-          });
-          return false;
-        case 404:
-          return true;
-        default:
-          errorToast({
-            title: 'Please try again',
-            description: 'There was an error. Please try again.'
-          });
-          return false;
-      }
-    } catch (error) {
-      errorToast({
-        title: 'Please try again',
-        description: 'There was an error. Please try again.'
-      });
-      return false;
-    } finally {
-      setIsValidatingEmail(false);
-    }
-  };
+  //   try {
+  //     setIsValidatingEmail(true);
+  //     const response =
+  //       event.status === 'preregistration'
+  //         ? await api.execute(checkPreRegistration(eventId, email))
+  //         : await api.execute(getEventRegistrationWithEmail(eventId, email));
+  //     switch (response.status) {
+  //       case 200:
+  //         errorToast({
+  //           title: 'Email already registered',
+  //           description: 'The email you entered has already been used. Please enter a different email.'
+  //         });
+  //         return false;
+  //       case 404:
+  //         return true;
+  //       default:
+  //         errorToast({
+  //           title: 'Please try again',
+  //           description: 'There was an error. Please try again.'
+  //         });
+  //         return false;
+  //     }
+  //   } catch (error) {
+  //     errorToast({
+  //       title: 'Please try again',
+  //       description: 'There was an error. Please try again.'
+  //     });
+  //     return false;
+  //   } finally {
+  //     setIsValidatingEmail(false);
+  //   }
+  // };
 
   const checkRegistrationCount = async () => {
     const response = await api.execute(getEventRegCountStatus(eventId));
@@ -191,32 +190,32 @@ export const useRegisterFooter = (
     }
   };
 
-  const onStartRegister = async () => {
-    if (event.isApprovalFlow && event.status === 'open') {
-      const isValid = await trigger(fieldsToCheck);
-      if (!isValid) {
-        return;
-      }
+  // const onStartRegister = async () => {
+  //   if (event.isApprovalFlow && event.status === 'open') {
+  //     const isValid = await trigger(fieldsToCheck);
+  //     if (!isValid) {
+  //       return;
+  //     }
 
-      const { isSuccess: hasPreRegistered, preregistrationData } = await getAndSetPreRegistration();
-      const hasRegistered = await validateEmail();
-      if (!hasPreRegistered || !hasRegistered) {
-        return;
-      }
+  //     const { isSuccess: hasPreRegistered, preregistrationData } = await getAndSetPreRegistration();
+  //     const hasRegistered = await validateEmail();
+  //     if (!hasPreRegistered || !hasRegistered) {
+  //       return;
+  //     }
 
-      if (!event.paidEvent) {
-        setCurrentStep(STEP_SUCCESS);
-        return;
-      }
+  //     if (!event.paidEvent) {
+  //       setCurrentStep(STEP_SUCCESS);
+  //       return;
+  //     }
 
-      // TODO: registration to form values
-      preregistrationData && setRegistrationValues(preregistrationData, setValue);
-      setCurrentStep(STEP_PAYMENT);
-      return;
-    }
+  //     // TODO: registration to form values
+  //     preregistrationData && setRegistrationValues(preregistrationData, setValue);
+  //     setCurrentStep(STEP_PAYMENT);
+  //     return;
+  //   }
 
-    onNextStep();
-  };
+  //   onNextStep();
+  // };
 
   const setRegistrationValues = (preregistrationData: PreRegistration, setValue: UseFormSetValue<RegisterFormValues>) => {
     Object.keys(preregistrationData).forEach((key) => {
@@ -229,17 +228,17 @@ export const useRegisterFooter = (
     });
   };
 
-  const onCheckEmailNextStep = async () => {
-    if (event.isApprovalFlow && event.status === 'open') {
-      onNextStep();
-      return;
-    }
+  // const onCheckEmailNextStep = async () => {
+  //   if (event.isApprovalFlow && event.status === 'open') {
+  //     onNextStep();
+  //     return;
+  //   }
 
-    const isValid = await validateEmail();
-    if (isValid) {
-      onNextStep();
-    }
-  };
+  //   const isValid = await validateEmail();
+  //   if (isValid) {
+  //     onNextStep();
+  //   }
+  // };
 
   const onSummaryStep = () => {
     if (!transactionFee) {
@@ -306,12 +305,11 @@ export const useRegisterFooter = (
 
   return {
     paymentButtonDisabled,
-    isValidatingEmail,
     isFormSubmitting,
     onNextStep,
     onPrevStep,
-    onStartRegister,
-    onCheckEmailNextStep,
+    // onStartRegister,
+    // onCheckEmailNextStep,
     onSummaryStep,
     onSignUpOther: reloadPage,
     onSubmitForm

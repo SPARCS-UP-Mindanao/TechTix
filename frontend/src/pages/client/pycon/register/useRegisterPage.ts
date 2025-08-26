@@ -1,16 +1,25 @@
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getEvent } from '@/api/events';
+import { getEventRegistrationWithEmail } from '@/api/pycon/registrations';
 import { reloadPage } from '@/utils/functions';
 import { useApiQuery } from '@/hooks/useApi';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useMetaData } from '@/hooks/useMetaData';
-import { RegisterStep, RegisterStepId, STEP_BASIC_INFO, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
+import { RegisterStep, RegisterStepId, STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
 
 export const useRegisterPage = (eventId: string, setCurrentStep: (step: RegisterStep) => void) => {
+  const auth = useCurrentUser();
+
   const { data: response, isPending } = useApiQuery(getEvent(eventId));
+  const { data: userRegistration, isPending: isFetchingRegistration } = useApiQuery(getEventRegistrationWithEmail(eventId, auth?.user?.email!));
+
   const setMetaData = useMetaData();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const stepFromUrl = searchParams.get('step');
+
+  const hasExistingRegistration = userRegistration?.status === 200;
 
   setMetaData({
     title: response?.data?.name,
@@ -19,6 +28,10 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
 
   useEffect(() => {
     const savedState = localStorage.getItem('formState');
+
+    if (hasExistingRegistration) {
+      navigate('/register/userInfo');
+    }
 
     if (savedState) {
       if (stepFromUrl) {
@@ -35,12 +48,12 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
         }
       }
     } else {
-      setCurrentStep(STEP_BASIC_INFO);
+      setCurrentStep(STEP_EVENT_DETAILS);
     }
   }, [setCurrentStep, stepFromUrl]);
 
   return {
     response,
-    isPending
+    isPending: isPending || isFetchingRegistration
   };
 };

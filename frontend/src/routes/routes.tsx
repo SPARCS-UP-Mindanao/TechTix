@@ -5,6 +5,7 @@ import LoginPage from '@/pages/client/login/LoginPage';
 import PreRegisterPage from '@/pages/client/preregister/PreRegisterPage';
 import PyconClientPage from '@/pages/client/pycon/PyconClientPage';
 import RegisterPage from '@/pages/client/pycon/register/RegisterPage';
+import UserInfoPage from '@/pages/client/pycon/register/UserInfoPage';
 import Callback from './Callback';
 import ClientAuthRouteLayout from './layouts/client/ClientAuthRouteLayout';
 import ClientRouteLayout from './layouts/client/ClientRouteLayout';
@@ -64,6 +65,16 @@ export const routes = createBrowserRouter(
                   path: 'evaluate',
                   element: <EvaluatePage />
                 },
+
+                {
+                  path: 'register/userInfo',
+                  element: <UserInfoPage />
+                },
+                {
+                  path: 'registration/userInfo',
+                  element: <UserInfoPage />
+                },
+
                 {
                   path: '*',
                   element: ErrorPage({})

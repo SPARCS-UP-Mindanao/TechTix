@@ -266,12 +266,12 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                   ?.sort((a, b) => parseInt(a.tier) - parseInt(b.tier))
                   .map((ticketType) => (
                     <div
-                      key={ticketType.konfhubId}
+                      key={ticketType.id}
                       className={`rounded-sm cursor-pointer hover:bg-accent-secondary hover:text-accent-foreground transition-colors border-2 ${
-                        field.value === ticketType.konfhubId ? 'border-primary' : 'border-gray-700'
+                        field.value === ticketType.id ? 'border-primary' : 'border-gray-700'
                       }`}
                       onClick={() => {
-                        field.onChange(ticketType.konfhubId);
+                        field.onChange(ticketType.id);
                         updateEventPrice(ticketType.price);
                       }}
                     >
@@ -292,15 +292,15 @@ const PersonalInfoStep = ({ event, updateEventPrice }: Props) => {
                       </CardContent>
                       <CardFooter className="flex justify-between items-center">
                         <Button
-                          variant={field.value === ticketType.konfhubId ? 'primaryGradientNoHover' : 'default'}
+                          variant={field.value === ticketType.id ? 'primaryGradientNoHover' : 'default'}
                           onClick={() => {
-                            field.onChange(ticketType.konfhubId);
+                            field.onChange(ticketType.id);
                             updateEventPrice(ticketType.price);
                           }}
                           disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
                         >
-                          {field.value === ticketType.konfhubId ? <Check className="mr-2 h-4 w-4" /> : null}
-                          {field.value === ticketType.konfhubId ? 'Selected' : 'Select'}
+                          {field.value === ticketType.id ? <Check className="mr-2 h-4 w-4" /> : null}
+                          {field.value === ticketType.id ? 'Selected' : 'Select'}
                         </Button>
                       </CardFooter>
                     </div>

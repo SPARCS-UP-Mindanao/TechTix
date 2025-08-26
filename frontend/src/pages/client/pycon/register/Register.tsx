@@ -2,8 +2,6 @@ import { FC, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import ErrorPage from '@/components/ErrorPage';
-import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
-import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import Stepper from '@/components/Stepper';
 import { Event } from '@/model/events';
@@ -29,7 +27,6 @@ const Register: FC = () => {
   const navigateOnSuccess = () => setCurrentStep(STEP_SUCCESS);
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>(STEP_EVENT_DETAILS);
-  // const [currentStep, setCurrentStep] = useState<RegisterStep>(CURRENT_STEP);
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
   const [isFeesLoading, setIsFeesLoading] = useState(false);
 
@@ -122,19 +119,6 @@ const Register: FC = () => {
             {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
             {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}
             {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4" />}
-
-            {currentStep.id === 'EventDetails' && eventInfo.isApprovalFlow && eventInfo.status === 'open' && (
-              <FormItem name="email">
-                {({ field }) => (
-                  <FormItemContainer className="px-0 my-6">
-                    <FormLabel>Email</FormLabel>
-                    <Input type="email" {...field} />
-                    <FormDescription>Enter the email address you used for pre-registering</FormDescription>
-                    <FormError />
-                  </FormItemContainer>
-                )}
-              </FormItem>
-            )}
 
             <RegisterFooter
               event={eventInfo}

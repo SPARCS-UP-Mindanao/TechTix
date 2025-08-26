@@ -3,10 +3,8 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import Button from '@/components/Button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
-import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select';
 import { Event } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
 import { RegisterFormValues } from '../../hooks/useRegisterForm';
@@ -33,47 +31,95 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
             <div className="grid gap-2">
               {event.ticketTypes
                 ?.sort((a, b) => parseInt(a.tier) - parseInt(b.tier))
-                .map((ticketType) => (
-                  <div
-                    key={ticketType.konfhubId}
-                    className={`rounded-sm cursor-pointer hover:bg-accent-secondary hover:text-accent-foreground transition-colors border-2 ${
-                      field.value === ticketType.konfhubId ? 'border-primary' : 'border-gray-700'
-                    }`}
-                    onClick={() => {
-                      field.onChange(ticketType.konfhubId);
-                      updateEventPrice(ticketType.price);
-                    }}
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        {ticketType.name}
-                        <span className="text-primary font-bold text-xl">{formatMoney(ticketType.price, 'PHP')}</span>
-                      </CardTitle>
-                      {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
-                        <CardDescription>
-                          <span className="line-through text-gray-500 font-semibold">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
-                          <span className="ml-2 text-green-400 font-semibold">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm mb-2">{ticketType.description}</p>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center">
-                      <Button
-                        variant={field.value === ticketType.konfhubId ? 'primaryGradientNoHover' : 'default'}
+                .map((ticketType) => {
+                  console.log({ ticketType });
+
+                  if (ticketType.id === 'coder') {
+                    return (
+                      <div
+                        key={ticketType.name}
+                        className={`rounded-sm cursor-pointer hover:bg-accent-secondary hover:text-accent-foreground transition-colors border-2 ${
+                          field.value === ticketType.id ? 'border-primary' : 'border-gray-700'
+                        }`}
                         onClick={() => {
-                          field.onChange(ticketType.konfhubId);
+                          field.onChange(ticketType.id);
                           updateEventPrice(ticketType.price);
                         }}
-                        disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
                       >
-                        {field.value === ticketType.konfhubId ? <Check className="mr-2 h-4 w-4" /> : null}
-                        {field.value === ticketType.konfhubId ? 'Selected' : 'Select'}
-                      </Button>
-                    </CardFooter>
-                  </div>
-                ))}
+                        <CardHeader>
+                          <CardTitle className="flex justify-between items-center">
+                            {ticketType.name}
+                            <span className="text-primary font-bold text-xl">{formatMoney(ticketType.price, 'PHP')}</span>
+                          </CardTitle>
+                          {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
+                            <CardDescription>
+                              <span className="line-through text-gray-500 font-semibold">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
+                              <span className="ml-2 text-green-400 font-semibold">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
+                            </CardDescription>
+                          )}
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm mb-2">{ticketType.description}</p>
+                        </CardContent>
+                        <CardFooter className="flex justify-between items-center">
+                          <Button
+                            variant={field.value === ticketType.id ? 'primaryGradientNoHover' : 'default'}
+                            onClick={() => {
+                              field.onChange(ticketType.id);
+                              updateEventPrice(ticketType.price);
+                            }}
+                            disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
+                          >
+                            {field.value === ticketType.id ? <Check className="mr-2 h-4 w-4" /> : null}
+                            {field.value === ticketType.id ? 'Selected' : 'Select'}
+                          </Button>
+                        </CardFooter>
+                      </div>
+                    );
+                  } else if (ticketType.id === 'kasosyo') {
+                    return (
+                      <div
+                        key={ticketType.name}
+                        className={`rounded-sm cursor-pointer hover:bg-accent-secondary hover:text-accent-foreground transition-colors border-2 ${
+                          field.value === ticketType.id ? 'border-primary' : 'border-gray-700'
+                        }`}
+                        onClick={() => {
+                          field.onChange(ticketType.id);
+                          updateEventPrice(ticketType.price);
+                        }}
+                      >
+                        <CardHeader>
+                          <CardTitle className="flex justify-between items-center">
+                            {ticketType.name}
+                            <span className="text-primary font-bold text-xl">{formatMoney(ticketType.price, 'PHP')}</span>
+                          </CardTitle>
+                          {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
+                            <CardDescription>
+                              <span className="line-through text-gray-500 font-semibold">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
+                              <span className="ml-2 text-green-400 font-semibold">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
+                            </CardDescription>
+                          )}
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm mb-2">{ticketType.description}</p>
+                        </CardContent>
+                        <CardFooter className="flex justify-between items-center">
+                          <Button
+                            variant={field.value === ticketType.id ? 'primaryGradientNoHover' : 'default'}
+                            onClick={() => {
+                              field.onChange(ticketType.id);
+                              updateEventPrice(ticketType.price);
+                            }}
+                            disabled={ticketType.maximumQuantity <= (ticketType.currentSales ?? 0)}
+                          >
+                            {field.value === ticketType.id ? <Check className="mr-2 h-4 w-4" /> : null}
+                            {field.value === ticketType.id ? 'Selected' : 'Select'}
+                          </Button>
+                        </CardFooter>
+                      </div>
+                    );
+                  }
+                })}
             </div>
             <FormError />
           </div>

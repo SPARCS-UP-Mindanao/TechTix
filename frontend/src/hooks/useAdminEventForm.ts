@@ -58,16 +58,11 @@ const EventFormSchema = z
           }),
           maximumQuantity: z.coerce.number<number>().min(0, {
             message: 'Please enter the ticket type maximum quantity'
-          }),
-          konfhubId: z.string().min(1, {
-            message: 'Please enter the ticket type konfhub id'
           })
         })
       )
       .optional(),
     hasMultipleTicketTypes: z.boolean(),
-    konfhubId: z.string().optional(),
-    konfhubApiKey: z.string().optional(),
     isUsingPlatformFee: z.boolean(),
     platformFee: z.coerce
       .number<number>()

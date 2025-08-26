@@ -86,26 +86,6 @@ const AdminEventForm: FC<Props> = ({ event }) => {
 
         <Separator className="my-4" />
 
-        <FormItem name="konfhubId">
-          {({ field }) => (
-            <FormItemContainer>
-              <FormLabel>Konfhub Event ID</FormLabel>
-              <Input {...field} placeholder="Konfhub ID" />
-              <FormError />
-            </FormItemContainer>
-          )}
-        </FormItem>
-
-        <FormItem name="konfhubApiKey">
-          {({ field }) => (
-            <FormItemContainer>
-              <FormLabel>Konfhub API Key</FormLabel>
-              <Input {...field} placeholder="Konfhub API Key" />
-              <FormError />
-            </FormItemContainer>
-          )}
-        </FormItem>
-
         <FormItem name="paidEvent">
           {({ field: { value, onChange } }) => (
             <FormItemContainer halfSpace>
@@ -208,18 +188,6 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-4 gap-2">
-                          <FormLabel htmlFor={`ticketTypes.${index}.konfhubId`} className="col-span-1">
-                            Konfhub ID
-                          </FormLabel>
-                          <Input
-                            {...register(`ticketTypes.${index}.konfhubId`)}
-                            id={`ticketTypes.${index}.konfhubId`}
-                            placeholder="Konfhub ID"
-                            className="col-span-3"
-                          />
-                        </div>
-
                         <Button type="button" className="w-fit" variant={'negative'} onClick={() => remove(index)}>
                           Remove
                         </Button>
@@ -229,7 +197,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                       type="button"
                       variant={'default'}
                       className="w-full"
-                      onClick={() => append({ name: '', description: '', tier: '', price: 0, maximumQuantity: 0, konfhubId: '' })}
+                      onClick={() => append({ name: '', description: '', tier: '', price: 0, maximumQuantity: 0 })}
                     >
                       Add Ticket Type
                     </Button>
