@@ -181,6 +181,7 @@ def get_registration_by_email(
 )
 def get_registrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
+    is_delted: bool = Query(False, title='Include deleted entries', alias='isDeleted'),
     current_user: AccessUser = Depends(get_current_user),
 ):
     """
@@ -188,7 +189,7 @@ def get_registrations(
     """
     _ = current_user
     registrations_uc = PyconRegistrationUsecase()
-    return registrations_uc.get_pycon_registrations(event_id=event_id)
+    return registrations_uc.get_pycon_registrations(event_id=event_id, is_deleted=is_delted)
 
 
 @pycon_registration_router.get(

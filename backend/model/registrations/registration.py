@@ -101,6 +101,8 @@ class Registration(Model):
 
     validIdObjectKey = UnicodeAttribute(null=True)
 
+    deletedAt = UnicodeAttribute(null=True)
+
 
 class RegistrationDataIn(BaseModel):
     class Config:

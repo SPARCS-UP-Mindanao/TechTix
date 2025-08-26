@@ -289,9 +289,22 @@ class RegistrationsRepository:
 
         """
         try:
-            registration_entry.delete()
+            # soft delete
+            update_data = {
+                'deletedAt': self.current_date,
+                'entryStatus': EntryStatus.DELETED.value,
+            }
+            with TransactWrite(connection=self.conn) as transaction:
+                actions = [getattr(Registration, k).set(v) for k, v in update_data.items()]
+                transaction.update(registration_entry, actions=actions)
+
             logger.info(f'[{registration_entry.rangeKey}] Delete registration data successful')
             return HTTPStatus.OK, None
+
+        except TransactWriteError as e:
+            message = f'Failed to delete event data: {str(e)}'
+            logger.error(f'[{registration_entry.rangeKey}] {message}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
         except DeleteError as e:
             message = f'Failed to delete event data: {str(e)}'
