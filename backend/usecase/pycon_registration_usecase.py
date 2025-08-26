@@ -5,18 +5,12 @@ from http import HTTPStatus
 from typing import List, Union
 
 import ulid
-from constants.common_constants import CommonConstants
-from external_gateway.konfhub_gateway import KonfHubGateway
-from model.events.event import Event
 from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileDownloadOut
-from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
-from model.pycon_registrations.pycon_registration import PyconRegistrationOut
-from model.registrations.registration import (
-    PreRegistrationToRegistrationIn,
-    RegistrationIn,
-    RegistrationOut,
-    RegistrationPatch,
+from model.pycon_registrations.pycon_registration import (
+    PyconRegistrationIn,
+    PyconRegistrationOut,
+    PyconRegistrationPatch,
 )
 from repository.events_repository import EventsRepository
 from repository.payment_transaction_repository import PaymentTransactionRepository
@@ -26,15 +20,15 @@ from starlette.responses import JSONResponse
 from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
-from usecase.preregistration_usecase import PreRegistrationUsecase
 from utils.logger import logger
 
 
-class RegistrationUsecase:
+class PyconRegistrationUsecase:
     """
-    Handles the business logic for managing registration entries.
+    Handles the business logic for managing PyCon-specific registration entries.
 
-    This class provides methods for creating, updating, retrieving, listing, and deleting registration entries.
+    This class provides methods for creating, updating, retrieving, listing, and deleting PyCon registration entries.
+    It focuses specifically on PyCon events and their unique requirements.
 
     Attributes:
         registrations_repository (RegistrationsRepository): An instance of the RegistrationsRepository used for data access.
@@ -46,19 +40,19 @@ class RegistrationUsecase:
         self.__email_usecase = EmailUsecase()
         self.__discount_usecase = DiscountUsecase()
         self.__file_s3_usecase = FileS3Usecase()
-        self.__preregistration_usecase = PreRegistrationUsecase()
         self.__ticket_type_repository = TicketTypeRepository()
-        self.__konfhub_gateway = KonfHubGateway()
         self.__payment_transaction_repository = PaymentTransactionRepository()
 
-    def create_registration(self, registration_in: RegistrationIn) -> Union[JSONResponse, RegistrationOut]:
-        """Creates a new registration entry.
+    def create_pycon_registration(
+        self, registration_in: PyconRegistrationIn
+    ) -> Union[JSONResponse, PyconRegistrationOut]:
+        """Creates a new PyCon registration entry.
 
-        :param registration_in: The data for creating the new registration.
-        :type registration_in: RegistrationIn
+        :param registration_in: The data for creating the new PyCon registration.
+        :type registration_in: PyconRegistrationIn
 
         :return: If successful, returns the created registration entry. If unsuccessful, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
+        :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
         status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
@@ -66,9 +60,6 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         event_id = registration_in.eventId
-
-        if event.isApprovalFlow:
-            return self.create_registration_approval_flow(event=event, registration_in=registration_in)
 
         # Check if the event is still open
         if event.status != EventStatus.OPEN.value:
@@ -119,7 +110,7 @@ class RegistrationUsecase:
 
         ticket_type_entry = None
         if event.hasMultipleTicketTypes:
-            ticket_type_id = registration_in.ticketTypeId
+            ticket_type_id = registration_in.ticketType.value
             if not ticket_type_id:
                 return JSONResponse(
                     status_code=HTTPStatus.BAD_REQUEST,
@@ -170,92 +161,30 @@ class RegistrationUsecase:
             if status != HTTPStatus.OK:
                 return JSONResponse(status_code=status, content={'message': message})
 
-        # Capture registration to KonfHub
-        if event.konfhubId:
-            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-            if konfhub_response != HTTPStatus.OK:
-                return konfhub_response
-
         registration_data = self.__convert_data_entry_to_dict(registration)
 
         if not registration.registrationEmailSent:
             self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
 
-        registration_out = RegistrationOut(**registration_data)
-        return self.collect_pre_signed_url(registration_out)
+        registration_out = PyconRegistrationOut(**registration_data)
+        return self.collect_pre_signed_url_pycon(registration_out)
 
-    def create_registration_approval_flow(
-        self, event: Event, registration_in: RegistrationIn
-    ) -> Union[JSONResponse, RegistrationOut]:
-        """Creates a new registration entry for an event with approval flow.
+    def update_pycon_registration(
+        self, event_id: str, registration_id: str, registration_in: PyconRegistrationPatch
+    ) -> Union[JSONResponse, PyconRegistrationOut]:
+        """Updates an existing PyCon registration entry.
 
-        :param event: The event for which the registration is being created.
-        :type event: Event
-
-        :param registration_in: The data for creating the new registration.
-        :type registration_in: RegistrationIn
-
-        :return: If successful, returns the created registration entry. If unsuccessful, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
-
-        """
-        event_id = registration_in.eventId
-        email = registration_in.email
-        preregistration = self.__preregistration_usecase.get_preregistration_by_email(event_id=event_id, email=email)
-
-        if isinstance(preregistration, JSONResponse):
-            return preregistration
-
-        registration_data = preregistration.dict()
-        registration_data_in = PreRegistrationToRegistrationIn(
-            **registration_data,
-            discountCode=registration_in.discountCode,
-            referenceNumber=registration_in.referenceNumber,
-            amountPaid=registration_in.amountPaid,
-        )
-
-        registration_id = preregistration.preRegistrationId
-        (
-            status,
-            registration,
-            message,
-        ) = self.__registrations_repository.store_registration(
-            registration_in=registration_data_in,
-            registration_id=registration_id,
-        )
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
-
-        status, __, message = self.__events_repository.append_event_registration_count(event_entry=event)
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
-
-        if event.konfhubId:
-            konfhub_response = self.register_konfhub(registration_in=registration_in, event_id=event_id, event=event)
-            if konfhub_response != HTTPStatus.OK:
-                return konfhub_response
-
-        registration_data = self.__convert_data_entry_to_dict(registration)
-
-        if not registration.registrationEmailSent:
-            self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
-
-        registration_out = RegistrationOut(**registration_data)
-        return self.collect_pre_signed_url(registration_out)
-
-    def update_registration(
-        self, event_id: str, registration_id: str, registration_in: RegistrationPatch
-    ) -> Union[JSONResponse, RegistrationOut]:
-        """Updates an existing registration entry.
+        :param event_id: The ID of the event
+        :type event_id: str
 
         :param registration_id: The unique identifier of the registration to be updated.
         :type registration_id: str
 
-        :param registration_in: The data for updating the registration.
-        :type registration_in: RegistrationIn
+        :param registration_in: The data for updating the PyCon registration.
+        :type registration_in: PyconRegistrationPatch
 
         :return: If successful, returns the updated registration entry. If unsuccessful, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
+        :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
@@ -283,11 +212,11 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(update_registration)
-        registration_out = RegistrationOut(**registration_data)
-        return self.collect_pre_signed_url(registration_out)
+        registration_out = PyconRegistrationOut(**registration_data)
+        return self.collect_pre_signed_url_pycon(registration_out)
 
-    def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
-        """Retrieves a specific registration entry by its ID.
+    def get_pycon_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, PyconRegistrationOut]:
+        """Retrieves a specific PyCon registration entry by its ID.
 
         :param event_id: The ID of the event
         :type event_id: str
@@ -296,7 +225,7 @@ class RegistrationUsecase:
         :type registration_id: str
 
         :return: If found, returns the requested registration entry. If not found, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
+        :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
 
@@ -315,11 +244,11 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
-        registration_out = RegistrationOut(**registration_data)
-        return self.collect_pre_signed_url(registration_out)
+        registration_out = PyconRegistrationOut(**registration_data)
+        return self.collect_pre_signed_url_pycon(registration_out)
 
-    def get_registration_by_email(self, event_id: str, email: str) -> RegistrationOut:
-        """Retrieves a specific registration entry by its email.
+    def get_pycon_registration_by_email(self, event_id: str, email: str) -> Union[JSONResponse, PyconRegistrationOut]:
+        """Retrieves a specific PyCon registration entry by its email.
 
         :param event_id: The ID of the event
         :type event_id: str
@@ -328,7 +257,7 @@ class RegistrationUsecase:
         :type email: str
 
         :return: If found, returns the requested registration entry. If not found, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
+        :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
         (
@@ -341,18 +270,18 @@ class RegistrationUsecase:
 
         registration = registrations[0]
         registration_data = self.__convert_data_entry_to_dict(registration)
-        registration_out = RegistrationOut(**registration_data)
+        registration_out = PyconRegistrationOut(**registration_data)
 
-        return self.collect_pre_signed_url(registration_out)
+        return self.collect_pre_signed_url_pycon(registration_out)
 
-    def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
-        """Retrieves a list of registration eregistration_idntries.
+    def get_pycon_registrations(self, event_id: str = None) -> Union[JSONResponse, List[PyconRegistrationOut]]:
+        """Retrieves a list of PyCon registration entries.
 
         :param event_id: If provided, only retrieves registration entries for the specified event. If not provided, retrieves all registration entries.
         :type event_id: str, optional
 
         :return: If successful, returns a list of registration entries. If unsuccessful, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, List[RegistrationOut]
+        :rtype: Union[JSONResponse, List[PyconRegistrationOut]]
 
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
@@ -368,12 +297,12 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         return [
-            self.collect_pre_signed_url(RegistrationOut(**self.__convert_data_entry_to_dict(registration)))
+            self.collect_pre_signed_url_pycon(PyconRegistrationOut(**self.__convert_data_entry_to_dict(registration)))
             for registration in registrations
         ]
 
-    def get_registration_csv(self, event_id: str) -> FileDownloadOut:
-        """Returns the FileDownloadOut of the CSV for the specified event
+    def get_pycon_registration_csv(self, event_id: str) -> FileDownloadOut:
+        """Returns the FileDownloadOut of the CSV for the specified PyCon event
 
         :param event_id: The event registrations to be queried
         :type event_id: str
@@ -381,7 +310,7 @@ class RegistrationUsecase:
         :return: FileDownloadOut for the CSV
         :rtype: FileDownloadOut
         """
-        # Get preregistrations for an event
+        # Get registrations for a PyCon event
         status, registrations, message = self.__registrations_repository.query_registrations(event_id=event_id)
 
         if status != HTTPStatus.OK:
@@ -389,7 +318,7 @@ class RegistrationUsecase:
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                csv_path = os.path.join(tmpdir, 'registrations.csv')
+                csv_path = os.path.join(tmpdir, 'pycon_registrations.csv')
 
                 with open(csv_path, 'w') as temp:
                     writer = csv.writer(temp)
@@ -404,17 +333,17 @@ class RegistrationUsecase:
                         writer.writerow(entry_dict.values())
 
                 # upload the file to s3
-                csv_object_key = f'csv/registrations/{event_id}.csv'
+                csv_object_key = f'csv/pycon_registrations/{event_id}.csv'
                 self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
 
                 return self.__file_s3_usecase.create_download_url(csv_object_key)
 
         except Exception as e:
-            logger.error(f'Error generating the CSV for {event_id}: {e}')
+            logger.error(f'Error generating the PyCon CSV for {event_id}: {e}')
             return
 
-    def delete_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
-        """Deletes a specific registration entry by its ID.
+    def delete_pycon_registration(self, event_id: str, registration_id: str) -> Union[None, JSONResponse]:
+        """Deletes a specific PyCon registration entry by its ID.
 
         :param event_id: The ID of the event
         :type event_id: str
@@ -446,29 +375,13 @@ class RegistrationUsecase:
 
         return None
 
-    def collect_pre_signed_url(self, registration: RegistrationOut) -> RegistrationOut:
-        """Collects the pre-signed URL for the GCash payment image.
-
-        :param registration: The registration entry to be updated.
-        :type registration: RegistrationOut
-
-        :return: The updated registration entry with the pre-signed URL for the GCash payment image.
-        :rtype: RegistrationOut
-
-        """
-        if registration.gcashPaymentId:
-            image_id_url = self.__file_s3_usecase.create_download_url(registration.gcashPaymentId)
-            registration.gcashPaymentUrl = image_id_url.downloadLink
-
-        return registration
-
     def collect_pre_signed_url_pycon(self, registration: PyconRegistrationOut) -> PyconRegistrationOut:
-        """Collects the pre-signed URL for the valid ID image.
+        """Collects the pre-signed URL for the valid ID image for PyCon registrations.
 
-        :param registration: The registration entry to be updated.
+        :param registration: The PyCon registration entry to be updated.
         :type registration: PyconRegistrationOut
 
-        :return: The updated registration entry with the pre-signed URL for the GCash payment image.
+        :return: The updated registration entry with the pre-signed URL for the valid ID image.
         :rtype: PyconRegistrationOut
 
         """
@@ -477,40 +390,6 @@ class RegistrationUsecase:
             registration.imageIdUrl = image_id_url.downloadLink
 
         return registration
-
-    def register_konfhub(self, registration_in: RegistrationIn, event_id: str, event: Event):
-        ticket_type_id = registration_in.ticketTypeId
-        if not ticket_type_id:
-            _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
-            ticket_types_list = [ticket_type.konfhubId for ticket_type in ticket_types_entries or []]
-            ticket_type_id = ticket_types_list[0]
-
-        phone_number_with_no_zero = registration_in.contactNumber.lstrip('0')
-        konfhub_registration_details = RegistrationDetail(
-            name=f'{registration_in.firstName} {registration_in.lastName}',
-            email_id=registration_in.email,
-            quantity=1,
-            designation=registration_in.title,
-            organisation=registration_in.organization,
-            t_shirt_size=registration_in.shirtSize,
-            phone_number=phone_number_with_no_zero,
-            dial_code=CommonConstants.PH_DIAL_CODE,
-            country_code=CommonConstants.PH_COUNTRY_CODE,
-        )
-        konfhub_capture_registration_in = KonfHubCaptureRegistrationIn(
-            event_id=event.konfhubId,
-            registration_tz=CommonConstants.PH_TIMEZONE,
-            registration_details={
-                ticket_type_id: [konfhub_registration_details],
-            },
-        )
-        status, _, message = self.__konfhub_gateway.capture_registration(
-            konfhub_capture_registration_in, event.konfhubApiKey
-        )
-        if status != HTTPStatus.OK:
-            return JSONResponse(status_code=status, content={'message': message})
-
-        return status
 
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):

@@ -74,14 +74,17 @@ class RegistrationsRepository:
             message = f'Failed to save registration strategy form: {str(e)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         else:
             logger.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None

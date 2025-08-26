@@ -18,6 +18,7 @@ from pynamodb.exceptions import (
 from pynamodb.transactions import TransactWrite
 from repository.repository_utils import RepositoryUtils
 from utils.logger import logger
+from utils.utils import Utils
 
 
 class TicketTypeRepository:
@@ -38,7 +39,7 @@ class TicketTypeRepository:
 
         """
         data = RepositoryUtils.load_data(pydantic_schema_in=ticket_type_in)
-        entry_id = ticket_type_in.konfhubId
+        entry_id = Utils.convert_to_slug(ticket_type_in.name)
         event_id = ticket_type_in.eventId
         hash_key = f'{self.core_obj}#{event_id}'
         range_key = f'v{self.latest_version}#{entry_id}'
@@ -61,14 +62,17 @@ class TicketTypeRepository:
             message = f'Failed to save ticket_type form: {str(e)}'
             logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
             logger.error(f'[{self.core_obj} = {entry_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         else:
             logger.info(f'[{self.core_obj} = {entry_id}]: Save TicketType data successful')
             return HTTPStatus.OK, ticket_type_entry, None

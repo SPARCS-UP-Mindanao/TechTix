@@ -10,13 +10,14 @@ from model.pycon_registrations.pycon_registration import (
     PyconRegistrationOut,
     PyconRegistrationPatch,
 )
-from usecase.registration_usecase import RegistrationUsecase
+from pydantic import EmailStr
+from usecase.pycon_registration_usecase import PyconRegistrationUsecase
 
-pycon_router = APIRouter()
+pycon_registration_router = APIRouter()
 
 
-@pycon_router.post(
-    '/',
+@pycon_registration_router.post(
+    '',
     response_model=PyconRegistrationOut,
     responses={
         200: {
@@ -58,6 +59,13 @@ pycon_router = APIRouter()
     },
     summary='Register for PyCon Davao',
     description='Create a new registration entry for PyCon Davao with personal details, ticket preferences, and payment information.',
+)
+@pycon_registration_router.post(
+    '/',
+    response_model=PyconRegistrationOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
 )
 def register_pycon(
     registration_in: PyconRegistrationIn = Body(
@@ -124,11 +132,38 @@ def register_pycon(
     This endpoint handles registration for PyCon Davao, capturing attendee information,
     ticket preferences, dietary restrictions, accessibility needs, and payment details.
     """
-    registrations_uc = RegistrationUsecase()
+    registrations_uc = PyconRegistrationUsecase()
     return registrations_uc.create_pycon_registration(registration_in)
 
 
-@pycon_router.get(
+@pycon_registration_router.get(
+    '/{email}/email',
+    response_model=PyconRegistrationOut,
+    responses={
+        404: {'model': Message, 'description': 'Registration not found'},
+        500: {'model': Message, 'description': 'Internal server error'},
+    },
+    summary='Get registration by email',
+)
+@pycon_registration_router.get(
+    '/{email}/email/',
+    response_model=PyconRegistrationOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_registration_by_email(
+    email: EmailStr = Path(..., title='Email'),
+    event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+):
+    """
+    Get a specific registration by email address.
+    """
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.get_pycon_registration_by_email(event_id=event_id, email=email)
+
+
+@pycon_registration_router.get(
     '',
     response_model=List[PyconRegistrationOut],
     responses={
@@ -137,7 +172,7 @@ def register_pycon(
     },
     summary='Get registrations',
 )
-@pycon_router.get(
+@pycon_registration_router.get(
     '/',
     response_model=List[PyconRegistrationOut],
     response_model_exclude_none=True,
@@ -146,15 +181,17 @@ def register_pycon(
 )
 def get_registrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Get a list of registration entries.
     """
-    registrations_uc = RegistrationUsecase()
-    return registrations_uc.get_registrations(event_id=event_id)
+    _ = current_user
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.get_pycon_registrations(event_id=event_id)
 
 
-@pycon_router.get(
+@pycon_registration_router.get(
     '/{entryId}',
     response_model=PyconRegistrationOut,
     responses={
@@ -163,7 +200,7 @@ def get_registrations(
     },
     summary='Get registration',
 )
-@pycon_router.get(
+@pycon_registration_router.get(
     '/{entryId}/',
     response_model=PyconRegistrationOut,
     response_model_exclude_none=True,
@@ -173,15 +210,17 @@ def get_registrations(
 def get_registration(
     entry_id: str = Path(..., title='Registration Id', alias=CommonConstants.ENTRY_ID),
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """
     Get a specific registration entry by its ID.
     """
-    registrations_uc = RegistrationUsecase()
-    return registrations_uc.get_registration(event_id=event_id, registration_id=entry_id)
+    _ = current_user
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.get_pycon_registration(event_id=event_id, registration_id=entry_id)
 
 
-@pycon_router.put(
+@pycon_registration_router.put(
     '/{entryId}',
     response_model=PyconRegistrationOut,
     responses={
@@ -191,7 +230,7 @@ def get_registration(
     },
     summary='Update registration',
 )
-@pycon_router.put(
+@pycon_registration_router.put(
     '/{entryId}/',
     response_model=PyconRegistrationOut,
     response_model_exclude_none=True,
@@ -208,13 +247,13 @@ def update_registration(
     Update an existing registration entry.
     """
     _ = current_user
-    registrations_uc = RegistrationUsecase()
-    return registrations_uc.update_registration(
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.update_pycon_registration(
         event_id=event_id, registration_id=entry_id, registration_in=registration
     )
 
 
-@pycon_router.delete(
+@pycon_registration_router.delete(
     '/{entryId}',
     status_code=HTTPStatus.NO_CONTENT,
     responses={
@@ -222,7 +261,7 @@ def update_registration(
     },
     summary='Delete registration',
 )
-@pycon_router.delete(
+@pycon_registration_router.delete(
     '{entryId}/',
     status_code=HTTPStatus.NO_CONTENT,
     include_in_schema=False,
@@ -236,5 +275,5 @@ def delete_registration(
     Delete a specific registration entry by its ID.
     """
     _ = current_user
-    registrations_uc = RegistrationUsecase()
-    return registrations_uc.delete_registration(registration_id=entry_id, event_id=event_id)
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.delete_pycon_registration(event_id=event_id, registration_id=entry_id)

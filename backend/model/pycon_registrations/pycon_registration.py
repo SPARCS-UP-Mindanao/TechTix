@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
@@ -95,6 +96,10 @@ class PyconRegistrationOut(PyconRegistration):
     class Config:
         extra = 'ignore'
 
+    paymentId: str = Field(None, title='Payment ID')
+    registrationId: str = Field(..., title='ID')
+    createDate: datetime = Field(..., title='Created At')
+    updateDate: datetime = Field(..., title='Updated At')
     imageIdUrl: Optional[HttpUrl] = Field(None, title='Image ID URL')
 
 
