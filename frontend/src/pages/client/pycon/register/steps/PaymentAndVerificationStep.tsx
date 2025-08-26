@@ -6,8 +6,8 @@ import { FormItem, FormLabel, FormError, FormDescription } from '@/components/Fo
 import Input from '@/components/Input';
 import { EVENT_UPLOAD_TYPE } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
-import { RegisterFormValues } from '@/hooks/useRegisterForm';
 import PaymentGateways from '@/pages/client/register/steps/PaymentGateways';
+import { RegisterFormValues } from '../../hooks/useRegisterForm';
 import { calculateTotalPrice } from '../pricing';
 import { useDiscount } from '../useDiscount';
 import { useTransactionFee } from '../useTransactionFee';
@@ -24,9 +24,9 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
   const { control } = useFormContext<RegisterFormValues>();
   const { getTransactionFee } = useTransactionFee(eventPrice, platformFee, setIsFeesLoading);
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(eventPrice);
-  const [transactionFee] = useWatch({ name: ['transactionFee'], control });
+  const [transactionFee, sprintDay] = useWatch({ name: ['transactionFee', 'sprintDay'], control });
   const discountedPrice = eventPrice * (1 - (discountPercentage ?? 0));
-  const total = calculateTotalPrice(eventPrice, transactionFee ?? null, discountPercentage ?? null, platformFee ?? null);
+  const total = calculateTotalPrice(eventPrice, transactionFee ?? null, discountPercentage ?? null, platformFee ?? null) + (sprintDay ? 200 : 0);
 
   useEffect(() => {
     getTransactionFee();
@@ -84,6 +84,12 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
           <div className="grid grid-cols-2 gap-5">
             <h4>Price:</h4>
             <p>{formatMoney(eventPrice, 'PHP')}</p>
+            {sprintDay && (
+              <>
+                <h4>Sprint Day:</h4>
+                <p>{formatMoney(200, 'PHP')}</p>
+              </>
+            )}
             <h4>Discount:</h4>
             <p>{discountPercentage ? <span>{formatPercentage(discountPercentage)}</span> : 'None'}</p>
             <h4>Discounted Price:</h4>
