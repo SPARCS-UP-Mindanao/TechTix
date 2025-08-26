@@ -274,7 +274,9 @@ class PyconRegistrationUsecase:
 
         return self.collect_pre_signed_url_pycon(registration_out)
 
-    def get_pycon_registrations(self, event_id: str = None) -> Union[JSONResponse, List[PyconRegistrationOut]]:
+    def get_pycon_registrations(
+        self, event_id: str = None, is_deleted: bool = False
+    ) -> Union[JSONResponse, List[PyconRegistrationOut]]:
         """Retrieves a list of PyCon registration entries.
 
         :param event_id: If provided, only retrieves registration entries for the specified event. If not provided, retrieves all registration entries.
@@ -299,6 +301,7 @@ class PyconRegistrationUsecase:
         return [
             self.collect_pre_signed_url_pycon(PyconRegistrationOut(**self.__convert_data_entry_to_dict(registration)))
             for registration in registrations
+            if (not registration.deletedAt or is_deleted)
         ]
 
     def get_pycon_registration_csv(self, event_id: str) -> FileDownloadOut:
