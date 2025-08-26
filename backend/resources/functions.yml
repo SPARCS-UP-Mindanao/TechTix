@@ -40,5 +40,4 @@ paymentHandler:
         - "sqs:SendMessage"
         - "sqs:ReceiveMessage"
         - "sqs:DeleteMessage"
-      Resource:
-        - "Fn::GetAtt": [ EmailQueue, Arn ]
+      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:${self:custom.stage}-durianpy-events-email-queue.fifo"
