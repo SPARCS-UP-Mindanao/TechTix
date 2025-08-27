@@ -10,7 +10,6 @@ from model.pycon_registrations.pycon_registration import PyconRegistrationIn
 from model.registrations.registration import Registration, RegistrationIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
-    DeleteError,
     PutError,
     PynamoDBConnectionError,
     QueryError,
@@ -89,7 +88,9 @@ class RegistrationsRepository:
             logger.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None
 
-    def query_registrations(self, event_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+    def query_registrations(
+        self, event_id: str = None, is_deleted: bool = False
+    ) -> Tuple[HTTPStatus, List[Registration], str]:
         """Query a list of registration records from the database.
 
         :param event_id: The event ID to query (default is None to query all records).
@@ -103,14 +104,18 @@ class RegistrationsRepository:
             if event_id is None:
                 registration_entries = list(
                     Registration.scan(
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value
+                        if not is_deleted
+                        else None,
                     )
                 )
             else:
                 registration_entries = list(
                     Registration.query(
                         hash_key=event_id,
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value
+                        if not is_deleted
+                        else None,
                     )
                 )
 
@@ -305,8 +310,3 @@ class RegistrationsRepository:
             message = f'Failed to delete event data: {str(e)}'
             logger.error(f'[{registration_entry.rangeKey}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
-
-        except DeleteError as e:
-            message = f'Failed to delete event data: {str(e)}'
-            logger.error(f'[{registration_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR

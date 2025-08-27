@@ -294,14 +294,13 @@ class PyconRegistrationUsecase:
             status,
             registrations,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id)
+        ) = self.__registrations_repository.query_registrations(event_id=event_id, is_deleted=is_deleted)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         return [
             self.collect_pre_signed_url_pycon(PyconRegistrationOut(**self.__convert_data_entry_to_dict(registration)))
             for registration in registrations
-            if (not registration.deletedAt or is_deleted)
         ]
 
     def get_pycon_registration_csv(self, event_id: str) -> FileDownloadOut:

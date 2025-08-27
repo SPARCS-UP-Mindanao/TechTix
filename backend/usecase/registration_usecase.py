@@ -11,10 +11,6 @@ from model.events.event import Event
 from model.events.events_constants import EventStatus
 from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
-from model.pycon_registrations.pycon_registration import (
-    PyconRegistrationOut,
-    PyconRegistrationPatch,
-)
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
     RegistrationIn,
@@ -246,8 +242,8 @@ class RegistrationUsecase:
         return self.collect_pre_signed_url(registration_out)
 
     def update_registration(
-        self, event_id: str, registration_id: str, registration_in: PyconRegistrationPatch
-    ) -> Union[JSONResponse, PyconRegistrationOut]:
+        self, event_id: str, registration_id: str, registration_in: RegistrationIn
+    ) -> Union[JSONResponse, RegistrationOut]:
         """Updates an existing registration entry.
 
         :param registration_id: The unique identifier of the registration to be updated.
@@ -284,10 +280,10 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(update_registration)
-        registration_out = PyconRegistrationOut(**registration_data)
+        registration_out = RegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 
-    def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, PyconRegistrationOut]:
+    def get_registration(self, event_id: str, registration_id: str) -> Union[JSONResponse, RegistrationOut]:
         """Retrieves a specific registration entry by its ID.
 
         :param event_id: The ID of the event
@@ -316,7 +312,7 @@ class RegistrationUsecase:
             return JSONResponse(status_code=status, content={'message': message})
 
         registration_data = self.__convert_data_entry_to_dict(registration)
-        registration_out = PyconRegistrationOut(**registration_data)
+        registration_out = RegistrationOut(**registration_data)
         return self.collect_pre_signed_url(registration_out)
 
     def get_registration_by_email(self, event_id: str, email: str) -> RegistrationOut:
@@ -348,7 +344,7 @@ class RegistrationUsecase:
 
     def get_registrations(
         self, event_id: str = None, is_deleted: bool = False
-    ) -> Union[JSONResponse, List[PyconRegistrationOut]]:
+    ) -> Union[JSONResponse, List[RegistrationOut]]:
         """Retrieves a list of registration eregistration_idntries.
 
         :param event_id: If provided, only retrieves registration entries for the specified event. If not provided, retrieves all registration entries.
@@ -366,14 +362,13 @@ class RegistrationUsecase:
             status,
             registrations,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id)
+        ) = self.__registrations_repository.query_registrations(event_id=event_id, is_deleted=is_deleted)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         return [
-            self.collect_pre_signed_url(PyconRegistrationOut(**self.__convert_data_entry_to_dict(registration)))
+            self.collect_pre_signed_url(RegistrationOut(**self.__convert_data_entry_to_dict(registration)))
             for registration in registrations
-            if (not registration.deletedAt or is_deleted)
         ]
 
     def get_registration_csv(self, event_id: str) -> FileDownloadOut:
@@ -466,7 +461,7 @@ class RegistrationUsecase:
 
         return registration
 
-    def collect_pre_signed_url_pycon(self, registration: PyconRegistrationOut) -> PyconRegistrationOut:
+    def collect_pre_signed_url_pycon(self, registration: RegistrationOut) -> RegistrationOut:
         """Collects the pre-signed URL for the valid ID image.
 
         :param registration: The registration entry to be updated.

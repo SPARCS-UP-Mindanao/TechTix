@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import List
+from typing import List, Optional
 
 from aws.cognito_settings import AccessUser, get_current_user
 from constants.common_constants import CommonConstants
@@ -181,7 +181,7 @@ def get_registration_by_email(
 )
 def get_registrations(
     event_id: str = Query(None, title='Event Id', alias=CommonConstants.EVENT_ID),
-    is_delted: bool = Query(False, title='Include deleted entries', alias='isDeleted'),
+    is_deleted: Optional[bool] = Query(None, title='Include deleted entries', alias='isDeleted'),
     current_user: AccessUser = Depends(get_current_user),
 ):
     """
@@ -189,7 +189,7 @@ def get_registrations(
     """
     _ = current_user
     registrations_uc = PyconRegistrationUsecase()
-    return registrations_uc.get_pycon_registrations(event_id=event_id, is_deleted=is_delted)
+    return registrations_uc.get_pycon_registrations(event_id=event_id, is_deleted=is_deleted)
 
 
 @pycon_registration_router.get(
