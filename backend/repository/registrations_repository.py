@@ -101,21 +101,21 @@ class RegistrationsRepository:
 
         """
         try:
+            condition = None
+            if not is_deleted:
+                condition = Registration.entryStatus == EntryStatus.ACTIVE.value
+
             if event_id is None:
                 registration_entries = list(
                     Registration.scan(
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value
-                        if not is_deleted
-                        else None,
+                        filter_condition=condition,
                     )
                 )
             else:
                 registration_entries = list(
                     Registration.query(
                         hash_key=event_id,
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value
-                        if not is_deleted
-                        else None,
+                        filter_condition=condition,
                     )
                 )
 
