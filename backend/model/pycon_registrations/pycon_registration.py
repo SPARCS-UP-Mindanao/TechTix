@@ -101,6 +101,8 @@ class PyconRegistrationOut(PyconRegistration):
     createDate: datetime = Field(..., title='Created At')
     updateDate: datetime = Field(..., title='Updated At')
     imageIdUrl: Optional[HttpUrl] = Field(None, title='Image ID URL')
+    amountPaid: Optional[float] = Field(None, title='Amount Paid')
+    transactionId: Optional[str] = Field(None, title='Transaction ID')
 
 
 class PyconRegistrationIn(PyconRegistration):
