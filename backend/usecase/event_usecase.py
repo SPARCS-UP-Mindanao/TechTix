@@ -119,7 +119,7 @@ class EventUsecase:
             # Delete ticket types not present in the input
             konfhub_ids_in_input = {ticket_type.name for ticket_type in event_in.ticketTypes}
             for ticket_type in ticket_types_map.values():
-                if ticket_type.entryId in konfhub_ids_in_input:
+                if ticket_type.name in konfhub_ids_in_input:
                     continue
 
                 status, message = self.__ticket_type_repository.delete_ticket_type(ticket_type)
