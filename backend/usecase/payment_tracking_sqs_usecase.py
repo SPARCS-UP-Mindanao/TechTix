@@ -23,13 +23,9 @@ class PaymentTrackingSQSUsecase:
         """
         for record in event.get('Records', []):
             receipt_handle = record.get('receiptHandle')
-            # try:
             message_body = json.loads(record['body'])
 
             self.payment_tracking_usecase.process_payment_event(message_body)
-
-            # except Exception as e:
-            # logger.error(f'Failed to process message with receipt handle {receipt_handle}: {e}')
 
             # finally:
             if receipt_handle:

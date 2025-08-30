@@ -13,6 +13,7 @@ from model.payments.payments import (
 )
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
+    DoesNotExist,
     PutError,
     PynamoDBConnectionError,
     QueryError,
@@ -253,23 +254,69 @@ class PaymentTransactionRepository:
                 range_key=range_key,
             )
 
+            # Log current values for debugging
+            logger.info(
+                f'[{payment_transaction_id}] Current transaction status: {payment_transaction.transactionStatus}'
+            )
+            logger.info(f'[{payment_transaction_id}] New status: {status.value}')
+
+            # Ensure CURRENT_USER has a fallback
+            current_user = os.getenv('CURRENT_USER') or 'system'
+            logger.info(f'[{payment_transaction_id}] Updating with user: {current_user}')
+
+            # Refresh the current_date to avoid stale timestamps
+            current_date = datetime.now(tz=pytz.timezone('Asia/Manila')).isoformat()
+
+            # Implement proper TransactWrite pattern with versioning like other repositories
+            current_version = payment_transaction.latestVersion
+            new_version = current_version + 1
+
             with TransactWrite(connection=self.conn) as transaction:
+                # Update current entry with new data and version bump
                 transaction.update(
                     payment_transaction,
                     actions=[
                         PaymentTransaction.transactionStatus.set(status.value),
-                        PaymentTransaction.updateDate.set(self.current_date),
-                        PaymentTransaction.updatedBy.set(os.getenv('CURRENT_USER')),
+                        PaymentTransaction.updateDate.set(current_date),
+                        PaymentTransaction.updatedBy.set(current_user),
+                        PaymentTransaction.latestVersion.set(new_version),
                     ],
                 )
+
+                # Store old entry as historical version
+                old_payment_transaction = deepcopy(payment_transaction)
+                old_payment_transaction.rangeKey = payment_transaction.rangeKey.replace('v0#', f'v{new_version}#')
+                old_payment_transaction.latestVersion = current_version
+                old_payment_transaction.updatedBy = old_payment_transaction.updatedBy or current_user
+                transaction.save(old_payment_transaction)
+
+            # Refresh the entry after transaction (like other repositories)
             payment_transaction.refresh()
+
             logger.info(f'[{payment_transaction_id}] Update payment transaction status successful')
             return HTTPStatus.OK, payment_transaction, ''
 
-        except (PutError, TransactWriteError, TableDoesNotExist, PynamoDBConnectionError) as e:
+        except DoesNotExist:
+            message = f'PaymentTransaction with ID = {payment_transaction_id} not found'
+            logger.error(f'[{payment_transaction_id}] {message}')
+            return HTTPStatus.NOT_FOUND, None, message
+
+        except TransactWriteError as e:
+            logger.error(f'[{payment_transaction_id}] TransactWriteError occurred: {e}')
+            # Log additional details for debugging
+            logger.error(
+                f'[{payment_transaction_id}] TransactWriteError details - cause: {getattr(e, "cause", "unknown")}'
+            )
+            if hasattr(e, 'response'):
+                logger.error(f'[{payment_transaction_id}] Response: {e.response}')
+            error_message = f'TransactWriteError: {str(e)}'
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, error_message
+
+        except (PutError, TableDoesNotExist, PynamoDBConnectionError) as e:
             logger.error(f'[{payment_transaction_id}] Failed to update payment transaction status: {e}')
             error_message = f'{e.__class__.__name__}: {str(e)}'
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, error_message
+
         except Exception as e:
             logger.error(f'[{payment_transaction_id}] An unexpected error occurred: {e}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, f'Unexpected error: {str(e)}'

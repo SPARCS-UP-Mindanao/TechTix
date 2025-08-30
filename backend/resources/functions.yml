@@ -34,8 +34,8 @@ paymentHandler:
       Action:
         - "dynamodb:PutItem"
         - "dynamodb:Query"
-        - "dynamodb:TransactWriteItems"
         - "dynamodb:GetItem"
+        - "dynamodb:UpdateItem"
       Resource:
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}"
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.entities}"
