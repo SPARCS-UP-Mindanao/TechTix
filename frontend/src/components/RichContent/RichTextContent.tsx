@@ -1,28 +1,31 @@
+import { cn } from '@/utils/classes';
 import './RichContent.css';
-import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
 import { Content, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 interface RichTextContentProps {
   content: Content;
+  className?: string;
 }
 
-function RichTextContent({ content }: RichTextContentProps) {
+function RichTextContent({ content, className }: RichTextContentProps) {
   const editor = useEditor({
     editable: false,
-    content: content,
+    content,
     extensions: [
       StarterKit,
       TextAlign.configure({
         types: ['heading', 'paragraph']
       }),
-      Underline,
-      Link,
       Placeholder
     ],
+    editorProps: {
+      attributes: {
+        class: cn(className)
+      }
+    },
     onCreate: ({ editor }) => {
       editor.commands.setContent(content);
     },

@@ -3,6 +3,7 @@ import Button from '@/components/Button';
 import { Event } from '@/model/events';
 import { RegisterField } from '../../hooks/useRegisterForm';
 import { RegisterStep } from '../steps/RegistrationSteps';
+import { EventFooterPortal } from './EventFooterPortal';
 import { useRegisterFooter } from './useRegisterFooter';
 
 interface Props {
@@ -17,31 +18,48 @@ interface Props {
 }
 
 const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, isRegisterSuccessful, setCurrentStep, retryRegister, isFeesLoading }) => {
-  const {
-    paymentButtonDisabled,
-    isFormSubmitting,
-    onNextStep,
-    onPrevStep,
+  const { paymentButtonDisabled, isFormSubmitting, onNextStep, onPrevStep, onSummaryStep, onSignUpOther, onSubmitForm } = useRegisterFooter(
+    event,
+    steps,
+    currentStep,
+    fieldsToCheck,
+    setCurrentStep
+  );
 
-    onSummaryStep,
-    onSignUpOther,
-    onSubmitForm
-  } = useRegisterFooter(event, steps, currentStep, fieldsToCheck, setCurrentStep);
   const eventDetailsFooter = () => {
     return (
-      <Button onClick={onNextStep} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-10">
-        Register
-      </Button>
+      <EventFooterPortal>
+        <Button
+          onClick={onNextStep}
+          icon="ChevronRight"
+          iconPlacement="right"
+          iconClassname="stroke-pycon-violet!"
+          className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! rounded-full hover:bg-pycon-custard py-6 sm:px-10 my-8"
+        >
+          Register
+        </Button>
+      </EventFooterPortal>
     );
   };
 
   const defaultFooter = () => {
     return (
       <>
-        <Button onClick={onPrevStep} icon="ChevronLeft" className="py-6 sm:px-6">
+        <Button
+          onClick={onPrevStep}
+          icon="ChevronLeft"
+          strokeWidth={3}
+          className="bg-transparent border border-pycon-custard-light text-pycon-custard-light font-medium rounded-full py-6 sm:px-6 hover:bg-pycon-custard-light cursor-pointer hover:text-pycon-violet"
+        >
           Back
         </Button>
-        <Button onClick={onNextStep} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-6">
+        <Button
+          onClick={onNextStep}
+          icon="ChevronRight"
+          strokeWidth={3}
+          iconPlacement="right"
+          className="bg-pycon-custard-light hover:bg-pycon-custard cursor-pointer  text-pycon-violet rounded-full py-6 sm:px-6"
+        >
           Next
         </Button>
       </>
@@ -55,7 +73,11 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
 
     return (
       <>
-        <Button onClick={onPrevStep} icon="ChevronLeft" className="py-6 sm:px-6">
+        <Button
+          onClick={onPrevStep}
+          icon="ChevronLeft"
+          className="bg-transparent border border-pycon-custard-light text-pycon-custard-light font-medium rounded-full py-6 sm:px-6 hover:bg-pycon-custard-light cursor-pointer hover:text-pycon-violet"
+        >
           Back
         </Button>
         <Button
@@ -64,7 +86,7 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
           loading={isFeesLoading}
           icon="ChevronRight"
           iconPlacement="right"
-          className="py-6 sm:px-6"
+          className="bg-pycon-custard-light hover:bg-pycon-custard cursor-pointer  text-pycon-violet rounded-full py-6 sm:px-6"
         >
           Next
         </Button>
@@ -75,7 +97,12 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
   const summaryFooter = () => {
     return (
       <>
-        <Button onClick={onPrevStep} disabled={isFormSubmitting} icon="ChevronLeft" className="py-6 sm:px-6">
+        <Button
+          onClick={onPrevStep}
+          disabled={isFormSubmitting}
+          icon="ChevronLeft"
+          className="bg-transparent border border-pycon-custard-light text-pycon-custard-light font-medium rounded-full py-6 sm:px-6 hover:bg-pycon-custard-light cursor-pointer hover:text-pycon-violet"
+        >
           Back
         </Button>
         {event.isApprovalFlow && event.status === 'open' ? (
@@ -90,7 +117,13 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
             Proceed to Payment
           </Button>
         ) : (
-          <Button onClick={onSubmitForm} loading={isFormSubmitting} icon="ChevronRight" iconPlacement="right" className="py-6 sm:px-6">
+          <Button
+            onClick={onSubmitForm}
+            loading={isFormSubmitting}
+            icon="ChevronRight"
+            iconPlacement="right"
+            className="bg-pycon-custard-light hover:bg-pycon-custard cursor-pointer  text-pycon-violet rounded-full py-6 sm:px-6"
+          >
             Submit
           </Button>
         )}

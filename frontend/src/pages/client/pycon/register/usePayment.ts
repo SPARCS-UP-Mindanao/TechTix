@@ -21,19 +21,10 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
     if (!total || !paymentChannel || (paymentChannel !== 'PAYMAYA' && paymentChannel !== 'GCASH')) {
       return;
     }
+
     try {
       const values = getValues();
       setIsRequestingPayment(true);
-      console.log({
-        referenceId,
-        eventId: eventId,
-        amount: total,
-        channelCode: paymentChannel,
-        failureReturnUrl: `${baseUrlPath}?step=Payment`,
-        successReturnUrl: `${baseUrlPath}?step=Success`,
-        cancelReturnUrl: `${baseUrlPath}?step=Payment`,
-        registrationData: mapCreateRegistrationDataForPayment(values, eventId)
-      });
 
       const response = await api.execute(
         createEwalletPaymentRequest({
@@ -47,8 +38,6 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
           registrationData: mapCreateRegistrationDataForPayment(values, eventId)
         })
       );
-
-      console.log({ response });
 
       if (response.status === 200) {
         localStorage.setItem('referenceId', JSON.stringify(response.data.referenceId));

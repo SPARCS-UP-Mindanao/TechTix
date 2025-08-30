@@ -3,23 +3,25 @@ import { useParams } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
 import ErrorPage from '@/components/ErrorPage';
 import Separator from '@/components/Separator';
-import Stepper from '@/components/Stepper';
+import Skeleton from '@/components/Skeleton';
 import { Event } from '@/model/events';
+import { cn } from '@/utils/classes';
+import { useActiveBreakpoints } from '@/hooks/useActiveBreakpoints';
 import { REGISTER_FIELDS, useRegisterForm } from '../hooks/useRegisterForm';
 import EventDetails from './EventDetails';
-import EventHeader from './EventHeader';
 import FAQs from './FAQs';
-import RegisterFormLoading from './RegisterFormSkeleton';
 import RegisterFooter from './footer/RegisterFooter';
 import BasicInfoStep from './steps/BasicInfoStep';
 import MiscellaneousStep from './steps/MiscellaneousStep';
 import PaymentAndVerificationStep from './steps/PaymentAndVerificationStep';
 import { RegisterStep, RegisterStepsWithPayment, STEP_EVENT_DETAILS, STEP_SUCCESS } from './steps/RegistrationSteps';
+import Stepper from './steps/Stepper';
 import SuccessStep from './steps/SuccessStep';
 import SummaryStep from './steps/SummaryStep';
 import TicketSelectionStep from './steps/TicketSelectionStep';
 import { useRegisterPage } from './useRegisterPage';
 import { useSuccess } from './useSuccess';
+import PyconBackground from '@/routes/layouts/PyconBackground';
 
 const Register: FC = () => {
   const { eventId } = useParams();
@@ -30,9 +32,11 @@ const Register: FC = () => {
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
   const [isFeesLoading, setIsFeesLoading] = useState(false);
 
-  const { form, onSubmit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { response, isPending } = useRegisterPage(eventId!, setCurrentStep);
+  const { form, onSubmit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
+
+  const [shouldBeVertical] = useActiveBreakpoints('md');
 
   const updateEventPrice = (newPrice: number) => {
     if (eventInfo) {
@@ -41,7 +45,7 @@ const Register: FC = () => {
   };
 
   if (isPending || isSuccessLoading) {
-    return <RegisterFormLoading />;
+    return <Skeleton className="w-full h-full" />;
   }
 
   if (!response || (response && !response.data && response.errorData)) {
@@ -90,17 +94,19 @@ const Register: FC = () => {
   const showFAQs = currentStep.id === 'EventDetails';
 
   return (
-    <section className="flex flex-col items-center px-4">
-      <div className="w-full max-w-2xl flex flex-col items-center space-y-4">
-        <EventHeader event={eventInfo} />
-
+    <section className="flex flex-col grow items-center px-4 h-full w-full text-pycon-custard font-inter max-w-6xl mx-auto">
+      <div className="w-full h-full flex flex-col space-y-4 grow">
         <FormProvider {...form}>
-          <main className="w-full">
-            {currentStep.id !== 'EventDetails' && <h1 className="text-xl text-center">{currentStep.title}</h1>}
+          {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <h1 className="text-xl">{currentStep.title}</h1>}
 
-            {showStepper && <Stepper steps={STEPS} currentStep={currentStep} stepsToExclude={[STEP_SUCCESS]} />}
+          <div className="flex flex-col md:flex-row w-full h-full grow">
+            {showStepper && (
+              <div className={cn('my-8', shouldBeVertical && 'h-[700px]')}>
+                <Stepper orientation={shouldBeVertical ? 'vertical' : 'horizontal'} steps={STEPS} currentStep={currentStep} stepsToExclude={[STEP_SUCCESS]} />
+              </div>
+            )}
 
-            <div className="space-y-4">
+            <div className={cn('space-y-4 grow', currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && shouldBeVertical && 'ms-[20vw] p-8')}>
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'BasicInfo' && <BasicInfoStep />}
               {currentStep.id === 'TicketSelection' && <TicketSelectionStep event={eventInfo} updateEventPrice={updateEventPrice} />}
@@ -114,27 +120,30 @@ const Register: FC = () => {
                   setIsFeesLoading={setIsFeesLoading}
                 />
               )}
+
+              {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
+              {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}
             </div>
+          </div>
 
-            {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
-            {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}
-            {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4" />}
+          {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <Separator className="my-4 bg-pycon-custard-light" />}
 
-            <RegisterFooter
-              event={eventInfo}
-              steps={STEPS}
-              currentStep={currentStep}
-              fieldsToCheck={fieldsToCheck}
-              isRegisterSuccessful={isRegisterSuccessful}
-              retryRegister={retryRegister}
-              setCurrentStep={setCurrentStep}
-              isFeesLoading={isFeesLoading}
-            />
+          <RegisterFooter
+            event={eventInfo}
+            steps={STEPS}
+            currentStep={currentStep}
+            fieldsToCheck={fieldsToCheck}
+            isRegisterSuccessful={isRegisterSuccessful}
+            retryRegister={retryRegister}
+            setCurrentStep={setCurrentStep}
+            isFeesLoading={isFeesLoading}
+          />
 
-            {showFAQs && <FAQs />}
-          </main>
+          {showFAQs && <FAQs />}
         </FormProvider>
       </div>
+
+      <PyconBackground />
     </section>
   );
 };

@@ -6,11 +6,11 @@ import { FormItem, FormLabel, FormError, FormDescription } from '@/components/Fo
 import Input from '@/components/Input';
 import { EVENT_UPLOAD_TYPE } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
-import PaymentGateways from '@/pages/client/register/steps/PaymentGateways';
 import { RegisterFormValues } from '../../hooks/useRegisterForm';
 import { calculateTotalPrice } from '../pricing';
 import { useDiscount } from '../useDiscount';
 import { useTransactionFee } from '../useTransactionFee';
+import PaymentGateways from './PaymentGateways';
 
 interface Props {
   eventId: string;
@@ -48,24 +48,31 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
     <>
       <FormItem name="validIdObjectKey">
         {({ field: { name, value, onChange } }) => (
-          <div>
+          <div className="space-y-4">
             <FormLabel>Valid ID</FormLabel>
-            <FormDescription>Valid ID is required upon entry to venue</FormDescription>
-            <FileUpload name={name} eventId={eventId} uploadType={EVENT_UPLOAD_TYPE.VALID_ID} value={value} onChange={onChange} />
+            <FormDescription className="text-pycon-custard-light">Valid ID is required upon entry to venue</FormDescription>
+            <FileUpload pyconStyles name={name} eventId={eventId} uploadType={EVENT_UPLOAD_TYPE.VALID_ID} value={value} onChange={onChange} />
             <FormError />
           </div>
         )}
       </FormItem>
 
-      <hr />
+      <hr className="border-pycon-custard-light" />
 
       <FormItem name="discountCode">
         {({ field }) => (
           <div className="flex flex-col gap-1">
-            <FormLabel optional>Discount Coupon</FormLabel>
+            <FormLabel optional optionalClass="text-pycon-custard-light">
+              Discount Coupon
+            </FormLabel>
             <div className="flex sm:flex-row flex-col gap-2 w-full items-center">
-              <Input type="text" placeholder="Enter Discount Coupon Code" className="w-full sm:w-1/2" {...field} />
-              <Button className="w-full sm:w-1/2" disabled={!field.value} onClick={validateDiscountCode} loading={isValidatingDiscountCode}>
+              <Input pyconStyles type="text" placeholder="Enter Discount Coupon Code" className="w-full sm:w-1/2" {...field} />
+              <Button
+                className="w-full sm:w-fit bg-pycon-custard-light cursor-pointer text-pycon-violet-dark disabled:bg-pycon-custard-light/70 disabled:cursor-not-allowed hover:bg-pycon"
+                disabled={!field.value}
+                onClick={validateDiscountCode}
+                loading={isValidatingDiscountCode}
+              >
                 Check Code
               </Button>
             </div>
@@ -74,36 +81,36 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
         )}
       </FormItem>
 
-      <hr />
+      <hr className="border-pycon-custard-light" />
 
       <PaymentGateways getTransactionFee={getTransactionFee} />
 
-      <hr />
+      <hr className="border-pycon-custard-light" />
       <div className="flex flex-col items-start gap-5">
         <div className="flex flex-col gap-5 w-full">
           <div className="grid grid-cols-2 gap-5">
-            <h4>Price:</h4>
-            <p>{formatMoney(eventPrice, 'PHP')}</p>
+            <h4 className="font-nunito text-pycon-custard font-bold">Price:</h4>
+            <p className="font-nunito font-bold">{formatMoney(eventPrice, 'PHP')}</p>
             {sprintDay && (
               <>
-                <h4>Sprint Day:</h4>
-                <p>{formatMoney(200, 'PHP')}</p>
+                <h4 className="font-nunito text-pycon-custard font-bold">Sprint Day:</h4>
+                <p className="font-nunito font-bold">{formatMoney(200, 'PHP')}</p>
               </>
             )}
-            <h4>Discount:</h4>
-            <p>{discountPercentage ? <span>{formatPercentage(discountPercentage)}</span> : 'None'}</p>
-            <h4>Discounted Price:</h4>
-            <p>{discountPercentage ? formatMoney(discountedPrice, 'PHP') : 'None'}</p>
-            <h4>Transaction Fee:</h4>
-            <p>{getTransactionFeeContent()}</p>
+            <h4 className="font-nunito text-pycon-custard font-bold">Discount:</h4>
+            <p className="font-nunito font-bold">{discountPercentage ? <span>{formatPercentage(discountPercentage)}</span> : 'None'}</p>
+            <h4 className="font-nunito text-pycon-custard font-bold">Discounted Price:</h4>
+            <p className="font-nunito font-bold">{discountPercentage ? formatMoney(discountedPrice, 'PHP') : 'None'}</p>
+            <h4 className="font-nunito text-pycon-custard font-bold">Transaction Fee:</h4>
+            <p className="font-nunito font-bold">{getTransactionFeeContent()}</p>
             {platformFee && (
               <>
-                <h4>Platform Fee:</h4>
-                <p>{formatMoney(eventPrice * platformFee, 'PHP')}</p>
+                <h4 className="font-nunito text-pycon-custard font-bold">Platform Fee:</h4>
+                <p className="font-nunito font-bold">{formatMoney(eventPrice * platformFee, 'PHP')}</p>
               </>
             )}
-            <h4>Total:</h4>
-            <p>{formatMoney(total, 'PHP')}</p>
+            <h4 className="font-nunito text-pycon-custard font-bold">Total:</h4>
+            <p className="font-nunito font-bold">{formatMoney(total, 'PHP')}</p>
           </div>
         </div>
       </div>

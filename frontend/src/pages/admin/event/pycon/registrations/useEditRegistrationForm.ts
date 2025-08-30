@@ -77,8 +77,6 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
     defaultValues: mapRegistrationToFormValues(registrationInfo)
   });
 
-  // TODO: Fix updating registration, specifically in type mappings
-
   const onUpdate = form.handleSubmit(async (values) => {
     try {
       const response = await api.execute(updateRegistration(eventId, registrationId, mapUpdateRegistrationValues(values)));

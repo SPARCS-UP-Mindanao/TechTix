@@ -18,61 +18,65 @@ interface Props {
 const MiscellaneousStep: FC<Props> = () => {
   return (
     <>
-      <FormItem name="communityInvolvement">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Are you a member of any local tech community?</FormLabel>
-            <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem id="communityInvolvement-yes" checked={!!field.value} value={'true'} />
-                <Label htmlFor={`communityInvolvement-yes`}>Yes</Label>
+      <div className="flex flex-col md:flex-row w-full gap-4">
+        <FormItem name="communityInvolvement">
+          {({ field }) => (
+            <div className="flex flex-col gap-1 grow md:basis-1/2">
+              <FormLabel>Are you a member of any local tech community?</FormLabel>
+              <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem pyconStyles id="communityInvolvement-yes" checked={!!field.value} value={'true'} />
+                  <Label htmlFor={`communityInvolvement-yes`}>Yes</Label>
 
-                <RadioGroupItem id="communityInvolvement-no" checked={!field.value} value="" />
-                <Label htmlFor={`communityInvolvement-no`}>No</Label>
-              </div>
-            </RadioGroup>
-            <FormError />
-          </div>
-        )}
-      </FormItem>
+                  <RadioGroupItem pyconStyles id="communityInvolvement-no" checked={!field.value} value="" />
+                  <Label htmlFor={`communityInvolvement-no`}>No</Label>
+                </div>
+              </RadioGroup>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
 
-      <FormItem name="futureVolunteer">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Would you like to volunteer in the future?</FormLabel>
-            <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem id="futureVolunteer-yes" checked={!!field.value} value={'true'} />
-                <Label htmlFor={`futureVolunteer-yes`}>Yes</Label>
+        <FormItem name="futureVolunteer">
+          {({ field }) => (
+            <div className="flex flex-col gap-1 grow md:basis-1/2">
+              <FormLabel>Would you like to volunteer in the future?</FormLabel>
+              <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem pyconStyles id="futureVolunteer-yes" checked={!!field.value} value={'true'} />
+                  <Label htmlFor={`futureVolunteer-yes`}>Yes</Label>
 
-                <RadioGroupItem id="futureVolunteer-no" checked={!field.value} value="" />
-                <Label htmlFor={`futureVolunteer-no`}>No</Label>
-              </div>
-            </RadioGroup>
-            <FormError />
-          </div>
-        )}
-      </FormItem>
+                  <RadioGroupItem pyconStyles id="futureVolunteer-no" checked={!field.value} value="" />
+                  <Label htmlFor={`futureVolunteer-no`}>No</Label>
+                </div>
+              </RadioGroup>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+      </div>
 
-      <FormItem name="dietaryRestrictions">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Dietary Restrictions</FormLabel>
-            <Input type="text" {...field} />
-            <FormError />
-          </div>
-        )}
-      </FormItem>
+      <div className="flex flex-col md:flex-row w-full gap-4">
+        <FormItem name="dietaryRestrictions">
+          {({ field }) => (
+            <div className="flex flex-col gap-1 grow basis-1/2">
+              <FormLabel>Dietary Restrictions</FormLabel>
+              <Input pyconStyles type="text" {...field} />
+              <FormError />
+            </div>
+          )}
+        </FormItem>
 
-      <FormItem name="accessibilityNeeds">
-        {({ field }) => (
-          <div className="flex flex-col gap-1">
-            <FormLabel>Accessibility Needs</FormLabel>
-            <Input type="text" {...field} />
-            <FormError />
-          </div>
-        )}
-      </FormItem>
+        <FormItem name="accessibilityNeeds">
+          {({ field }) => (
+            <div className="flex flex-col gap-1 grow basis-1/2">
+              <FormLabel>Accessibility Needs</FormLabel>
+              <Input pyconStyles type="text" {...field} />
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+      </div>
     </>
   );
 };

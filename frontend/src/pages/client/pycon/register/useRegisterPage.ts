@@ -12,7 +12,9 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
   const auth = useCurrentUser();
 
   const { data: response, isPending } = useApiQuery(getEvent(eventId));
-  const { data: userRegistration, isPending: isFetchingRegistration } = useApiQuery(getEventRegistrationWithEmail(eventId, auth?.user?.email!));
+  const { data: userRegistration, isPending: isFetchingRegistration } = useApiQuery(getEventRegistrationWithEmail(eventId, auth?.user?.email!), {
+    active: !!auth?.user?.email
+  });
 
   const setMetaData = useMetaData();
   const [searchParams] = useSearchParams();
@@ -50,7 +52,7 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
     } else {
       setCurrentStep(STEP_EVENT_DETAILS);
     }
-  }, [setCurrentStep, stepFromUrl]);
+  }, [setCurrentStep, stepFromUrl, hasExistingRegistration]);
 
   return {
     response,

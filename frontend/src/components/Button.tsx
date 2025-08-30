@@ -44,19 +44,36 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   asChild?: boolean;
   loading?: boolean;
   icon?: IconName;
+  strokeWidth?: number;
   iconPlacement?: 'left' | 'right';
   iconClassname?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, children, icon, iconClassname, iconPlacement = 'left', asChild = false, loading = false, disabled = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      children,
+      icon,
+      strokeWidth,
+      iconClassname,
+      iconPlacement = 'left',
+      asChild = false,
+      loading = false,
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
     const iconStyles = cn('shrink-0', size !== 'icon' && children && (iconPlacement === 'left' ? 'mr-3' : 'ml-3'), iconClassname, loading && 'animate-spin');
 
     const getButtonContent = () => {
       if (icon) {
         return (
           <>
-            <Icon name={loading ? 'LoaderCircle' : icon} className={iconStyles} />
+            <Icon strokeWidth={strokeWidth} name={loading ? 'LoaderCircle' : icon} className={iconStyles} />
             {children}
           </>
         );

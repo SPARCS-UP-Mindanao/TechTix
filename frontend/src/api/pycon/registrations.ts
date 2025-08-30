@@ -1,8 +1,10 @@
-import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
 import { CreateRegistration, Registration, UpdateRegistration } from '@/model/pycon/registrations';
 
 export interface RegistrationDto {
+  registrationId: string;
+  transactionId: string;
+  amountPaid: number;
   firstName: string;
   lastName: string;
   nickname: string;
@@ -36,8 +38,9 @@ interface CsvResponse {
 }
 
 const mapRegistrationDtoToRegistration = (registration: RegistrationDto): Registration => ({
-  registrationId: `registration-${ulid()}`, // TODO: Update to actual ID
-  transactionId: `transaction-${ulid()}`, // TODO: Update to actual ID
+  registrationId: registration.registrationId,
+  transactionId: registration.transactionId,
+  amountPaid: registration.amountPaid,
   firstName: registration.firstName,
   lastName: registration.lastName,
   nickname: registration.nickname ?? '',
@@ -86,7 +89,7 @@ export const getEventRegistrationWithEmail = (eventId: string, email: string) =>
   createApi<RegistrationDto, Registration>({
     method: 'get',
     authorize: true,
-    url: `/registrations/${email}/email`,
+    url: `/pycon/registrations/${email}/email`,
     queryParams: { eventId },
     output: mapRegistrationDtoToRegistration
   });

@@ -70,8 +70,6 @@ export const useDiscountForm = (eventId: string) => {
 
   const submit = form.handleSubmit(async (values) => {
     try {
-      console.log('Form values before submit:', values);
-
       if (values.isReusable) {
         if (!values.maxDiscountUses || values.maxDiscountUses < 1) {
           form.setError('maxDiscountUses', {

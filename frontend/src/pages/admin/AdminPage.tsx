@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Outlet as AdminPageRoute, useParams } from 'react-router-dom';
 import AlertModal from '@/components/AlertModal';
 import { Toaster } from '@/components/Toast/Toaster';
+import { useActiveBreakpoints } from '@/hooks/useActiveBreakpoints';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
 import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
-import { useLayout } from '@/hooks/useLayout';
 import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './sidebar/AdminSideBar';
 import AdminSideBarTrigger from './sidebar/AdminSideBarTrigger';
@@ -17,7 +17,7 @@ const AdminPageContent = () => {
   const auth = useCurrentAdminUser();
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const { eventId } = useParams();
-  const { md } = useLayout('md');
+  const [md] = useActiveBreakpoints('md');
 
   const SIDEBAR_OFFSET = 25;
   const openSidebarWidth = 220 + SIDEBAR_OFFSET;

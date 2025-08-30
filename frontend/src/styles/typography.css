@@ -24,6 +24,12 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: 'Pipanganan';
+  src: url('../assets/fonts/pipanganan/pipanganan.otf') format('opentype');
+  font-style: normal;
+}
+
 @layer base {
   * {
     @apply font-raleway;

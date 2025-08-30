@@ -5,7 +5,7 @@ import { registerUserInEvent } from '@/api/pycon/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { PaymentChannel, PaymentMethod } from '@/model/payments';
 import { mapCreateRegistrationValues } from '@/model/pycon/registrations';
-import { isValidContactNumber } from '@/utils/functions';
+import { hasOnlyValidKeys, isValidContactNumber } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -42,10 +42,8 @@ const RegisterFormSchema = z.object({
   jobTitle: z.string().min(1, {
     message: 'Please select your title'
   }),
-  facebookLink: z.string().min(1, {
-    message: 'Please enter your facebook profile link'
-  }),
-  linkedInLink: z.string().optional(),
+  facebookLink: z.url(),
+  linkedInLink: z.url().or(z.literal('')),
   ticketType: z.string().min(1, {
     error: 'Please select a ticket'
   }),
@@ -72,13 +70,15 @@ const RegisterFormSchema = z.object({
   total: z.number()
 });
 
+const validKeys = Object.keys(RegisterFormSchema.shape);
+
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 export type RegisterField = keyof RegisterFormValues;
 type RegisterFieldMap = Record<RegisterStepId, RegisterField[]>;
 
 export const REGISTER_FIELDS: RegisterFieldMap = {
   EventDetails: [],
-  BasicInfo: ['firstName', 'lastName', 'nickname', 'email', 'contactNumber', 'pronouns', 'organization', 'jobTitle', 'facebookLink'],
+  BasicInfo: ['firstName', 'lastName', 'nickname', 'email', 'contactNumber', 'pronouns', 'organization', 'jobTitle', 'facebookLink', 'linkedInLink'],
   TicketSelection: ['ticketType', 'sprintDay', 'shirtSize', 'shirtType'],
   Miscellaneous: ['communityInvolvement', 'futureVolunteer', 'dietaryRestrictions', 'accessibilityNeeds'],
   'Payment&Verification': ['paymentMethod', 'paymentChannel', 'discountCode', 'discountedPrice', 'transactionFee', 'total', 'validIdObjectKey'],
@@ -90,6 +90,7 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
   const auth = useCurrentUser();
+  const userEmail = auth?.user?.email ?? '';
   const [searchParams] = useSearchParams();
   const transactionIdFromUrl = searchParams.get('paymentTransactionId');
 
@@ -107,7 +108,7 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
       }
 
       return {
-        email: auth?.user?.email,
+        email: userEmail,
         firstName: '',
         lastName: '',
         nickname: '',
@@ -144,17 +145,15 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
   console.log({ values: form.watch(), errors: form.formState.errors });
 
   const registerUser = form.handleSubmit(async (values) => {
-    console.log('Running submit form'); // TODO: Remove console logs
-
     try {
-      const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId)));
-      console.log({ response }); // TODO: Remove console logs
+      const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId, userEmail)));
 
       if (response.status === 200) {
         successToast({
           title: 'Registration Successful',
           description: `Successfully registered user with email: ${values.email}`
         });
+
         navigateOnSuccess();
       } else if (response.status === 400) {
         const { message } = response.errorData;

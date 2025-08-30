@@ -68,87 +68,142 @@ const SummaryStep = ({ event }: SummaryProps) => {
   return (
     <div className="space-y-2 mb-4">
       <p className="w-full text-center">Please review the information below before submitting.</p>
-      <Separator />
+      <Separator className="bg-pycon-custard-light" />
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-5">
-          <span className="font-bold">First name: </span>
-          <span>{firstName}</span>
+          <span className="font-bold">First name</span>
+          <span className="break-words" title={firstName}>
+            {firstName}
+          </span>
 
-          <span className="font-bold">Last name: </span>
-          <span>{lastName}</span>
+          <span className="font-bold">Last name</span>
+          <span className="break-words" title={lastName}>
+            {lastName}
+          </span>
 
-          <span className="font-bold">Pronouns: </span>
-          <span>{pronouns || 'Prefer not to say'}</span>
+          <span className="font-bold">Pronouns</span>
+          <span className="break-words" title={pronouns || 'Prefer not to say'}>
+            {pronouns || 'Prefer not to say'}
+          </span>
 
-          <span className="font-bold">Email: </span>
-          <span>{email}</span>
+          <span className="font-bold">Email</span>
+          <span className="break-words" title={email}>
+            {email}
+          </span>
 
-          <span className="font-bold">Phone number: </span>
-          <span>{contactNumber}</span>
+          <span className="font-bold">Phone number</span>
+          <span className="break-words" title={contactNumber}>
+            {contactNumber}
+          </span>
 
-          <span className="font-bold">Dietary Restrictions: </span>
-          <span>{dietaryRestrictions || 'None'}</span>
+          <span className="font-bold">Dietary Restrictions</span>
+          <span className="break-words" title={dietaryRestrictions || 'None'}>
+            {dietaryRestrictions || 'None'}
+          </span>
 
-          <span className="font-bold">Facebook Link: </span>
-          <span>{facebookLink}</span>
+          <span className="font-bold">Accessibility Needs</span>
+          <span className="break-words" title={accessibilityNeeds || 'None'}>
+            {accessibilityNeeds || 'None'}
+          </span>
 
-          <span className="font-bold">Linkedin Link: </span>
-          <span>{linkedInLink || 'None'}</span>
+          <span className="font-bold">Facebook Link</span>
+          <span className="break-words" title={facebookLink}>
+            {facebookLink}
+          </span>
 
-          <span className="font-bold">Organization: </span>
-          <span>{organization}</span>
+          <span className="font-bold">Linkedin Link</span>
+          <span className="break-words" title={linkedInLink || 'None'}>
+            {linkedInLink || 'None'}
+          </span>
 
-          <span className="font-bold">Title: </span>
-          <span>{jobTitle}</span>
+          <span className="font-bold">Organization</span>
+          <span className="break-words" title={organization}>
+            {organization}
+          </span>
+
+          <span className="font-bold">Title</span>
+          <span className="break-words" title={jobTitle}>
+            {jobTitle}
+          </span>
+
+          <Separator className="bg-pycon-custard-light col-span-2" />
 
           {hasMultipleTicketTypes && (
             <>
-              <span className="font-bold">Ticket Type: </span>
-              <span>{ticketType?.name}</span>
+              <span className="font-bold">Ticket Type</span>
+              <span className="break-words" title={ticketType?.name}>
+                {ticketType?.name}
+              </span>
             </>
           )}
 
-          <span className="font-bold">Will join sprint day?: </span>
-          <span>{sprintDay ? 'Yes' : 'No'}</span>
+          <span className="font-bold">Will join sprint day?</span>
+          <span className="break-words" title={sprintDay ? 'Yes' : 'No'}>
+            {sprintDay ? 'Yes' : 'No'}
+          </span>
 
-          <span className="font-bold">Will avail tshirt?: </span>
-          <span>{availTShirt ? 'Yes' : 'No'}</span>
+          <span className="font-bold">Will avail tshirt?</span>
+          <span className="break-words" title={availTShirt ? 'Yes' : 'No'}>
+            {availTShirt ? 'Yes' : 'No'}
+          </span>
 
           {availTShirt && (
             <>
-              <span className="font-bold">Tshirt Type: </span>
-              <span>{shirtType}</span>
+              <span className="font-bold">Tshirt Type</span>
+              <span className="break-words" title={shirtType}>
+                {shirtType}
+              </span>
 
-              <span className="font-bold">Tshirt Size: </span>
-              <span>{shirtSize}</span>
+              <span className="font-bold">Tshirt Size</span>
+              <span className="break-words" title={shirtSize}>
+                {shirtSize}
+              </span>
             </>
           )}
+
+          <span className="font-bold">Are you a member of any local tech community?</span>
+          <span className="break-words" title={communityInvolvement ? 'Yes' : 'No'}>
+            {communityInvolvement ? 'Yes' : 'No'}
+          </span>
+
+          <span className="font-bold">Would you like to volunteer in the future?</span>
+          <span className="break-words" title={futureVolunteer ? 'Yes' : 'No'}>
+            {futureVolunteer ? 'Yes' : 'No'}
+          </span>
         </div>
 
-        {event.paidEvent && event.status !== 'preregistration' && <hr />}
+        {event.paidEvent && event.status !== 'preregistration' && <hr className="border-pycon-custard-light" />}
         {event.paidEvent && event.status !== 'preregistration' && (
           <div className="grid grid-cols-2 gap-5">
             <span className="font-bold">Price:</span>
             <p>{formatMoney(event.price, 'PHP')}</p>
 
-            {discountCode && (
+            {discountPercentage && discountCode ? (
               <>
                 <span className="font-bold">Discount Code: </span>
-                <span>{discountCode}</span>
+                <span className="break-words" title={discountCode}>
+                  {discountCode}
+                </span>
 
                 <span className="font-bold">Discount</span>
-                <span>{discountPercentage ? <span>-{formatPercentage(discountPercentage)}</span> : 'None'}</span>
+                <span className="break-words" title={discountPercentage ? `-${formatPercentage(discountPercentage)}` : 'None'}>
+                  {discountPercentage ? <span>-{formatPercentage(discountPercentage)}</span> : 'None'}
+                </span>
 
                 <span className="font-bold">Discounted Price</span>
-                <span>{formatMoney(discountedPrice ?? event.price, 'PHP')}</span>
+                <span className="break-words" title={formatMoney(discountedPrice ?? event.price, 'PHP')}>
+                  {formatMoney(discountedPrice ?? event.price, 'PHP')}
+                </span>
               </>
+            ) : (
+              <></>
             )}
 
             <span className="font-bold">Transaction Fee</span>
-            <span>{transactionFee ? <span>{formatMoney(transactionFee, 'PHP')}</span> : 'None'}</span>
+            <span className="break-words">{transactionFee ? <span className="break-words">{formatMoney(transactionFee, 'PHP')}</span> : 'None'}</span>
 
             <span className="font-bold">Total</span>
-            <span>{formatMoney(total ?? event.price, 'PHP')}</span>
+            <span className="break-words">{formatMoney(total ?? event.price, 'PHP')}</span>
           </div>
         )}
       </div>

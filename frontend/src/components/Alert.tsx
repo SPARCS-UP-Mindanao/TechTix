@@ -42,33 +42,35 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   description?: string;
   icon?: IconName;
   closable?: boolean;
+  ref?: React.RefObject<HTMLDivElement | null>;
+  onClose?: () => void;
 }
 
-const Alert = ({ title, description, icon = 'Info', className, variant = 'default', closable = false }: AlertProps) => {
-  const ref = React.useRef<HTMLDivElement>(null);
+const Alert = ({ ref, title, description, icon = 'Info', className, variant = 'default', closable = false, children, onClose }: AlertProps) => {
+  const alertRef = React.useRef<HTMLDivElement>(null);
+  const r = ref ?? alertRef;
 
   const handleDelete = () => {
-    ref.current?.remove();
+    r.current?.remove();
   };
 
   return (
-    <>
-      <AlertContainer variant={variant} className={cn('space-x-2', className)} ref={ref}>
-        <Icon name={icon} className="h-4 w-4" />
-        <AlertTitle className="flex justify-between">
-          {title}
-          {closable && (
-            <Icon
-              name="X"
-              onClick={handleDelete}
-              // absolute right-0 top-0
-              className="size-6 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-hidden focus:ring-1 group-hover:opacity-100 cursor-pointer"
-            />
-          )}
-        </AlertTitle>
-        {description && <AlertDescription>{description}</AlertDescription>}
-      </AlertContainer>
-    </>
+    <AlertContainer variant={variant} className={cn('space-x-2', className)} ref={r}>
+      <Icon name={icon} className="h-4 w-4 text-pycon-orange" />
+      <AlertTitle className="flex justify-between font-bold text-pycon-custard">
+        {title}
+        {closable && (
+          <Icon
+            name="X"
+            onClick={onClose ?? handleDelete}
+            // absolute right-0 top-0
+            className="size-6 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-hidden focus:ring-1 group-hover:opacity-100 cursor-pointer"
+          />
+        )}
+      </AlertTitle>
+      {description && <AlertDescription className="text-pycon-custard-light">{description}</AlertDescription>}
+      {children}
+    </AlertContainer>
   );
 };
 

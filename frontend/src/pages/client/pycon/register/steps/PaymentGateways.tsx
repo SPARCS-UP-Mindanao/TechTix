@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BPI_LOGO, CHINABANK_LOGO, GCASH_LOGO, MAYA_LOGO, RCBC_LOGO, UPB_LOGO } from '@/assets/paymentGatewaysIcons';
-import Button from '@/components/Button';
 import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { PaymentMethod, eWalletChannelCode, DirectDebitChannelCode, PaymentChannel } from '@/model/payments';
 import { cn } from '@/utils/classes';
@@ -18,29 +17,22 @@ const PaymentOption: FC<PaymentOptionProps> = ({ paymentTitle, imgSrc, paymentCh
   const selected = currentPaymentChannel === paymentChannelCode;
   return (
     <div className="w-full md:w-1/2 px-2">
-      <Button
+      <div
+        role="button"
         className={cn(
-          'w-full h-auto justify-normal p-2 transition-all',
-          selected && 'bg-transparent hover:bg-transparent border border-primary',
-          paymentChannelCode === 'BPI' && 'pl-0'
+          'inline-flex cursor-pointer items-center w-full justify-normal p-2 bg-pycon-custard-light hover:bg-pycon-custard rounded-lg outline-0 transition-[background-color,outline]',
+          selected && 'outline-2 outline-pycon-orange'
         )}
-        variant="outline"
         onClick={onClick}
       >
-        <div className="flex flex-row justify-start items-center w-32">
-          {imgSrc && (
-            <div className="h-10 mr-2">
-              <img
-                src={imgSrc}
-                className={cn('w-full h-full', paymentChannelCode === 'PAYMAYA' && 'py-2 pt-3', paymentChannelCode === 'BPI' && 'py-0')}
-                alt={paymentTitle}
-              />
-            </div>
-          )}
-          <p className="text-muted-foreground">{paymentTitle}</p>
-        </div>
-        <RadioGroupItem className="ml-auto" value={paymentChannelCode} checked={selected} />
-      </Button>
+        {imgSrc && (
+          <div className="h-10 w-[70px] mr-2">
+            <img src={imgSrc} className={cn('w-full h-full', paymentChannelCode === 'PAYMAYA' && 'py-2 pt-3')} alt={paymentTitle} />
+          </div>
+        )}
+        <p className="text-pycon-violet font-medium">{paymentTitle}</p>
+        <RadioGroupItem pyconStyles className="ml-auto border! border-pycon-orange!" value={paymentChannelCode} checked={selected} />
+      </div>
     </div>
   );
 };
@@ -70,9 +62,9 @@ const PaymentGateways: FC<Props> = ({ getTransactionFee }) => {
 
   return (
     <>
-      <h4>Select a payment method:</h4>
+      <h4 className="font-nunito text-pycon-custard">Select a payment method:</h4>
       <RadioGroup className="block space-y-2">
-        <p>eWallets:</p>
+        <p className="font-medium font-nunito">eWallets:</p>
         <div className="flex flex-wrap gap-y-2">
           <PaymentOption
             paymentTitle="Gcash"
@@ -90,7 +82,7 @@ const PaymentGateways: FC<Props> = ({ getTransactionFee }) => {
           />
         </div>
 
-        <p>Direct Debit:</p>
+        <p className="font-medium font-nunito">Direct Debit:</p>
         <div className="flex flex-wrap gap-y-2">
           <PaymentOption
             paymentTitle="BPI"

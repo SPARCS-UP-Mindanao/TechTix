@@ -4,6 +4,7 @@ import { RegisterFormValues } from '@/pages/client/pycon/hooks/useRegisterForm';
 export interface Registration {
   registrationId: string;
   transactionId: string;
+  amountPaid: number;
   firstName: string;
   lastName: string;
   nickname: string;
@@ -51,7 +52,7 @@ export const mapRegistrationToFormValues = (registration: Registration): Registe
   accessibilityNeeds: registration.accessibilityNeeds ?? '',
   discountCode: registration.discountCode ?? '',
   validIdObjectKey: registration.validIdObjectKey,
-  amountPaid: 0,
+  amountPaid: registration.amountPaid,
   transactionId: '',
   paymentMethod: null,
   paymentChannel: null,
@@ -64,23 +65,23 @@ export type CreateRegistration = Omit<Registration, 'registrationId' | 'createDa
   transactionId: string | null;
 };
 
-export const mapCreateRegistrationDataForPayment = (registration: RegisterFormValues, eventId: string) => ({
+export const mapCreateRegistrationDataForPayment = (registration: RegisterFormValues, eventId: string, email?: string) => ({
   eventId: eventId,
   firstName: registration.firstName,
   lastName: registration.lastName,
   nickname: registration.nickname || '',
   pronouns: registration.pronouns,
-  email: registration.email,
+  email: email ?? registration.email,
   contactNumber: registration.contactNumber,
   organization: registration.organization,
   jobTitle: registration.jobTitle,
-  facebookLink: registration.facebookLink || 'https://www.example.com', // TODO: Update links or have a function to map to a proper link
-  linkedInLink: registration.linkedInLink || 'https://www.example.com', // TODO: Update links or have a function to map to a proper link
+  facebookLink: registration.facebookLink,
+  linkedInLink: registration.linkedInLink || null,
   ticketType: registration.ticketType,
   sprintDay: registration.sprintDay,
   availTShirt: registration.availTShirt,
-  shirtType: registration.shirtType || null,
-  shirtSize: registration.shirtSize || null,
+  shirtType: registration.availTShirt ? registration.shirtType || null : null,
+  shirtSize: registration.availTShirt ? registration.shirtSize || null : null,
   communityInvolvement: registration.communityInvolvement,
   futureVolunteer: registration.futureVolunteer,
   dietaryRestrictions: registration.dietaryRestrictions || null,
@@ -89,9 +90,9 @@ export const mapCreateRegistrationDataForPayment = (registration: RegisterFormVa
   validIdObjectKey: registration.validIdObjectKey
 });
 
-export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string): CreateRegistration => ({
-  ...mapCreateRegistrationDataForPayment(registration, eventId),
-  amountPaid: registration.amountPaid,
+export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string, email?: string): CreateRegistration => ({
+  ...mapCreateRegistrationDataForPayment(registration, eventId, email),
+  amountPaid: registration.total,
   transactionId: registration.transactionId
 });
 

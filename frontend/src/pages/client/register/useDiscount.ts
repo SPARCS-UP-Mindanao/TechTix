@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
+import { ulid } from 'ulid';
 import { getDiscount } from '@/api/discounts';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -20,6 +21,7 @@ export const useDiscount = (eventPrice: number) => {
   const validateDiscountCode = async () => {
     if (!discountCode) {
       errorToast({
+        id: 'discount-empty-error-' + ulid(),
         title: 'Discount Code is Empty',
         description: 'The discount code you entered is empty. Please enter a valid discount code.'
       });
@@ -34,6 +36,7 @@ export const useDiscount = (eventPrice: number) => {
         case 200:
           if (!discount.remainingUses) {
             errorToast({
+              id: 'discount-claimed-error-' + ulid(),
               title: 'Discount Code Already Claimed',
               description: 'The discount code you entered has already been claimed. Please enter a different discount code.'
             });
@@ -48,12 +51,14 @@ export const useDiscount = (eventPrice: number) => {
           break;
         case 404:
           errorToast({
+            id: 'discount-invalid-error-' + ulid(),
             title: 'Invalid Discount Code',
             description: 'The discount code you entered is invalid. Please enter a different discount code.'
           });
           break;
         default:
           errorToast({
+            id: 'discount-error-' + ulid(),
             title: 'Please try again',
             description: 'There was an error. Please try again.'
           });
@@ -61,6 +66,7 @@ export const useDiscount = (eventPrice: number) => {
     } catch (error) {
       console.error(error);
       errorToast({
+        id: 'discount-error-' + ulid(),
         title: 'Please try again',
         description: 'There was an error. Please try again.'
       });

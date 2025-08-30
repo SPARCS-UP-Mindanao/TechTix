@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import Alert from '@/components/Alert';
 import Skeleton from '@/components/Skeleton';
 import { createQueryKey } from '@/api/utils/createApi';
 import { CurrentUser, getUserAttributes } from '@/model/auth';
@@ -40,7 +39,6 @@ const ClientAuthContextProvider = () => {
 
   return (
     <ClientAuthContext.Provider value={{ user: currentUser, refetchUser: refetch }}>
-      {currentUser?.isAdmin && <Alert closable className="bg-accent/50 rounded-none" title="You are accessing a client page as an admin" />}
       <Outlet />
     </ClientAuthContext.Provider>
   );

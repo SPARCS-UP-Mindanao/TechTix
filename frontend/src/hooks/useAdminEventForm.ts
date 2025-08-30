@@ -160,7 +160,6 @@ export const useAdminEventForm = (event?: Event) => {
   });
 
   const onInvalid = () => {
-    //TODO : Fix toast duplicaton
     errorToast({
       id: 'form-error',
       title: 'Form error',
@@ -209,9 +208,7 @@ export const useAdminEventForm = (event?: Event) => {
         });
       }
     },
-    (e) => {
-      console.log({ e });
-
+    () => {
       onInvalid();
     }
   );

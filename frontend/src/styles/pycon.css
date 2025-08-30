@@ -1,0 +1,34 @@
+body[data-page='pycon'] {
+  @apply bg-pycon-violet;
+
+  div#root {
+    @apply flex flex-col;
+
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-y: clip;
+  }
+
+  * {
+    @apply font-nunito;
+  }
+
+  input:autofill,
+  input:autofill:focus,
+  input:autofill:hover,
+  input:autofill:active,
+  input:-webkit-autofill,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(---pycon-dirty-white) inset !important;
+    -webkit-text-fill-color: var(---pycon-dirty-white) !important;
+    @apply font-nunito! bg-pycon-dirty-white! text-pycon-violet-dark!;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+
+  h1 {
+    @apply font-nunito font-extrabold text-pycon-orange  scroll-m-20 text-4xl tracking-tight lg:text-5xl;
+  }
+}
