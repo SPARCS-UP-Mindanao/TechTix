@@ -33,7 +33,12 @@ paymentHandler:
     - Effect: Allow
       Action:
         - "dynamodb:PutItem"
-      Resource: "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.stage}-durianpy-events-registrations"
+        - "dynamodb:Query"
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.entities}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}/index/*"
 
     - Effect: Allow
       Action:

@@ -232,6 +232,21 @@ class PaymentTransactionRepository:
             logger.info(f'[{self.core_obj}={payment_transaction_id}] Fetch PaymentTransaction by ID successful')
             return HTTPStatus.OK, payment_transaction_entries[0], None
 
+    def update_payment_transaction_status(
+        self, payment_transaction: PaymentTransaction, status: TransactionStatus
+    ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
+        try:
+            payment_transaction.transactionStatus = status.value
+            payment_transaction.updateDate = self.current_date
+            payment_transaction.updatedBy = os.getenv('CURRENT_USER')
+            payment_transaction.save()
+            logger.info(f'[{payment_transaction.rangeKey}] Update payment_transaction status successful')
+            return HTTPStatus.OK, payment_transaction, ''
+
+        except Exception as e:
+            logger.error(f'[{payment_transaction.rangeKey}] Failed to update payment_transaction status: {e}')
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, str(e)
+
     def update_payment_transaction(
         self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn
     ) -> Tuple[HTTPStatus, PaymentTransaction, str]:

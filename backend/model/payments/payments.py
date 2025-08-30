@@ -3,8 +3,8 @@ from typing import Optional
 
 from model.entities import Entities
 from model.pycon_registrations.pycon_registration import (
+    PaymentRegistrationDetailsOut,
     PyconRegistration,
-    PyconRegistrationOut,
 )
 from pydantic import BaseModel, Field
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
@@ -77,7 +77,7 @@ class PaymentTransactionOut(PaymentTransactionIn):
         extra = 'ignore'
 
     entryId: str = Field(..., title='Entry ID')
-    registrationData: Optional[PyconRegistrationOut] = Field(None, title='Registration Data')
+    registrationData: Optional[PaymentRegistrationDetailsOut] = Field(None, title='Registration Data')
 
     amountPaid: Optional[float] = Field(None, title='Amount Paid')
     transactionId: Optional[str] = Field(None, title='Transaction ID')

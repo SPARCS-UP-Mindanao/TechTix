@@ -105,6 +105,18 @@ class PyconRegistrationOut(PyconRegistration):
     transactionId: Optional[str] = Field(None, title='Transaction ID')
 
 
+class PaymentRegistrationDetailsOut(PyconRegistration):
+    class Config:
+        extra = 'ignore'
+
+    paymentId: str = Field(None, title='Payment ID')
+    createDate: datetime = Field(..., title='Created At')
+    updateDate: datetime = Field(..., title='Updated At')
+    imageIdUrl: Optional[HttpUrl] = Field(None, title='Image ID URL')
+    amountPaid: Optional[float] = Field(None, title='Amount Paid')
+    transactionId: Optional[str] = Field(None, title='Transaction ID')
+
+
 class PyconRegistrationIn(PyconRegistration):
     amountPaid: Optional[float] = Field(None, title='Amount Paid')
     transactionId: Optional[str] = Field(None, title='Transaction ID')

@@ -6,7 +6,7 @@ from model.payments.payments import (
     PaymentTransactionOut,
     TransactionStatus,
 )
-from model.pycon_registrations.pycon_registration import PyconRegistrationOut
+from model.pycon_registrations.pycon_registration import PaymentRegistrationDetailsOut
 from pydantic import ValidationError
 from repository.events_repository import EventsRepository
 from repository.payment_transaction_repository import PaymentTransactionRepository
@@ -89,7 +89,7 @@ class PaymentUsecase:
             payment_transaction_data = self.__convert_data_entry_to_dict(payment_transaction)
 
             try:
-                pycon_registration_out = PyconRegistrationOut(**payment_transaction_data)
+                pycon_registration_out = PaymentRegistrationDetailsOut(**payment_transaction_data)
                 payment_transaction_out = PaymentTransactionOut(
                     **payment_transaction_data, registrationData=pycon_registration_out
                 )
