@@ -262,7 +262,7 @@ class PaymentTransactionRepository:
                         PaymentTransaction.updatedBy.set(os.getenv('CURRENT_USER')),
                     ],
                 )
-
+            payment_transaction.refresh()
             logger.info(f'[{payment_transaction_id}] Update payment transaction status successful')
             return HTTPStatus.OK, payment_transaction, ''
 
