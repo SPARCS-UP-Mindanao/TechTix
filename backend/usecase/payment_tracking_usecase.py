@@ -21,19 +21,26 @@ class PaymentTrackingUsecase:
         self.event_repository = EventsRepository()
         self.payment_transaction_repository = PaymentTransactionRepository()
 
-    def process_payment_event(self, payment_tracking_body: PaymentTrackingBody):
-        registration_details = payment_tracking_body.registration_details
-        transaction_status = payment_tracking_body.status
-        registration_data = registration_details.registrationData
-
-        if transaction_status == TransactionStatus.PENDING:
-            return
-
+    def process_payment_event(self, message_body: dict):
+        """
+        Processes a payment event message. This method now includes timestamp updates.
+        """
         try:
+            self._update_timestamps(message_body)
+            payment_tracking_body = PaymentTrackingBody(**message_body)
+
+            registration_details = payment_tracking_body.registration_details
+            transaction_status = payment_tracking_body.status
+            registration_data = registration_details.registrationData
+
+            if transaction_status == TransactionStatus.PENDING:
+                logger.info(f'Skipping PENDING message for entryId: {registration_details.entryId}')
+                return
+
             (
-                status,
+                _,
                 payment_transaction,
-                message,
+                _,
             ) = self.payment_transaction_repository.query_payment_transaction_with_payment_transaction_id(
                 event_id=registration_details.eventId, payment_transaction_id=registration_details.entryId
             )
@@ -41,12 +48,25 @@ class PaymentTrackingUsecase:
                 payment_transaction=payment_transaction,
                 status=transaction_status,
             )
+
             self._create_and_save_registration(registration_details, registration_data, transaction_status)
             self._send_email_notification(registration_data, transaction_status, registration_details.eventId)
             logger.info(f'Successfully processed and saved registration for {registration_data.email}')
+
         except Exception as e:
             logger.error(f'Failed to process successful payment for entryId {registration_details.entryId}: {e}')
             raise
+
+    def _update_timestamps(self, message_body: dict):
+        registration_details = message_body.get('registration_details')
+        if registration_details and 'registrationData' in registration_details:
+            current_time = datetime.now(timezone.utc).isoformat()
+            registration_data = registration_details['registrationData']
+
+            if 'createDate' not in registration_data:
+                registration_data['createDate'] = current_time
+
+            registration_data['updateDate'] = current_time
 
     def _create_and_save_registration(self, registration_details, registration_data, status):
         registration_id = str(ulid.ulid())
