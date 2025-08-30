@@ -129,13 +129,15 @@ class PaymentTrackingUsecase:
         email_templates = {
             TransactionStatus.SUCCESS: {
                 'subject': f"You're all set for {event_detail.name}!",
+                'salutation': f'Hi {registration_data.firstName},',
                 'body': [
-                    f'Hi {registration_data.firstName},',
                     f"Thank you for registering for {event_detail.name}! Your payment was successful, and we're excited to see you at the event.",
                     'Below is a summary of your registration details:',
                     f'Ticket Type: {registration_data.ticketType.value.capitalize()}',
                     f"Sprint Day Participation: {'Yes' if registration_data.sprintDay else 'No'}",
-                    f'Amount Paid: ₱{registration_data.amountPaid:.2f}',
+                    f'Amount Paid: ₱{registration_data.amountPaid:.2f}'
+                    if registration_data.amountPaid is not None
+                    else 'Amount Paid: N/A',
                     f'Transaction ID: {registration_data.transactionId}',
                     '',
                     'See you there!',
@@ -144,8 +146,8 @@ class PaymentTrackingUsecase:
             },
             TransactionStatus.FAILED: {
                 'subject': f'Issue with your {event_detail.name} Payment',
+                'salutation': f'Hi {registration_data.firstName},',
                 'body': [
-                    f'Hi {registration_data.firstName},',
                     f'There was an issue processing your payment for {event_detail.name}. Please check your payment details or try again.',
                     'If the problem persists, please contact our support team at durianpy.davao@gmail.com.',
                 ],
@@ -159,6 +161,7 @@ class PaymentTrackingUsecase:
             email_in = EmailIn(
                 to=[registration_data.email],
                 subject=template['subject'],
+                salutation=template['salutation'],
                 body=template['body'],
                 regards=template['regards'],
                 emailType=EmailType.REGISTRATION_EMAIL,
