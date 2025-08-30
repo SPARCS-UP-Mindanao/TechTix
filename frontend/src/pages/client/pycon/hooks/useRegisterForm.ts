@@ -5,7 +5,7 @@ import { registerUserInEvent } from '@/api/pycon/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
 import { PaymentChannel, PaymentMethod } from '@/model/payments';
 import { mapCreateRegistrationValues } from '@/model/pycon/registrations';
-import { hasOnlyValidKeys, isValidContactNumber } from '@/utils/functions';
+import { isValidContactNumber } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -67,7 +67,10 @@ const RegisterFormSchema = z.object({
   discountPercentage: z.number().optional(),
   transactionFee: z.number().optional().nullish(),
   discountedPrice: z.number().optional(),
-  total: z.number()
+  total: z.number(),
+  // ----- //
+  agreeToDataUse: z.literal(true, { error: 'Please agree to data use policy to proceed' }),
+  agreeToCodeOfConduct: z.literal(true, { error: 'Please agree to our code of conduct to proceed' })
 });
 
 const validKeys = Object.keys(RegisterFormSchema.shape);
@@ -82,7 +85,7 @@ export const REGISTER_FIELDS: RegisterFieldMap = {
   TicketSelection: ['ticketType', 'sprintDay', 'shirtSize', 'shirtType'],
   Miscellaneous: ['communityInvolvement', 'futureVolunteer', 'dietaryRestrictions', 'accessibilityNeeds'],
   'Payment&Verification': ['paymentMethod', 'paymentChannel', 'discountCode', 'discountedPrice', 'transactionFee', 'total', 'validIdObjectKey'],
-  Summary: [],
+  Summary: ['agreeToDataUse', 'agreeToCodeOfConduct'],
   Success: []
 } as const;
 
@@ -137,12 +140,12 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
         discountPercentage: 0,
         transactionFee: '',
         discountedPrice: 0,
-        total: 0
+        total: 0,
+        agreeToDataUse: false,
+        agreeToCodeOfConduct: false
       };
     }
   });
-
-  console.log({ values: form.watch(), errors: form.formState.errors });
 
   const registerUser = form.handleSubmit(async (values) => {
     try {

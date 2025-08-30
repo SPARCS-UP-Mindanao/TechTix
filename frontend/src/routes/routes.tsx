@@ -67,11 +67,11 @@ export const routes = createBrowserRouter(
                 },
 
                 {
-                  path: 'register/userInfo',
+                  path: 'register/details',
                   element: <UserInfoPage />
                 },
                 {
-                  path: 'registration/userInfo',
+                  path: 'registration/details',
                   element: <UserInfoPage />
                 },
 

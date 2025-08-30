@@ -32,7 +32,7 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
     const savedState = localStorage.getItem('formState');
 
     if (hasExistingRegistration) {
-      navigate('/register/userInfo');
+      navigate(`/${eventId}/register/details`);
     }
 
     if (savedState) {

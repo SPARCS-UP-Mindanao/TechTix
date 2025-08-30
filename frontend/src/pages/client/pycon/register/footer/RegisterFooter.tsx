@@ -18,7 +18,7 @@ interface Props {
 }
 
 const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, isRegisterSuccessful, setCurrentStep, retryRegister, isFeesLoading }) => {
-  const { paymentButtonDisabled, isFormSubmitting, onNextStep, onPrevStep, onSummaryStep, onSignUpOther, onSubmitForm } = useRegisterFooter(
+  const { paymentButtonDisabled, isFormSubmitting, onNextStep, onPrevStep, onSummaryStep, onSubmitForm, onViewRegistrationDetails } = useRegisterFooter(
     event,
     steps,
     currentStep,
@@ -134,15 +134,22 @@ const RegisterFooter: FC<Props> = ({ event, steps, currentStep, fieldsToCheck, i
   const successFooter = () => {
     if (!isRegisterSuccessful) {
       return (
-        <Button icon="RotateCw" onClick={retryRegister} className="py-6 sm:px-8">
+        <Button
+          icon="RotateCw"
+          onClick={retryRegister}
+          className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard rounded-full w-full max-w-sm py-4"
+        >
           Retry submitting registration
         </Button>
       );
     }
 
     return (
-      <Button onClick={onSignUpOther} className="py-6 sm:px-8">
-        Sign up another person
+      <Button
+        className="cursor-pointer bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard rounded-full w-full max-w-sm py-4"
+        onClick={onViewRegistrationDetails}
+      >
+        Check registration details
       </Button>
     );
   };

@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useFormContext, UseFormSetValue, useWatch } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { ulid } from 'ulid';
 import { getEventRegCountStatus } from '@/api/events';
-import { checkPreRegistration } from '@/api/preregistrations';
 import { Event } from '@/model/events';
-import { AcceptanceStatus, PreRegistration, mapPreRegistrationToFormValues } from '@/model/preregistrations';
 import { getPathFromUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
@@ -20,11 +19,13 @@ export const useRegisterFooter = (
   fieldsToCheck: RegisterField[],
   setCurrentStep: (step: RegisterStep) => void
 ) => {
-  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
-  const { errorToast } = useNotifyToast();
-  const { trigger, setValue, getValues, control, reset } = useFormContext<RegisterFormValues>();
-  const api = useApi();
   const { eventId } = event;
+  const api = useApi();
+  const navigate = useNavigate();
+  const { errorToast } = useNotifyToast();
+
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+  const { trigger, setValue, getValues, control } = useFormContext<RegisterFormValues>();
   const [paymentChannel, paymentMethod, transactionFee, percentageDiscount] = useWatch({
     control,
     name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage']
@@ -51,35 +52,6 @@ export const useRegisterFooter = (
     }
 
     return false;
-  };
-
-  const checkAcceptanceStatus = (preRegistration: PreRegistration) => {
-    const getTitleAndDescription = (acceptanceStatus: AcceptanceStatus) => {
-      if (acceptanceStatus === 'REJECTED') {
-        return {
-          title: 'Your pre-registration was not accepted',
-          description: `We're sorry but your registration wasn't accepted. Please feel free to join our future events.`
-        };
-      }
-
-      if (acceptanceStatus === 'PENDING') {
-        return {
-          title: 'Your pre-registration is still being reviewed',
-          description: `Please wait while we review your pre-registration. We'll send you an email when it's approved.`
-        };
-      }
-
-      return {};
-    };
-
-    switch (preRegistration.acceptanceStatus) {
-      case 'ACCEPTED':
-        reset(mapPreRegistrationToFormValues(preRegistration));
-        return true;
-      default:
-        errorToast(getTitleAndDescription(preRegistration.acceptanceStatus));
-        return false;
-    }
   };
 
   // Function to set the total price
@@ -152,6 +124,17 @@ export const useRegisterFooter = (
   };
 
   const onSubmitForm = async () => {
+    const isValid = await trigger(fieldsToCheck);
+
+    if (!isValid) {
+      errorToast({
+        id: 'form-error-' + ulid(),
+        title: 'There are errors in the form',
+        description: 'Please review the form and try again.'
+      });
+      return;
+    }
+
     const total = getValues('total');
 
     if (event.isApprovalFlow && event.status === 'preregistration') {
@@ -185,13 +168,17 @@ export const useRegisterFooter = (
     }
   };
 
+  const onViewRegistrationDetails = () => {
+    navigate(`/${eventId}/register/details`);
+  };
+
   return {
     paymentButtonDisabled,
     isFormSubmitting,
     onNextStep,
     onPrevStep,
     onSummaryStep,
-    onSignUpOther: reloadPage,
-    onSubmitForm
+    onSubmitForm,
+    onViewRegistrationDetails
   };
 };

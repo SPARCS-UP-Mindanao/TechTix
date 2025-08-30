@@ -94,7 +94,12 @@ const Register: FC = () => {
   const showFAQs = currentStep.id === 'EventDetails';
 
   return (
-    <section className="flex flex-col grow items-center px-4 h-full w-full text-pycon-custard font-inter max-w-6xl mx-auto">
+    <section
+      className={cn(
+        'flex flex-col grow items-center px-4 h-full w-full text-pycon-custard font-nunito max-w-6xl mx-auto',
+        currentStep.id === 'Success' && 'grow-0'
+      )}
+    >
       <div className="w-full h-full flex flex-col space-y-4 grow">
         <FormProvider {...form}>
           {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <h1 className="text-xl">{currentStep.title}</h1>}
@@ -120,7 +125,6 @@ const Register: FC = () => {
                   setIsFeesLoading={setIsFeesLoading}
                 />
               )}
-
               {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
               {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}
             </div>

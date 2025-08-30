@@ -69,7 +69,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
       </FormItem>
 
       <div className="flex flex-col md:flex-row w-full gap-4">
-        <FormItem name="availTShirt">
+        {/* <FormItem name="availTShirt">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
               <FormLabel>Will you avail a shirt?</FormLabel>
@@ -85,12 +85,13 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
               <FormError />
             </div>
           )}
-        </FormItem>
+        </FormItem> */}
 
         <FormItem name="sprintDay">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              <FormLabel>Will you join sprint day? (You will have to pay additional PHP200)</FormLabel>
+              {/* TODO: Update sprint day price */}
+              <FormLabel>Will you join sprint day? (You will have to pay additional PHP 200)</FormLabel>
               <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem pyconStyles id="sprintDay-yes" checked={!!field.value} value="true" />
@@ -106,7 +107,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
         </FormItem>
       </div>
 
-      {availTShirt && (
+      {/* {availTShirt && (
         <div className="flex flex-col md:flex-row w-full gap-4">
           <FormItem name="shirtType">
             {({ field }) => (
@@ -160,7 +161,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
             )}
           </FormItem>
         </div>
-      )}
+      )} */}
     </>
   );
 };

@@ -26,6 +26,7 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(eventPrice);
   const [transactionFee, sprintDay] = useWatch({ name: ['transactionFee', 'sprintDay'], control });
   const discountedPrice = eventPrice * (1 - (discountPercentage ?? 0));
+  // TODO: Update sprint day price
   const total = calculateTotalPrice(eventPrice, transactionFee ?? null, discountPercentage ?? null, platformFee ?? null) + (sprintDay ? 200 : 0);
 
   useEffect(() => {
@@ -94,6 +95,7 @@ const PaymentAndVerificationStep = ({ eventId, eventPrice, platformFee, isFeesLo
             {sprintDay && (
               <>
                 <h4 className="font-nunito text-pycon-custard font-bold">Sprint Day:</h4>
+                {/* TODO: Update sprint day price */}
                 <p className="font-nunito font-bold">{formatMoney(200, 'PHP')}</p>
               </>
             )}

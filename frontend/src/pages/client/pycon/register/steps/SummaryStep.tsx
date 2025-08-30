@@ -1,8 +1,13 @@
 import { useFormContext, useWatch } from 'react-hook-form';
+import Checkbox from '@/components/Checkbox';
+import { FormItem, FormError } from '@/components/Form';
+import Label from '@/components/Label';
 import Separator from '@/components/Separator';
 import { Event } from '@/model/events';
 import { formatMoney, formatPercentage } from '@/utils/functions';
 import { RegisterFormValues } from '../../hooks/useRegisterForm';
+
+const PYCON_CODE_OF_CONDUCT = import.meta.env.VITE_PYCON_CODE_OF_CONDUCT || 'https://pycon-davao.durianpy.org/code-of-conduct';
 
 interface SummaryProps {
   event: Event;
@@ -26,9 +31,9 @@ const SummaryStep = ({ event }: SummaryProps) => {
     transactionFee,
     discountedPrice,
     total,
-    availTShirt,
-    shirtType,
-    shirtSize,
+    // availTShirt,
+    // shirtType,
+    // shirtSize,
     communityInvolvement,
     futureVolunteer,
     dietaryRestrictions,
@@ -52,9 +57,9 @@ const SummaryStep = ({ event }: SummaryProps) => {
       'transactionFee',
       'discountedPrice',
       'total',
-      'availTShirt',
-      'shirtType',
-      'shirtSize',
+      // 'availTShirt',
+      // 'shirtType',
+      // 'shirtSize',
       'communityInvolvement',
       'futureVolunteer',
       'dietaryRestrictions',
@@ -142,7 +147,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
             {sprintDay ? 'Yes' : 'No'}
           </span>
 
-          <span className="font-bold">Will avail tshirt?</span>
+          {/* <span className="font-bold">Will avail tshirt?</span>
           <span className="break-words" title={availTShirt ? 'Yes' : 'No'}>
             {availTShirt ? 'Yes' : 'No'}
           </span>
@@ -159,7 +164,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
                 {shirtSize}
               </span>
             </>
-          )}
+          )} */}
 
           <span className="font-bold">Are you a member of any local tech community?</span>
           <span className="break-words" title={communityInvolvement ? 'Yes' : 'No'}>
@@ -206,6 +211,40 @@ const SummaryStep = ({ event }: SummaryProps) => {
             <span className="break-words">{formatMoney(total ?? event.price, 'PHP')}</span>
           </div>
         )}
+      </div>
+
+      <div className="flex flex-col mt-8">
+        <FormItem name="agreeToDataUse">
+          {({ field }) => (
+            <div className="">
+              <div className="flex items-center space-x-2">
+                <Checkbox pyconStyles id="agreeToDataUse" checked={field.value} onCheckedChange={field.onChange} />
+                <Label htmlFor="agreeToDataUse" className="text-base font-medium">
+                  I consent for photography, data use, and communication
+                </Label>
+              </div>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
+
+        <FormItem name="agreeToCodeOfConduct">
+          {({ field }) => (
+            <div className="">
+              <div className="flex items-center space-x-2">
+                <Checkbox pyconStyles id="agreeToDataUse" checked={field.value} onCheckedChange={field.onChange} />
+                <Label htmlFor="agreeToDataUse" className="text-base font-medium">
+                  I agree to follow the{' '}
+                  <a href={PYCON_CODE_OF_CONDUCT} target="_blank" className="text-pycon-orange underline">
+                    Code of Conduct
+                  </a>
+                  .
+                </Label>
+              </div>
+              <FormError />
+            </div>
+          )}
+        </FormItem>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ const EventDetails: FC<Props> = ({
     if (isSameDayEvent) {
       return `${moment(startDate).format('MMMM Do YYYY, h:mm A')} - ${moment(endDate).format('LT')}`;
     }
-    return `${moment(startDate).format('MMMM Do YYYY')} - ${moment(endDate).format('MMMM Do YYYY')}`;
+    return `${moment(startDate).format('MMMM Do YYYY, h:mm A')} - ${moment(endDate).format('MMMM Do YYYY')}`;
   };
 
   const eventPrice = hasMultipleTicketTypes && ticketTypes ? Math.min(...ticketTypes.map((x) => x.price)) : price;

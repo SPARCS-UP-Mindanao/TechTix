@@ -36,7 +36,7 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(({ name, eventI
   if (pyconStyles) {
     return (
       <div className="flex flex-col gap-y-4 max-w-xl font-nunito!">
-        <div className=" bg-pycon-dirty-white rounded-xl  h-50">
+        <div className=" bg-pycon-dirty-white rounded-xl h-50">
           {isUploading ? (
             <div className="w-full h-full flex items-center justify-center p-4">
               <Loader2 className="animate-spin text-pycon-red" size={40} />
