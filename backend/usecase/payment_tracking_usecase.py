@@ -3,8 +3,8 @@ from http import HTTPStatus
 
 import ulid
 from model.email.email import EmailIn, EmailType
-from model.payments.payments import PaymentTrackingBody, TransactionStatus
 from model.events.event import Event
+from model.payments.payments import PaymentTrackingBody, TransactionStatus
 from model.pycon_registrations.pycon_registration import (
     PyconRegistrationIn,
     PyconRegistrationOut,
@@ -44,17 +44,15 @@ class PaymentTrackingUsecase:
 
             _, event_detail, _ = self.event_repository.query_events(event_id)
             if not event_detail:
-                raise ValueError(f"Event details not found for eventId: {event_id}")
+                raise ValueError(f'Event details not found for eventId: {event_id}')
 
             # Update Payment Transaction Status
             status, _, msg = self.payment_transaction_repository.update_payment_transaction_status(
-                event_id=event_id,
-                payment_transaction_id=entry_id,
-                status=transaction_status
+                event_id=event_id, payment_transaction_id=entry_id, status=transaction_status
             )
 
             if status != HTTPStatus.OK:
-                logger.error(f"Failed to update payment transaction status for entryId {entry_id}: {msg}")
+                logger.error(f'Failed to update payment transaction status for entryId {entry_id}: {msg}')
                 return
 
             logger.info(f'Payment transaction status updated to {transaction_status} for entryId {entry_id}')
@@ -130,29 +128,29 @@ class PaymentTrackingUsecase:
     def _send_email_notification(self, registration_data: PyconRegistrationOut, status: str, event_detail: Event):
         email_templates = {
             TransactionStatus.SUCCESS: {
-                "subject": f"You're all set for {event_detail.name}!",
-                "body": [
-                    f"Hi {registration_data.firstName},",
+                'subject': f"You're all set for {event_detail.name}!",
+                'body': [
+                    f'Hi {registration_data.firstName},',
                     f"Thank you for registering for {event_detail.name}! Your payment was successful, and we're excited to see you at the event.",
-                    f"Below is a summary of your registration details:",
-                    f"Ticket Type: {registration_data.ticketType.value.capitalize()}",
+                    'Below is a summary of your registration details:',
+                    f'Ticket Type: {registration_data.ticketType.value.capitalize()}',
                     f"Sprint Day Participation: {'Yes' if registration_data.sprintDay else 'No'}",
-                    f"Amount Paid: ₱{registration_data.amountPaid:.2f}",
-                    f"Transaction ID: {registration_data.transactionId}",
-                    "",
-                    "See you there!",
+                    f'Amount Paid: ₱{registration_data.amountPaid:.2f}',
+                    f'Transaction ID: {registration_data.transactionId}',
+                    '',
+                    'See you there!',
                 ],
-                "regards": ["Best,"],
+                'regards': ['Best,'],
             },
             TransactionStatus.FAILED: {
-                "subject": f"Issue with your {event_detail.name} Payment",
-                "body": [
-                    f"Hi {registration_data.firstName},",
-                    f"There was an issue processing your payment for {event_detail.name}. Please check your payment details or try again.",
-                    f"If the problem persists, please contact our support team at durianpy.davao@gmail.com.",
+                'subject': f'Issue with your {event_detail.name} Payment',
+                'body': [
+                    f'Hi {registration_data.firstName},',
+                    f'There was an issue processing your payment for {event_detail.name}. Please check your payment details or try again.',
+                    'If the problem persists, please contact our support team at durianpy.davao@gmail.com.',
                 ],
-                "regards": ["Sincerely,"],
-            }
+                'regards': ['Sincerely,'],
+            },
         }
 
         template = email_templates.get(status)
@@ -160,13 +158,13 @@ class PaymentTrackingUsecase:
         if template:
             email_in = EmailIn(
                 to=[registration_data.email],
-                subject=template["subject"],
-                body=template["body"],
-                regards=template["regards"],
+                subject=template['subject'],
+                body=template['body'],
+                regards=template['regards'],
                 emailType=EmailType.REGISTRATION_EMAIL,
                 eventId=event_detail.eventId,
                 isDurianPy=True,
             )
             self.email_usecase.send_email(email_in=email_in, event=event_detail)
         else:
-            logger.error(f"No email template found for status: {status}")
+            logger.error(f'No email template found for status: {status}')

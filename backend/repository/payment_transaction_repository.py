@@ -236,7 +236,7 @@ class PaymentTransactionRepository:
         self, event_id: str, payment_transaction_id: str, status: TransactionStatus
     ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
         """Update the transactionStatus of a payment_transaction.
-        
+
         :param event_id: The event ID.
         :param payment_transaction_id: The payment transaction ID to update.
         :param status: The new transaction status.
@@ -273,8 +273,6 @@ class PaymentTransactionRepository:
         except Exception as e:
             logger.error(f'[{payment_transaction_id}] An unexpected error occurred: {e}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, f'Unexpected error: {str(e)}'
-
-
 
     def update_payment_transaction(
         self, payment_transaction: PaymentTransaction, payment_transaction_in: PaymentTransactionIn
