@@ -4,11 +4,12 @@ from http import HTTPStatus
 import ulid
 from model.email.email import EmailIn, EmailType
 from model.events.event import Event
-from model.payments.payments import PaymentTrackingBody, TransactionStatus
-from model.pycon_registrations.pycon_registration import (
-    PyconRegistrationIn,
-    PyconRegistrationOut,
+from model.payments.payments import (
+    PaymentTrackingBody,
+    PaymentTransactionOut,
+    TransactionStatus,
 )
+from model.pycon_registrations.pycon_registration import PyconRegistrationIn
 from repository.events_repository import EventsRepository
 from repository.payment_transaction_repository import PaymentTransactionRepository
 from repository.registrations_repository import RegistrationsRepository
@@ -57,10 +58,14 @@ class PaymentTrackingUsecase:
 
             logger.info(f'Payment transaction status updated to {transaction_status} for entryId {entry_id}')
 
-            self._create_and_save_registration(registration_details, registration_data, transaction_status)
+            recorded_registration_data = self._create_and_save_registration(
+                registration_details, registration_data, transaction_status
+            )
 
             self._send_email_notification(
-                registration_data=registration_data,
+                registration_id=recorded_registration_data.registrationId,
+                amount_paid=recorded_registration_data.amountPaid,
+                registration_detail=registration_details,
                 status=transaction_status,
                 event_detail=event_detail,
             )
@@ -121,25 +126,80 @@ class PaymentTrackingUsecase:
             entryStatus=status.value,
         )
 
-        self.registration_repository.store_registration(
+        status, registration_data, _ = self.registration_repository.store_registration(
             registration_in=registration_in, registration_id=registration_id
         )
 
-    def _send_email_notification(self, registration_data: PyconRegistrationOut, status: str, event_detail: Event):
+        return registration_data
+
+    def _send_email_notification(
+        self,
+        registration_id: str,
+        amount_paid: float,
+        status: str,
+        event_detail: Event,
+        registration_detail: PaymentTransactionOut,
+        is_pycon_event: bool = True,
+    ):
+        def _email_list_elements(elements: list[str]):
+            return '\n'.join([f'<li>{element}</li>' for element in elements])
+
+        def _email_bold_element(element: str):
+            return f'<b>{element}</b>'
+
+        def _email_newline_element():
+            return '<br/>'
+
+        registration_data = registration_detail.registrationData
+
+        pycon_email_templates = {
+            TransactionStatus.SUCCESS: {
+                'subject': "You're all set for PyCon Davao 2025!",
+                'salutation': f'Hi {registration_data.firstName},',
+                'body': [
+                    "Thank you for registering for PyCon Davao 2025 by DurianPy! Your payment was successful, and we're excited to see you at the event.",
+                    _email_bold_element('Below is a summary of your registration details:'),
+                    _email_list_elements(
+                        [
+                            f'Registration ID: {registration_id}',
+                            f'Ticket Type: {registration_data.ticketType.value.capitalize()}',
+                            f"Sprint Day Participation: {'Yes' if registration_data.sprintDay else 'No'}",
+                            f'Amount Paid: ₱{amount_paid:.2f}' if amount_paid is not None else 'Amount Paid: N/A',
+                        ]
+                    ),
+                    _email_newline_element(),
+                    'See you there!',
+                ],
+                'regards': ['Best,'],
+            },
+            TransactionStatus.FAILED: {
+                'subject': 'Issue with your PyCon Davao 2025 Payment',
+                'salutation': f'Hi {registration_data.firstName},',
+                'body': [
+                    'There was an issue processing your payment for PyCon Davao 2025. Please check your payment details or try again.',
+                    f'If the problem persists, please contact our support team at durianpy.davao@gmail.com and present your transaction ID: {registration_detail.transactionId}',
+                ],
+                'regards': ['Sincerely,'],
+            },
+        }
+
         email_templates = {
             TransactionStatus.SUCCESS: {
                 'subject': f"You're all set for {event_detail.name}!",
                 'salutation': f'Hi {registration_data.firstName},',
                 'body': [
                     f"Thank you for registering for {event_detail.name}! Your payment was successful, and we're excited to see you at the event.",
-                    'Below is a summary of your registration details:',
-                    f'Ticket Type: {registration_data.ticketType.value.capitalize()}',
-                    f"Sprint Day Participation: {'Yes' if registration_data.sprintDay else 'No'}",
-                    f'Amount Paid: ₱{registration_data.amountPaid:.2f}'
-                    if registration_data.amountPaid is not None
-                    else 'Amount Paid: N/A',
-                    f'Transaction ID: {registration_data.transactionId}',
-                    '',
+                    _email_bold_element('Below is a summary of your registration details:'),
+                    _email_list_elements(
+                        [
+                            f'Registration ID: {registration_id}',
+                            f'Ticket Type: {registration_data.ticketType.value.capitalize()}',
+                            f"Sprint Day Participation: {'Yes' if registration_data.sprintDay else 'No'}",
+                            f'Amount Paid: ₱{amount_paid:.2f}' if amount_paid is not None else 'Amount Paid: N/A',
+                            f'Transaction ID: {registration_detail.transactionId}',
+                        ]
+                    ),
+                    _email_newline_element(),
                     'See you there!',
                 ],
                 'regards': ['Best,'],
@@ -149,13 +209,14 @@ class PaymentTrackingUsecase:
                 'salutation': f'Hi {registration_data.firstName},',
                 'body': [
                     f'There was an issue processing your payment for {event_detail.name}. Please check your payment details or try again.',
-                    'If the problem persists, please contact our support team at durianpy.davao@gmail.com.',
+                    f'If the problem persists, please contact our support team at durianpy.davao@gmail.com and present your transaction ID: {registration_detail.transactionId}',
                 ],
                 'regards': ['Sincerely,'],
             },
         }
 
-        template = email_templates.get(status)
+        template_dict = pycon_email_templates if is_pycon_event else email_templates
+        template = template_dict.get(status)
 
         if template:
             email_in = EmailIn(
