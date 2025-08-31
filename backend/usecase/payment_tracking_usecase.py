@@ -160,7 +160,7 @@ class PaymentTrackingUsecase:
                         [
                             f'Registration ID: {recorded_registration.registrationId}',
                             f'Ticket Type: {ticket_type.capitalize()}',
-                            f"Sprint Day Participation: {'Yes' if recorded_registration.sprintDay else 'No'}",
+                            f'Sprint Day Participation: {"Yes" if recorded_registration.sprintDay else "No"}',
                             f'Amount Paid: ₱{recorded_registration.amountPaid:.2f}'
                             if recorded_registration.amountPaid is not None
                             else 'Amount Paid: ₱0',
@@ -193,7 +193,7 @@ class PaymentTrackingUsecase:
                         [
                             f'Registration ID: {recorded_registration.registrationId}',
                             f'Ticket Type: {ticket_type.capitalize()}',
-                            f"Sprint Day Participation: {'Yes' if recorded_registration.sprintDay else 'No'}",
+                            f'Sprint Day Participation: {"Yes" if recorded_registration.sprintDay else "No"}',
                             f'Amount Paid: ₱{recorded_registration.amountPaid:.2f}'
                             if recorded_registration.amountPaid is not None
                             else 'Amount Paid: ₱0',
