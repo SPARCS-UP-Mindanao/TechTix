@@ -27,6 +27,7 @@ class PaymentTrackingUsecase:
         and stores the registration details.
         """
         try:
+            logger.info(f'Processing payment event message: {message_body}')
             self._update_timestamps(message_body)
             payment_tracking_body = PaymentTrackingBody(**message_body)
 
@@ -42,6 +43,7 @@ class PaymentTrackingUsecase:
 
             _, event_detail, _ = self.event_repository.query_events(event_id)
             if not event_detail:
+                logger.error(f'Event details not found for eventId: {event_id}')
                 raise ValueError(f'Event details not found for eventId: {event_id}')
 
             # Update Payment Transaction Status
