@@ -47,7 +47,7 @@ class DiscountIn(BaseModel):
     discountPercentage: float = Field(..., title='Discount Percentage')
     quantity: Optional[int] = Field(None, title='Quantity')
     organizationName: str = Field(..., title='Organization ID')
-    isReusable: bool
+    isReusable: bool = Field(..., title='Is Discount Reusable')
     maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
     currentDiscountUses: Optional[int] = Field(0, title='Current Discount Uses')
     remainingUses: Optional[int] = Field(default=0, title='Remaining Discount Uses')
@@ -69,6 +69,7 @@ class DiscountOut(BaseModel):
     maxDiscountUses: Optional[int] = Field(None, title='Discount Max Uses')
     currentDiscountUses: Optional[int] = Field(0, title='Current Discount Uses')
     remainingUses: Optional[int] = Field(None, title='Discount Remaining Uses')
+    isReusable: bool = Field(..., title='Is Discount Reusable')
 
 
 class DiscountOrganization(BaseModel):

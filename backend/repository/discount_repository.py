@@ -265,7 +265,10 @@ class DiscountsRepository:
                 return HTTPStatus.BAD_REQUEST, None, 'No remaining uses available for this discount'
 
             with TransactWrite(connection=self.conn) as transaction:
-                actions = [Discount.currentDiscountUses.add(append_count), Discount.remainingUses.add(-append_count)]
+                actions = [
+                    Discount.currentDiscountUses.add(append_count),
+                    Discount.remainingUses.set(Discount.remainingUses - append_count),
+                ]
                 transaction.update(discount_entry, actions=actions)
 
             discount_entry.refresh()

@@ -101,6 +101,7 @@ def get_discount(
 )
 def get_discounts(
     event_id: str = Query(..., title='Event Id', alias=CommonConstants.EVENT_ID),
+    current_user: AccessUser = Depends(get_current_user),
 ):
     """Get a list of discounts.
 
@@ -111,5 +112,6 @@ def get_discounts(
     :rtype: List[DiscountOrganization]
 
     """
+    _ = current_user
     discount_uc = DiscountUsecase()
     return discount_uc.get_discount_list(event_id=event_id)

@@ -106,7 +106,7 @@ class CertificateUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
-        # Gernerate Certificate---------------------
+        # Generate Certificate---------------------
         registration = registrations[0]
         if not registration.certificateGenerated:
             self.generate_certificates(event_id=event_id, registration_id=registration.registrationId)

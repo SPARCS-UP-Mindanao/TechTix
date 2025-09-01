@@ -68,23 +68,47 @@ class PyconRegistrationUsecase:
                 content={'message': 'Event is not open for registration'},
             )
 
-        if event.paidEvent:
-            transaction_id = registration_in.transactionId
-            if not transaction_id:
-                return JSONResponse(
-                    status_code=HTTPStatus.BAD_REQUEST,
-                    content={'message': 'Transaction ID is required for paid event'},
-                )
+        is_free_ticket = False
 
-            (
-                status,
-                _,
-                message,
-            ) = self.__payment_transaction_repository.query_payment_transaction_with_payment_transaction_id(
-                event_id=event_id, payment_transaction_id=transaction_id
-            )
-            if status != HTTPStatus.OK:
-                return JSONResponse(status_code=status, content={'message': message})
+        if event.paidEvent:
+            if registration_in.discountCode:
+                discount_entry = self.__discount_usecase.get_discount(
+                    event_id=event_id, entry_id=registration_in.discountCode
+                )
+                if isinstance(discount_entry, JSONResponse):
+                    return discount_entry
+
+                if discount_entry.isReusable and discount_entry.remainingUses <= 0:
+                    return JSONResponse(
+                        status_code=HTTPStatus.BAD_REQUEST, content={'message': 'Discount code has no remaining uses'}
+                    )
+
+                if not discount_entry.isReusable and discount_entry.claimed:
+                    return JSONResponse(
+                        status_code=HTTPStatus.BAD_REQUEST,
+                        content={'message': 'Discount code has already been claimed'},
+                    )
+
+                if discount_entry.discountPercentage == 1 and not registration_in.sprintDay:
+                    is_free_ticket = True
+
+            if not is_free_ticket:
+                transaction_id = registration_in.transactionId
+                if not transaction_id:
+                    return JSONResponse(
+                        status_code=HTTPStatus.BAD_REQUEST,
+                        content={'message': 'Transaction ID is required for paid event'},
+                    )
+
+                (
+                    status,
+                    _,
+                    message,
+                ) = self.__payment_transaction_repository.query_payment_transaction_with_payment_transaction_id(
+                    event_id=event_id, payment_transaction_id=transaction_id
+                )
+                if status != HTTPStatus.OK:
+                    return JSONResponse(status_code=status, content={'message': message})
 
         # Check if the registration with the same email already exists
         email = registration_in.email
