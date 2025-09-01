@@ -168,6 +168,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
     <div className="px-4">
       <Modal
         modalTitle="Create Discount"
+        className="max-h-[90vh] overflow-auto"
         trigger={<Button disabled={disabled}>Create Discount</Button>}
         modalFooter={footer}
         showCloseButton={!form.formState.isSubmitting && !showDiscountCodes}
@@ -178,7 +179,7 @@ const CreateDiscountModal = ({ eventId, disabled, refetch }: CreateDiscountModal
           <DiscountCodeList discountCodes={discountCodes} />
         ) : (
           <FormProvider {...form}>
-            <main className="w-full">
+            <main className="w-full max-h-[80%]">
               <CreateDiscountFormItems />
             </main>
           </FormProvider>
