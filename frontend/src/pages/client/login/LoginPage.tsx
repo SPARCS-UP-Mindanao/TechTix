@@ -57,17 +57,15 @@ const LoginPage = () => {
 
       <main data-page="pycon" className="grow pycon-page flex flex-col mx-auto px-4 py-6 md:px-8 md:py-12 lg:px-12 lg:py-16 gap-y-10 md:gap-y-16 lg:gap-y-20">
         {event && (
-          <div className="w-full max-w-4xl mx-auto">
-            <EventDetails
-              event={event}
-              registerButton={
-                <Button className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard mt-6" onClick={onLogin}>
-                  <img className="size-6" src={googleLogo} alt="" />
-                  Sign in with Google
-                </Button>
-              }
-            />
-          </div>
+          <EventDetails
+            event={event}
+            registerButton={
+              <Button className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard mt-6" onClick={onLogin}>
+                <img className="size-6" src={googleLogo} alt="" />
+                Sign in with Google
+              </Button>
+            }
+          />
         )}
       </main>
     </>

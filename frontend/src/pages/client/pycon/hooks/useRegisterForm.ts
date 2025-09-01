@@ -12,6 +12,19 @@ import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterStepId } from '../register/steps/RegistrationSteps';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+const refineUrl = (url: string) => {
+  try {
+    const parsedUrl = new URL(url);
+    const isHttpOrHttps = parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+    // Check for a top-level domain by looking for a period after the first character
+    const hasTLD = parsedUrl.hostname.split('.').length > 1;
+
+    return isHttpOrHttps && hasTLD;
+  } catch {
+    return false;
+  }
+};
+
 const RegisterFormSchema = z.object({
   email: z.email({
     message: 'Please enter a valid email address'
@@ -42,51 +55,19 @@ const RegisterFormSchema = z.object({
   jobTitle: z.string().min(1, {
     message: 'Please select your title'
   }),
-  facebookLink: z
-    .string()
-    .min(1, {
-      message: 'Please enter your Facebook link'
+  facebookLink: z.url().pipe(
+    z.string().refine(refineUrl, {
+      message: 'Please enter a valid URL starting with https:// (e.g., https://facebook.com/yourprofile)'
     })
-    .refine(
-      (val) => {
-        // Check if it looks like a URL but missing protocol
-        if (val.includes('.') && !val.startsWith('http://') && !val.startsWith('https://')) {
-          return false;
-        }
-
-        // Validate as URL using Zod's built-in validation
-        try {
-          z.url().parse(val);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      {
-        message: 'Please enter a valid URL starting with https:// (e.g., https://facebook.com/yourprofile)'
-      }
-    ),
-  linkedInLink: z.string().refine(
-    (val) => {
-      if (val === '') return true; // Allow empty string
-
-      // Check if it looks like a URL but missing protocol
-      if (val.includes('.') && !val.startsWith('http://') && !val.startsWith('https://')) {
-        return false;
-      }
-
-      // Validate as URL using Zod's built-in validation
-      try {
-        z.url().parse(val);
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    {
-      message: 'Please enter a valid URL starting with https:// (e.g., https://linkedin.com/in/yourprofile)'
-    }
   ),
+  linkedInLink: z
+    .url()
+    .pipe(
+      z.string().refine(refineUrl, {
+        message: 'Please enter a valid URL starting with https:// (e.g., https://linkedin.com/in/yourprofile)'
+      })
+    )
+    .or(z.literal('')),
   ticketType: z.string().min(1, {
     error: 'Please select a ticket'
   }),
@@ -116,7 +97,7 @@ const RegisterFormSchema = z.object({
   agreeToCodeOfConduct: z.literal(true, { error: 'Please agree to our code of conduct to proceed' })
 });
 
-const validKeys = Object.keys(RegisterFormSchema.shape);
+const validKeys: readonly string[] = Object.keys(RegisterFormSchema.shape);
 
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
 export type RegisterField = keyof RegisterFormValues;
@@ -145,8 +126,11 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: async () => {
       const savedState = localStorage.getItem('formState');
+
       if (savedState) {
         const parsedState = JSON.parse(savedState);
+        console.log({ parsedState });
+
         return {
           ...parsedState,
           transactionId: transactionIdFromUrl || parsedState.transactionId
@@ -190,45 +174,54 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
     }
   });
 
-  const registerUser = form.handleSubmit(async (values) => {
-    try {
-      const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId, userEmail)));
+  const registerUser = form.handleSubmit(
+    async (values) => {
+      console.log({ valuesOnSubmit: values });
 
-      if (response.status === 200) {
-        successToast({
-          title: 'Registration Successful',
-          description: `Successfully registered user with email: ${values.email}`
-        });
+      try {
+        const response = await api.execute(registerUserInEvent(mapCreateRegistrationValues(values, eventId, userEmail)));
 
-        navigateOnSuccess();
-      } else if (response.status === 400) {
-        const { message } = response.errorData;
-        errorToast({
-          title: message
-        });
-      } else if (response.status === 409) {
-        form.setError('email', {
-          type: 'manual',
-          message: 'The email you entered has already been used. Please enter a different email.'
-        });
-        errorToast({
-          title: 'Email already registered',
-          description: 'The email you entered has already been used. Please enter a different email.'
-        });
-      } else {
+        if (response.status === 200) {
+          successToast({
+            title: 'Registration Successful',
+            description: `Successfully registered user with email: ${values.email}`
+          });
+
+          navigateOnSuccess();
+        } else if (response.status === 400) {
+          const { message } = response.errorData;
+          errorToast({
+            title: message
+          });
+          throw Error(`Error in Registering:\n\n${message}`);
+        } else if (response.status === 409) {
+          form.setError('email', {
+            type: 'manual',
+            message: 'The email you entered has already been used. Please enter a different email.'
+          });
+          errorToast({
+            title: 'Email already registered',
+            description: 'The email you entered has already been used. Please enter a different email.'
+          });
+          throw Error('Email already registered');
+        } else {
+          errorToast({
+            title: 'Error in Registering',
+            description: 'An error occurred while registering. Please try again.'
+          });
+          throw Error('Error in Registering');
+        }
+      } catch (e) {
+        const { errorData } = e as CustomAxiosError;
         errorToast({
           title: 'Error in Registering',
-          description: 'An error occurred while registering. Please try again.'
+          description: errorData.message || errorData.detail[0].msg || 'An error occurred while registering. Please try again.'
         });
+        throw Error('Error in Registering');
       }
-    } catch (e) {
-      const { errorData } = e as CustomAxiosError;
-      errorToast({
-        title: 'Error in Registering',
-        description: errorData.message || errorData.detail[0].msg || 'An error occurred while registering. Please try again.'
-      });
-    }
-  });
+    },
+    (e) => console.log({ e })
+  );
 
   return {
     form,

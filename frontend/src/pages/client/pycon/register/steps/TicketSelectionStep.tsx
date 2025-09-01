@@ -155,7 +155,7 @@ const TicketType: FC<TicketTypeProps> = ({ ticketType, benefits, subtitle, value
     <div
       key={ticketType.name}
       className={cn(
-        'font-nunito cursor-pointer transition-all duration-200 text-pycon-dirty-white rounded-2xl shadow-lg',
+        'font-nunito cursor-pointer transition-[transform,color,box-shadow,scale] duration-200 text-pycon-dirty-white rounded-2xl shadow-lg',
         'hover:shadow-xl hover:scale-[1.02] hover:brightness-110',
         isKasosyo ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-200/50' : 'bg-gradient-to-br from-orange-400 to-orange-500 shadow-orange-200/50',
         isSelected && 'ring-2 ring-white/10 shadow-lg',
@@ -234,7 +234,7 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPric
 
       <div
         className={cn(
-          'border-2 rounded-2xl p-8 cursor-pointer transition-all duration-200 font-nunito',
+          'border-2 rounded-2xl p-8 cursor-pointer transition-[transform,color,box-shadow,scale] duration-200 font-nunito',
           'hover:shadow-lg hover:scale-[1.02]',
           isSelected
             ? 'border-pycon-orange bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg shadow-orange-200/50'
@@ -244,10 +244,10 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPric
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex-1">
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-4 mb-4 flex-wrap">
               <Calendar className="text-pycon-violet-dark h-7 w-7" />
-              <h4 className="font-bold text-2xl text-pycon-violet-dark">Join Sprint Day</h4>
-              <div className="ml-auto md:ml-0">
+              <h4 className="font-bold text-2xl text-pycon-violet-dark me-auto">Join Sprint Day</h4>
+              <div className="">
                 <span
                   className={cn(
                     'px-4 py-2 rounded-full text-base font-bold',
