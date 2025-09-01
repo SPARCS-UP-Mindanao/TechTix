@@ -369,11 +369,11 @@ class EmailUsecase:
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [
-            f'A big thank you for attending {event_name}! Your participation made the event truly special.',
-            'To claim your certificate, please fill out the evaluation form below. Your feedback is crucial for us to keep improving.',
-            claim_certificate_url,
+            f'Thanks so much for coming to {event_name}! It was great to have you there.',
+            "We know you're looking forward to getting your certificate. To claim it, please take a quick moment to fill out this form. Your feedback helps us make these events even better.",
+            f'Link to form: {claim_certificate_url}',
             f'If you have any questions or need assistance, reach out to us at {event.email}.',
-            "We're excited to see you at future events – more great experiences await!",
+            'We look forward to seeing you at our next event.',
         ]
         regards = ['Best,']
 
