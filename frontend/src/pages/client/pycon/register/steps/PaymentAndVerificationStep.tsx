@@ -19,10 +19,10 @@ interface Props {
 }
 
 const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, sprintDayPrice }, isFeesLoading, setIsFeesLoading }: Props) => {
-  const { control } = useFormContext<RegisterFormValues>();
-  const { getTransactionFee } = useTransactionFee(price, platformFee, setIsFeesLoading);
+  const { control, setValue } = useFormContext<RegisterFormValues>();
   const [transactionFee, sprintDay] = useWatch({ name: ['transactionFee', 'sprintDay'], control });
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(price);
+  const { getTransactionFee } = useTransactionFee(price, platformFee, setIsFeesLoading, discountPercentage, sprintDayPrice);
   const currentSprintPrice = sprintDay && sprintDayPrice ? sprintDayPrice : 0;
   const discountedPrice = calculateDiscountedPrice({ price, discountPercentage: discountPercentage ?? 0 });
   const total = calculateTotalPrice({
@@ -36,6 +36,20 @@ const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, spri
   useEffect(() => {
     getTransactionFee();
   }, [getTransactionFee]);
+
+  // Update form total whenever calculated total changes
+  useEffect(() => {
+    setValue('total', total);
+  }, [total, setValue]);
+
+  // Recalculate transaction fee when discount changes
+  useEffect(() => {
+    const [paymentChannel, paymentMethod] = ['paymentChannel', 'paymentMethod'].map((name) => control._formValues?.[name as keyof RegisterFormValues]);
+
+    if (paymentChannel && paymentMethod) {
+      getTransactionFee();
+    }
+  }, [discountPercentage, sprintDay, getTransactionFee, control]);
 
   const getTransactionFeeContent = () => {
     if (isFeesLoading) {
@@ -54,7 +68,7 @@ const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, spri
       <FormItem name="validIdObjectKey">
         {({ field: { name, value, onChange } }) => (
           <div className="space-y-4">
-            <FormLabel>Valid ID</FormLabel>
+            <FormLabel>Valid ID *</FormLabel>
             <FormDescription className="text-pycon-custard-light">Valid ID is required upon entry to venue</FormDescription>
             <FileUpload pyconStyles name={name} eventId={eventId} uploadType={EVENT_UPLOAD_TYPE.VALID_ID} value={value} onChange={onChange} />
             <FormError />
@@ -88,9 +102,24 @@ const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, spri
 
       <hr className="border-pycon-custard-light" />
 
-      <PaymentGateways getTransactionFee={getTransactionFee} />
+      {/* Only show payment gateways if payment is required */}
+      {total > 0 && (
+        <>
+          <PaymentGateways getTransactionFee={getTransactionFee} />
+          <hr className="border-pycon-custard-light" />
+        </>
+      )}
 
-      <hr className="border-pycon-custard-light" />
+      {/* For free tickets, show a message instead */}
+      {total === 0 && (
+        <>
+          <div className="text-center py-4">
+            <h4 className="font-nunito text-pycon-custard font-bold text-lg">🎉 Free Registration!</h4>
+            <p className="font-nunito text-pycon-custard-light">No payment required for your registration.</p>
+          </div>
+          <hr className="border-pycon-custard-light" />
+        </>
+      )}
       <div className="flex flex-col items-start gap-5">
         <div className="flex flex-col gap-5 w-full">
           <div className="grid grid-cols-2 gap-5">
@@ -121,10 +150,15 @@ const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, spri
             )}
 
             <h4 className="font-nunito text-pycon-custard font-bold">Subtotal:</h4>
-            <p className="font-nunito font-bold">{formatMoney((discountPercentage ? discountedPrice : price) + (sprintDayPrice ?? 0), 'PHP')}</p>
+            <p className="font-nunito font-bold">{formatMoney((discountPercentage ? discountedPrice : price) + currentSprintPrice, 'PHP')}</p>
 
-            <h4 className="font-nunito text-pycon-custard font-bold">Transaction Fee:</h4>
-            <p className="font-nunito font-bold">{getTransactionFeeContent()}</p>
+            {/* Only show transaction fee for paid tickets */}
+            {total > 0 && (
+              <>
+                <h4 className="font-nunito text-pycon-custard font-bold">Transaction Fee:</h4>
+                <p className="font-nunito font-bold">{getTransactionFeeContent()}</p>
+              </>
+            )}
 
             {platformFee && (
               <>

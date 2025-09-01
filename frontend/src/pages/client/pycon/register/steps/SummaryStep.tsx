@@ -226,7 +226,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
               <div className="flex items-center space-x-2">
                 <Checkbox pyconStyles id="agreeToDataUse" checked={field.value} onCheckedChange={field.onChange} />
                 <Label htmlFor="agreeToDataUse" className="text-base font-medium">
-                  I consent for photography, data use, and communication
+                  I consent for photography, data use, and communication *
                 </Label>
               </div>
               <FormError />
@@ -238,13 +238,13 @@ const SummaryStep = ({ event }: SummaryProps) => {
           {({ field }) => (
             <div className="">
               <div className="flex items-center space-x-2">
-                <Checkbox pyconStyles id="agreeToDataUse" checked={field.value} onCheckedChange={field.onChange} />
-                <Label htmlFor="agreeToDataUse" className="text-base font-medium">
+                <Checkbox pyconStyles id="agreeToCodeOfConduct" checked={field.value} onCheckedChange={field.onChange} />
+                <Label htmlFor="agreeToCodeOfConduct" className="text-base font-medium">
                   I agree to follow the{' '}
                   <a href={PYCON_CODE_OF_CONDUCT} target="_blank" className="text-pycon-orange underline">
                     Code of Conduct
                   </a>
-                  .
+                  . *
                 </Label>
               </div>
               <FormError />

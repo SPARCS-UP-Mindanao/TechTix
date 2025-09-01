@@ -60,7 +60,9 @@ const MiscellaneousStep: FC<Props> = () => {
         <FormItem name="dietaryRestrictions">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              <FormLabel>Dietary Restrictions</FormLabel>
+              <FormLabel optional optionalClass="text-pycon-custard-light">
+                Dietary Restrictions
+              </FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -70,7 +72,9 @@ const MiscellaneousStep: FC<Props> = () => {
         <FormItem name="accessibilityNeeds">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              <FormLabel>Accessibility Needs</FormLabel>
+              <FormLabel optional optionalClass="text-pycon-custard-light">
+                Accessibility Needs
+              </FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>

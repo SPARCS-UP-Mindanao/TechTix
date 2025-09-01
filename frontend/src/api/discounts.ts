@@ -21,10 +21,35 @@ interface ReusableDiscount {
   updateDate: string;
   discountPercentage: number;
   organizationId: string;
+  claimed?: boolean;
   maxDiscountUses: number;
   currentDiscountUses: number;
   remainingUses: number;
   registration: {
+    transactionId: string;
+    registrationId: string;
+    eventId: string;
+    discountCode: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    contactNumber: string;
+    organization: string;
+  };
+}
+
+export interface DiscountResponse {
+  entryId: string;
+  eventId: string;
+  createDate: string;
+  updateDate: string;
+  discountPercentage: number;
+  organizationId: string;
+  claimed?: boolean;
+  maxDiscountUses?: number;
+  currentDiscountUses?: number;
+  remainingUses?: number;
+  registration?: {
     transactionId: string;
     registrationId: string;
     eventId: string;
@@ -63,7 +88,7 @@ export const createDiscount = (createDiscount: CreateDiscount, eventId: string) 
   });
 
 export const getDiscount = (discountCode: string, eventId: string) =>
-  createApi<DiscountDto['discounts'][number]>({
+  createApi<DiscountResponse>({
     method: 'get',
     url: `/discounts/${discountCode}`,
     queryParams: {

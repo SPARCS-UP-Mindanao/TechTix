@@ -13,7 +13,7 @@ const BasicInfoStep = () => {
         <FormItem name="firstName">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">First Name</FormLabel>
+              <FormLabel className="font-nunito">First Name *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -23,7 +23,7 @@ const BasicInfoStep = () => {
         <FormItem name="lastName">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Last Name</FormLabel>
+              <FormLabel className="font-nunito">Last Name *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -35,7 +35,7 @@ const BasicInfoStep = () => {
         <FormItem name="nickname">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Nickname</FormLabel>
+              <FormLabel className="font-nunito">Nickname *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -45,7 +45,7 @@ const BasicInfoStep = () => {
         <FormItem name="pronouns">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Pronouns</FormLabel>
+              <FormLabel className="font-nunito">Pronouns *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -57,7 +57,7 @@ const BasicInfoStep = () => {
         <FormItem name="organization">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Affiliation/Organization/Company</FormLabel>
+              <FormLabel className="font-nunito">Affiliation/Organization/Company *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -67,7 +67,7 @@ const BasicInfoStep = () => {
         <FormItem name="jobTitle">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Title</FormLabel>
+              <FormLabel className="font-nunito">Title *</FormLabel>
               <Input pyconStyles type="text" {...field} />
               <FormError />
             </div>
@@ -80,7 +80,7 @@ const BasicInfoStep = () => {
           <FormItem name="email">
             {({ field }) => (
               <div className="flex flex-col gap-1 grow md:basis-1/2">
-                <FormLabel className="font-nunito">Email</FormLabel>
+                <FormLabel className="font-nunito">Email *</FormLabel>
                 <Input pyconStyles type="email" {...field} />
                 <FormError />
               </div>
@@ -91,7 +91,7 @@ const BasicInfoStep = () => {
         <FormItem name="contactNumber">
           {({ field }) => (
             <div className="flex flex-col gap-1 md:basis-1/2">
-              <FormLabel className="font-nunito">Phone number</FormLabel>
+              <FormLabel className="font-nunito">Phone number *</FormLabel>
               <Input pyconStyles type="text" placeholder="09XX XXX XXXX" {...field} />
               <FormError />
             </div>
@@ -103,9 +103,13 @@ const BasicInfoStep = () => {
         <FormItem name="facebookLink">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">Facebook Link</FormLabel>
-              <FormDescription className="font-nunito text-pycon-custard-light">Links should start with http:// or https://</FormDescription>
-              <Input pyconStyles type="text" {...field} />
+              <FormLabel className="font-nunito">
+                Facebook Link *
+              </FormLabel>
+              <FormDescription className="font-nunito text-pycon-custard-light">
+                Links should start with https:// (e.g., https://facebook.com/yourprofile)
+              </FormDescription>
+              <Input pyconStyles type="text" placeholder="https://facebook.com/yourprofile" {...field} />
               <FormError />
             </div>
           )}
@@ -115,10 +119,12 @@ const BasicInfoStep = () => {
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
               <FormLabel className="font-nunito" optional optionalClass="text-pycon-custard-light">
-                Linkedin Link
+                LinkedIn Link
               </FormLabel>
-              <FormDescription className="font-nunito text-pycon-custard-light">Links should start with http:// or https://</FormDescription>
-              <Input pyconStyles type="text" {...field} />
+              <FormDescription className="font-nunito text-pycon-custard-light">
+                Links should start with https:// (e.g., https://linkedin.com/in/yourprofile)
+              </FormDescription>
+              <Input pyconStyles type="text" placeholder="https://linkedin.com/in/yourprofile" {...field} />
               <FormError />
             </div>
           )}

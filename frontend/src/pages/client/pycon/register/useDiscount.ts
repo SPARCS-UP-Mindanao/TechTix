@@ -33,7 +33,12 @@ export const useDiscount = (price: number) => {
       const discount = response.data;
       switch (response.status) {
         case 200:
-          if (!discount.remainingUses) {
+          // Check if discount is already used based on maxDiscountUses
+          const isDiscountUsedUp = discount.maxDiscountUses !== null
+            ? discount.remainingUses === 0
+            : discount.claimed;
+
+          if (isDiscountUsedUp) {
             errorToast({
               title: 'Discount Code is already used up',
               description: 'The discount code you entered has already been claimed to its maximum. Please enter a different discount code.'

@@ -42,7 +42,7 @@ const LoginPage = () => {
   return (
     <>
       <Alert
-        className="bg-accent/50 rounded-none grid-cols-3 top-0 sticky"
+        className="bg-accent/50 rounded-none grid-cols-3 top-0 sticky z-10 mb-6 md:mb-8"
         title="Welcome to Techtix! Please signin to continue"
         description="We require our users to signin their accounts to easily track their registrations"
       >
@@ -54,17 +54,20 @@ const LoginPage = () => {
           Sign in with Google
         </Button>
       </Alert>
-      <main data-page="pycon" className="grow pycon-page flex flex-col mx-auto my-0 p-0 pt-8! md:p-4 lg:px-8 py-8 gap-y-8 md:gap-y-16">
+
+      <main data-page="pycon" className="grow pycon-page flex flex-col mx-auto px-4 py-6 md:px-8 md:py-12 lg:px-12 lg:py-16 gap-y-10 md:gap-y-16 lg:gap-y-20">
         {event && (
-          <EventDetails
-            event={event}
-            registerButton={
-              <Button className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard" onClick={onLogin}>
-                <img className="size-6" src={googleLogo} alt="" />
-                Sign in with Google
-              </Button>
-            }
-          />
+          <div className="w-full max-w-4xl mx-auto">
+            <EventDetails
+              event={event}
+              registerButton={
+                <Button className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! hover:bg-pycon-custard mt-6" onClick={onLogin}>
+                  <img className="size-6" src={googleLogo} alt="" />
+                  Sign in with Google
+                </Button>
+              }
+            />
+          </div>
         )}
       </main>
     </>

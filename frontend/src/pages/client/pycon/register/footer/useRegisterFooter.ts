@@ -37,7 +37,19 @@ export const useRegisterFooter = (
 
   const currentIndex = steps.indexOf(currentStep);
 
-  const paymentButtonDisabled = isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
+  // Calculate if this is a free ticket (total = 0)
+  const total = calculateTotalPrice({
+    price: event.price,
+    transactionFee: transactionFee ?? 0,
+    discountPercentage: discountPercentage ?? 0,
+    platformFee: event.platformFee ?? 0,
+    sprintDayPrice: sprintDay && event.sprintDayPrice ? event.sprintDayPrice : 0
+  });
+
+  const isFreeTicket = total === 0;
+
+  // For free tickets, don't require payment method selection
+  const paymentButtonDisabled = isFreeTicket ? false : isEmpty(paymentChannel) || isEmpty(paymentMethod) || isEmpty(transactionFee);
 
   const checkRegistrationCount = async () => {
     const response = await api.execute(getEventRegCountStatus(eventId));
@@ -80,7 +92,13 @@ export const useRegisterFooter = (
     if (isEmpty(fieldsToCheck)) {
       moveToNextStep();
     } else {
-      const isValid = await trigger(fieldsToCheck);
+      // For Payment&Verification step with free tickets, filter out payment fields
+      let validationFields = fieldsToCheck;
+      if (currentStep.id === 'Payment&Verification' && isFreeTicket) {
+        validationFields = fieldsToCheck.filter((field) => field !== 'paymentMethod' && field !== 'paymentChannel' && field !== 'transactionFee');
+      }
+
+      const isValid = await trigger(validationFields);
 
       if (isValid) {
         moveToNextStep();
@@ -103,11 +121,17 @@ export const useRegisterFooter = (
   };
 
   const onSummaryStep = () => {
-    if (!transactionFee) {
+    // For free tickets, allow proceeding even without transaction fee
+    if (!isFreeTicket && !transactionFee) {
       return;
     }
 
-    setPaymentTotal();
+    // Set the total field in the form
+    if (isFreeTicket) {
+      setValue('total', 0);
+    } else {
+      setPaymentTotal();
+    }
     onNextStep();
   };
 
