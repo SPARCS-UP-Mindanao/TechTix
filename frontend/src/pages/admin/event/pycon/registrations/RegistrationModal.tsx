@@ -4,6 +4,7 @@ import AlertModal from '@/components/AlertModal';
 import Button from '@/components/Button';
 import Checkbox from '@/components/Checkbox';
 import { FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
+import ImageViewer from '@/components/ImageViewer';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import Modal from '@/components/Modal';
@@ -40,7 +41,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
       visible={showModal}
       onOpenChange={setShowModal}
       trigger={<Button variant="ghost" size="icon" icon="Ellipsis" />}
-      className="md:max-w-[80%]"
+      className="md:max-w-[80%] max-h-[90vh] overflow-auto"
       modalFooter={
         <Button onClick={() => setShowModal(false)} variant="ghost">
           Close
@@ -217,6 +218,11 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
         <FormItemContainer halfSpace>
           <Label>Amount paid:</Label>
           <Input disabled value={registrationInfo.amountPaid ? formatMoney(registrationInfo.amountPaid, 'PHP') : 'None'} />
+        </FormItemContainer>
+
+        <FormItemContainer>
+          <Label>Submitted ID:</Label>
+          <ImageViewer eventId={eventId} objectKey={registrationInfo.validIdObjectKey} className="max-h-60 w-auto" />
         </FormItemContainer>
 
         <div className="w-full flex mt-4 md:mt-8 justify-center space-x-4">
