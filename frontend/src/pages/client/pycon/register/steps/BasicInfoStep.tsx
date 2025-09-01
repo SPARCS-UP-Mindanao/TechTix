@@ -103,9 +103,7 @@ const BasicInfoStep = () => {
         <FormItem name="facebookLink">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel className="font-nunito">
-                Facebook Link *
-              </FormLabel>
+              <FormLabel className="font-nunito">Facebook Link *</FormLabel>
               <FormDescription className="font-nunito text-pycon-custard-light">
                 Links should start with https:// (e.g., https://facebook.com/yourprofile)
               </FormDescription>

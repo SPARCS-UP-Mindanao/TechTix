@@ -42,27 +42,30 @@ const RegisterFormSchema = z.object({
   jobTitle: z.string().min(1, {
     message: 'Please select your title'
   }),
-  facebookLink: z.string().min(1, {
-    message: 'Please enter your Facebook link'
-  }).refine(
-    (val) => {
-      // Check if it looks like a URL but missing protocol
-      if (val.includes('.') && !val.startsWith('http://') && !val.startsWith('https://')) {
-        return false;
-      }
+  facebookLink: z
+    .string()
+    .min(1, {
+      message: 'Please enter your Facebook link'
+    })
+    .refine(
+      (val) => {
+        // Check if it looks like a URL but missing protocol
+        if (val.includes('.') && !val.startsWith('http://') && !val.startsWith('https://')) {
+          return false;
+        }
 
-      // Validate as URL using Zod's built-in validation
-      try {
-        z.url().parse(val);
-        return true;
-      } catch {
-        return false;
+        // Validate as URL using Zod's built-in validation
+        try {
+          z.url().parse(val);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      {
+        message: 'Please enter a valid URL starting with https:// (e.g., https://facebook.com/yourprofile)'
       }
-    },
-    {
-      message: 'Please enter a valid URL starting with https:// (e.g., https://facebook.com/yourprofile)'
-    }
-  ),
+    ),
   linkedInLink: z.string().refine(
     (val) => {
       if (val === '') return true; // Allow empty string

@@ -34,9 +34,7 @@ export const useDiscount = (price: number) => {
       switch (response.status) {
         case 200:
           // Check if discount is already used based on maxDiscountUses
-          const isDiscountUsedUp = discount.maxDiscountUses !== null
-            ? discount.remainingUses === 0
-            : discount.claimed;
+          const isDiscountUsedUp = discount.maxDiscountUses !== null ? discount.remainingUses === 0 : discount.claimed;
 
           if (isDiscountUsedUp) {
             errorToast({
