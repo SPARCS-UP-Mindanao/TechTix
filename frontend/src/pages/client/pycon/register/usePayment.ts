@@ -12,9 +12,6 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
   const api = useApi();
   const { errorToast } = useNotifyToast();
   const { getValues } = useFormContext<RegisterFormValues>();
-  const email = getValues('email') ?? '';
-  const firstName = getValues('firstName') ?? '';
-  const lastName = getValues('lastName') ?? '';
   const [isRequestingPayment, setIsRequestingPayment] = useState(false);
   const referenceId = ulid();
   const eWalletRequest = async (total: number, paymentChannel: PaymentChannel) => {
@@ -63,9 +60,9 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
       setIsRequestingPayment(true);
       const response = await api.execute(
         initiateDirectDebitPayment({
-          email,
-          givenNames: firstName,
-          surname: lastName,
+          email: values.email,
+          givenNames: values.firstName,
+          surname: values.lastName,
           amount: total,
           channelCode: paymentChannel,
           failureReturnUrl: `${baseUrlPath}?step=Payment`,

@@ -107,6 +107,19 @@ export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
       enableHiding: getEnableHiding('ticketType')
     },
     {
+      accessorKey: 'discountCode',
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Discount Code Used
+            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      enableHiding: getEnableHiding('ticketType'),
+      cell: ({ row }) => row.original.discountCode || <span className="text-muted-foreground">None</span>
+    },
+    {
       accessorKey: 'dietaryRestrictions',
       header: ({ column }) => {
         return (
@@ -140,44 +153,45 @@ export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
           </Button>
         );
       },
+      cell: ({ row }) => <Icon name={row.original.sprintDay ? 'Check' : 'X'} />,
       enableHiding: getEnableHiding('ticketType')
     },
-    {
-      accessorKey: 'availTShirt',
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            Will avail T-shrt?
-            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      enableHiding: getEnableHiding('ticketType')
-    },
-    {
-      accessorKey: 'shirtType',
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            Shirt type
-            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      enableHiding: getEnableHiding('ticketType')
-    },
-    {
-      accessorKey: 'shirtSize',
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            Shirt size
-            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      enableHiding: getEnableHiding('ticketType')
-    },
+    // {
+    //   accessorKey: 'availTShirt',
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //         Will avail T-shrt?
+    //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+    //       </Button>
+    //     );
+    //   },
+    //   enableHiding: getEnableHiding('ticketType')
+    // },
+    // {
+    //   accessorKey: 'shirtType',
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //         Shirt type
+    //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+    //       </Button>
+    //     );
+    //   },
+    //   enableHiding: getEnableHiding('ticketType')
+    // },
+    // {
+    //   accessorKey: 'shirtSize',
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //         Shirt size
+    //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+    //       </Button>
+    //     );
+    //   },
+    //   enableHiding: getEnableHiding('ticketType')
+    // },
     {
       accessorKey: 'createDate',
       header: ({ column }) => {
@@ -192,6 +206,21 @@ export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
       cell: ({ row }) => {
         return moment(row.getValue('createDate')).local().format('MMM D h:mm A');
       }
+    },
+    {
+      accessorKey: 'updateDate',
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Date Updated
+            <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        return moment(row.getValue('createDate')).local().format('MMM D h:mm A');
+      },
+      enableHiding: getEnableHiding('linkedInLink')
     },
     {
       accessorKey: 'facebookLink',
@@ -217,6 +246,7 @@ export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
       },
       enableHiding: getEnableHiding('linkedInLink')
     },
+
     {
       id: 'actions',
       header: () => <span>Actions</span>,

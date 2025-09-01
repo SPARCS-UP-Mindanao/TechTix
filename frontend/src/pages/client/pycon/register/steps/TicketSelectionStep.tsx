@@ -90,8 +90,7 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
         <FormItem name="sprintDay">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              {/* TODO: Update sprint day price */}
-              <FormLabel>Will you join sprint day? (You will have to pay additional PHP 200)</FormLabel>
+              <FormLabel>Will you join sprint day? (You will have to pay additional {formatMoney(event.sprintDayPrice ?? 0, 'PHP')})</FormLabel>
               <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem pyconStyles id="sprintDay-yes" checked={!!field.value} value="true" />

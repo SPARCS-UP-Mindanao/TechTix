@@ -26,7 +26,10 @@ const AdminEventForm: FC<Props> = ({ event }) => {
     name: 'ticketTypes'
   });
 
-  const [paidEvent, isLimitedSlot, isUsingPlatformFee] = useWatch({ name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee'], control });
+  const [paidEvent, isLimitedSlot, isUsingPlatformFee, sprintDay] = useWatch({
+    name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee', 'sprintDay'],
+    control
+  });
   const { isSubmitting, isDirty } = useFormState({ control });
 
   const hasMultipleTicketTypes = watch('hasMultipleTicketTypes');
@@ -286,6 +289,34 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           </FormItem>
         ) : (
           <FormItemSpacer />
+        )}
+
+        <Separator className="my-4" />
+
+        <FormItem name="sprintDay">
+          {({ field }) => (
+            <FormItemContainer halfSpace={sprintDay}>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Will this event have a sprint day?</FormLabel>
+                <Switch id="sprintDay" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
+              </div>
+              <FormError />
+            </FormItemContainer>
+          )}
+        </FormItem>
+
+        {sprintDay && (
+          <FormItem name="sprintDayPrice">
+            {({ field }) => (
+              <FormItemContainer halfSpace>
+                <div className="flex flex-row gap-2">
+                  <FormLabel>Sprint Day Fee</FormLabel>
+                  <Input type="number" {...field} />
+                </div>
+                <FormError />
+              </FormItemContainer>
+            )}
+          </FormItem>
         )}
 
         <Separator className="my-4" />

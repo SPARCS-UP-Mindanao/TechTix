@@ -175,42 +175,48 @@ const SummaryStep = ({ event }: SummaryProps) => {
           <span className="break-words" title={futureVolunteer ? 'Yes' : 'No'}>
             {futureVolunteer ? 'Yes' : 'No'}
           </span>
+          {event.paidEvent && event.status !== 'preregistration' && <hr className="border-pycon-custard-light col-span-2" />}
+          {event.paidEvent && event.status !== 'preregistration' && (
+            <>
+              <span className="font-bold">Price:</span>
+              <p>{formatMoney(event.price, 'PHP')}</p>
+
+              {discountPercentage && discountCode && discountedPrice ? (
+                <>
+                  <span className="font-bold">Discount Code: </span>
+                  <span className="break-words" title={discountCode}>
+                    {discountCode}
+                  </span>
+
+                  <span className="font-bold">Discount</span>
+                  <span className="break-words" title={discountPercentage ? `${formatPercentage(discountPercentage)}` : 'None'}>
+                    {discountPercentage ? <span>{formatPercentage(discountPercentage)}</span> : 'None'}
+                  </span>
+
+                  <span className="font-bold">Discounted Price</span>
+                  <span className="break-words" title={formatMoney(discountedPrice ?? event.price, 'PHP')}>
+                    {formatMoney(discountedPrice ?? event.price, 'PHP')}
+                  </span>
+                </>
+              ) : (
+                <></>
+              )}
+
+              {sprintDay && event.sprintDayPrice && (
+                <>
+                  <span className="font-bold">Sprint Day Fee:</span>
+                  <p>{formatMoney(event.sprintDayPrice, 'PHP')}</p>
+                </>
+              )}
+
+              <span className="font-bold">Transaction Fee</span>
+              <span className="break-words">{transactionFee ? <span className="break-words">{formatMoney(transactionFee, 'PHP')}</span> : 'None'}</span>
+
+              <span className="font-bold">Total</span>
+              <span className="break-words">{formatMoney(total ?? event.price, 'PHP')}</span>
+            </>
+          )}
         </div>
-
-        {event.paidEvent && event.status !== 'preregistration' && <hr className="border-pycon-custard-light" />}
-        {event.paidEvent && event.status !== 'preregistration' && (
-          <div className="grid grid-cols-2 gap-5">
-            <span className="font-bold">Price:</span>
-            <p>{formatMoney(event.price, 'PHP')}</p>
-
-            {discountPercentage && discountCode ? (
-              <>
-                <span className="font-bold">Discount Code: </span>
-                <span className="break-words" title={discountCode}>
-                  {discountCode}
-                </span>
-
-                <span className="font-bold">Discount</span>
-                <span className="break-words" title={discountPercentage ? `-${formatPercentage(discountPercentage)}` : 'None'}>
-                  {discountPercentage ? <span>-{formatPercentage(discountPercentage)}</span> : 'None'}
-                </span>
-
-                <span className="font-bold">Discounted Price</span>
-                <span className="break-words" title={formatMoney(discountedPrice ?? event.price, 'PHP')}>
-                  {formatMoney(discountedPrice ?? event.price, 'PHP')}
-                </span>
-              </>
-            ) : (
-              <></>
-            )}
-
-            <span className="font-bold">Transaction Fee</span>
-            <span className="break-words">{transactionFee ? <span className="break-words">{formatMoney(transactionFee, 'PHP')}</span> : 'None'}</span>
-
-            <span className="font-bold">Total</span>
-            <span className="break-words">{formatMoney(total ?? event.price, 'PHP')}</span>
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col mt-8">

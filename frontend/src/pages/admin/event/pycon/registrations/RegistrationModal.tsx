@@ -21,7 +21,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
   const {
-    event: { paidEvent, eventId, status }
+    event: { eventId }
   } = useAdminEvent();
 
   const { form, onUpdate, onDelete } = useEditRegistrationForm(eventId, registrationInfo);
@@ -147,7 +147,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
             )}
           </FormItem>
 
-          <FormItem name="availTShirt">
+          {/* <FormItem name="availTShirt">
             {({ field }) => (
               <>
                 <FormItemContainer halfSpace>
@@ -181,7 +181,7 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
                 )}
               </>
             )}
-          </FormItem>
+          </FormItem> */}
 
           <FormItem name="dietaryRestrictions">
             {({ field }) => (
@@ -209,10 +209,15 @@ const RegistrationModal: React.FC<Props> = ({ registrationInfo }) => {
           <Input disabled value={registrationInfo.discountCode ? registrationInfo.discountCode : 'None'} />
         </FormItemContainer>
 
-        {/* <FormItemContainer halfSpace>
+        <FormItemContainer halfSpace>
+          <Label>Transaction ID: </Label>
+          <Input disabled value={registrationInfo.transactionId} />
+        </FormItemContainer>
+
+        <FormItemContainer halfSpace>
           <Label>Amount paid:</Label>
           <Input disabled value={registrationInfo.amountPaid ? formatMoney(registrationInfo.amountPaid, 'PHP') : 'None'} />
-        </FormItemContainer> */}
+        </FormItemContainer>
 
         <div className="w-full flex mt-4 md:mt-8 justify-center space-x-4">
           {allowEdit && (

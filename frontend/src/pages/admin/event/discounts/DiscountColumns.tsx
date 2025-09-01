@@ -73,38 +73,38 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return formatPercentage(discount);
     }
   },
-  {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Email Claimer
-          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    enableHiding: getEnableHiding('email'),
-    cell: ({ row }) => {
-      const registration: Registration = row.getValue('registration');
-      return registration && registration.email ? registration.email : 'N/A';
-    }
-  },
-  {
-    accessorKey: 'registration',
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Name of Claimer
-          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    enableHiding: getEnableHiding('registration'),
-    cell: ({ row }) => {
-      const registration: Registration = row.getValue('registration');
-      return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
-    }
-  },
+  // {
+  //   accessorKey: 'email',
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+  //         Email Claimer
+  //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   enableHiding: getEnableHiding('email'),
+  //   cell: ({ row }) => {
+  //     const registration: Registration = row.getValue('registration');
+  //     return registration && registration.email ? registration.email : 'N/A';
+  //   }
+  // },
+  // {
+  //   accessorKey: 'registration',
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+  //         Name of Claimer
+  //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   enableHiding: getEnableHiding('registration'),
+  //   cell: ({ row }) => {
+  //     const registration: Registration = row.getValue('registration');
+  //     return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
+  //   }
+  // },
   {
     accessorKey: 'remainingUses',
     header: ({ column }) => {

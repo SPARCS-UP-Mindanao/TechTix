@@ -12,29 +12,29 @@ import { zodResolver } from '@hookform/resolvers/zod';
 const EventFormSchema = z
   .object({
     name: z.string().min(1, {
-      message: 'Please enter the event name'
+      error: 'Please enter the event name'
     }),
     description: z.string().min(1, {
-      message: 'Please enter the event description'
+      error: 'Please enter the event description'
     }),
     email: z.email({
-      message: 'Please enter a valid email address'
+      error: 'Please enter a valid email address'
     }),
     startDate: z.string().min(1, {
-      message: 'Please enter the event start date'
+      error: 'Please enter the event start date'
     }),
     endDate: z.string().min(1, {
-      message: 'Please enter the event end date'
+      error: 'Please enter the event end date'
     }),
     venue: z.string().min(1, {
-      message: 'Please enter the event venue'
+      error: 'Please enter the event venue'
     }),
     paidEvent: z.boolean(),
     price: z.coerce.number<number>().min(0, {
-      message: 'Please enter the event price'
+      error: 'Please enter the event price'
     }),
     status: z.custom<EventStatus>().refine((value) => !isEmpty(value), {
-      message: 'Please select the event status'
+      error: 'Please select the event status'
     }),
     bannerLink: z.string().optional(),
     logoLink: z.string().optional(),
@@ -46,39 +46,27 @@ const EventFormSchema = z
       .array(
         z.object({
           name: z.string().min(1, {
-            message: 'Please enter the ticket type name'
+            error: 'Please enter the ticket type name'
           }),
           description: z.string().optional(),
           tier: z.string().min(1, {
-            message: 'Please enter the ticket type tier'
+            error: 'Please enter the ticket type tier'
           }),
           originalPrice: z.coerce.number<number>().optional(),
           price: z.coerce.number<number>().min(0, {
-            message: 'Please enter the ticket type price'
+            error: 'Please enter the ticket type price'
           }),
           maximumQuantity: z.coerce.number<number>().min(0, {
-            message: 'Please enter the ticket type maximum quantity'
+            error: 'Please enter the ticket type maximum quantity'
           })
         })
       )
       .optional(),
     hasMultipleTicketTypes: z.boolean(),
     isUsingPlatformFee: z.boolean(),
-    platformFee: z.coerce
-      .number<number>()
-      .optional()
-      .refine(
-        (fee) => {
-          if (fee && fee < 0) {
-            return false;
-          }
-          return true;
-        },
-        {
-          message: 'Please enter a value more than 0',
-          path: ['platformFee']
-        }
-      )
+    platformFee: z.coerce.number<number>().optional(),
+    sprintDay: z.boolean(),
+    sprintDayPrice: z.coerce.number<number>().optional()
   })
   .refine(
     (data) => {
@@ -89,7 +77,7 @@ const EventFormSchema = z
       return true;
     },
     {
-      message: 'Please enter a value more than 0',
+      error: 'Please enter a value more than 0',
       path: ['price']
     }
   )
@@ -102,10 +90,18 @@ const EventFormSchema = z
       return true;
     },
     {
-      message: 'Please enter a value more than 0',
+      error: 'Please enter a value more than 0',
       path: ['maximumSlots']
     }
-  );
+  )
+  .refine(({ sprintDay, sprintDayPrice }) => (sprintDay ? sprintDayPrice && sprintDayPrice > 0 : true), {
+    error: 'Please enter a value more than 0',
+    path: ['sprintDayPrice']
+  })
+  .refine(({ isUsingPlatformFee, platformFee }) => (isUsingPlatformFee ? platformFee && platformFee < 0 : true), {
+    error: 'Please enter a value more than 0',
+    path: ['platformFee']
+  });
 
 const extendRegisterFormSchema = (event: Event) =>
   EventFormSchema.refine(
@@ -154,7 +150,9 @@ export const useAdminEventForm = (event?: Event) => {
         status: 'draft',
         ticketTypes: [],
         hasMultipleTicketTypes: false,
-        isUsingPlatformFee: false
+        isUsingPlatformFee: false,
+        sprintDay: false,
+        sprintDayPrice: 0
       };
     }
   });

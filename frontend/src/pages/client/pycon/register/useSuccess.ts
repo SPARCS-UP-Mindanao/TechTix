@@ -18,7 +18,12 @@ export const useSuccess = (currentStep: RegisterStep, getValues: () => RegisterF
     }
   }, [submitForm]);
 
-  const { isLoading, isSuccess, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    isSuccess,
+    refetch
+  } = useQuery({
     queryKey: createQueryKey('submitForm', getValues()),
     queryFn: async () => redirectToSuccess(),
     enabled: currentStep.id === 'Success',
@@ -29,7 +34,7 @@ export const useSuccess = (currentStep: RegisterStep, getValues: () => RegisterF
 
   return {
     isSuccessLoading: isLoading,
-    isRegisterSuccessful: isSuccess,
+    isRegisterSuccessful: isSuccess && response && response !== 'Error',
     retryRegister: refetch
   };
 };

@@ -33,6 +33,8 @@ export interface EventDto {
   isApprovalFlow: boolean;
   registrationCount: number;
   maximumSlots: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
   createDate: string;
   updateDate: string;
   createdBy: string;

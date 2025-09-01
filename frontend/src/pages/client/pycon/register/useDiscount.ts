@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { getDiscount } from '@/api/discounts';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterFormValues } from '../hooks/useRegisterForm';
+import { calculateDiscountedPrice } from './pricing';
 
-export const useDiscount = (eventPrice: number) => {
+export const useDiscount = (price: number) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
   const { eventId } = useParams();
-  const { watch, getValues, setValue } = useFormContext<RegisterFormValues>();
+  const { control, getValues, setValue } = useFormContext<RegisterFormValues>();
 
   const [isValidatingDiscountCode, setIsValidatingDiscountCode] = useState(false);
-  const discountPercentage = watch('discountPercentage');
-  const getDiscountPrice = (percentage: number) => eventPrice * (1 - percentage / 100);
+  const [discountPercentage] = useWatch({ control, name: ['discountPercentage'] });
+  const getDiscountPrice = (percentage: number) => calculateDiscountedPrice({ price, discountPercentage: percentage });
 
   const validateDiscountCode = async () => {
     const discountCode = getValues('discountCode');

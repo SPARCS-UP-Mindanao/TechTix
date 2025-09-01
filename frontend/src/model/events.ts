@@ -41,6 +41,8 @@ export interface Event {
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketType[] | null;
   platformFee: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -122,7 +124,9 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
     })) ?? undefined,
 
   platformFee: event.platformFee ? event.platformFee * 100 : undefined,
-  isUsingPlatformFee: !!event.platformFee
+  isUsingPlatformFee: !!event.platformFee,
+  sprintDay: event.sprintDay,
+  sprintDayPrice: event.sprintDayPrice ?? undefined
 });
 
 export interface CreateEvent {
@@ -144,6 +148,8 @@ export interface CreateEvent {
   hasMultipleTicketTypes: boolean;
   ticketTypes: Omit<TicketType, 'currentSales' | 'id'>[] | null;
   platformFee: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
 }
 
 export type UpdateEvent = CreateEvent;
@@ -175,7 +181,9 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
         maximumQuantity: ticket.maximumQuantity
       }))
     : null,
-  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee)
+  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee),
+  sprintDay: values.sprintDay,
+  sprintDayPrice: values.sprintDay ? (values.sprintDayPrice ?? null) : null
 });
 
 const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);

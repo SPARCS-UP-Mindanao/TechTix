@@ -117,13 +117,7 @@ const Register: FC = () => {
               {currentStep.id === 'TicketSelection' && <TicketSelectionStep event={eventInfo} updateEventPrice={updateEventPrice} />}
               {currentStep.id === 'Miscellaneous' && <MiscellaneousStep event={eventInfo} updateEventPrice={updateEventPrice} />}
               {currentStep.id === 'Payment&Verification' && (
-                <PaymentAndVerificationStep
-                  eventId={eventId!}
-                  eventPrice={eventInfo.price}
-                  platformFee={eventInfo.platformFee}
-                  isFeesLoading={isFeesLoading}
-                  setIsFeesLoading={setIsFeesLoading}
-                />
+                <PaymentAndVerificationStep event={eventInfo} isFeesLoading={isFeesLoading} setIsFeesLoading={setIsFeesLoading} />
               )}
               {currentStep.id === 'Summary' && <SummaryStep event={eventInfo} />}
               {currentStep.id === 'Success' && <SuccessStep event={eventInfo} isRegisterSuccessful={isRegisterSuccessful} />}

@@ -26,9 +26,9 @@ export const useRegisterFooter = (
 
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const { trigger, setValue, getValues, control } = useFormContext<RegisterFormValues>();
-  const [paymentChannel, paymentMethod, transactionFee, percentageDiscount] = useWatch({
+  const [paymentChannel, paymentMethod, transactionFee, discountPercentage, sprintDay] = useWatch({
     control,
-    name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage']
+    name: ['paymentChannel', 'paymentMethod', 'transactionFee', 'discountPercentage', 'sprintDay']
   });
 
   const baseUrl = getPathFromUrl(window.location.href);
@@ -56,7 +56,15 @@ export const useRegisterFooter = (
 
   // Function to set the total price
   const setPaymentTotal = () => {
-    const total = Number(calculateTotalPrice(event.price, transactionFee ?? null, percentageDiscount ?? null, event.platformFee).toFixed(2));
+    const total = Number(
+      calculateTotalPrice({
+        price: event.price,
+        transactionFee: transactionFee ?? 0,
+        discountPercentage: discountPercentage ?? 0,
+        platformFee: event.platformFee ?? 0,
+        sprintDayPrice: sprintDay && event.sprintDayPrice ? event.sprintDayPrice : 0
+      }).toFixed(2)
+    );
     setValue('total', total);
   };
 
