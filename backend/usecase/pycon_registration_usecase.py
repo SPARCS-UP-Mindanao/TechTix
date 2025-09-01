@@ -55,6 +55,7 @@ class PyconRegistrationUsecase:
         :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
+        logger.info(f'Saving PyCon registration: {registration_in}')
         status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})

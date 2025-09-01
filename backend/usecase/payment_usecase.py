@@ -30,6 +30,7 @@ class PaymentUsecase:
             PaymentTransactionOut -- The created payment transaction
         """
         logger.info(f'Creating payment transaction for {payment_transaction.eventId}')
+        logger.info(f'Payment transaction data: {payment_transaction}')
         status, payment_transaction, message = self.payment_repo.store_payment_transaction(payment_transaction)
         if status != HTTPStatus.OK:
             logger.error(f'[{payment_transaction.eventId}] {message}')

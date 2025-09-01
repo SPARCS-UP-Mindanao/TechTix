@@ -99,6 +99,8 @@ class PaymentTrackingUsecase:
             lastName=registration_data.lastName,
             nickname=registration_data.nickname,
             pronouns=registration_data.pronouns,
+            facebookLink=registration_data.facebookLink if registration_data.facebookLink else None,
+            linkedInLink=registration_data.linkedInLink if registration_data.linkedInLink else None,
             contactNumber=registration_data.contactNumber,
             organization=registration_data.organization,
             jobTitle=registration_data.jobTitle,
