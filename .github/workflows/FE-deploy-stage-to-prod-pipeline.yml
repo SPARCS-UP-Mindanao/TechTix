@@ -1,11 +1,11 @@
-name: Deploy stage to prod
+name: Deploy stage to main
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy-stage-to-prod:
-    name: Deploy stage to prod
+  deploy-stage-to-main:
+    name: Deploy stage to main
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,12 +39,12 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
           approvers: ArJSarmiento,ASPactores,seangaaab
           minimum-approvals: 1
-          issue-title: "Deploying stage to prod"
+          issue-title: "Deploying stage to main"
           issue-body: "Please approve or deny the deployment."
 
-      - name: Sync stage to prod
+      - name: Sync stage to main
         uses: connor-baer/action-sync-branch@main
         with:
-          branch: prod
+          branch: main
           token: ${{ secrets.GITHUB_TOKEN }}
           force: true
