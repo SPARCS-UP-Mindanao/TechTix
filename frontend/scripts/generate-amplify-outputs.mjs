@@ -78,7 +78,8 @@ function buildAmplifyOutputs(vars) {
         identity_providers: ['GOOGLE'],
         domain: vars.COGNITO_DOMAIN_URL,
         scopes: ['email', 'openid', 'phone', 'profile', 'aws.cognito.signin.user.admin'],
-        redirect_sign_in_uri: [vars.COGNITO_REDIRECT_SIGNIN_URI, STAGE !== 'prod' ? vars.COGNITO_REDIRECT_SIGNIN_URI_LOCAL : ''],
+        redirect_sign_in_uri:
+          STAGE !== 'prod' ? [vars.COGNITO_REDIRECT_SIGNIN_URI, vars.COGNITO_REDIRECT_SIGNIN_URI_LOCAL] : [vars.COGNITO_REDIRECT_SIGNIN_URI],
         redirect_sign_out_uri: [],
         response_type: 'token'
       },
