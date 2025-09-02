@@ -86,7 +86,7 @@ export const mapCreateRegistrationDataForPayment = (registration: RegisterFormVa
   futureVolunteer: registration.futureVolunteer,
   dietaryRestrictions: registration.dietaryRestrictions || null,
   accessibilityNeeds: registration.accessibilityNeeds || null,
-  discountCode: registration.discountCode || null,
+  discountCode: registration.discountPercentage ? registration.validCode || null : null,
   validIdObjectKey: registration.validIdObjectKey
 });
 

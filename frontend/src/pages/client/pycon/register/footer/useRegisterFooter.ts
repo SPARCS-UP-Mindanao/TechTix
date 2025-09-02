@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ulid } from 'ulid';
-import { getEventRegCountStatus } from '@/api/events';
+import { getDiscount } from '@/api/discounts';
+import { getEvent, getEventRegCountStatus } from '@/api/events';
 import { Event } from '@/model/events';
 import { getPathFromUrl, isEmpty, reloadPage, scrollToView } from '@/utils/functions';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterField, RegisterFormValues } from '../../hooks/useRegisterForm';
 import { calculateTotalPrice } from '../pricing';
-import { RegisterStep, STEP_SUCCESS } from '../steps/RegistrationSteps';
+import { RegisterStep, STEP_PAYMENT, STEP_SUCCESS, STEP_TICKET_SELECTION } from '../steps/RegistrationSteps';
 import { usePayment } from '../usePayment';
 
 export const useRegisterFooter = (
@@ -77,6 +78,7 @@ export const useRegisterFooter = (
         sprintDayPrice: sprintDay && event.sprintDayPrice ? event.sprintDayPrice : 0
       }).toFixed(2)
     );
+
     setValue('total', total);
   };
 
@@ -167,7 +169,7 @@ export const useRegisterFooter = (
       return;
     }
 
-    const total = getValues('total');
+    const [total, selectedTicket, discountCode] = getValues(['total', 'ticketType', 'validCode']);
 
     if (event.isApprovalFlow && event.status === 'preregistration') {
       setCurrentStep(STEP_SUCCESS);
@@ -188,6 +190,56 @@ export const useRegisterFooter = (
 
     if (event.isApprovalFlow && event.status === 'open') {
       setPaymentTotal();
+    }
+
+    if (selectedTicket) {
+      // refetch event to get latest info
+      const event = await api.execute(getEvent(eventId));
+
+      if (!event.data || event.status !== 200) {
+        return;
+      }
+
+      const ticketTypeFromEvent = event.data.ticketTypes?.find((x) => x.id === selectedTicket);
+
+      // return error if ticket type is not found
+      if (!ticketTypeFromEvent) {
+        errorToast({
+          title: 'Ticket type not found',
+          description: 'Your ticket type is invalid. Please select another ticket type.'
+        });
+        setCurrentStep(STEP_TICKET_SELECTION);
+        return;
+      }
+
+      // return error if ticket type is sold out
+      if (ticketTypeFromEvent.maximumQuantity === ticketTypeFromEvent.currentSales) {
+        errorToast({
+          title: 'Ticket type is sold out',
+          description: 'Sorry, but your selected ticket type is already sold out. Please select another ticket type to register.'
+        });
+        setCurrentStep(STEP_TICKET_SELECTION);
+        return;
+      }
+    }
+
+    // recheck discount code
+    if (discountCode) {
+      const response = await api.execute(getDiscount(discountCode, eventId));
+      const discount = response.data;
+
+      const isDiscountUsedUp = discount.maxDiscountUses !== null ? discount.remainingUses === 0 : discount.claimed;
+
+      // return error if discount code is used up
+      if (isDiscountUsedUp) {
+        errorToast({
+          title: 'Discount Code is already used up',
+          description: 'The discount code you entered has already been claimed to its maximum. Please enter a different discount code.'
+        });
+        setValue('validCode', '');
+        setCurrentStep(STEP_PAYMENT);
+        return;
+      }
     }
 
     try {

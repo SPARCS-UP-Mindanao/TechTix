@@ -55,6 +55,7 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
     if (!total || !paymentChannel || paymentChannel === 'PAYMAYA' || paymentChannel === 'GCASH') {
       return;
     }
+
     try {
       const values = getValues();
       setIsRequestingPayment(true);

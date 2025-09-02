@@ -26,7 +26,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
     linkedInLink,
     ticketTypeId,
     sprintDay,
-    discountCode,
+    validCode,
     discountPercentage,
     transactionFee,
     discountedPrice,
@@ -52,7 +52,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
       'linkedInLink',
       'ticketType',
       'sprintDay',
-      'discountCode',
+      'validCode',
       'discountPercentage',
       'transactionFee',
       'discountedPrice',
@@ -181,11 +181,11 @@ const SummaryStep = ({ event }: SummaryProps) => {
               <span className="font-bold">Price:</span>
               <p>{formatMoney(event.price, 'PHP')}</p>
 
-              {discountPercentage && discountCode && discountedPrice ? (
+              {discountPercentage && validCode && discountedPrice ? (
                 <>
                   <span className="font-bold">Discount Code: </span>
-                  <span className="break-words" title={discountCode}>
-                    {discountCode}
+                  <span className="break-words" title={validCode}>
+                    {validCode}
                   </span>
 
                   <span className="font-bold">Discount</span>

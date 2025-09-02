@@ -25,14 +25,23 @@ const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
 export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
   const RegistrationColumns: ColumnDef<Registration>[] = [
+    // {
+    //   id: 'select',
+    //   header: ({ table }) => (
+    //     <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />
+    //   ),
+    //   cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
+    //   enableSorting: false,
+    //   enableHiding: getEnableHiding('select')
+    // },
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />
-      ),
-      cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
-      enableSorting: false,
-      enableHiding: getEnableHiding('select')
+      id: 'actions',
+      header: () => <span>View Regstration</span>,
+      cell: ({ row }) => {
+        const registrationInfo = row.original;
+        return <RegistrationModal registrationInfo={registrationInfo} />;
+      },
+      enableHiding: getEnableHiding('actions')
     },
     {
       accessorKey: 'firstName',
@@ -245,16 +254,6 @@ export const getRegistrationColumns = (): ColumnDef<Registration>[] => {
         );
       },
       enableHiding: getEnableHiding('linkedInLink')
-    },
-
-    {
-      id: 'actions',
-      header: () => <span>Actions</span>,
-      cell: ({ row }) => {
-        const registrationInfo = row.original;
-        return <RegistrationModal registrationInfo={registrationInfo} />;
-      },
-      enableHiding: getEnableHiding('actions')
     }
   ];
 

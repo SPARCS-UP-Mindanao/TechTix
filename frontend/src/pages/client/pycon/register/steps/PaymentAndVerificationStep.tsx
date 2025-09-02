@@ -19,7 +19,7 @@ interface Props {
 }
 
 const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, sprintDayPrice }, isFeesLoading, setIsFeesLoading }: Props) => {
-  const { control, setValue } = useFormContext<RegisterFormValues>();
+  const { control, setValue, getValues } = useFormContext<RegisterFormValues>();
   const [transactionFee, sprintDay] = useWatch({ name: ['transactionFee', 'sprintDay'], control });
   const { discountPercentage, isValidatingDiscountCode, validateDiscountCode } = useDiscount(price);
   const { getTransactionFee } = useTransactionFee(price, platformFee, setIsFeesLoading, discountPercentage, sprintDayPrice);
@@ -44,7 +44,7 @@ const PaymentAndVerificationStep = ({ event: { eventId, price, platformFee, spri
 
   // Recalculate transaction fee when discount changes
   useEffect(() => {
-    const [paymentChannel, paymentMethod] = ['paymentChannel', 'paymentMethod'].map((name) => control._formValues?.[name as keyof RegisterFormValues]);
+    const [paymentChannel, paymentMethod] = getValues(['paymentChannel', 'paymentMethod']);
 
     if (paymentChannel && paymentMethod) {
       getTransactionFee();

@@ -104,7 +104,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
     }
   });
 
-  const onDelete = form.handleSubmit(async () => {
+  const onDelete = async () => {
     try {
       const response = await api.execute(deleteRegistration(eventId, registrationId));
 
@@ -130,7 +130,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
         description: errorData?.message || 'An error occurred while deleting registration. Please try again.'
       });
     }
-  });
+  };
 
   return {
     form,

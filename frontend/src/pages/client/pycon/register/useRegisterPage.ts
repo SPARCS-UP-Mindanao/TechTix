@@ -1,20 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getEvent } from '@/api/events';
 import { getEventRegistrationWithEmail } from '@/api/pycon/registrations';
+import { Event } from '@/model/events';
 import { reloadPage } from '@/utils/functions';
 import { useApiQuery } from '@/hooks/useApi';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useMetaData } from '@/hooks/useMetaData';
 import { RegisterStep, RegisterStepId, STEP_EVENT_DETAILS, STEP_PAYMENT, STEP_SUCCESS } from './steps/RegistrationSteps';
 
-export const useRegisterPage = (eventId: string, setCurrentStep: (step: RegisterStep) => void) => {
+export const useRegisterPage = (eventId: string, setCurrentStep: (step: RegisterStep) => void, setEventInfo: (event: Event) => void) => {
   const auth = useCurrentUser();
 
   const { data: response, isPending } = useApiQuery(getEvent(eventId));
   const { data: userRegistration, isPending: isFetchingRegistration } = useApiQuery(getEventRegistrationWithEmail(eventId, auth?.user?.email!), {
     active: !!auth?.user?.email
   });
+  const isEventSet = useRef(false);
 
   const setMetaData = useMetaData();
   const [searchParams] = useSearchParams();
@@ -27,6 +29,13 @@ export const useRegisterPage = (eventId: string, setCurrentStep: (step: Register
     title: response?.data?.name,
     iconUrl: response?.data?.logoUrl
   });
+
+  useEffect(() => {
+    if (!isEventSet.current && response?.data && response.status === 200) {
+      setEventInfo(response.data);
+      isEventSet.current = true;
+    }
+  }, [response?.data]);
 
   useEffect(() => {
     const savedState = localStorage.getItem('formState');

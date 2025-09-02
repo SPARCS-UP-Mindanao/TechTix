@@ -10,6 +10,7 @@ import { calculateDiscountedPrice } from './pricing';
 export const useDiscount = (price: number) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
+
   const { eventId } = useParams();
   const { control, getValues, setValue } = useFormContext<RegisterFormValues>();
 
@@ -41,9 +42,11 @@ export const useDiscount = (price: number) => {
               title: 'Discount Code is already used up',
               description: 'The discount code you entered has already been claimed to its maximum. Please enter a different discount code.'
             });
+            setValue('validCode', '');
           } else {
             setValue('discountPercentage', discount.discountPercentage);
             setValue('discountedPrice', getDiscountPrice(discount.discountPercentage));
+            setValue('validCode', response.data.entryId);
             successToast({
               title: 'Valid Discount Code',
               description: 'The discount code you entered is valid. Please proceed to the next step.'
@@ -55,12 +58,15 @@ export const useDiscount = (price: number) => {
             title: 'Invalid Discount Code',
             description: 'The discount code you entered is invalid. Please enter a different discount code.'
           });
+          setValue('validCode', '');
+
           break;
         default:
           errorToast({
             title: 'Please try again',
             description: 'There was an error. Please try again.'
           });
+          setValue('validCode', '');
       }
     } catch (error) {
       console.error(error);

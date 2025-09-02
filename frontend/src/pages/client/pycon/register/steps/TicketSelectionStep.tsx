@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Check, Star, Zap, Calendar, Users, Coffee } from 'lucide-react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import Button from '@/components/Button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
-import Label from '@/components/Label';
-import { RadioGroup, RadioGroupItem } from '@/components/RadioGroup';
 import { Event } from '@/model/events';
 import { cn } from '@/utils/classes';
 import { formatMoney, formatPercentage } from '@/utils/functions';
@@ -16,13 +14,13 @@ interface Props {
   updateEventPrice: (newPrice: number) => void;
 }
 
-const shirtSizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as const;
+// const shirtSizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as const;
 
 const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
-  const shirtSizeLink = import.meta.env.VITE_COMMDAY_SHIRT_SIZE_LINK;
+  // const shirtSizeLink = import.meta.env.VITE_COMMDAY_SHIRT_SIZE_LINK;
 
   const { control } = useFormContext<RegisterFormValues>();
-  const [availTShirt] = useWatch({ control, name: ['availTShirt'] });
+  // const [availTShirt] = useWatch({ control, name: ['availTShirt'] });
 
   return (
     <>
@@ -150,6 +148,7 @@ interface TicketTypeProps {
 const TicketType: FC<TicketTypeProps> = ({ ticketType, benefits, subtitle, value, backgroundClass, star, updateEventPrice, onChange }) => {
   const isSelected = value === ticketType.id;
   const isKasosyo = ticketType.id === 'kasosyo';
+  const isSoldOut = ticketType.maximumQuantity === ticketType.currentSales;
 
   return (
     <div
@@ -159,16 +158,21 @@ const TicketType: FC<TicketTypeProps> = ({ ticketType, benefits, subtitle, value
         'hover:shadow-xl hover:scale-[1.02] hover:brightness-110',
         isKasosyo ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-200/50' : 'bg-gradient-to-br from-orange-400 to-orange-500 shadow-orange-200/50',
         isSelected && 'ring-2 ring-white/10 shadow-lg',
+        isSoldOut && 'grayscale-100 cursor-not-allowed shadow-none hover:scale-none hover:brightness-100 hover:shadow-none select-none',
         backgroundClass
       )}
       onClick={() => {
+        if (isSoldOut) {
+          return;
+        }
+
         onChange(ticketType.id);
         updateEventPrice(ticketType.price);
       }}
     >
       <CardHeader className="pb-4">
         <CardTitle className={cn('flex flex-wrap font-black font-nunito text-2xl items-center gap-x-4 mb-3')}>
-          {star && <Star fill="currentColor" className="animate-pulse" />}
+          {star && <Star fill="currentColor" className={cn(!isSoldOut && 'animate-pulse')} />}
           {ticketType.name.toUpperCase()}
           <span className={cn('font-medium text-base opacity-90')}>{`( ${subtitle} )`}</span>
         </CardTitle>
@@ -201,6 +205,10 @@ const TicketType: FC<TicketTypeProps> = ({ ticketType, benefits, subtitle, value
               : 'bg-pycon-violet-dark/80 hover:bg-pycon-violet-light hover:shadow-xl hover:scale-105 text-white shadow-lg border border-transparent'
           )}
           onClick={(e) => {
+            if (isSoldOut) {
+              return;
+            }
+
             e.stopPropagation();
             onChange(ticketType.id);
             updateEventPrice(ticketType.price);
@@ -315,29 +323,3 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPric
 };
 
 export default TicketSelectionStep;
-
-// <CardHeader>
-//   <CardTitle className={cn('grid font-black font-nunito text-2xl items-center gap-x-4', 'grid-cols-[auto_auto_auto_1fr]')}>
-//     {/* <div className="inline-flex gap-x-2 items-center">
-//     </div> */}
-//     <Star fill="currentColor" className={cn(!star && 'opacity-0')} />
-//     {ticketType.name.toUpperCase()}
-//     <span className={cn('font-medium text-base row-start-2 sm:row-start-1', 'col-start-2 sm:col-start-3')}>{`( ${subtitle} )`}</span>
-
-//     <div
-//       className={cn(
-//         'text-pycon-custard-light font-nunito font-bold text-xl  col-span-2 sm:col-span-1',
-//         'row-start-3 sm:row-start-1 ms-0 sm:col-start-3 sm:ms-auto',
-//         'col-start-2 sm:col-start-4 ms-0 sm:ms-auto'
-//       )}
-//     >
-//       {formatMoney(ticketType.price, 'PHP')}
-//     </div>
-//   </CardTitle>
-//   {ticketType.originalPrice && ticketType.price < ticketType.originalPrice && (
-//     <CardDescription>
-//       <span className="line-through text-gray-500 font-semibold">{formatMoney(ticketType.originalPrice, 'PHP')}</span>
-//       <span className="ml-2 text-green-400 font-semibold">{formatPercentage(1 - ticketType.price / ticketType.originalPrice)} off</span>
-//     </CardDescription>
-//   )}
-// </CardHeader>

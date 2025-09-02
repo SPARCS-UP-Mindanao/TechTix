@@ -93,6 +93,7 @@ const RegisterFormSchema = z.object({
   discountedPrice: z.number().optional(),
   total: z.number(),
   // ----- //
+  validCode: z.string().optional(),
   agreeToDataUse: z.literal(true, { error: 'Please agree to data use policy to proceed' }),
   agreeToCodeOfConduct: z.literal(true, { error: 'Please agree to our code of conduct to proceed' })
 });
@@ -116,8 +117,10 @@ export const REGISTER_FIELDS: RegisterFieldMap = {
 export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) => {
   const { successToast, errorToast } = useNotifyToast();
   const api = useApi();
+
   const auth = useCurrentUser();
   const userEmail = auth?.user?.email ?? '';
+
   const [searchParams] = useSearchParams();
   const transactionIdFromUrl = searchParams.get('paymentTransactionId');
 
@@ -161,6 +164,7 @@ export const useRegisterForm = (eventId: string, navigateOnSuccess: () => void) 
         amountPaid: 0,
         discountCode: '',
         // ----- //
+        validCode: '',
         transactionId: '',
         paymentMethod: '',
         paymentChannel: '',

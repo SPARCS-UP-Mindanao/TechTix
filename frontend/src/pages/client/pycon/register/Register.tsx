@@ -32,7 +32,7 @@ const Register: FC = () => {
   const [eventInfo, setEventInfo] = useState<Event | null>(null);
   const [isFeesLoading, setIsFeesLoading] = useState(false);
 
-  const { response, isPending } = useRegisterPage(eventId!, setCurrentStep);
+  const { response, isPending } = useRegisterPage(eventId!, setCurrentStep, setEventInfo);
   const { form, onSubmit } = useRegisterForm(eventId!, navigateOnSuccess);
   const { isSuccessLoading, isRegisterSuccessful, retryRegister } = useSuccess(currentStep, form.getValues, onSubmit);
 
@@ -48,13 +48,8 @@ const Register: FC = () => {
     return <Skeleton className="w-full h-full" />;
   }
 
-  if (!response || (response && !response.data && response.errorData)) {
+  if (!response || (response && !response.data && response.errorData) || !eventInfo) {
     return <ErrorPage error={response} />;
-  }
-
-  if (!eventInfo) {
-    setEventInfo(response.data);
-    return null;
   }
 
   if (eventInfo.status === 'draft') {
