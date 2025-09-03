@@ -1,5 +1,6 @@
 import { EditRegistrationFormValues } from '@/pages/admin/event/pycon/registrations/useEditRegistrationForm';
 import { RegisterFormValues } from '@/pages/client/pycon/hooks/useRegisterForm';
+import { roundUpToTwoDecimals } from '@/pages/client/pycon/register/pricing';
 
 export interface Registration {
   registrationId: string;
@@ -92,7 +93,7 @@ export const mapCreateRegistrationDataForPayment = (registration: RegisterFormVa
 
 export const mapCreateRegistrationValues = (registration: RegisterFormValues, eventId: string, email?: string): CreateRegistration => ({
   ...mapCreateRegistrationDataForPayment(registration, eventId, email),
-  amountPaid: registration.total,
+  amountPaid: roundUpToTwoDecimals(registration.total),
   transactionId: registration.transactionId
 });
 

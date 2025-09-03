@@ -24,3 +24,7 @@ export const calculateTotalPrice = ({
 export const calculateDiscountedPrice = ({ price, discountPercentage }: { price: number; discountPercentage: number }) => {
   return price * (1 - discountPercentage);
 };
+
+export function roundUpToTwoDecimals(value: number): number {
+  return Number((Math.ceil(value * 100) / 100).toFixed(2));
+}

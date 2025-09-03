@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form';
 import { getTransactionDetails } from '@/api/payments';
 import { useApi } from '@/hooks/useApi';
 import { RegisterFormValues } from '../hooks/useRegisterForm';
-import { calculateDiscountedPrice } from './pricing';
+import { calculateDiscountedPrice, roundUpToTwoDecimals } from './pricing';
 
 export const useTransactionFee = (
   eventPrice: number,
@@ -48,7 +48,7 @@ export const useTransactionFee = (
       getTransactionDetails({
         payment_channel: paymentChannel,
         payment_method: paymentMethod,
-        ticket_price: totalTicketPrice,
+        ticket_price: roundUpToTwoDecimals(totalTicketPrice),
         platform_fee: platformFee
       })
     );
