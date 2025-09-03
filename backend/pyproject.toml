@@ -55,48 +55,43 @@ exclude = [
   '^.serverless/',
 ]
 
-[tool.black]
-line-length = 120
-skip-string-normalization = true
-target-version = ['py311']
-
 [tool.ruff]
 line-length = 120
 indent-width = 4
 target-version = "py311"
 exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".ipynb_checkpoints",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pyenv",
-    ".pytest_cache",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".vscode",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "site-packages",
-    "venv",
-    ".serverless"
+".bzr",
+".direnv",
+".eggs",
+".git",
+".git-rewrite",
+".hg",
+".ipynb_checkpoints",
+".mypy_cache",
+".nox",
+".pants.d",
+".pyenv",
+".pytest_cache",
+".pytype",
+".ruff_cache",
+".svn",
+".tox",
+".venv",
+".vscode",
+"pypackages",
+"_build",
+"buck-out",
+"build",
+"dist",
+"node_modules",
+"site-packages",
+"venv",
+".serverless"
 ]
 
 [tool.ruff.lint]
 ignore = [
-    "E203", "E266", "E501", "F403", "F401", "E402", "F841", "C901", "F722", "F405", "F811"
+"E203", "E266", "E501", "F403", "F401", "E402", "F841", "C901", "F722", "F405", "F811"
 ]
 select = ["E4", "E7", "E9", "F"]
 fixable = ["ALL"]
