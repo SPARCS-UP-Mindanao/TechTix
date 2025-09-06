@@ -101,10 +101,11 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
         if status == HTTPStatus.OK and registrations:
-            return JSONResponse(
-                status_code=HTTPStatus.CONFLICT,
-                content={'message': f'Registration with email {email} already exists'},
-            )
+            logger.info(f'Registration with email {email} already exists, returning existing registration')
+            registration = registrations[0]
+            registration_data = self.__convert_data_entry_to_dict(registration)
+            registration_out = RegistrationOut(**registration_data)
+            return self.collect_pre_signed_url(registration_out)
 
         # check if ticket types in event exists
         future_registrations = event.registrationCount
