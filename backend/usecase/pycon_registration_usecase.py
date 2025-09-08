@@ -419,6 +419,35 @@ class PyconRegistrationUsecase:
 
         return registration
 
+    def resend_confirmation_email(self, event_id: str, email: str):
+        """Resends the registration confirmation email for a specific PyCon registration entry.
+
+        :param event_id: The ID of the event
+        :type event_id: str
+
+        :param email: The email address of the registrant
+        :type email: str
+
+        :return: If successful, returns a JSONResponse indicating the email was sent. If unsuccessful, returns a JSONResponse with an error message.
+        :rtype: JSONResponse
+
+        """
+        status, event, message = self.__events_repository.query_events(event_id=event_id)
+        if status != HTTPStatus.OK:
+            return JSONResponse(status_code=status, content={'message': message})
+
+        (status, registrations, message) = self.__registrations_repository.query_registrations_with_email(
+            event_id=event_id, email=email
+        )
+
+        if status == HTTPStatus.OK and registrations and registrations[0].transactionId:
+            registration = registrations[0]
+            logger.info(f'Resending confirmation email to {email} for event {event_id}')
+            self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
+            return JSONResponse(status_code=HTTPStatus.OK, content={'message': f'Confirmation email sent to {email}'})
+
+        return JSONResponse(status_code=status, content={'message': message})
+
     @staticmethod
     def __convert_data_entry_to_dict(data_entry):
         """Converts a data entry to a dictionary.
