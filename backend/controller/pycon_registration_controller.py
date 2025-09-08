@@ -278,3 +278,24 @@ def delete_registration(
     _ = current_user
     registrations_uc = PyconRegistrationUsecase()
     return registrations_uc.delete_pycon_registration(event_id=event_id, registration_id=entry_id)
+
+
+@pycon_registration_router.post(
+    '/resend-confirmation',
+    status_code=HTTPStatus.OK,
+    responses={
+        200: {'model': Message, 'description': 'Confirmation email sent successfully'},
+        400: {'model': Message, 'description': 'Bad request'},
+        404: {'model': Message, 'description': 'Registration not found'},
+    },
+    summary='Resend confirmation email',
+)
+def resend_confirmation_email(
+    email: EmailStr = Body(..., embed=True, title='Email'),
+    event_id: str = Body(..., embed=True, title='Event Id'),
+):
+    """
+    Resend the confirmation email for a specific registration.
+    """
+    registrations_uc = PyconRegistrationUsecase()
+    return registrations_uc.resend_confirmation_email(event_id=event_id, email=email)
