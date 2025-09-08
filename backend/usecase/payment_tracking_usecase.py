@@ -66,6 +66,16 @@ class PaymentTrackingUsecase:
                 if not recorded_registration_data:
                     logger.error(f'Failed to save registration for entryId {entry_id}')
 
+            elif transaction_status == TransactionStatus.FAILED:
+                status, registrations, msg = self.registration_repository.query_registrations_with_email(
+                    event_id=event_id, email=registration_data.email
+                )
+                if status == HTTPStatus.OK and registrations:
+                    logger.info(
+                        f'Skipping failed payment email for {registration_data.email} - user already has existing registration'
+                    )
+                    return
+
             self._send_email_notification(
                 first_name=registration_data.firstName,
                 email=registration_data.email,
