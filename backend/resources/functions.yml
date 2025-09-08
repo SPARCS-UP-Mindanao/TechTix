@@ -38,6 +38,7 @@ paymentHandler:
         - "dynamodb:UpdateItem"
       Resource:
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}/index/*"
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.entities}"
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}"
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}/index/*"
