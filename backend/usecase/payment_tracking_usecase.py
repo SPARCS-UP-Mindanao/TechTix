@@ -21,6 +21,7 @@ class PaymentTrackingUsecase:
         self.email_usecase = EmailUsecase()
         self.event_repository = EventsRepository()
         self.payment_transaction_repository = PaymentTransactionRepository()
+        self.registration_repository = RegistrationsRepository()
 
     def process_payment_event(self, message_body: dict) -> None:
         """
@@ -58,6 +59,16 @@ class PaymentTrackingUsecase:
                 return
 
             logger.info(f'Payment transaction status updated to {transaction_status} for entryId {entry_id}')
+
+            status, registration_details, _ = self.registration_repository.query_registrations_with_email(
+                event_id=event_id, email=registration_data.email
+            )
+
+            if status == HTTPStatus.OK and registration_details:
+                logger.info(
+                    f'Skipping duplicate email for {registration_data.email} - user already has existing registration'
+                )
+                return
 
             if transaction_status == TransactionStatus.SUCCESS:
                 recorded_registration_data = self._create_and_save_registration(
