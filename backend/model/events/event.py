@@ -77,6 +77,7 @@ class Event(Model):
     # PyCon Sprint Fields
     sprintDay = BooleanAttribute(null=True)
     sprintDayPrice = NumberAttribute(null=True)
+    maximumSprintDaySlots = NumberAttribute(null=True)
 
 
 class EventDBIn(BaseModel):

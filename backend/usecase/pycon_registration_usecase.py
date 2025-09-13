@@ -133,7 +133,17 @@ class PyconRegistrationUsecase:
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'message': f'Event registration is full. Maximum slots: {event.maximumSlots}'},
             )
-
+        
+        if registration_in.sprintDay:
+            if not event.maximumSprintDaySlots  
+                registrations= self.__registrations_repository.query_registrations(event_id=event_id)[1]
+                sprint_day_registered = [reg for reg in registrations if reg.sprintDay]
+                if event.maximumSprintDaySlots and len(sprint_day_registered) >= event.maximumSprintDaySlots
+                    return JSONResponse(
+                        status_code=HTTPStatus.BAD_REQUEST,
+                        content={'message':'Sprint Day is already full.'}
+                    )    
+        
         ticket_type_entry = None
         if event.hasMultipleTicketTypes:
             ticket_type_id = registration_in.ticketType.value
