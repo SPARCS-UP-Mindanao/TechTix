@@ -192,7 +192,7 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   sprintDay: values.sprintDay,
   sprintDayPrice: values.sprintDay ? (values.sprintDayPrice ?? null) : null,
   maximumSprintDaySlots: values.isSprintDayLimitedSlot ? (values.maximumSprintDaySlots ?? null) : null,
-  sprintDayRegistrationCount: 0
+  sprintDayRegistrationCount: values.sprintDayRegistrationCount || 0
 });
 
 const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);
