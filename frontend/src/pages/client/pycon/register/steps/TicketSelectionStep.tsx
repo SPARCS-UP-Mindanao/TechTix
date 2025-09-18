@@ -71,7 +71,13 @@ const TicketSelectionStep = ({ event, updateEventPrice }: Props) => {
 
       <FormItem name="sprintDay">
         {({ field }) => (
-          <SprintDaySection isSelected={!!field.value} sprintDayPrice={event.sprintDayPrice ?? 0} onChange={(selected) => field.onChange(selected)} />
+          <SprintDaySection
+            isSelected={!!field.value}
+            sprintDayPrice={event.sprintDayPrice ?? 0}
+            onChange={(selected) => field.onChange(selected)}
+            maximumSprintDaySlots={event.maximumSprintDaySlots}
+            sprintDayRegistrationCount={event.sprintDayRegistrationCount}
+          />
         )}
       </FormItem>
 
@@ -226,10 +232,14 @@ const TicketType: FC<TicketTypeProps> = ({ ticketType, benefits, subtitle, value
 interface SprintDaySectionProps {
   isSelected: boolean;
   sprintDayPrice: number;
+  maximumSprintDaySlots?: number | null;
+  sprintDayRegistrationCount: number;
   onChange: (selected: boolean) => void;
 }
 
-const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPrice, onChange }) => {
+const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sprintDayRegistrationCount, isSelected, sprintDayPrice, onChange }) => {
+  const sprintIsSoldOut = maximumSprintDaySlots === sprintDayRegistrationCount;
+
   return (
     <div className="flex flex-col gap-6 mt-12">
       <div className="text-center md:text-left">
@@ -246,20 +256,28 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPric
           'hover:shadow-lg hover:scale-[1.02]',
           isSelected
             ? 'border-pycon-orange bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg shadow-orange-200/50'
-            : 'border-gray-300 bg-white hover:border-pycon-orange/50'
+            : 'border-gray-300 bg-white hover:border-pycon-orange/50',
+          sprintIsSoldOut && 'grayscale cursor-not-allowed hover:shadow-none hover:scale-100 hover:border-gray-300 bg-gray-300'
         )}
-        onClick={() => onChange(!isSelected)}
+        onClick={() => {
+          if (sprintIsSoldOut) {
+            return;
+          }
+
+          onChange(!isSelected);
+        }}
       >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 ">
           <div className="flex-1">
-            <div className="flex items-center gap-4 mb-4 flex-wrap">
+            <div className="flex items-center gap-4 mb-4 flex-wrap ">
               <Calendar className="text-pycon-violet-dark h-7 w-7" />
               <h4 className="font-bold text-2xl text-pycon-violet-dark me-auto">Join Sprint Day</h4>
               <div className="">
                 <span
                   className={cn(
                     'px-4 py-2 rounded-full text-base font-bold',
-                    isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100 text-gray-600'
+                    isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100 text-gray-700',
+                    sprintIsSoldOut && 'bg-gray-400 text-gray-700'
                   )}
                 >
                   +{formatMoney(sprintDayPrice, 'PHP')}
@@ -297,12 +315,18 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ isSelected, sprintDayPric
                 'w-full md:w-auto px-10 py-4 font-bold transition-all duration-300 text-lg min-w-[180px]',
                 isSelected
                   ? 'bg-pycon-orange text-white border-2 border-pycon-orange shadow-2xl shadow-orange-200/50 hover:bg-pycon-orange/90 hover:scale-110 ring-4 ring-orange-200/60'
-                  : 'bg-gray-100 hover:bg-pycon-orange hover:text-white text-gray-700 border-2 border-gray-300 hover:border-pycon-orange hover:shadow-xl hover:scale-105 shadow-lg'
+                  : 'bg-gray-100 hover:bg-pycon-orange hover:text-white text-gray-700 border-2 border-gray-300 hover:border-pycon-orange hover:shadow-xl hover:scale-105 shadow-lg',
+                sprintIsSoldOut &&
+                  'grayscale-100 cursor-not-allowed shadow-none hover:scale-none hover:brightness-100 hover:shadow-none select-none bg-gray-300 border-gray-300 text-gray-500 hover:bg-gray-300 hover:text-gray-500 hover:border-gray-300'
               )}
               onClick={(e) => {
+                if (sprintIsSoldOut) {
+                  return;
+                }
                 e.stopPropagation();
                 onChange(!isSelected);
               }}
+              disabled={sprintIsSoldOut}
             >
               {isSelected ? (
                 <>
