@@ -246,6 +246,7 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
         <div className="flex items-center gap-3 mb-2 justify-center md:justify-start">
           <Zap className="text-pycon-orange h-8 w-8" />
           <h3 className="font-nunito font-bold text-3xl text-pycon-orange">Add Sprint Day</h3>
+          <h3 className="pl-5 font-nunito font-extrabold text-4xl text-pycon-red">{sprintIsSoldOut && 'SOLD OUT!'}</h3>
         </div>
         <p className="text-pycon-custard-light text-lg font-medium">Enhance your conference experience with hands-on coding</p>
       </div>
@@ -256,8 +257,8 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
           'hover:shadow-lg hover:scale-[1.02]',
           isSelected
             ? 'border-pycon-orange bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg shadow-orange-200/50'
-            : 'border-gray-300 bg-white hover:border-pycon-orange/50',
-          sprintIsSoldOut && 'grayscale cursor-not-allowed hover:shadow-none hover:scale-100 hover:border-gray-300 bg-gray-300'
+            : 'border-gray-200 bg-white hover:border-pycon-orange/50',
+          sprintIsSoldOut && 'grayscale cursor-not-allowed hover:shadow-none hover:scale-100 hover:border-gray-300 bg-gray-200'
         )}
         onClick={() => {
           if (sprintIsSoldOut) {
@@ -313,7 +314,7 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
 
           <div className="flex flex-col items-center gap-3 md:ml-8">
             {sprintIsSoldOut ? (
-              <h4 className="w-full md:w-auto px-10 py-4 font-bold text-2xl text-pycon-violet-dark me-auto">Sold Out</h4>
+              <h4 className="w-full md:w-auto px-10 py-4 font-bold text-2xl text-pycon-violet-dark me-auto">Slots are full</h4>
             ) : (
               <Button
                 className={cn(
