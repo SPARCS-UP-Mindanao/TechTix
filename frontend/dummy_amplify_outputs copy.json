@@ -1,9 +1,9 @@
 {
   "version": "1.3",
   "auth": {
-    "aws_region": "",
-    "user_pool_id": "",
-    "user_pool_client_id": "",
+    "aws_region": "dummy_region",
+    "user_pool_id": "dummy_pool",
+    "user_pool_client_id": "dummy_pool_id",
     "identity_pool_id": "dummy",
     "username_attributes": ["email"],
     "standard_required_attributes": ["email"],
