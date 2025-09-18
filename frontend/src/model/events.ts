@@ -131,7 +131,7 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   sprintDay: event.sprintDay,
   sprintDayPrice: event.sprintDayPrice ?? undefined,
   maximumSprintDaySlots: event.maximumSprintDaySlots ?? undefined,
-  isSprintDayLimitedSlot: event.isSprintDayLimitedSlot ?? false
+  isSprintDayLimitedSlot: event.maximumSprintDaySlots ? true : false,
 });
 
 export interface CreateEvent {
