@@ -78,6 +78,7 @@ class Event(Model):
     sprintDay = BooleanAttribute(null=True)
     sprintDayPrice = NumberAttribute(null=True)
     maximumSprintDaySlots = NumberAttribute(null=True)
+    sprintDayRegistrationCount = NumberAttribute(default=0)
 
 
 class EventDBIn(BaseModel):
@@ -113,6 +114,14 @@ class EventDBIn(BaseModel):
     )
     sprintDayPrice: Optional[float] = Field(
         None, title='Sprint Day Price', description='The price for the sprint day ticket'
+    )
+    maximumSprintDaySlots: Optional[int] = Field(
+        None, title='Sprint Day Maximum Slots', description='The maximum number of slots for the sprint day'
+    )
+    sprintDayRegistrationCount: Optional[int] = Field(
+        None,
+        title='Sprint Day Registration Count',
+        description='The current number of registrations for the sprint day',
     )
 
     @root_validator(pre='false')

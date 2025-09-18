@@ -95,6 +95,11 @@ class EventUsecase:
         original_event = deepcopy(event)
         original_status = original_event.status
 
+        if event_in.maximumSprintDaySlots:
+            registrations = self.__registration_repository.query_registrations(event_id)[1]
+            eventSprintCount = len([reg for reg in registrations if reg.sprintDay])
+            event_in.sprintDayRegistrationCount = eventSprintCount
+
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})

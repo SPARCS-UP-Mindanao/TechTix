@@ -315,7 +315,9 @@ class EventsRepository:
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
-    def append_event_registration_count(self, event_entry: Event, append_count: int = 1):
+    def append_event_registration_count(
+        self, event_entry: Event, registration_sprint_day: bool = False, append_count: int = 1
+    ):
         """Adds the registrationCount attribute of the event_entry by append_count
 
         :param event_entry: The Event object to be updated.
@@ -329,8 +331,12 @@ class EventsRepository:
 
         """
         try:
+            actions = [
+                Event.registrationCount.add(append_count),
+            ]
+            if registration_sprint_day:
+                actions.append(Event.sprintDayRegistrationCount.add(append_count))
             with TransactWrite(connection=self.conn) as transaction:
-                actions = [Event.registrationCount.add(append_count)]
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()
