@@ -273,15 +273,17 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
               <Calendar className="text-pycon-violet-dark h-7 w-7" />
               <h4 className="font-bold text-2xl text-pycon-violet-dark me-auto">Join Sprint Day</h4>
               <div className="">
-                <span
-                  className={cn(
-                    'px-4 py-2 rounded-full text-base font-bold',
-                    isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100 text-gray-700',
-                    sprintIsSoldOut && 'bg-gray-400 text-gray-700'
-                  )}
-                >
-                  +{formatMoney(sprintDayPrice, 'PHP')}
-                </span>
+                {sprintIsSoldOut ?? (
+                  <span
+                    className={cn(
+                      'px-4 py-2 rounded-full text-base font-bold',
+                      isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100 text-gray-700',
+                      sprintIsSoldOut && 'bg-gray-400 text-gray-700'
+                    )}
+                  >
+                    +${formatMoney(sprintDayPrice, 'PHP')}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -310,33 +312,37 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
           </div>
 
           <div className="flex flex-col items-center gap-3 md:ml-8">
-            <Button
-              className={cn(
-                'w-full md:w-auto px-10 py-4 font-bold transition-all duration-300 text-lg min-w-[180px]',
-                isSelected
-                  ? 'bg-pycon-orange text-white border-2 border-pycon-orange shadow-2xl shadow-orange-200/50 hover:bg-pycon-orange/90 hover:scale-110 ring-4 ring-orange-200/60'
-                  : 'bg-gray-100 hover:bg-pycon-orange hover:text-white text-gray-700 border-2 border-gray-300 hover:border-pycon-orange hover:shadow-xl hover:scale-105 shadow-lg',
-                sprintIsSoldOut &&
-                  'grayscale-100 cursor-not-allowed shadow-none hover:scale-none hover:brightness-100 hover:shadow-none select-none bg-gray-300 border-gray-300 text-gray-500 hover:bg-gray-300 hover:text-gray-500 hover:border-gray-300'
-              )}
-              onClick={(e) => {
-                if (sprintIsSoldOut) {
-                  return;
-                }
-                e.stopPropagation();
-                onChange(!isSelected);
-              }}
-              disabled={sprintIsSoldOut}
-            >
-              {isSelected ? (
-                <>
-                  <Check className="mr-3 h-5 w-5" />
-                  Added
-                </>
-              ) : (
-                'Add to Registration'
-              )}
-            </Button>
+            {sprintIsSoldOut ? (
+              <h4 className="w-full md:w-auto px-10 py-4 font-bold text-2xl text-pycon-violet-dark me-auto">Sold Out</h4>
+            ) : (
+              <Button
+                className={cn(
+                  'w-full md:w-auto px-10 py-4 font-bold transition-all duration-300 text-lg min-w-[180px]',
+                  isSelected
+                    ? 'bg-pycon-orange text-white border-2 border-pycon-orange shadow-2xl shadow-orange-200/50 hover:bg-pycon-orange/90 hover:scale-110 ring-4 ring-orange-200/60'
+                    : 'bg-gray-100 hover:bg-pycon-orange hover:text-white text-gray-700 border-2 border-gray-300 hover:border-pycon-orange hover:shadow-xl hover:scale-105 shadow-lg',
+                  sprintIsSoldOut &&
+                    'grayscale-100 cursor-not-allowed shadow-none hover:scale-none hover:brightness-100 hover:shadow-none select-none bg-gray-300 border-gray-300 text-gray-500 hover:bg-gray-300 hover:text-gray-500 hover:border-gray-300'
+                )}
+                onClick={(e) => {
+                  if (sprintIsSoldOut) {
+                    return;
+                  }
+                  e.stopPropagation();
+                  onChange(!isSelected);
+                }}
+                disabled={sprintIsSoldOut}
+              >
+                {isSelected ? (
+                  <>
+                    <Check className="mr-3 h-5 w-5" />
+                    Added
+                  </>
+                ) : (
+                  'Add to Registration'
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
