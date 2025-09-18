@@ -66,7 +66,9 @@ const EventFormSchema = z
     isUsingPlatformFee: z.boolean(),
     platformFee: z.coerce.number<number>().optional(),
     sprintDay: z.boolean(),
-    sprintDayPrice: z.coerce.number<number>().optional()
+    sprintDayPrice: z.coerce.number<number>().optional(),
+    isSprintDayLimitedSlot: z.boolean(),
+    maximumSprintDaySlots: z.coerce.number<number>().optional(),
   })
   .refine(
     (data) => {
@@ -152,7 +154,10 @@ export const useAdminEventForm = (event?: Event) => {
         hasMultipleTicketTypes: false,
         isUsingPlatformFee: false,
         sprintDay: false,
-        sprintDayPrice: 0
+        sprintDayPrice: 0,
+        isSprintDayLimitedSlot: false,
+        maximumSprintDaySlots: undefined,
+        sprintDayRegistrationCount: 0  
       };
     }
   });

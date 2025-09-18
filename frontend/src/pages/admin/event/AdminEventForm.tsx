@@ -26,8 +26,8 @@ const AdminEventForm: FC<Props> = ({ event }) => {
     name: 'ticketTypes'
   });
 
-  const [paidEvent, isLimitedSlot, isUsingPlatformFee, sprintDay] = useWatch({
-    name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee', 'sprintDay'],
+  const [paidEvent, isLimitedSlot, isUsingPlatformFee, sprintDay, isSprintDayLimitedSlot] = useWatch({
+    name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee', 'sprintDay', 'isSprintDayLimitedSlot'],
     control
   });
   const { isSubmitting, isDirty } = useFormState({ control });
@@ -306,17 +306,45 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         </FormItem>
 
         {sprintDay && (
-          <FormItem name="sprintDayPrice">
-            {({ field }) => (
-              <FormItemContainer halfSpace>
-                <div className="flex flex-row gap-2">
-                  <FormLabel>Sprint Day Fee</FormLabel>
-                  <Input type="number" {...field} />
-                </div>
-                <FormError />
-              </FormItemContainer>
+          <>
+            <FormItem name="sprintDayPrice">
+              {({ field }) => (
+                <FormItemContainer halfSpace>
+                  <div className="flex flex-row gap-2">
+                    <FormLabel>Sprint Day Fee</FormLabel>
+                    <Input type="number" {...field} />
+                  </div>
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+
+            <Separator className="my-4" />
+
+            <FormItem name="isSprintDayLimitedSlot">
+              {({ field }) => (
+                <FormItemContainer halfSpace>
+                  <div className="flex flex-row gap-2">
+                    <FormLabel>Are sprint day slots limited?</FormLabel>
+                    <Switch id="isSprintDayLimitedSlot" checked={field.value} onCheckedChange={field.onChange} />
+                  </div>
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+
+            {isSprintDayLimitedSlot && (
+              <FormItem name="maximumSprintDaySlots">
+                {({ field }) => (
+                  <FormItemContainer halfSpace>
+                    <FormLabel>Sprint Day Maximum Slots</FormLabel>
+                    <Input type="number" {...field} />
+                    <FormError />
+                  </FormItemContainer>
+                )}
+              </FormItem>
             )}
-          </FormItem>
+          </>
         )}
 
         <Separator className="my-4" />

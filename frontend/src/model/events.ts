@@ -43,6 +43,9 @@ export interface Event {
   platformFee: number | null;
   sprintDay: boolean;
   sprintDayPrice: number | null;
+  isSprintDayLimitedSlot?: boolean;
+  sprintDayRegistrationCount: number;
+  maximumSprintDaySlots: number | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -126,7 +129,9 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   platformFee: event.platformFee ? event.platformFee * 100 : undefined,
   isUsingPlatformFee: !!event.platformFee,
   sprintDay: event.sprintDay,
-  sprintDayPrice: event.sprintDayPrice ?? undefined
+  sprintDayPrice: event.sprintDayPrice ?? undefined,
+  maximumSprintDaySlots: event.maximumSprintDaySlots ?? undefined,
+  isSprintDayLimitedSlot: event.isSprintDayLimitedSlot ?? false
 });
 
 export interface CreateEvent {
@@ -150,6 +155,8 @@ export interface CreateEvent {
   platformFee: number | null;
   sprintDay: boolean;
   sprintDayPrice: number | null;
+  maximumSprintDaySlots: number | null;
+  sprintDayRegistrationCount: number;
 }
 
 export type UpdateEvent = CreateEvent;
@@ -183,7 +190,9 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
     : null,
   platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee),
   sprintDay: values.sprintDay,
-  sprintDayPrice: values.sprintDay ? (values.sprintDayPrice ?? null) : null
+  sprintDayPrice: values.sprintDay ? (values.sprintDayPrice ?? null) : null,
+  maximumSprintDaySlots: values.isSprintDayLimitedSlot ? (values.maximumSprintDaySlots ?? null) : null,
+  sprintDayRegistrationCount: 0
 });
 
 const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);
