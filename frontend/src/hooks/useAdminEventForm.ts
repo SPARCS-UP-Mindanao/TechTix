@@ -69,6 +69,7 @@ const EventFormSchema = z
     sprintDayPrice: z.coerce.number<number>().optional(),
     isSprintDayLimitedSlot: z.boolean(),
     maximumSprintDaySlots: z.coerce.number<number>().optional(),
+    sprintDayRegistrationCount: z.coerce.number<number>().optional()
   })
   .refine(
     (data) => {
@@ -118,6 +119,18 @@ const extendRegisterFormSchema = (event: Event) =>
       message: `Please enter a value larger than or equal to ${event.registrationCount} (Current registration count)`,
       path: ['maximumSlots']
     }
+  ).refine(
+    (data) => {
+      // If isLimitedSlots is true, then maximumSlots should be greater than registrationCount
+      if (data.isSprintDayLimitedSlot && (data.maximumSprintDaySlots === undefined || data.maximumSprintDaySlots < event.sprintDayRegistrationCount)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: `Please enter a value larger than or equal to ${event.sprintDayRegistrationCount} (Current sprint day registration count)`,
+      path: ['maximumSprintDaySlots']
+    }
   );
 
 export type EventFormValues = z.infer<typeof EventFormSchema>;
@@ -157,7 +170,7 @@ export const useAdminEventForm = (event?: Event) => {
         sprintDayPrice: 0,
         isSprintDayLimitedSlot: false,
         maximumSprintDaySlots: undefined,
-        sprintDayRegistrationCount: 0  
+        sprintDayRegistrationCount: 0
       };
     }
   });
