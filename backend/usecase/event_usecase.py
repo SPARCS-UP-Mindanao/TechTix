@@ -17,6 +17,7 @@ from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
+from utils.logger import logger
 from utils.utils import Utils
 
 
@@ -101,7 +102,9 @@ class EventUsecase:
 
         if event_in.ticketTypes:
             _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
-            existing_ticket_types_map = {ticket_type.name: ticket_type for ticket_type in ticket_types_entries or []}
+            existing_ticket_types_map = {
+                Utils.convert_to_slug(ticket_type.name): ticket_type for ticket_type in ticket_types_entries or []
+            }
 
             for ticket_type in event_in.ticketTypes:
                 ticket_type.eventId = event_id
@@ -121,7 +124,7 @@ class EventUsecase:
             # Delete ticket types not present in the input
             ticket_types_in_input = {Utils.convert_to_slug(ticket_type.name) for ticket_type in event_in.ticketTypes}
             for existing_ticket_type in existing_ticket_types_map.values():
-                if existing_ticket_type.name in ticket_types_in_input:
+                if Utils.convert_to_slug(existing_ticket_type.name) in ticket_types_in_input:
                     continue
 
                 status, message = self.__ticket_type_repository.delete_ticket_type(existing_ticket_type)
