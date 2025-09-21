@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { on } from 'events';
 import { Check, Star, Zap, Calendar, Users, Coffee } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import Button from '@/components/Button';
