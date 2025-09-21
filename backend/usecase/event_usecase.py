@@ -17,7 +17,6 @@ from repository.ticket_type_repository import TicketTypeRepository
 from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
-from utils.logger import logger
 from utils.utils import Utils
 
 
