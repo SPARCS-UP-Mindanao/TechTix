@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { on } from 'events';
 import { Check, Star, Zap, Calendar, Users, Coffee } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import Button from '@/components/Button';
@@ -239,6 +240,9 @@ interface SprintDaySectionProps {
 
 const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sprintDayRegistrationCount, isSelected, sprintDayPrice, onChange }) => {
   const sprintIsSoldOut = maximumSprintDaySlots === sprintDayRegistrationCount;
+  if (sprintIsSoldOut) {
+    onChange(false);
+  }
 
   return (
     <div className="flex flex-col gap-6 mt-12">
