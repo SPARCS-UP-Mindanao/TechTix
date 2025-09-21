@@ -44,6 +44,8 @@ export interface EventDto {
   konfhubId: string | null;
   konfhubApiKey: string | null;
   platformFee: number | null;
+  sprintDayRegistrationCount: number;
+  maximumSprintDaySlots: number | null;
 }
 
 export type OptionalEvent = Partial<Event>;
