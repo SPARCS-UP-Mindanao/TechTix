@@ -128,3 +128,15 @@ class PyconRegistrationIn(PyconRegistration):
 class PyconRegistrationPatch(PyconRegistration):
     class Config:
         extra = Extra.ignore
+
+
+class PyconExportData(BaseModel):
+    firstName: str = Field(..., title='First Name')
+    lastName: str = Field(..., title='Last Name')
+    nickname: str = Field(..., title='Nickname')
+    jobTitle: str = Field(..., title='Job Title', description='Your current job title or role in tech')
+    email: EmailStr = Field(..., title='Email')
+    contactNumber: str = Field(..., title='Contact Number')
+    organization: str = Field(..., title='Affiliated Company or Organization')
+    ticketType: TicketTypes = Field(title='Ticket Type')
+    idURL: Optional[HttpUrl] = Field(None, title='ID URL')
