@@ -13,9 +13,14 @@ parser.add_argument('--file-name', type=str, required=True, help='Output Excel f
 args = parser.parse_args()
 load_dotenv(dotenv_path=args.env_file)
 
+import asyncio
+
 if __name__ == '__main__':
     from usecase.export_data_usecase import ExportDataUsecase
 
-    usecase = ExportDataUsecase()
+    async def main():
+        usecase = ExportDataUsecase()
+        response = await usecase.export_registrations_to_excel(event_id=args.event_id, file_name=args.file_name)
+        print(response)
 
-    response = usecase.export_registrations_to_excel(event_id=args.event_id, file_name=args.file_name)
+    asyncio.run(main())

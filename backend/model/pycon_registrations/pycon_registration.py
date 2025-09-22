@@ -139,4 +139,4 @@ class PyconExportData(BaseModel):
     contactNumber: str = Field(..., title='Contact Number')
     organization: str = Field(..., title='Affiliated Company or Organization')
     ticketType: TicketTypes = Field(title='Ticket Type')
-    idURL: Optional[HttpUrl] = Field(None, title='ID URL')
+    imageIdUrl: Optional[HttpUrl] = Field(None, title='ID URL')
