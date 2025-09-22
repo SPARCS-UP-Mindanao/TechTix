@@ -239,9 +239,11 @@ interface SprintDaySectionProps {
 
 const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sprintDayRegistrationCount, isSelected, sprintDayPrice, onChange }) => {
   const sprintIsSoldOut = maximumSprintDaySlots === sprintDayRegistrationCount;
+
   if (sprintIsSoldOut) {
     onChange(false);
   }
+
 
   return (
     <div className="flex flex-col gap-6 mt-12">
@@ -276,17 +278,15 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
               <Calendar className="text-pycon-violet-dark h-7 w-7" />
               <h4 className="font-bold text-2xl text-pycon-violet-dark me-auto">Join Sprint Day</h4>
               <div className="">
-                {sprintIsSoldOut ?? (
-                  <span
-                    className={cn(
-                      'px-4 py-2 rounded-full text-base font-bold',
-                      isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100',
-                      sprintIsSoldOut && 'bg-gray-400 text-gray-700'
-                    )}
-                  >
-                    +${formatMoney(sprintDayPrice, 'PHP')}
-                  </span>
-                )}
+                <span
+                  className={cn(
+                    'px-4 py-2 rounded-full text-base font-bold',
+                    isSelected ? 'bg-pycon-orange text-white shadow-lg' : 'bg-gray-100 text-gray-600',
+                    sprintIsSoldOut && 'bg-gray-300 text-gray-500 shadow-none' 
+                  )}
+                >
+                  {sprintIsSoldOut ? 'Sold Out!' : formatMoney(sprintDayPrice, 'PHP')}
+                </span>
               </div>
             </div>
 
@@ -317,8 +317,7 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
           <div className="flex flex-col items-center gap-3 md:ml-8">
             {sprintIsSoldOut ? (
               <div className=" rounded-lg p-4 text-center">
-                <h3 className="font-nunito font-extrabold text-4xl text-pycon-red mb-2">SOLD OUT!</h3>
-                <p className="text-pycon-red font-medium">Sprint day slots are full</p>
+                <p className="text-gray-500 font-bold">Sprint Day is Full</p>
               </div>
             ) : (
               <Button
