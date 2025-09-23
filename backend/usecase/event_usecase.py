@@ -96,7 +96,7 @@ class EventUsecase:
         original_status = original_event.status
 
         if event_in.maximumSprintDaySlots:
-            registrations = self.__registration_repository.query_registrations(event_id)[1]
+            status, registrations, _ = self.__registration_repository.query_registrations(event_id)
             if registrations not in (None, []):
                 eventSprintCount = len([reg for reg in registrations if reg.sprintDay])
                 event_in.sprintDayRegistrationCount = eventSprintCount
