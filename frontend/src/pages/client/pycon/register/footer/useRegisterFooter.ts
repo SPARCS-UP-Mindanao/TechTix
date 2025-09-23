@@ -242,6 +242,25 @@ export const useRegisterFooter = (
       }
     }
 
+    if (sprintDay) {
+      const event = await api.execute(getEvent(eventId));
+
+      if (!event.data || event.status !== 200) {
+        return;
+      }
+
+      console.log(event.data);
+
+      if (event.data.maximumSprintDaySlots === event.data.sprintDayRegistrationCount) {
+        setValue('sprintDay', false);
+        errorToast({
+          title: 'Sprint Day is full',
+          description: 'Sorry, but the Sprint Day slots are already full. Your registration will proceed without Sprint Day.'
+        });
+        return;
+      }
+    }
+
     try {
       setIsFormSubmitting(true);
       await onRequestPayment();
