@@ -249,7 +249,7 @@ const SprintDaySection: FC<SprintDaySectionProps> = ({ maximumSprintDaySlots, sp
   return (
     <div className="flex flex-col gap-6 mt-12">
       <div className="text-center md:text-left">
-        <div className="flex items-c  enter gap-3 mb-2 justify-center md:justify-start">
+        <div className="flex items-center gap-3 mb-2 justify-center md:justify-start">
           <Zap className="text-pycon-orange h-8 w-8" />
           <h3 className="font-nunito font-bold text-3xl text-pycon-orange">Add Sprint Day</h3>
         </div>
