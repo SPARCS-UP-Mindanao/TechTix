@@ -246,17 +246,22 @@ export const useRegisterFooter = (
       const event = await api.execute(getEvent(eventId));
 
       if (!event.data || event.status !== 200) {
+        errorToast({
+          title: 'Sprint Day is full',
+          description: 'Sorry, Sprint Day slots are already full'
+        });
+
         return;
       }
-
-      console.log(event.data);
 
       if (event.data.maximumSprintDaySlots === event.data.sprintDayRegistrationCount) {
         setValue('sprintDay', false);
         errorToast({
           title: 'Sprint Day is full',
-          description: 'Sorry, but the Sprint Day slots are already full. Your registration will proceed without Sprint Day.'
+          description: 'Sorry, Sprint Day slots are already full.'
         });
+
+        setCurrentStep(STEP_TICKET_SELECTION);
         return;
       }
     }
