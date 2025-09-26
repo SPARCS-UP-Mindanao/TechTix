@@ -247,8 +247,8 @@ export const useRegisterFooter = (
 
       if (!event.data || event.status !== 200) {
         errorToast({
-          title: 'Sprint Day is full',
-          description: 'Sorry, Sprint Day slots are already full'
+          title: 'Oops, Something Went Wrong',
+          description: "An unexpected error occurred. We're working to resolve it as quickly as possible. Please try again shortly."
         });
 
         return;
