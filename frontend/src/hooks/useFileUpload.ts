@@ -92,11 +92,20 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
   const uploadFile = async (file: File) => {
     const { uploadLink, objectKey } = await getPresignedUrlTrigger(eventId, file, uploadType);
 
+    const url = new URL(uploadLink);
+    const pathParts = url.pathname.split('/');
+    const s3FileName = pathParts[pathParts.length - 1];
+
+    const renamedFile =
+      file.name === s3FileName
+        ? file
+        : new File([file], s3FileName, { type: file.type });
+
     const uploadApi = createApi({
       method: 'put',
       url: uploadLink,
       headers: { 'Content-Type': file.type },
-      body: file
+      body: renamedFile
     });
 
     try {

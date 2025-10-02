@@ -1,4 +1,6 @@
 import os
+import uuid
+from datetime import datetime
 from http import HTTPStatus
 from typing import Tuple
 
@@ -32,13 +34,26 @@ class FileS3Usecase:
         :rtype: FileUploadOut
         """
         try:
+            path_parts = [part for part in object_key.split('/') if part]
+            if len(path_parts) > 0:
+                original_filename = path_parts[-1]
+                path_prefix = '/'.join(path_parts[:-1])
+                prefix = path_parts[1] if len(path_parts) > 1 else ''
+                unique_filename = self.__generate_unique_filename(original_filename=original_filename, prefix=prefix)
+                if path_prefix:
+                    unique_object_key = '/'.join([p for p in [path_prefix, unique_filename] if p])
+                else:
+                    unique_object_key = unique_filename
+            else:
+                unique_object_key = object_key
+
             presigned_url = self.__s3_client.generate_presigned_url(
                 ClientMethod=ClientMethods.PUT_OBJECT,
-                Params={'Bucket': self.__bucket, 'Key': object_key},
+                Params={'Bucket': self.__bucket, 'Key': unique_object_key},
                 ExpiresIn=self.__presigned_url_expiration_time,
             )
 
-            url_data = {'uploadLink': presigned_url, 'objectKey': object_key}
+            url_data = {'uploadLink': presigned_url, 'objectKey': unique_object_key}
 
             return FileUploadOut(**url_data)
         except ClientError as e:
@@ -106,3 +121,28 @@ class FileS3Usecase:
         upload_type = type_to_field_map[upload_type]
 
         return entry_id, upload_type.value
+
+    def __generate_unique_filename(self, original_filename: str, prefix: str = '') -> str:
+        """Generate a unique filename while preserving the file extension
+
+        :param original_filename: The original filename
+        :type original_filename: str
+
+        :param prefix: Optional prefix for the filename
+        :type prefix: str
+
+        :return: A unique filename with timestamp and UUID
+        :rtype: str
+        """
+
+        file_extension = os.path.splitext(original_filename)[1]
+
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        unique_id = str(uuid.uuid4())[:8]
+
+        if prefix:
+            new_filename = f'{prefix}_{timestamp}_{unique_id}{file_extension}'
+        else:
+            new_filename = f'{timestamp}_{unique_id}{file_extension}'
+
+        return new_filename

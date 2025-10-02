@@ -9,3 +9,5 @@ my.secrets
 
 .ruff_cache
 .DS_Store
+
+*.xlsx
