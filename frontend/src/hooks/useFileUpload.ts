@@ -96,10 +96,7 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
     const pathParts = url.pathname.split('/');
     const s3FileName = pathParts[pathParts.length - 1];
 
-    const renamedFile =
-      file.name === s3FileName
-        ? file
-        : new File([file], s3FileName, { type: file.type });
+    const renamedFile = file.name === s3FileName ? file : new File([file], s3FileName, { type: file.type });
 
     const uploadApi = createApi({
       method: 'put',
