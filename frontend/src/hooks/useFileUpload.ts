@@ -90,21 +90,20 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
   };
 
   const uploadFile = async (file: File) => {
-    const { uploadLink, objectKey } = await getPresignedUrlTrigger(eventId, file, uploadType);
+    const { uploadLink, objectKey }: { uploadLink: string; objectKey: string } = await getPresignedUrlTrigger(eventId, file, uploadType);
 
     const url = new URL(uploadLink);
-    const pathParts = url.pathname.split('/');
-    const s3FileName = pathParts[pathParts.length - 1];
+    const pathParts = url.pathname ? url.pathname.split('/') : [];
+    const s3FileName: string = pathParts.length > 0 && pathParts[pathParts.length - 1] ? pathParts[pathParts.length - 1] : file.name;
 
-    const renamedFile = file.name === s3FileName ? file : new File([file], s3FileName, { type: file.type });
+    const renamedFile: File = file.name === s3FileName ? file : new File([file], s3FileName, { type: file.type });
 
     const uploadApi = createApi({
-      method: 'put',
+      method: 'put' as const,
       url: uploadLink,
       headers: { 'Content-Type': file.type },
       body: renamedFile
     });
-
     try {
       await api.execute(uploadApi);
       setUploadProgress(100);
