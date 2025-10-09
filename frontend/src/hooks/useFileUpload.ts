@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form';
 import { getPresignedUrl } from '@/api/events';
 import { createApi } from '@/api/utils/createApi';
 import { UploadType } from '@/model/events';
-import { PresignedUrlResponse } from '@/model/registrations'
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 
@@ -35,14 +34,10 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const getPresignedUrlTrigger = async (entryId: string, file: File, uploadType: UploadType): Promise<PresignedUrlResponse> => {
+  const getPresignedUrlTrigger = async (entryId: string, file: File, uploadType: UploadType) => {
     const response = await api.execute(getPresignedUrl(entryId, file.name, uploadType));
 
-    if (!response.data) {
-      throw new Error('Could not get presigned URL');
-    }
-
-    return response.data as PresignedUrlResponse;
+    return response.data;
   };
 
   const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -96,41 +91,28 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
   };
 
   const uploadFile = async (file: File) => {
-    let presignedData: PresignedUrlResponse;
-
     try {
-      presignedData = await getPresignedUrlTrigger(eventId, file, uploadType);
-    } catch (err) {
-      errorToast({
-        title: 'File Setup Failed',
-        description: 'Could not prepare the file for upload. Please try again.'
+      const { uploadLink, objectKey } = await getPresignedUrlTrigger(eventId, file, uploadType);
+      const pathParts = objectKey.split('/');
+
+      if (pathParts.length === 0) {
+        errorToast({
+          title: 'File Upload Failed',
+          description: 'File upload failed. Please try again.'
+        });
+        return;
+      }
+
+      const s3FileName: string = pathParts[pathParts.length - 1];
+      const renamedFile: File = file.name === s3FileName ? file : new File([file], s3FileName, { type: file.type });
+
+      const uploadApi = createApi({
+        method: 'put',
+        url: uploadLink,
+        headers: { 'Content-Type': file.type },
+        body: renamedFile
       });
-      return;
-    }
 
-    const { uploadLink, objectKey } = presignedData;
-
-    const pathParts = objectKey.split('/');
-
-    if (pathParts.length === 0) {
-      errorToast({
-        title: 'File Upload Failed',
-        description: 'File upload failed. Please try again.'
-      });
-      return;
-    }
-    const s3FileName: string = pathParts[pathParts.length - 1];
-
-    const renamedFile: File = file.name === s3FileName ? file : new File([file], s3FileName, { type: file.type });
-
-    const uploadApi = createApi({
-      method: 'put' as const,
-      url: uploadLink,
-      headers: { 'Content-Type': file.type },
-      body: renamedFile
-    });
-
-    try {
       await api.execute(uploadApi);
       setUploadProgress(100);
 
@@ -142,17 +124,16 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
       onChange(objectKey);
     } catch (err) {
       errorToast({
-        title: 'File Upload Failed',
-        description: 'File upload failed. Please try again.'
+        title: 'File Setup Failed',
+        description: 'Could not prepare the file for upload. Please try again.'
       });
       return;
     }
-  };
 
-
-  return {
-    uploadProgress,
-    isUploading,
-    onFileChange
+    return {
+      uploadProgress,
+      isUploading,
+      onFileChange
+    };
   };
-};
+}

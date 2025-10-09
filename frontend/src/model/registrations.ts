@@ -131,8 +131,3 @@ export const mapUpdateRegistrationValues = (newRegistrationValues: EditRegistrat
   awsCommunityDayInLineWith: previousRegistration.awsCommunityDayInLineWith,
   foodRestrictions: previousRegistration.foodRestrictions
 });
-
-export interface PresignedUrlResponse {
-  uploadLink: string;
-  objectKey: string;
-}
