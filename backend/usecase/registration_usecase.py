@@ -1,6 +1,7 @@
 import csv
 import os
 import tempfile
+from datetime import datetime
 from http import HTTPStatus
 from typing import List, Union
 
@@ -13,6 +14,7 @@ from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
+    Registration,
     RegistrationIn,
     RegistrationOut,
 )
@@ -387,6 +389,11 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        if not registrations:
+            return JSONResponse(
+                status_code=HTTPStatus.NOT_FOUND, content={'message': 'No registrations found for this event'}
+            )
+
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 csv_path = os.path.join(tmpdir, 'registrations.csv')
@@ -394,17 +401,25 @@ class RegistrationUsecase:
                 with open(csv_path, 'w') as temp:
                     writer = csv.writer(temp)
 
-                    # make the first row csv for the keys using the dict keys of the first entry
-                    first_entry = self.__convert_data_entry_to_dict(registrations[0])
-                    writer.writerow(first_entry.keys())
+                    # Get headers from Registration DynamoDB model attributes
+                    headers = [
+                        attr_name
+                        for attr_name in dir(Registration)
+                        if not attr_name.startswith('_')
+                        and not callable(getattr(Registration, attr_name))
+                        and attr_name not in ['Meta', 'DoesNotExist', 'registrationIdGSI', 'emailLSI']
+                    ]
+                    headers.sort()
+                    logger.info(f'Headers for CSV export: {headers}')
+                    writer.writerow(headers)
 
-                    # the remaining rows consist of the values of the attributes
                     for entry in registrations:
                         entry_dict = self.__convert_data_entry_to_dict(entry)
-                        writer.writerow(entry_dict.values())
+                        row_values = [entry_dict.get(header, '') for header in headers]
+                        writer.writerow(row_values)
 
                 # upload the file to s3
-                csv_object_key = f'csv/registrations/{event_id}.csv'
+                csv_object_key = f'csv/registrations/{event_id}-{datetime.now().strftime("%Y%m%d%H%M%S")}.csv'
                 self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
 
                 return self.__file_s3_usecase.create_download_url(csv_object_key)
