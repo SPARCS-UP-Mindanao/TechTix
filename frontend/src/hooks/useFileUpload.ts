@@ -129,11 +129,11 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
       });
       return;
     }
+  };
 
-    return {
-      uploadProgress,
-      isUploading,
-      onFileChange
-    };
+  return {
+    uploadProgress,
+    isUploading,
+    onFileChange
   };
 }
