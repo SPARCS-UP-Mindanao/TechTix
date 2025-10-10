@@ -136,4 +136,4 @@ export const useFileUpload = (eventId: string, uploadType: UploadType, onChange:
     isUploading,
     onFileChange
   };
-}
+};
