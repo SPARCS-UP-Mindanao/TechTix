@@ -402,14 +402,19 @@ class RegistrationUsecase:
                     writer = csv.writer(temp)
 
                     # Get headers from Registration DynamoDB model attributes
-                    headers = [
+                    all_headers = [
                         attr_name
                         for attr_name in dir(Registration)
                         if not attr_name.startswith('_')
                         and not callable(getattr(Registration, attr_name))
                         and attr_name not in ['Meta', 'DoesNotExist', 'registrationIdGSI', 'emailLSI']
                     ]
-                    headers.sort()
+
+                    priority_headers = ['firstName', 'lastName']
+                    remaining_headers = [h for h in all_headers if h not in priority_headers]
+                    remaining_headers.sort()
+
+                    headers = priority_headers + remaining_headers
                     logger.info(f'Headers for CSV export: {headers}')
                     writer.writerow(headers)
 
