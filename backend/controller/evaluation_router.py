@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from constants.common_constants import CommonConstants
 from fastapi import APIRouter, Path, Query
@@ -9,7 +9,10 @@ from model.evaluations.evaluation import (
     EvaluationOut,
     EvaluationPatch,
 )
-from model.evaluations.evaluations_constants import EvaluationQuestionType
+from model.evaluations.evaluations_constants import (
+    EvaluationQuestionType,
+    PyconEvaluationQuestionType,
+)
 from usecase.evaluation_usecase import EvaluationUsecase
 
 evaluation_router = APIRouter()
@@ -69,7 +72,7 @@ def get_evaluations(
 )
 def get_evaluations_by_question(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
-    question: EvaluationQuestionType = Path(..., title='Question'),
+    question: Union[EvaluationQuestionType, PyconEvaluationQuestionType] = Path(..., title='Question'),
 ):
     """Get Evaluation Entries by Question
 
@@ -106,7 +109,7 @@ def get_evaluations_by_question(
 def get_evaluation(
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
     registration_id: str = Path(..., title='Registration Id', alias=CommonConstants.REGISTRATION_ID),
-    question: EvaluationQuestionType = Query(..., title='Question'),
+    question: Union[EvaluationQuestionType, PyconEvaluationQuestionType] = Query(..., title='Question'),
 ):
     """Get Evaluation Entry
 
@@ -180,7 +183,7 @@ def update_evaluation(
     evaluation: EvaluationPatch,
     event_id: str = Path(..., title='Event Id', alias=CommonConstants.EVENT_ID),
     registration_id: str = Query(..., title='Registration Id'),
-    question: EvaluationQuestionType = Query(..., title='Question'),
+    question: Union[EvaluationQuestionType, PyconEvaluationQuestionType] = Query(..., title='Question'),
 ):
     """Update Evaluation Entry
 
