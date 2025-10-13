@@ -24,8 +24,6 @@ const ClaimCertificate: FC<Props> = ({ eventId }) => {
   //   shareToLinkedIn(LinkedInParams);
   // };
 
-  console.log(certificateImgDataURL, isLoading);
-
   if (isLoading) {
     return <Skeleton className="rounded-2xl h-[330px] w-full" />;
   }
@@ -38,10 +36,8 @@ const ClaimCertificate: FC<Props> = ({ eventId }) => {
 
   return (
     <>
-      <h3>Here's your Certificate!</h3>
-      {certificateImgDataURL && (
-        <img src={certificateImgDataURL} className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full" />
-      )}
+      <h2 className="text-center text-pycon-orange font-extrabold">Here's your Certificate!</h2>
+      <img src={certificateImgDataURL} alt="certificate" className="animate-[fade-in_3s_ease-in-out] rounded-2xl object-center object-cover w-full h-full" />
       <div className="w-full space-y-10">
         <div className="flex flex-col space-y-4">
           <Button onClick={onDownloadImg} icon="Download" variant="secondaryGradient" className="py-3 px-6">
@@ -56,9 +52,9 @@ const ClaimCertificate: FC<Props> = ({ eventId }) => {
           Share to LinkedIn
         </Button> */}
 
-        <Button onClick={reloadPage} icon="ChevronRight" iconPlacement="right" className="w-full py-3 px-6">
+        {/* <Button onClick={reloadPage} icon="ChevronRight" iconPlacement="right" className="w-full py-3 px-6">
           Evaluate with another user
-        </Button>
+        </Button> */}
       </div>
     </>
   );

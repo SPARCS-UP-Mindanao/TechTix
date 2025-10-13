@@ -21,7 +21,6 @@ const useEvaluateFooter = <T extends string>(
   const { errorToast } = useNotifyToast();
   const api = useApi();
   const context = useCurrentUser();
-  console.log(context);
   const { eventId } = event;
   const { trigger, getValues, setValue } = useFormContext<DefaultEvaluateFormValues>();
   const { isSubmitting: isFormSubmitting } = useFormState();
@@ -53,14 +52,6 @@ const useEvaluateFooter = <T extends string>(
 
   const onStartEvaluate = async () => {
     const email = context?.user?.email || getValues('email');
-
-    if (!email) {
-      errorToast({
-        title: 'Authentication Required',
-        description: 'Please log in to continue.'
-      });
-      return;
-    }
 
     try {
       setIsValidatingEmail(true);

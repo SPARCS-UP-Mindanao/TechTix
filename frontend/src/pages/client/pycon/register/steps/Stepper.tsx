@@ -14,13 +14,14 @@ interface StepperProps<T extends Step> {
   stepsToExclude?: T[];
   onStepClick?: (step: T) => void;
   orientation?: 'horizontal' | 'vertical';
+  hideTitle?: boolean;
 }
 
 const STEP_CIRCLE_SIZE = '1.5rem';
 
-const Stepper = <T extends Step>({ steps, currentStep, stepsToExclude, onStepClick, orientation = 'horizontal' }: StepperProps<T>) => {
+const Stepper = <T extends Step>({ steps, currentStep, stepsToExclude, onStepClick, orientation = 'horizontal', hideTitle = false }: StepperProps<T>) => {
   const visibleSteps = steps.filter((step) => step.title && !stepsToExclude?.some((excludeStep) => excludeStep.id === step.id));
-
+  const showTitle = orientation === 'vertical' && !hideTitle;
   const currentStepIndex = visibleSteps.indexOf(currentStep);
 
   return (
@@ -42,7 +43,7 @@ const Stepper = <T extends Step>({ steps, currentStep, stepsToExclude, onStepCli
               ></div>
               {currentStepIndex === index && <img src={durian} className="w-10 scale-150 absolute inset-0 z-5" alt="" />}
 
-              {orientation === 'vertical' && <div className="absolute inset-0 z-6 ms-16 flex items-center">{step.title}</div>}
+              {showTitle && <div className="absolute inset-0 z-6 ms-16 flex items-center">{step.title}</div>}
             </div>
 
             {!isLastStep && <div className={cn('transition-colors', connectorBackground, orientation === 'horizontal' ? 'h-1 flex-1' : 'w-1 flex-1')} />}

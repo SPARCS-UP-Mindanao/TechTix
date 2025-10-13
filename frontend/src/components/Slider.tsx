@@ -16,10 +16,14 @@ const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, R
       <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full dark:bg-background-100 bg-pycon-custard-light">
         <SliderPrimitive.Range className="absolute h-full bg-pycon-orange" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb
-        className="block h-8 w-8 bg-cover bg-center transition-transform hover:scale-110 focus-visible:outline-none disabled:opacity-50"
-        style={{ backgroundImage: `url(${durian})` }}
-      />
+      <SliderPrimitive.Thumb className="block relative size-4 rounded-full border border-primary/50 bg-background shadow-sm transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+        <div
+          className="absolute -inset-x-1 -inset-y-1 size-6 bg-cover bg-no-repeat bg-center transition-transform hover:scale-110 focus-visible:outline-none disabled:opacity-50"
+          style={{
+            backgroundImage: `url(${durian})`
+          }}
+        />
+      </SliderPrimitive.Thumb>
     </SliderPrimitive.Root>
   )
 );

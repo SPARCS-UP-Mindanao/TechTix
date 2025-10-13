@@ -1,8 +1,6 @@
 import { FC, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import ErrorPage from '@/components/ErrorPage';
-import { FormDescription, FormError, FormItem, FormItemContainer, FormLabel } from '@/components/Form';
-import Input from '@/components/Input';
 import Separator from '@/components/Separator';
 import { cn } from '@/utils/classes';
 import { useActiveBreakpoints } from '@/hooks/useActiveBreakpoints';
@@ -38,45 +36,51 @@ const Evaluate: FC<Props> = ({ eventId }) => {
   const showStepper = currentStep.id !== 'EventDetails' && currentStep.id !== 'ClaimCertificate';
 
   return (
-    <section className="flex flex-col items-center px-4">
-      <div className="w-full max-w-6xl space-y-6 flex flex-col items-center">
+    <section
+      className={cn(
+        'flex flex-col grow items-center px-4 h-full w-full text-pycon-custard font-nunito max-w-6xl mx-auto',
+        currentStep.id === 'ClaimCertificate' && 'grow-0'
+      )}
+    >
+      <div className="w-full h-full flex flex-col space-y-4 grow">
+        {currentStep.id !== 'EventDetails' && currentStep.id !== 'ClaimCertificate' && <h1 className="text-xl">Evaluation</h1>}
+
         <FormProvider {...form}>
-          <div className="flex flex-col md:flex-row items-start gap-5 lg:gap-15 w-full lg:mt-10">
+          <div className="flex flex-col md:flex-row w-full h-full grow">
             {showStepper && (
-              <aside className="w-full md:w-1/4 md:min-w-[240px] lg:h-[50vh]">
-                {showStepper && (
-                  <div className={cn('my-8', shouldBeVertical && 'h-[700px]')}>
-                    <Stepper
-                      orientation={shouldBeVertical ? 'vertical' : 'horizontal'}
-                      steps={STEPS}
-                      currentStep={currentStep}
-                      stepsToExclude={[STEP_CLAIM_CERTIFICATE]}
-                    />
-                  </div>
-                )}
-              </aside>
+              <div className={cn('my-8', shouldBeVertical && 'h-[700px]')}>
+                <Stepper
+                  orientation={shouldBeVertical ? 'vertical' : 'horizontal'}
+                  steps={STEPS}
+                  currentStep={currentStep}
+                  stepsToExclude={[STEP_CLAIM_CERTIFICATE]}
+                  hideTitle
+                />
+              </div>
             )}
 
-            <main className="flex-1">
-              {currentStep.id !== 'EventDetails' && currentStep.title && <h1 className="text-xl text-center md:text-left mb-4">{currentStep.title}</h1>}
-              <div className="space-y-4">
-                {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
-                {currentStep.id === 'Evaluation_1' && <QuestionBuilder questions={EVALUATION_QUESTIONS_1} />}
-                {currentStep.id === 'Evaluation_2' && <QuestionBuilder questions={EVALUATION_QUESTIONS_2} />}
-              </div>
-
-              {(currentStep.id === 'Evaluation_1' || currentStep.id === 'Evaluation_2') && <Separator className="my-4" />}
-
-              <EvaluateFooter
-                event={eventInfo}
-                steps={STEPS}
-                currentStep={currentStep}
-                fieldsToCheck={fieldsToCheck}
-                setCurrentStep={setCurrentStep}
-                submitForm={submit}
-              />
-            </main>
+            <div
+              className={cn(
+                'space-y-4 grow',
+                currentStep.id !== 'EventDetails' && currentStep.id !== 'ClaimCertificate' && shouldBeVertical && 'ms-[20vw] p-8'
+              )}
+            >
+              {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
+              {currentStep.id === 'Evaluation_1' && <QuestionBuilder questions={EVALUATION_QUESTIONS_1} />}
+              {currentStep.id === 'Evaluation_2' && <QuestionBuilder questions={EVALUATION_QUESTIONS_2} />}
+            </div>
           </div>
+
+          {currentStep.id !== 'EventDetails' && currentStep.id !== 'ClaimCertificate' && <Separator className="my-4 bg-pycon-custard-light" />}
+
+          <EvaluateFooter
+            event={eventInfo}
+            steps={STEPS}
+            currentStep={currentStep}
+            fieldsToCheck={fieldsToCheck}
+            setCurrentStep={setCurrentStep}
+            submitForm={submit}
+          />
 
           {currentStep.id === 'ClaimCertificate' && <ClaimCertificate eventId={eventId!} />}
         </FormProvider>

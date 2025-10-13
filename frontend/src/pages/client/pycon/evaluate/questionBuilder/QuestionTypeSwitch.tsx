@@ -21,7 +21,7 @@ const QuestionTypeSwitch = <TFieldValues extends FieldValues, TName extends Fiel
       return (
         <Select onValueChange={field.onChange} disabled={disabled}>
           <SelectTrigger>
-            <SelectValue placeholder="Drop down Choices" />
+            <SelectValue placeholder="Dropdown Choices" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -79,7 +79,15 @@ const QuestionTypeSwitch = <TFieldValues extends FieldValues, TName extends Fiel
     case 'slider':
       return (
         <div className="w-full">
-          <Slider className="w-full mt-5" min={1} max={5} step={1} onValueChange={field.onChange} disabled={disabled} />
+          <Slider
+            className="w-full mt-5"
+            min={1}
+            max={5}
+            step={1}
+            value={Array.isArray(field.value) && !!field.value.length ? field.value : undefined}
+            onValueChange={field.onChange}
+            disabled={disabled}
+          />
           <div className="flex justify-between px-1 mt-5">
             {[...Array(5)].map((_, index) => (
               <span key={index}>{index + 1}</span>

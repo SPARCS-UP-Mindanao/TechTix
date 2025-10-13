@@ -6,10 +6,7 @@ export const questionSchemaBuilder = (questions: QuestionConfigItem[]) => {
     (acc, question) => {
       switch (question.questionType) {
         case 'multiple_answers':
-          acc[question.name] = z
-            .array(z.string())
-
-            .min(1, { message: 'Please select at least one option' });
+          acc[question.name] = z.array(z.string()).min(1, { message: 'Please select at least one option' });
           break;
 
         case 'slider':

@@ -1,5 +1,6 @@
 import Button from '@/components/Button';
 import { Event } from '@/model/events';
+import { EventFooterPortal } from '../../register/footer/EventFooterPortal';
 import { EvaluateStep } from '../steps/EvaluationSteps';
 import useEvaluateFooter from './useEvaluateFooter';
 
@@ -28,28 +29,37 @@ const EvaluateFooter = <T extends string>({ event, steps, currentStep, fieldsToC
 
   const eventDetailsFooter = () => {
     return (
-      <Button
-        onClick={onStartEvaluate}
-        icon="ChevronRight"
-        iconPlacement="right"
-        className="py-6 sm:px-10 bg-pycon-orange hover:bg-pycon-custard cursor-pointer hover:text-pycon-orange"
-      >
-        Evaluate
-      </Button>
+      <EventFooterPortal>
+        <Button
+          onClick={onStartEvaluate}
+          icon="ChevronRight"
+          iconPlacement="right"
+          iconClassname="stroke-pycon-violet!"
+          className="cursor-pointer gap-x-2 bg-pycon-custard-light text-pycon-violet! rounded-full hover:bg-pycon-custard py-6 sm:px-10 my-8"
+        >
+          Evaluate
+        </Button>
+      </EventFooterPortal>
     );
   };
 
   const evaluationFooter = () => {
     return (
       <>
-        <Button onClick={onPrevStep} icon="ChevronLeft" className="py-6 sm:px-6 bg-pycon-orange hover:bg-pycon-custard cursor-pointer hover:text-pycon-orange">
+        <Button
+          onClick={onPrevStep}
+          icon="ChevronLeft"
+          strokeWidth={3}
+          className="bg-transparent border border-pycon-custard-light text-pycon-custard-light font-medium rounded-full py-6 sm:px-6 hover:bg-pycon-custard-light cursor-pointer hover:text-pycon-violet"
+        >
           Back
         </Button>
         <Button
           onClick={onNextStep}
           icon="ChevronRight"
+          strokeWidth={3}
           iconPlacement="right"
-          className="py-6 sm:px-6 bg-pycon-orange hover:bg-pycon-custard cursor-pointer hover:text-pycon-orange"
+          className="bg-pycon-custard-light hover:bg-pycon-custard cursor-pointer  text-pycon-violet rounded-full py-6 sm:px-6"
         >
           Next
         </Button>
@@ -62,9 +72,9 @@ const EvaluateFooter = <T extends string>({ event, steps, currentStep, fieldsToC
       <>
         <Button
           onClick={onPrevStep}
-          disabled={isFormSubmitting}
           icon="ChevronLeft"
-          className="py-6 sm:px-6 bg-pycon-orange hover:bg-pycon-custard cursor-pointer hover:text-pycon-orange"
+          strokeWidth={3}
+          className="bg-transparent border border-pycon-custard-light text-pycon-custard-light font-medium rounded-full py-6 sm:px-6 hover:bg-pycon-custard-light cursor-pointer hover:text-pycon-violet"
         >
           Back
         </Button>
@@ -73,7 +83,7 @@ const EvaluateFooter = <T extends string>({ event, steps, currentStep, fieldsToC
           loading={isFormSubmitting}
           icon="ChevronRight"
           iconPlacement="right"
-          className="py-6 sm:px-6 bg-pycon-orange hover:bg-pycon-custard cursor-pointer hover:text-pycon-orange"
+          className="bg-pycon-custard-light hover:bg-pycon-custard cursor-pointer  text-pycon-violet rounded-full py-6 sm:px-6"
         >
           Submit
         </Button>

@@ -3,7 +3,7 @@ import ErrorPage from '@/components/ErrorPage';
 import LoginPage from '@/pages/client/login/LoginPage';
 import PreRegisterPage from '@/pages/client/preregister/PreRegisterPage';
 import PyconClientPage from '@/pages/client/pycon/PyconClientPage';
-import EvaluatePage from '@/pages/client/pycon/evaluate/PyconEvaluatePage';
+import EvaluatePage from '@/pages/client/pycon/evaluate/EvaluatePage';
 import RegisterPage from '@/pages/client/pycon/register/RegisterPage';
 import UserInfoPage from '@/pages/client/pycon/register/UserInfoPage';
 import Callback from './Callback';

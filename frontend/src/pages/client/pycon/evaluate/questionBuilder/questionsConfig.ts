@@ -6,7 +6,6 @@ export const EVALUATION_QUESTIONS_1: QuestionConfigItem[] = [
     questionType: 'slider',
     question: 'How would you rate PyCon Davao overall? (1–5)',
     options: [],
-
     required: true
   },
   {
@@ -82,10 +81,9 @@ export const EVALUATION_QUESTIONS_2: QuestionConfigItem[] = [
   },
   {
     name: 'were_the_venue_facilities_adequate',
-    questionType: 'radio_buttons',
-
-    question: 'Were the venue facilities adequate?',
-    options: ['Yes', 'No'],
+    questionType: 'slider',
+    question: 'Were the venue facilities adequate? (1–5)',
+    options: [],
     required: true
   },
   {
