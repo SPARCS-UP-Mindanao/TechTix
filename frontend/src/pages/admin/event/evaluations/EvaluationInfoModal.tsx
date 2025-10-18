@@ -29,7 +29,7 @@ const EvaluationInfoModal: FC<Props> = ({ fullName, evaluationList }) => {
       modalTitle={fullName + ' Evaluation Answers'}
       visible={showModal}
       onOpenChange={setShowModal}
-      className="md:max-w-[80%]"
+      className="md:max-w-[80%] max-h-[80%] overflow-scroll overflow-x-hidden"
       trigger={<Button variant="ghost" size="icon" icon="Ellipsis" />}
       modalFooter={
         <Button onClick={() => setShowModal(false)} variant="ghost">
@@ -37,13 +37,16 @@ const EvaluationInfoModal: FC<Props> = ({ fullName, evaluationList }) => {
         </Button>
       }
     >
-      <div className="w-full flex flex-wrap gap-y-2">
-        {evaluationList.map((evaluation) => (
+      <div className="w-full flex flex-col flex-wrap gap-y-6 items-center justify-center">
+        {evaluationList.map((evaluation) => {
+          return (
           <FormItemContainer key={evaluation.question} halfSpace>
-            <p className="font-bold">{QUESTIONS.get(evaluation.question!)}</p>
+            <div className='flex flex-col gap-y-2'>
+            <p className="font-bold">{evaluation.question?.split('_').join(' ')}?</p>
             <p className="p-2 rounded-sm bg-input">{DisplayAnswerSwitch(evaluation)}</p>
+            </div>
           </FormItemContainer>
-        ))}
+        )})}
       </div>
     </Modal>
   );
