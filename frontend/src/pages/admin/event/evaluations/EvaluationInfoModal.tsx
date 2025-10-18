@@ -40,13 +40,14 @@ const EvaluationInfoModal: FC<Props> = ({ fullName, evaluationList }) => {
       <div className="w-full flex flex-col flex-wrap gap-y-6 items-center justify-center">
         {evaluationList.map((evaluation) => {
           return (
-          <FormItemContainer key={evaluation.question} halfSpace>
-            <div className='flex flex-col gap-y-2'>
-            <p className="font-bold">{evaluation.question?.split('_').join(' ')}?</p>
-            <p className="p-2 rounded-sm bg-input">{DisplayAnswerSwitch(evaluation)}</p>
-            </div>
-          </FormItemContainer>
-        )})}
+            <FormItemContainer key={evaluation.question} halfSpace>
+              <div className="flex flex-col gap-y-2">
+                <p className="font-bold">{evaluation.question?.split('_').join(' ')}?</p>
+                <p className="p-2 rounded-sm bg-input">{DisplayAnswerSwitch(evaluation)}</p>
+              </div>
+            </FormItemContainer>
+          );
+        })}
       </div>
     </Modal>
   );
