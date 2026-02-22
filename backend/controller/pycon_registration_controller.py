@@ -79,7 +79,7 @@ def register_pycon(
                     'lastName': 'Dela Cruz',
                     'nickname': 'Juan',
                     'pronouns': 'he/him',
-                    'email': 'durianpy.davao+juan.delacruz@gmail.com',
+                    'email': 'sparcsup+juan.delacruz@gmail.com',
                     'eventId': 'pycon-davao-2024',
                     'contactNumber': '+639171234567',
                     'organization': 'Tech Company Inc',

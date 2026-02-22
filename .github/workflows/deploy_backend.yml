@@ -1,4 +1,4 @@
-name: Deploy DurianPy Events Service
+name: Deploy SPARCS Events Service
 on:
   push:
     paths:

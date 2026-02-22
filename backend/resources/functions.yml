@@ -23,13 +23,13 @@ paymentHandler:
   events:
     - sqs:
         arn:
-          "Fn::GetAtt": [ PaymentQueue, Arn ]
+          "Fn::GetAtt": [PaymentQueue, Arn]
   iamRoleStatements:
     - Effect: Allow
       Action:
         - "sqs:*"
       Resource:
-        - "Fn::GetAtt": [ PaymentQueue, Arn ]
+        - "Fn::GetAtt": [PaymentQueue, Arn]
     - Effect: Allow
       Action:
         - "dynamodb:PutItem"
@@ -48,4 +48,4 @@ paymentHandler:
         - "sqs:SendMessage"
         - "sqs:ReceiveMessage"
         - "sqs:DeleteMessage"
-      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:${self:custom.stage}-durianpy-events-email-queue.fifo"
+      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:${self:custom.stage}-sparcs-events-email-queue.fifo"
