@@ -62,10 +62,10 @@ Resources:
       LocalSecondaryIndexes:
         - IndexName: QuestionLSI
           KeySchema:
-          - AttributeName: hashKey
-            KeyType: HASH
-          - AttributeName: question
-            KeyType: RANGE
+            - AttributeName: hashKey
+              KeyType: HASH
+            - AttributeName: question
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
 
@@ -140,3 +140,38 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+
+  EntitiesParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /${self:custom.stage}-sparcs-events-entities
+      Type: String
+      Value: ${self:custom.entities}
+
+  RegistrationsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /${self:custom.stage}-sparcs-events-registrations
+      Type: String
+      Value: ${self:custom.registrations}
+
+  PreRegistrationsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /${self:custom.stage}-sparcs-events-preregistrations
+      Type: String
+      Value: ${self:custom.preregistrations}
+
+  EvaluationsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /${self:custom.stage}-sparcs-events-evaluations
+      Type: String
+      Value: ${self:custom.evaluations}
+
+  EventsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /${self:custom.stage}-sparcs-events-events
+      Type: String
+      Value: ${self:custom.events}
