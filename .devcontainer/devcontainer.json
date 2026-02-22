@@ -1,0 +1,24 @@
+{
+  "name": "TechTix Monorepo",
+  "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.8"
+    }
+  },
+  "postCreateCommand": "npm install --prefix frontend && pipenv install --skip-lock --python 3.8 --manifest backend/Pipfile",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}
