@@ -2,15 +2,18 @@ Resources:
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: ${self:custom.bucket}
+      BucketName: ${self:custom.bucket}-2
       VersioningConfiguration:
         Status: Enabled
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ["*"]
+          - AllowedHeaders: ["*"]
             AllowedMethods: [GET, PUT, HEAD]
             AllowedOrigins: ["*"]
+            AllowedOrigins: ["*"]
             Id: ${self:custom.bucket}-name
+            MaxAge: "3600"
             MaxAge: "3600"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
