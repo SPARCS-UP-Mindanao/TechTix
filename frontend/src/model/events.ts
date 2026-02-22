@@ -3,14 +3,14 @@ import { EventFormValues } from '@/hooks/useAdminEventForm';
 import { FAQsFormValues } from '@/hooks/useFAQsForm';
 
 export interface TicketType {
+  id: string;
   name: string;
-  description?: string;
+  description: string | null;
   tier: string;
-  originalPrice?: number;
+  originalPrice: number | null;
   price: number;
   maximumQuantity: number;
-  konfhubId: string;
-  currentSales?: number | null;
+  currentSales: number;
 }
 
 export interface Event {
@@ -40,9 +40,12 @@ export interface Event {
   certificateTemplateUrl?: string;
   hasMultipleTicketTypes: boolean;
   ticketTypes: TicketType[] | null;
-  konfhubId: string | null;
-  konfhubApiKey: string | null;
   platformFee: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
+  isSprintDayLimitedSlot?: boolean;
+  sprintDayRegistrationCount: number;
+  maximumSprintDaySlots: number | null;
 }
 
 export type EventStatus = 'draft' | 'preregistration' | 'open' | 'cancelled' | 'closed' | 'completed';
@@ -78,40 +81,16 @@ export const EVENT_STATUSES: EventStatusItem[] = [
   }
 ];
 
-export const EVENT_UPLOAD_TYPES = {
+export type UploadType = 'banner' | 'logo' | 'certificateTemplate' | 'proofOfPayment' | 'gcashQRCode' | 'validId';
+
+export const EVENT_UPLOAD_TYPE: Record<string, UploadType> = {
   BANNER: 'banner',
   LOGO: 'logo',
   CERTIFICATE_TEMPLATE: 'certificateTemplate',
   PROOF_OF_PAYMENT: 'proofOfPayment',
-  GCASH_QR: 'gcashQRCode'
-};
-
-export const EVENT_OBJECT_KEY_MAPS = {
-  BANNER: 'bannerLink',
-  LOGO: 'logoLink',
-  CERTIFICATE_TEMPLATE: 'certificateTemplate',
-  PROOF_OF_PAYMENT: 'proofOfPayment',
-  GCASH_QR: 'gcashQRCode'
-};
-
-export type UploadType = keyof typeof EVENT_UPLOAD_TYPE;
-
-export const enum EVENT_UPLOAD_TYPE {
-  BANNER = 'banner',
-  LOGO = 'logo',
-  CERTIFICATE_TEMPLATE = 'certificateTemplate',
-  PROOF_OF_PAYMENT = 'proofOfPayment',
-  GCASH_QR = 'gcashQRCode'
-}
-
-export const enum EVENT_OBJECT_KEY_MAP {
-  BANNER = 'bannerLink',
-  LOGO = 'logoLink',
-  CERTIFICATE_TEMPLATE = 'certificateTemplate',
-  GCASH_PAYMENT = 'gcashPayment',
-  GCASH_QR = 'gcashQRCode'
-}
-
+  GCASH_QR: 'gcashQRCode',
+  VALID_ID: 'validId'
+} as const;
 export type EventFAQs = {
   isActive: boolean;
   faqs: FAQ[];
@@ -122,10 +101,6 @@ export type FAQ = {
   question: string;
   answer: string;
 };
-
-export interface EventWithRefetchEvent extends Event {
-  refetchEvent: () => void;
-}
 
 export const mapEventToFormValues = (event: Event): EventFormValues => ({
   name: event.name,
@@ -144,11 +119,19 @@ export const mapEventToFormValues = (event: Event): EventFormValues => ({
   isApprovalFlow: event.isApprovalFlow || false,
   maximumSlots: event.maximumSlots || undefined,
   hasMultipleTicketTypes: event.hasMultipleTicketTypes || false,
-  ticketTypes: event.ticketTypes || undefined,
-  konfhubId: event.konfhubId || undefined,
-  konfhubApiKey: event.konfhubApiKey || undefined,
+  ticketTypes:
+    event.ticketTypes?.map((x) => ({
+      ...x,
+      description: x.description ?? undefined,
+      originalPrice: x.originalPrice ?? undefined
+    })) ?? undefined,
+
   platformFee: event.platformFee ? event.platformFee * 100 : undefined,
-  isUsingPlatformFee: !!event.platformFee
+  isUsingPlatformFee: !!event.platformFee,
+  sprintDay: event.sprintDay,
+  sprintDayPrice: event.sprintDayPrice ?? undefined,
+  maximumSprintDaySlots: event.maximumSprintDaySlots ?? undefined,
+  isSprintDayLimitedSlot: event.maximumSprintDaySlots ? true : false
 });
 
 export interface CreateEvent {
@@ -168,10 +151,12 @@ export interface CreateEvent {
   maximumSlots: number | null;
   status: EventStatus;
   hasMultipleTicketTypes: boolean;
-  ticketTypes: TicketType[] | null;
-  konfhubId: string | null;
-  konfhubApiKey: string | null;
+  ticketTypes: Omit<TicketType, 'currentSales' | 'id'>[] | null;
   platformFee: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
+  maximumSprintDaySlots: number | null;
+  sprintDayRegistrationCount: number;
 }
 
 export type UpdateEvent = CreateEvent;
@@ -196,16 +181,18 @@ export const mapCreateEventValues = (values: EventFormValues): CreateEvent => ({
   ticketTypes: values.ticketTypes
     ? values.ticketTypes.map((ticket) => ({
         name: ticket.name,
+        originalPrice: ticket.originalPrice ?? null,
+        description: ticket.description ?? null,
         price: ticket.price,
         tier: ticket.tier,
-        maximumQuantity: ticket.maximumQuantity,
-        konfhubId: ticket.konfhubId,
-        description: ticket.description
+        maximumQuantity: ticket.maximumQuantity
       }))
     : null,
-  konfhubId: values.konfhubId || null,
-  konfhubApiKey: values.konfhubApiKey || null,
-  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee)
+  platformFee: transformPlatformFee(values.isUsingPlatformFee, values.platformFee),
+  sprintDay: values.sprintDay,
+  sprintDayPrice: values.sprintDay ? (values.sprintDayPrice ?? null) : null,
+  maximumSprintDaySlots: values.isSprintDayLimitedSlot ? (values.maximumSprintDaySlots ?? null) : null,
+  sprintDayRegistrationCount: values.sprintDayRegistrationCount || 0
 });
 
 const transformPlatformFee = (isUsingPlatformFee: boolean, platformFee?: number) => (isUsingPlatformFee && platformFee ? platformFee / 100 : null);

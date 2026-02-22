@@ -1,30 +1,16 @@
 import { ulid } from 'ulid';
 import { createApi } from '@/api/utils/createApi';
-import { Event, EventFAQs, EventStatus, FAQ } from '@/model/events';
-
-export interface TicketType {
-  name: string;
-  description?: string;
-  tier: string;
-  originalPrice?: number;
-  price: number;
-  maximumQuantity: number;
-  eventId: string;
-  entryId: string;
-  konfhubId: string;
-}
+import { CreateEvent, Event, EventFAQs, EventStatus, FAQ, UpdateEvent, UploadType } from '@/model/events';
 
 export interface TicketTypeDto {
   name: string;
-  description?: string;
+  description: string | null;
   tier: string;
-  originalPrice?: number;
+  originalPrice: number | null;
   price: number;
   maximumQuantity: number;
   eventId: string;
-  entryId: string;
-  konfhubId: string;
-  currentSales: number | null;
+  currentSales: number;
 }
 
 export interface EventDto {
@@ -47,6 +33,8 @@ export interface EventDto {
   isApprovalFlow: boolean;
   registrationCount: number;
   maximumSlots: number | null;
+  sprintDay: boolean;
+  sprintDayPrice: number | null;
   createDate: string;
   updateDate: string;
   createdBy: string;
@@ -56,12 +44,19 @@ export interface EventDto {
   konfhubId: string | null;
   konfhubApiKey: string | null;
   platformFee: number | null;
+  sprintDayRegistrationCount: number;
+  maximumSprintDaySlots: number | null;
 }
 
 export type OptionalEvent = Partial<Event>;
 
 export interface PresignedUrl {
   uploadLink: string;
+  objectKey: string;
+}
+
+export interface DownloadUrl {
+  downloadLink: string;
   objectKey: string;
 }
 
@@ -93,8 +88,15 @@ const mapFAQsDtoToFAQ = (FAQDto: FAQDto): EventFAQs => {
   return { isActive: FAQDto.isActive, faqs: FAQsWithId };
 };
 
+const mapDtoToTicketTypes = (ticketTypes: TicketTypeDto[]) =>
+  ticketTypes.map((x) => ({
+    ...x,
+    id: x.name.trim().toLowerCase()
+  }));
+
 const mapEventDtoToEvent = (event: EventDto): Event => ({
-  ...event
+  ...event,
+  ticketTypes: event.ticketTypes ? mapDtoToTicketTypes(event.ticketTypes) : null
 });
 
 const mapEventsDtoToEvent = (events: EventDto[]): Event[] => events.map((event) => mapEventDtoToEvent(event));
@@ -120,7 +122,7 @@ export const getAdminEvents = (adminId: string) =>
     output: mapEventsDtoToEvent
   });
 
-export const createEvent = (event: Omit<Event, 'eventId' | 'registrationCount'>) =>
+export const createEvent = (event: CreateEvent) =>
   createApi<EventDto, Event>({
     method: 'post',
     authorize: true,
@@ -144,7 +146,7 @@ export const getAdminEvent = (entryId: string) =>
     output: mapEventDtoToEvent
   });
 
-export const updateEvent = (entryId: string, event: OptionalEvent) =>
+export const updateEvent = (entryId: string, event: UpdateEvent) =>
   createApi<EventDto, Event>({
     method: 'put',
     authorize: true,
@@ -161,12 +163,19 @@ export const deleteEvent = (entryId: string) =>
     output: mapEventDtoToEvent
   });
 
-export const getPresignedUrl = (entryId: string, fileName: string, uploadType: string) =>
+export const getPresignedUrl = (entryId: string, fileName: string, uploadType: UploadType, headers?: object) =>
   createApi<PresignedUrl>({
     method: 'put',
-    authorize: true,
     url: `/events/${entryId}/upload/${uploadType}`,
+    headers,
     body: { fileName }
+  });
+
+export const getDownloadUrl = (entryId: string, objectKey: string) =>
+  createApi<DownloadUrl>({
+    method: 'get',
+    url: `/events/${entryId}/download`,
+    queryParams: { objectKey }
   });
 
 export const getEventRegCountStatus = (entryId: string) =>

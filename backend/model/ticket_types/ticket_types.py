@@ -1,3 +1,5 @@
+from typing import Optional
+
 from model.entities import Entities
 from pydantic import BaseModel, Field
 from pynamodb.attributes import NumberAttribute, UnicodeAttribute
@@ -17,18 +19,18 @@ class TicketType(Entities, discriminator='TicketType'):
     currentSales = NumberAttribute(default=0)
 
     eventId = UnicodeAttribute(null=False)
-    konfhubId = UnicodeAttribute(null=False)
+    konfhubId = UnicodeAttribute(null=True)
 
 
 class TicketTypeIn(BaseModel):
-    name: str = Field(None, title='Name')
-    description: str = Field(None, title='Description')
-    tier: str = Field(None, title='Tier')
-    originalPrice: float = Field(None, title='Original Price')
-    price: float = Field(None, title='Price')
-    maximumQuantity: int = Field(None, title='Maximum Quantity')
-    eventId: str = Field(None, title='Event ID')
-    konfhubId: str = Field(None, title='Konfhub ID')
+    name: Optional[str] = Field(None, title='Name')
+    description: Optional[str] = Field(None, title='Description')
+    tier: Optional[str] = Field(None, title='Tier')
+    originalPrice: Optional[float] = Field(None, title='Original Price')
+    price: Optional[float] = Field(None, title='Price')
+    maximumQuantity: Optional[int] = Field(None, title='Maximum Quantity')
+    eventId: Optional[str] = Field(None, title='Event ID')
+    konfhubId: Optional[str] = Field(None, title='Konfhub ID', exclude=True)
 
 
 class TicketTypeOut(TicketTypeIn):

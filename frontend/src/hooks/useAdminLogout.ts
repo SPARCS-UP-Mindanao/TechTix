@@ -1,38 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSignOut } from 'react-auth-kit';
-import { getCookie, removeCookie } from 'typescript-cookie';
-import { logoutUser } from '@/api/auth';
-import { CustomAxiosError } from '@/api/utils/createApi';
-import { cookieConfiguration } from '@/utils/cookies';
-import { useApi } from './useApi';
+import { AuthError, signOut } from 'aws-amplify/auth';
+import { useNavigateTo } from '@/hooks/useNavigateTo';
+import { useCurrentAdminUser } from './useCurrentUser';
 import { useNotifyToast } from './useNotifyToast';
 
 export const useAdminLogout = () => {
+  const auth = useCurrentAdminUser();
   const [isLogoutOpen, setLogoutOpen] = useState(false);
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { errorToast } = useNotifyToast();
-  const api = useApi();
-  const navigate = useNavigate();
-  const signOut = useSignOut();
+  const { navigate } = useNavigateTo();
 
   const onLogoutAdmin = async () => {
     try {
-      const accessToken = getCookie('_auth')!;
       setIsLoggingOut(true);
-      const logoutResponse = await api.execute(logoutUser(accessToken));
-      if (logoutResponse.status === 200 || logoutResponse.status === 400 || logoutResponse.status === 422) {
-        signOut();
-        removeCookie('_auth_user', cookieConfiguration);
-        navigate('/admin/login');
-      }
+      await signOut();
+      await auth.refetchUser?.();
+      navigate('/admin/login', { replace: true });
     } catch (e) {
-      const { errorData } = e as CustomAxiosError;
-      console.error(errorData.message || errorData.detail[0].msg);
-      errorToast({
-        title: 'Retry logging out',
-        description: 'An error occured. Please try logging out again'
-      });
+      if (e instanceof AuthError) {
+        errorToast({
+          id: 'sign-in-error',
+          title: 'There was a problem signing in.',
+          description: e.message
+        });
+        throw Error(e.message);
+      } else {
+        console.error(e);
+        throw Error();
+      }
     } finally {
       setIsLoggingOut(false);
     }

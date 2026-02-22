@@ -1,17 +1,51 @@
-eventsUploadHandler:
-  handler: functions/events_upload_handler.handler
+# eventsUploadHandler:
+#   handler: functions/events_upload_handler.handler
+#   layers:
+#     - { Ref: PythonRequirementsLambdaLayer }
+#   events:
+#     - s3:
+#         bucket: ${self:custom.bucket}
+#         event: s3:ObjectCreated:*
+#         rules:
+#           - prefix: events/
+#         existing: true
+#   iamRoleStatements:
+#     - Effect: Allow
+#       Action:
+#         - "dynamodb:*"
+#       Resource:
+#         - { "Fn::GetAtt": [Entities, Arn] }
+
+paymentHandler:
+  handler: functions/payment_handling.handler
   layers:
     - { Ref: PythonRequirementsLambdaLayer }
   events:
-    - s3:
-        bucket: ${self:custom.bucket}
-        event: s3:ObjectCreated:*
-        rules:
-          - prefix: events/
-        existing: true
+    - sqs:
+        arn:
+          "Fn::GetAtt": [ PaymentQueue, Arn ]
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - "dynamodb:*"
+        - "sqs:*"
       Resource:
-        - { "Fn::GetAtt": [Entities, Arn] }
+        - "Fn::GetAtt": [ PaymentQueue, Arn ]
+    - Effect: Allow
+      Action:
+        - "dynamodb:PutItem"
+        - "dynamodb:Query"
+        - "dynamodb:GetItem"
+        - "dynamodb:UpdateItem"
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.registrations}/index/*"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.entities}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.events}/index/*"
+
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
+      Resource: "arn:aws:sqs:${self:provider.region}:${aws:accountId}:${self:custom.stage}-durianpy-events-email-queue.fifo"

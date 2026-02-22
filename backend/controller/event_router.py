@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Path, Query
 from model.common import Message
 from model.events.event import EventAdminOut, EventIn, EventOut
 from model.events.events_constants import EventUploadType
-from model.file_uploads.file_upload import FileUploadIn, FileUploadOut
+from model.file_uploads.file_upload import FileDownloadOut, FileUploadIn, FileUploadOut
 from model.file_uploads.file_upload_constants import FileUploadConstants
 from usecase.event_usecase import EventUsecase
 from usecase.file_s3_usecase import FileS3Usecase
@@ -298,3 +298,32 @@ def get_presigned_url(
     """
     file_s3_uc = FileS3Usecase()
     return file_s3_uc.create_presigned_url(f'events/{entry_id}/{upload_type.value}/{upload_in.fileName}')
+
+
+@event_router.get(
+    '/{entryId}/download',
+    response_model=FileDownloadOut,
+    responses={500: {'model': Message, 'description': 'Interal server error'}},
+    summary='Get download URL',
+)
+@event_router.get(
+    '/{entryId}/download/',
+    response_model=FileDownloadOut,
+    response_model_exclude_none=True,
+    response_model_exclude_unset=True,
+    include_in_schema=False,
+)
+def get_download_url(
+    object_key: str = Query(..., title='Object key', alias=CommonConstants.OBJECT_KEY),
+):
+    """Get download URL
+
+    :param object_key: The key of the object. Defaults to Query(None, title='Object key', alias=CommonConstants.OBJECT_KEY).
+    :type admin_id: str
+
+    :return: FileDownloadOut object.
+    :rtype: FileDownloadOut
+
+    """
+    file_s3_uc = FileS3Usecase()
+    return file_s3_uc.create_download_url(object_key=object_key)

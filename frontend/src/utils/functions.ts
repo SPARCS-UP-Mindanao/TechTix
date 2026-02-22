@@ -113,3 +113,8 @@ export const downloadFile = (fileLink: string, fileName: string) => {
 };
 
 export const decodeObjectKeys = (objectKey: string) => `${decodeURIComponent(objectKey?.split('/').pop() ?? '')}`;
+
+export const hasOnlyValidKeys = (obj: unknown, validKeys: string[]): obj is Record<string, unknown> => {
+  if (typeof obj !== 'object' || obj === null) return false;
+  return Object.keys(obj).every((key) => validKeys.includes(key));
+};

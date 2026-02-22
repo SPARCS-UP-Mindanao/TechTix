@@ -1,15 +1,15 @@
 import os
 from datetime import datetime
 from http import HTTPStatus
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import pytz
 import ulid
 from constants.common_constants import EntryStatus
+from model.pycon_registrations.pycon_registration import PyconRegistrationIn
 from model.registrations.registration import Registration, RegistrationIn
 from pynamodb.connection import Connection
 from pynamodb.exceptions import (
-    DeleteError,
     PutError,
     PynamoDBConnectionError,
     QueryError,
@@ -39,7 +39,7 @@ class RegistrationsRepository:
         self.conn = Connection(region=os.getenv('REGION'))
 
     def store_registration(
-        self, registration_in: RegistrationIn, registration_id: str = None
+        self, registration_in: Union[PyconRegistrationIn, RegistrationIn], registration_id: str = None
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Store a registration record in the database.
 
@@ -73,19 +73,24 @@ class RegistrationsRepository:
             message = f'Failed to save registration strategy form: {str(e)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except PynamoDBConnectionError as db_error:
             message = f'Connection error occurred, Please check config(region, table name, etc): {str(db_error)}'
             logger.error(f'[{self.core_obj} = {registration_id}]: {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         else:
             logger.info(f'[{self.core_obj} = {registration_id}]: Successfully saved registration strategy form')
             return HTTPStatus.OK, registration_entry, None
 
-    def query_registrations(self, event_id: str = None) -> Tuple[HTTPStatus, List[Registration], str]:
+    def query_registrations(
+        self, event_id: str = None, is_deleted: bool = False
+    ) -> Tuple[HTTPStatus, List[Registration], str]:
         """Query a list of registration records from the database.
 
         :param event_id: The event ID to query (default is None to query all records).
@@ -96,17 +101,21 @@ class RegistrationsRepository:
 
         """
         try:
+            condition = None
+            if not is_deleted:
+                condition = Registration.entryStatus == EntryStatus.ACTIVE.value
+
             if event_id is None:
                 registration_entries = list(
                     Registration.scan(
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                        filter_condition=condition,
                     )
                 )
             else:
                 registration_entries = list(
                     Registration.query(
                         hash_key=event_id,
-                        filter_condition=Registration.entryStatus == EntryStatus.ACTIVE.value,
+                        filter_condition=condition,
                     )
                 )
 
@@ -235,7 +244,7 @@ class RegistrationsRepository:
             return HTTPStatus.OK, registration_entries, None
 
     def update_registration(
-        self, registration_entry: Registration, registration_in: RegistrationIn
+        self, registration_entry: Registration, registration_in: Union[PyconRegistrationIn, RegistrationIn]
     ) -> Tuple[HTTPStatus, Registration, str]:
         """Update a registration record in the database.
 
@@ -266,7 +275,7 @@ class RegistrationsRepository:
                 transaction.update(registration_entry, actions=actions)
 
             registration_entry.refresh()
-            logger.info(f'[{registration_entry.rangeKey}] ' f'Update event data succesful')
+            logger.info(f'[{registration_entry.rangeKey}] Update event data succesful')
             return HTTPStatus.OK, registration_entry, ''
 
         except TransactWriteError as e:
@@ -285,11 +294,19 @@ class RegistrationsRepository:
 
         """
         try:
-            registration_entry.delete()
-            logger.info(f'[{registration_entry.rangeKey}] ' f'Delete registration data successful')
+            # soft delete
+            update_data = {
+                'deletedAt': self.current_date,
+                'entryStatus': EntryStatus.DELETED.value,
+            }
+            with TransactWrite(connection=self.conn) as transaction:
+                actions = [getattr(Registration, k).set(v) for k, v in update_data.items()]
+                transaction.update(registration_entry, actions=actions)
+
+            logger.info(f'[{registration_entry.rangeKey}] Delete registration data successful')
             return HTTPStatus.OK, None
 
-        except DeleteError as e:
+        except TransactWriteError as e:
             message = f'Failed to delete event data: {str(e)}'
             logger.error(f'[{registration_entry.rangeKey}] {message}')
-            return HTTPStatus.INTERNAL_SERVER_ERROR
+            return HTTPStatus.INTERNAL_SERVER_ERROR, None, message

@@ -1,1 +1,12 @@
-{"name":"databaseless-api","description":"","version":"0.1.0","devDependencies":{"serverless-iam-roles-per-function":"^3.2.0","serverless-python-requirements":"^6.1.0"}}
+{
+  "name": "databaseless-api",
+  "description": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "serverless": "^3.40.0",
+    "serverless-better-credentials": "^2.0.1",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-python-requirements": "^6.1.2"
+  }
+}

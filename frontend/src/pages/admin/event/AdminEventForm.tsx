@@ -26,7 +26,10 @@ const AdminEventForm: FC<Props> = ({ event }) => {
     name: 'ticketTypes'
   });
 
-  const [paidEvent, isLimitedSlot, isUsingPlatformFee] = useWatch({ name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee'], control });
+  const [paidEvent, isLimitedSlot, isUsingPlatformFee, sprintDay, isSprintDayLimitedSlot] = useWatch({
+    name: ['paidEvent', 'isLimitedSlot', 'isUsingPlatformFee', 'sprintDay', 'isSprintDayLimitedSlot'],
+    control
+  });
   const { isSubmitting, isDirty } = useFormState({ control });
 
   const hasMultipleTicketTypes = watch('hasMultipleTicketTypes');
@@ -85,26 +88,6 @@ const AdminEventForm: FC<Props> = ({ event }) => {
         </FormItem>
 
         <Separator className="my-4" />
-
-        <FormItem name="konfhubId">
-          {({ field }) => (
-            <FormItemContainer>
-              <FormLabel>Konfhub Event ID</FormLabel>
-              <Input {...field} placeholder="Konfhub ID" />
-              <FormError />
-            </FormItemContainer>
-          )}
-        </FormItem>
-
-        <FormItem name="konfhubApiKey">
-          {({ field }) => (
-            <FormItemContainer>
-              <FormLabel>Konfhub API Key</FormLabel>
-              <Input {...field} placeholder="Konfhub API Key" />
-              <FormError />
-            </FormItemContainer>
-          )}
-        </FormItem>
 
         <FormItem name="paidEvent">
           {({ field: { value, onChange } }) => (
@@ -208,18 +191,6 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-4 gap-2">
-                          <FormLabel htmlFor={`ticketTypes.${index}.konfhubId`} className="col-span-1">
-                            Konfhub ID
-                          </FormLabel>
-                          <Input
-                            {...register(`ticketTypes.${index}.konfhubId`)}
-                            id={`ticketTypes.${index}.konfhubId`}
-                            placeholder="Konfhub ID"
-                            className="col-span-3"
-                          />
-                        </div>
-
                         <Button type="button" className="w-fit" variant={'negative'} onClick={() => remove(index)}>
                           Remove
                         </Button>
@@ -229,7 +200,7 @@ const AdminEventForm: FC<Props> = ({ event }) => {
                       type="button"
                       variant={'default'}
                       className="w-full"
-                      onClick={() => append({ name: '', description: '', tier: '', price: 0, maximumQuantity: 0, konfhubId: '' })}
+                      onClick={() => append({ name: '', description: '', tier: '', price: 0, maximumQuantity: 0 })}
                     >
                       Add Ticket Type
                     </Button>
@@ -318,6 +289,62 @@ const AdminEventForm: FC<Props> = ({ event }) => {
           </FormItem>
         ) : (
           <FormItemSpacer />
+        )}
+
+        <Separator className="my-4" />
+
+        <FormItem name="sprintDay">
+          {({ field }) => (
+            <FormItemContainer halfSpace={sprintDay}>
+              <div className="flex flex-row gap-2">
+                <FormLabel>Will this event have a sprint day?</FormLabel>
+                <Switch id="sprintDay" checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
+              </div>
+              <FormError />
+            </FormItemContainer>
+          )}
+        </FormItem>
+
+        {sprintDay && (
+          <>
+            <FormItem name="sprintDayPrice">
+              {({ field }) => (
+                <FormItemContainer halfSpace>
+                  <div className="flex flex-row gap-2">
+                    <FormLabel>Sprint Day Fee</FormLabel>
+                    <Input type="number" {...field} />
+                  </div>
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+
+            <Separator className="my-4" />
+
+            <FormItem name="isSprintDayLimitedSlot">
+              {({ field }) => (
+                <FormItemContainer halfSpace>
+                  <div className="flex flex-row gap-2">
+                    <FormLabel>Are sprint day slots limited?</FormLabel>
+                    <Switch id="isSprintDayLimitedSlot" checked={field.value} onCheckedChange={field.onChange} />
+                  </div>
+                  <FormError />
+                </FormItemContainer>
+              )}
+            </FormItem>
+
+            {isSprintDayLimitedSlot && (
+              <FormItem name="maximumSprintDaySlots">
+                {({ field }) => (
+                  <FormItemContainer halfSpace>
+                    <FormLabel>Sprint Day Maximum Slots</FormLabel>
+                    <Input type="number" {...field} />
+                    <FormError />
+                  </FormItemContainer>
+                )}
+              </FormItem>
+            )}
+          </>
         )}
 
         <Separator className="my-4" />

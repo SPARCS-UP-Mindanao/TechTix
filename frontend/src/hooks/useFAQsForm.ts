@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { ulid } from 'ulid';
 import { z } from 'zod';
 import { updateFAQs } from '@/api/events';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { Event, removeFAQIds } from '@/model/events';
+import { removeFAQIds } from '@/model/events';
+import useAdminEvent from './useAdminEvent';
 import { useApi } from './useApi';
 import { useNotifyToast } from './useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,7 +22,7 @@ const FAQSchema = z.object(
     })
   },
   {
-    required_error: 'Please enter a question and answer'
+    error: 'Please enter a question and answer'
   }
 );
 
@@ -50,7 +50,9 @@ type FAQ = z.infer<typeof FAQSchema>;
 export const useFAQsForm = (eventFAQs: FAQsFormValues) => {
   const api = useApi();
   const { successToast, errorToast } = useNotifyToast();
-  const { eventId } = useOutletContext<Event>();
+  const {
+    event: { eventId }
+  } = useAdminEvent();
   const form = useForm<FAQsFormValues>({
     mode: 'onChange',
     resolver: zodResolver(FAQsFormSchema),

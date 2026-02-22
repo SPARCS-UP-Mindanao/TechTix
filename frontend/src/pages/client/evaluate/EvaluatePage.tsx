@@ -1,7 +1,15 @@
+import { useParams } from 'react-router-dom';
+import ErrorPage from '@/components/ErrorPage';
 import Evaluate from './Evaluate';
 
 const EvaluatePage = () => {
-  return <Evaluate />;
+  const { eventId } = useParams();
+
+  if (!eventId) {
+    return <ErrorPage />;
+  }
+
+  return <Evaluate eventId={eventId} />;
 };
 
 export const Component = EvaluatePage;

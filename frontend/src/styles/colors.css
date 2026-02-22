@@ -1,4 +1,18 @@
 @layer base {
+  /* Pycon Colors */
+  :root {
+    --pycon-orange: #f3a04d; /* #f3a04d; */
+    --pycon-custard: #fddeb2; /* #fddeb2; */
+    --pycon-custard-light: #feefdb; /* #feefdb; */
+    --pycon-red: #d53c45; /* #d53c45; */
+    --pycon-white: #fff; /* #fff; */
+    --pycon-violet: #3e2c54; /* #3e2c54; */
+    --pycon-violet-light: #67557d; /* #67557d; */
+    --pycon-violet-dark: #312541; /* #312541; */
+    --pycon-lavender: #7681b6; /* #7681b6; */
+    --pycon-dirty-white: #fff9f2; /* # fff9f2 */
+  }
+
   :root,
   .light {
     --background: var(--primary-50);

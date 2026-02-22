@@ -1,14 +1,10 @@
 import { useState } from 'react';
-import { Outlet as AdminPageRoute, Navigate, useParams } from 'react-router-dom';
-import { useIsAuthenticated } from 'react-auth-kit';
+import { Outlet as AdminPageRoute, useParams } from 'react-router-dom';
 import AlertModal from '@/components/AlertModal';
-import ErrorPage from '@/components/ErrorPage';
-import Skeleton from '@/components/Skeleton';
 import { Toaster } from '@/components/Toast/Toaster';
-import { getCurrentUser } from '@/api/auth';
+import { useActiveBreakpoints } from '@/hooks/useActiveBreakpoints';
 import { useAdminLogout } from '@/hooks/useAdminLogout';
-import { useApiQuery } from '@/hooks/useApi';
-import { useLayout } from '@/hooks/useLayout';
+import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
 import { useMetaData } from '@/hooks/useMetaData';
 import AdminSideBar from './sidebar/AdminSideBar';
 import AdminSideBarTrigger from './sidebar/AdminSideBarTrigger';
@@ -17,10 +13,11 @@ import { getAdminRouteConfig } from './sidebar/getAdminRouteConfig';
 const AdminPageContent = () => {
   const setMetaData = useMetaData();
   setMetaData({});
-  const { data: response, isFetching } = useApiQuery(getCurrentUser());
+
+  const auth = useCurrentAdminUser();
   const [isSideBarOpen, setSideBarOpen] = useState(true);
   const { eventId } = useParams();
-  const { md } = useLayout('md');
+  const [md] = useActiveBreakpoints('md');
 
   const SIDEBAR_OFFSET = 25;
   const openSidebarWidth = 220 + SIDEBAR_OFFSET;
@@ -31,23 +28,8 @@ const AdminPageContent = () => {
   const { isLogoutOpen, setLogoutOpen, isLoggingOut, onLogoutAdmin } = useAdminLogout();
   const onCloseLogoutModal = () => setLogoutOpen(false);
 
-  const isAuthenticated = useIsAuthenticated();
-  if (!isAuthenticated()) {
-    return <Navigate to="/admin/login" />;
-  }
-
-  if (isFetching) {
-    return <Skeleton className="w-full h-full rounded-none" />;
-  }
-
-  if (!response || (response && !response.data && response.errorData)) {
-    return <ErrorPage error={response} />;
-  }
-
-  const userGroups = response.data['cognito:groups'];
-
   const ADMIN_CONFIG = getAdminRouteConfig({
-    userGroups: userGroups,
+    isSuperAdmin: !!auth?.user?.isSuperAdmin,
     eventId: eventId,
     setLogoutOpen
   });
@@ -81,7 +63,7 @@ const AdminPageContent = () => {
         >
           {md && <AdminSideBarTrigger isSidebarOpen={isSideBarOpen} toggleSidebar={toggleSidebar} />}
           <div className="p-10 px-4 md:p-14">
-            <AdminPageRoute context={{ userGroups }} />
+            <AdminPageRoute />
           </div>
         </div>
       </main>

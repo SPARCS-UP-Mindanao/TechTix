@@ -1,4 +1,3 @@
-import json
 import os
 import re
 from copy import deepcopy
@@ -96,17 +95,27 @@ class EventUsecase:
         original_event = deepcopy(event)
         original_status = original_event.status
 
+        if event_in.maximumSprintDaySlots:
+            status, registrations, _ = self.__registration_repository.query_registrations(event_id)
+            if registrations not in (None, []):
+                eventSprintCount = len([reg for reg in registrations if reg.sprintDay])
+                event_in.sprintDayRegistrationCount = eventSprintCount
+
         status, update_event, message = self.__events_repository.update_event(event_entry=event, event_in=event_in)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
         if event_in.ticketTypes:
             _, ticket_types_entries, _ = self.__ticket_type_repository.query_ticket_types(event_id=event_id)
-            ticket_types_map = {ticket_type.konfhubId: ticket_type for ticket_type in ticket_types_entries or []}
+            existing_ticket_types_map = {
+                Utils.convert_to_slug(ticket_type.name): ticket_type for ticket_type in ticket_types_entries or []
+            }
 
             for ticket_type in event_in.ticketTypes:
                 ticket_type.eventId = event_id
-                ticket_type_entry = ticket_types_map.get(ticket_type.konfhubId)
+                slug = Utils.convert_to_slug(ticket_type.name)
+                ticket_type_entry = existing_ticket_types_map.get(slug)
+
                 if ticket_type_entry:
                     status, _, message = self.__ticket_type_repository.update_ticket_type(
                         ticket_type_entry=ticket_type_entry, ticket_type_in=ticket_type
@@ -118,12 +127,12 @@ class EventUsecase:
                     return JSONResponse(status_code=status, content={'message': message})
 
             # Delete ticket types not present in the input
-            konfhub_ids_in_input = {ticket_type.konfhubId for ticket_type in event_in.ticketTypes}
-            for ticket_type in ticket_types_map.values():
-                if ticket_type.entryId in konfhub_ids_in_input:
+            ticket_types_in_input = {Utils.convert_to_slug(ticket_type.name) for ticket_type in event_in.ticketTypes}
+            for existing_ticket_type in existing_ticket_types_map.values():
+                if Utils.convert_to_slug(existing_ticket_type.name) in ticket_types_in_input:
                     continue
 
-                status, message = self.__ticket_type_repository.delete_ticket_type(ticket_type)
+                status, message = self.__ticket_type_repository.delete_ticket_type(existing_ticket_type)
                 if status != HTTPStatus.OK:
                     return JSONResponse(status_code=status, content={'message': message})
 
@@ -310,4 +319,4 @@ class EventUsecase:
         :rtype: dict
 
         """
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

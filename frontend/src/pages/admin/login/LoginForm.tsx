@@ -1,6 +1,4 @@
 import { KeyboardEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useIsAuthenticated } from 'react-auth-kit';
 import { FormProvider } from 'react-hook-form';
 import Button from '@/components/Button';
 import { FormItem, FormLabel, FormError } from '@/components/Form';
@@ -53,7 +51,7 @@ const ResetPasswordModal = () => {
       modalTitle="Reset Password"
       modalDescription={getModalDescription()}
       visible={showModal}
-      closable={step === 'email'}
+      showCloseButton={step === 'email'}
       onOpenChange={toggleModal}
       modalFooter={ModalFooter()}
       trigger={
@@ -120,11 +118,6 @@ const LoginForm = () => {
       submit();
     }
   };
-  const isAuthenticated = useIsAuthenticated();
-
-  if (isAuthenticated()) {
-    return <Navigate to="/admin/events" />;
-  }
 
   const onShowPassword = () => setShowPassword((prev) => !prev);
 
@@ -150,7 +143,7 @@ const LoginForm = () => {
                   <Input type={showPassword ? 'text' : 'password'} {...field} className="pr-8" />
                   <Icon
                     name={showPassword ? 'EyeOff' : 'Eye'}
-                    className="ml-[-2rem] cursor-pointer hover:text-muted-foreground transition-colors"
+                    className="-ml-8 cursor-pointer hover:text-muted-foreground transition-colors"
                     onClick={onShowPassword}
                   />
                 </div>

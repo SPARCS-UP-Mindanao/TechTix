@@ -7,7 +7,7 @@ import { Registration } from '@/model/registrations';
 import { formatPercentage } from '@/utils/functions';
 import { ColumnDef } from '@tanstack/react-table';
 
-const showableHeaders: readonly string[] = ['entryId', 'createDate', 'claimed', 'discountPercentage', 'registration', 'email'];
+const showableHeaders: readonly string[] = ['entryId', 'createDate', 'claimed', 'discountPercentage', 'registration', 'email', 'remainingUses'];
 const getEnableHiding = (header: string) => showableHeaders.includes(header);
 
 export const discountColumns: ColumnDef<Discount>[] = [
@@ -25,7 +25,7 @@ export const discountColumns: ColumnDef<Discount>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Discout Code
+          Discount Code
           <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -33,17 +33,16 @@ export const discountColumns: ColumnDef<Discount>[] = [
     enableHiding: getEnableHiding('entryId')
   },
   {
-    accessorKey: 'claimed',
+    accessorKey: 'stillAvailable',
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Claimed?
+          Has available uses?
           <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <Icon name={row.original.claimed ? 'Check' : 'X'} />,
-    enableHiding: getEnableHiding('claimed')
+    cell: ({ row }) => <Icon name={row.original.remainingUses ? 'Check' : 'X'} />
   },
   {
     accessorKey: 'createDate',
@@ -74,36 +73,58 @@ export const discountColumns: ColumnDef<Discount>[] = [
       return formatPercentage(discount);
     }
   },
+  // {
+  //   accessorKey: 'email',
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+  //         Email Claimer
+  //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   enableHiding: getEnableHiding('email'),
+  //   cell: ({ row }) => {
+  //     const registration: Registration = row.getValue('registration');
+  //     return registration && registration.email ? registration.email : 'N/A';
+  //   }
+  // },
+  // {
+  //   accessorKey: 'registration',
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+  //         Name of Claimer
+  //         <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   enableHiding: getEnableHiding('registration'),
+  //   cell: ({ row }) => {
+  //     const registration: Registration = row.getValue('registration');
+  //     return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
+  //   }
+  // },
   {
-    accessorKey: 'email',
+    accessorKey: 'remainingUses',
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Email Claimer
+          Remaining Uses
           <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    enableHiding: getEnableHiding('email'),
+    enableHiding: getEnableHiding('remainingUses'),
     cell: ({ row }) => {
-      const registration: Registration = row.getValue('registration');
-      return registration && registration.email ? registration.email : 'N/A';
-    }
-  },
-  {
-    accessorKey: 'registration',
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Name of Claimer
-          <Icon name="ArrowDownUp" className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    enableHiding: getEnableHiding('registration'),
-    cell: ({ row }) => {
-      const registration: Registration = row.getValue('registration');
-      return registration && registration.firstName && registration.lastName ? registration.firstName + ' ' + registration.lastName : 'N/A';
+      const remainingUses: number = row.getValue('remainingUses');
+      const discount: Discount = row.original;
+
+      if (discount.maxDiscountUses !== undefined && discount.maxDiscountUses !== null) {
+        return remainingUses !== undefined && remainingUses !== null ? remainingUses : 'N/A';
+      }
+
+      return discount.remainingUses ? 'Used' : '1';
     }
   }
 ];

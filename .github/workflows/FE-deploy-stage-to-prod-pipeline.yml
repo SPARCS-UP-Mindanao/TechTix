@@ -1,0 +1,50 @@
+name: Deploy stage to main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-stage-to-main:
+    name: Deploy stage to main
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: stage
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Code Format
+        run: npm run format:check:ci
+
+      - name: Build Project
+        run: npm run build:dummy
+
+      - name: Await Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: ArJSarmiento,ASPactores,seangaaab
+          minimum-approvals: 1
+          issue-title: "Deploying stage to main"
+          issue-body: "Please approve or deny the deployment."
+
+      - name: Sync stage to main
+        uses: connor-baer/action-sync-branch@main
+        with:
+          branch: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          force: true

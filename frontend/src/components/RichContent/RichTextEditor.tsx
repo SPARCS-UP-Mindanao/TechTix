@@ -1,10 +1,8 @@
 import { forwardRef } from 'react';
 import './RichContent.css';
 import RichEditorMenu from './RichEditorMenu';
-import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent, Content } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
@@ -21,12 +19,6 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(({ conten
       TextAlign.configure({
         types: ['heading', 'paragraph']
       }),
-      Underline,
-      Link.configure({
-        openOnClick: false
-      }).extend({
-        inclusive: false
-      }),
       Placeholder.configure({
         emptyEditorClass: 'emptyEditor',
         placeholder
@@ -36,7 +28,7 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(({ conten
     editorProps: {
       attributes: {
         class:
-          'min-h-[100px] w-full rounded-md border border-border bg-input px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-5'
+          'min-h-[100px] w-full rounded-md border border-border bg-input px-3 py-1 shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-5'
       }
     },
     onUpdate: ({ editor }) => {
@@ -45,7 +37,8 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(({ conten
     },
     onCreate: ({ editor }) => {
       editor.commands.setContent(content);
-    }
+    },
+    immediatelyRender: false
   });
 
   if (!editor) {

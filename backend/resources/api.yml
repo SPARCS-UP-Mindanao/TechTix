@@ -17,7 +17,7 @@ app:
         path: /docs
         method: get
         authorizer:
-          arn: arn:aws:lambda:${self:provider.region}:192218445313:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
+          arn: arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:durianpy-auth-service-${self:custom.stage}-basicAuthAuthorizer
           resultTtlInSeconds: 0
   iamRoleStatements:
     - Effect: Allow
@@ -69,13 +69,13 @@ app:
       Action:
         - ssm:GetParameter
       Resource:
-        - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
+        - arn:aws:ssm:*:*:parameter/durianpy-auth-secret-key-${self:custom.stage}
     - Effect: Allow
       Action:
         - "sqs:*"
       Resource:
-        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-email-queue.fifo
-        - arn:aws:sqs:ap-southeast-1:192218445313:${self:custom.stage}-sparcs-events-certificate-queue.fifo
+        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-durianpy-events-email-queue.fifo
+        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-durianpy-events-certificate-queue.fifo
     - Effect: Allow
       Action:
         - s3:PutObject

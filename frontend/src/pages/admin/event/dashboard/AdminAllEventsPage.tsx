@@ -1,20 +1,20 @@
 import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from 'typescript-cookie';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion';
 import { getAdminEvents } from '@/api/events';
 import { Event } from '@/model/events';
 import { cn } from '@/utils/classes';
 import { useApiQuery } from '@/hooks/useApi';
+import { useCurrentAdminUser } from '@/hooks/useCurrentUser';
 import { useDashboardEvents } from '@/hooks/useDashboardEvents';
 import EventCard from '../../../../components/EventCard/EventCard';
 import AdminAllEventsPageSkeleton from './AdminAllEventsPageSkeleton';
 
 const AdminAllEvents = () => {
-  const adminId = getCookie('_auth_user');
-  const { data: response, isFetching, refetch } = useApiQuery(getAdminEvents(adminId!));
+  const auth = useCurrentAdminUser();
+  const { data: response, isPending, refetch } = useApiQuery(getAdminEvents(auth?.user?.id!));
 
-  if (isFetching) {
+  if (isPending) {
     return <AdminAllEventsPageSkeleton />;
   }
 
@@ -29,6 +29,8 @@ const AdminAllEvents = () => {
 
   const events: Event[] = response.data;
   return <DashboardContent events={events} refetch={refetch} />;
+
+  // return <h1>test</h1>
 };
 
 interface DashboardProps {
@@ -74,7 +76,7 @@ const DashboardContent: FC<DashboardProps> = ({ events, refetch }) => {
           <AccordionItem value={category.id} key={category.id} disabled={!category.events.length}>
             <AccordionTrigger className={cn(category.events.length && 'font-bold')}>
               <div className="inline-flex space-x-1">
-                <p className={cn('text-xl hover:!no-underline', category.events.length && 'text-primary-400')}>{getEventCount(category.events)}</p>
+                <p className={cn('text-xl hover:no-underline!', category.events.length && 'text-primary-400')}>{getEventCount(category.events)}</p>
                 <p className={cn('text-xl')}>{category.name}</p>
               </div>
             </AccordionTrigger>

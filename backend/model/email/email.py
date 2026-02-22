@@ -14,4 +14,4 @@ class EmailIn(BaseModel):
     regards: List[str] = Field(..., title='Regards of the email')
     emailType: EmailType = Field(..., title='Type of the email')
     eventId: str = Field(..., title='Event ID of the email')
-    isSparcs: bool = Field(default=True, title='Is this a SPARCS sent email?')
+    isDurianPy: bool = Field(default=True, title='Is this a DURIANPY sent email?')

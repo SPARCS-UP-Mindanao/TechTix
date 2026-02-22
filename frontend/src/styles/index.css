@@ -1,8 +1,210 @@
+@import 'tailwindcss';
 @import './typography.css';
 @import './colors.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './pycon.css';
+
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-pycon-orange: var(--pycon-orange); /* #f3a04d; */
+  --color-pycon-custard: var(--pycon-custard); /* #fddeb2; */
+  --color-pycon-custard-light: var(--pycon-custard-light); /* #feefdb; */
+  --color-pycon-red: var(--pycon-red); /* #d53c45; */
+  --color-pycon-white: var(--pycon-white); /* #fff; */
+  --color-pycon-violet: var(--pycon-violet); /* #3e2c54; */
+  --color-pycon-violet-light: var(--pycon-violet-light); /* #67557d; */
+  --color-pycon-violet-dark: var(--pycon-violet-dark); /* #312541; */
+  --color-pycon-lavender: var(--pycon-lavender); /* #7681b6; */
+  --color-pycon-dirty-white: var(--pycon-dirty-white); /* # fff9f2 */
+
+  --font-pipanganan: 'Pipanganan', 'sans-serif';
+  --font-nunito: 'Nunito Sans', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+
+  --breakpoint-3xl: 1600px;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary-50: hsl(var(--primary-50));
+  --color-primary-100: hsl(var(--primary-100));
+  --color-primary-200: hsl(var(--primary-200));
+  --color-primary-300: hsl(var(--primary-300));
+  --color-primary-400: hsl(var(--primary-400));
+  --color-primary-500: hsl(var(--primary-500));
+  --color-primary-600: hsl(var(--primary-600));
+  --color-primary-700: hsl(var(--primary-700));
+  --color-primary-800: hsl(var(--primary-800));
+  --color-primary-900: hsl(var(--primary-900));
+  --color-primary-950: hsl(var(--primary-950));
+  --color-primary: hsl(var(--primary-500));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary-pink-500));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-secondary-pink-50: hsl(var(--secondary-pink-50));
+  --color-secondary-pink-100: hsl(var(--secondary-pink-100));
+  --color-secondary-pink-200: hsl(var(--secondary-pink-200));
+  --color-secondary-pink-300: hsl(var(--secondary-pink-300));
+  --color-secondary-pink-400: hsl(var(--secondary-pink-400));
+  --color-secondary-pink-500: hsl(var(--secondary-pink-500));
+  --color-secondary-pink-600: hsl(var(--secondary-pink-600));
+  --color-secondary-pink-700: hsl(var(--secondary-pink-700));
+  --color-secondary-pink-800: hsl(var(--secondary-pink-800));
+  --color-secondary-pink-900: hsl(var(--secondary-pink-900));
+  --color-secondary-pink-950: hsl(var(--secondary-pink-950));
+  --color-secondary-pink: hsl(var(--secondary-pink-500));
+
+  --color-secondary-orange-50: hsl(var(--secondary-orange-50));
+  --color-secondary-orange-100: hsl(var(--secondary-orange-100));
+  --color-secondary-orange-200: hsl(var(--secondary-orange-200));
+  --color-secondary-orange-300: hsl(var(--secondary-orange-300));
+  --color-secondary-orange-400: hsl(var(--secondary-orange-400));
+  --color-secondary-orange-500: hsl(var(--secondary-orange-500));
+  --color-secondary-orange-600: hsl(var(--secondary-orange-600));
+  --color-secondary-orange-700: hsl(var(--secondary-orange-700));
+  --color-secondary-orange-800: hsl(var(--secondary-orange-800));
+  --color-secondary-orange-900: hsl(var(--secondary-orange-900));
+  --color-secondary-orange-950: hsl(var(--secondary-orange-950));
+  --color-secondary-orange: hsl(var(--secondary-orange-500));
+
+  --color-neutrals-50: hsl(var(--neutrals-50));
+  --color-neutrals-100: hsl(var(--neutrals-100));
+  --color-neutrals-200: hsl(var(--neutrals-200));
+  --color-neutrals-300: hsl(var(--neutrals-300));
+  --color-neutrals-400: hsl(var(--neutrals-400));
+  --color-neutrals-500: hsl(var(--neutrals-500));
+  --color-neutrals-600: hsl(var(--neutrals-600));
+  --color-neutrals-700: hsl(var(--neutrals-700));
+  --color-neutrals-800: hsl(var(--neutrals-800));
+  --color-neutrals-900: hsl(var(--neutrals-900));
+  --color-neutrals-950: hsl(var(--neutrals-950));
+  --color-neutrals: hsl(var(--neutrals-500));
+
+  --color-positive-50: hsl(var(--positive-50));
+  --color-positive-100: hsl(var(--positive-100));
+  --color-positive-200: hsl(var(--positive-200));
+  --color-positive-300: hsl(var(--positive-300));
+  --color-positive-400: hsl(var(--positive-400));
+  --color-positive-500: hsl(var(--positive-500));
+  --color-positive-600: hsl(var(--positive-600));
+  --color-positive-700: hsl(var(--positive-700));
+  --color-positive-800: hsl(var(--positive-800));
+  --color-positive-900: hsl(var(--positive-900));
+  --color-positive-950: hsl(var(--positive-950));
+  --color-positive: hsl(var(--positive));
+  --color-positive-foreground: hsl(var(--positive-foreground));
+
+  --color-warming-50: hsl(var(--warming-50));
+  --color-warming-100: hsl(var(--warming-100));
+  --color-warming-200: hsl(var(--warming-200));
+  --color-warming-300: hsl(var(--warming-300));
+  --color-warming-400: hsl(var(--warming-400));
+  --color-warming-500: hsl(var(--warming-500));
+  --color-warming-600: hsl(var(--warming-600));
+  --color-warming-700: hsl(var(--warming-700));
+  --color-warming-800: hsl(var(--warming-800));
+  --color-warming-900: hsl(var(--warming-900));
+  --color-warming-950: hsl(var(--warming-950));
+  --color-warming: hsl(var(--warming-500));
+
+  --color-negative-50: hsl(var(--negative-50));
+  --color-negative-100: hsl(var(--negative-100));
+  --color-negative-200: hsl(var(--negative-200));
+  --color-negative-300: hsl(var(--negative-300));
+  --color-negative-400: hsl(var(--negative-400));
+  --color-negative-500: hsl(var(--negative-500));
+  --color-negative-600: hsl(var(--negative-600));
+  --color-negative-700: hsl(var(--negative-700));
+  --color-negative-800: hsl(var(--negative-800));
+  --color-negative-900: hsl(var(--negative-900));
+  --color-negative-950: hsl(var(--negative-950));
+  --color-negative: hsl(var(--negative));
+  --color-negative-foreground: hsl(var(--negative-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-secondary: hsl(var(--accent-secondary));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --font-raleway: Raleway, sans-serif;
+  --font-subjectivity: Subjectivity, sans-serif;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-3xl)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @layer base {
   * {
@@ -19,7 +221,8 @@
     -ms-user-select: text; /* IE 10+ */
     user-select: text; /* Standard syntax */
   }
-  input:autofill,
+
+  /* input:autofill,
   input:autofill:focus,
   input:autofill:hover,
   input:autofill:active,
@@ -34,9 +237,9 @@
 
   input:-webkit-autofill {
     -webkit-text-fill-color: hsl(var(--foreground)) !important;
-  }
+  } */
 
-  button,
+  /* button,
   textarea,
   input,
   select,
@@ -49,7 +252,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
+  } */
 
   #root {
     width: 100%;

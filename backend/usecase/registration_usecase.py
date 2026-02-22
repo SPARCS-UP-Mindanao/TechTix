@@ -1,7 +1,7 @@
 import csv
-import json
 import os
 import tempfile
+from datetime import datetime
 from http import HTTPStatus
 from typing import List, Union
 
@@ -14,9 +14,9 @@ from model.file_uploads.file_upload import FileDownloadOut
 from model.konfhub.konfhub import KonfHubCaptureRegistrationIn, RegistrationDetail
 from model.registrations.registration import (
     PreRegistrationToRegistrationIn,
+    Registration,
     RegistrationIn,
     RegistrationOut,
-    RegistrationPatch,
 )
 from repository.events_repository import EventsRepository
 from repository.payment_transaction_repository import PaymentTransactionRepository
@@ -103,10 +103,11 @@ class RegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
         if status == HTTPStatus.OK and registrations:
-            return JSONResponse(
-                status_code=HTTPStatus.CONFLICT,
-                content={'message': f'Registration with email {email} already exists'},
-            )
+            logger.info(f'Registration with email {email} already exists, returning existing registration')
+            registration = registrations[0]
+            registration_data = self.__convert_data_entry_to_dict(registration)
+            registration_out = RegistrationOut(**registration_data)
+            return self.collect_pre_signed_url(registration_out)
 
         # check if ticket types in event exists
         future_registrations = event.registrationCount
@@ -244,7 +245,7 @@ class RegistrationUsecase:
         return self.collect_pre_signed_url(registration_out)
 
     def update_registration(
-        self, event_id: str, registration_id: str, registration_in: RegistrationPatch
+        self, event_id: str, registration_id: str, registration_in: RegistrationIn
     ) -> Union[JSONResponse, RegistrationOut]:
         """Updates an existing registration entry.
 
@@ -252,10 +253,10 @@ class RegistrationUsecase:
         :type registration_id: str
 
         :param registration_in: The data for updating the registration.
-        :type registration_in: RegistrationIn
+        :type registration_in: PyconRegistrationIn
 
         :return: If successful, returns the updated registration entry. If unsuccessful, returns a JSONResponse with an error message.
-        :rtype: Union[JSONResponse, RegistrationOut]
+        :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
         status, _, message = self.__events_repository.query_events(event_id=event_id)
@@ -271,7 +272,6 @@ class RegistrationUsecase:
         )
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
-
         (
             status,
             update_registration,
@@ -345,7 +345,9 @@ class RegistrationUsecase:
 
         return self.collect_pre_signed_url(registration_out)
 
-    def get_registrations(self, event_id: str = None) -> Union[JSONResponse, List[RegistrationOut]]:
+    def get_registrations(
+        self, event_id: str = None, is_deleted: bool = False
+    ) -> Union[JSONResponse, List[RegistrationOut]]:
         """Retrieves a list of registration eregistration_idntries.
 
         :param event_id: If provided, only retrieves registration entries for the specified event. If not provided, retrieves all registration entries.
@@ -363,7 +365,7 @@ class RegistrationUsecase:
             status,
             registrations,
             message,
-        ) = self.__registrations_repository.query_registrations(event_id=event_id)
+        ) = self.__registrations_repository.query_registrations(event_id=event_id, is_deleted=is_deleted)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
@@ -387,6 +389,11 @@ class RegistrationUsecase:
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
 
+        if not registrations:
+            return JSONResponse(
+                status_code=HTTPStatus.NOT_FOUND, content={'message': 'No registrations found for this event'}
+            )
+
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 csv_path = os.path.join(tmpdir, 'registrations.csv')
@@ -394,17 +401,30 @@ class RegistrationUsecase:
                 with open(csv_path, 'w') as temp:
                     writer = csv.writer(temp)
 
-                    # make the first row csv for the keys using the dict keys of the first entry
-                    first_entry = self.__convert_data_entry_to_dict(registrations[0])
-                    writer.writerow(first_entry.keys())
+                    # Get headers from Registration DynamoDB model attributes
+                    all_headers = [
+                        attr_name
+                        for attr_name in dir(Registration)
+                        if not attr_name.startswith('_')
+                        and not callable(getattr(Registration, attr_name))
+                        and attr_name not in ['Meta', 'DoesNotExist', 'registrationIdGSI', 'emailLSI']
+                    ]
 
-                    # the remaining rows consist of the values of the attributes
+                    priority_headers = ['firstName', 'lastName']
+                    remaining_headers = [h for h in all_headers if h not in priority_headers]
+                    remaining_headers.sort()
+
+                    headers = priority_headers + remaining_headers
+                    logger.info(f'Headers for CSV export: {headers}')
+                    writer.writerow(headers)
+
                     for entry in registrations:
                         entry_dict = self.__convert_data_entry_to_dict(entry)
-                        writer.writerow(entry_dict.values())
+                        row_values = [entry_dict.get(header, '') for header in headers]
+                        writer.writerow(row_values)
 
                 # upload the file to s3
-                csv_object_key = f'csv/registrations/{event_id}.csv'
+                csv_object_key = f'csv/registrations/{event_id}-{datetime.now().strftime("%Y%m%d%H%M%S")}.csv'
                 self.__file_s3_usecase.upload_file(file_name=csv_path, object_name=csv_object_key)
 
                 return self.__file_s3_usecase.create_download_url(csv_object_key)
@@ -446,7 +466,7 @@ class RegistrationUsecase:
 
         return None
 
-    def collect_pre_signed_url(self, registration: RegistrationOut):
+    def collect_pre_signed_url(self, registration: RegistrationOut) -> RegistrationOut:
         """Collects the pre-signed URL for the GCash payment image.
 
         :param registration: The registration entry to be updated.
@@ -456,9 +476,25 @@ class RegistrationUsecase:
         :rtype: RegistrationOut
 
         """
-        if registration.gcashPayment:
-            gcash_payment = self.__file_s3_usecase.create_download_url(registration.gcashPayment)
-            registration.gcashPaymentUrl = gcash_payment.downloadLink
+        if registration.gcashPaymentId:
+            image_id_url = self.__file_s3_usecase.create_download_url(registration.gcashPaymentId)
+            registration.gcashPaymentUrl = image_id_url.downloadLink
+
+        return registration
+
+    def collect_pre_signed_url_pycon(self, registration: RegistrationOut) -> RegistrationOut:
+        """Collects the pre-signed URL for the valid ID image.
+
+        :param registration: The registration entry to be updated.
+        :type registration: PyconRegistrationOut
+
+        :return: The updated registration entry with the pre-signed URL for the GCash payment image.
+        :rtype: PyconRegistrationOut
+
+        """
+        if registration.validIdObjectKey:
+            image_id_url = self.__file_s3_usecase.create_download_url(registration.validIdObjectKey)
+            registration.imageIdUrl = image_id_url.downloadLink
 
         return registration
 
@@ -508,4 +544,4 @@ class RegistrationUsecase:
 
         """
 
-        return json.loads(data_entry.to_json())
+        return data_entry.to_simple_dict()

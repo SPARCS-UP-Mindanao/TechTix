@@ -4,12 +4,12 @@ import { cn } from '@/utils/classes';
 import Icon, { IconName } from './Icon';
 
 const alertVariants = cva(
-  'relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground',
+  'relative w-full rounded-lg border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
   {
     variants: {
       variant: {
-        default: 'bg-background text-foreground',
-        negative: 'border-negative/50 text-negative dark:border-negative [&>svg]:text-negative'
+        default: 'bg-card text-card-foreground',
+        destructive: 'text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90'
       }
     },
     defaultVariants: {
@@ -18,56 +18,61 @@ const alertVariants = cva(
   }
 );
 
-const AlertContainer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>>(
-  ({ className, variant, ...props }, ref) => <div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props} />
-);
-AlertContainer.displayName = 'Alert';
+function AlertContainer({ className, variant, ...props }: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
+  return <div data-slot="alert" role="alert" className={cn(alertVariants({ variant }), className)} {...props} />;
+}
 
-const AlertTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(({ className, ...props }, ref) => (
-  <h5 ref={ref} className={cn('mb-1 font-medium leading-none tracking-tight', className)} {...props} />
-));
-AlertTitle.displayName = 'AlertTitle';
+function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div data-slot="alert-title" className={cn('col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight', className)} {...props} />;
+}
 
-const AlertDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('text-sm [&_p]:leading-relaxed', className)} {...props} />
-));
-AlertDescription.displayName = 'AlertDescription';
+function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="alert-description"
+      className={cn('text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed', className)}
+      {...props}
+    />
+  );
+}
 
 interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'negative';
+  variant?: 'default' | 'destructive';
   title?: string;
   description?: string;
   icon?: IconName;
   closable?: boolean;
+  ref?: React.RefObject<HTMLDivElement | null>;
+  onClose?: () => void;
 }
 
-const Alert = ({ title, description, icon = 'Info', className, children, variant = 'default', closable = false }: AlertProps) => {
-  const ref = React.useRef<HTMLDivElement>(null);
+const Alert = ({ ref, title, description, icon = 'Info', className, variant = 'default', closable = false, children, onClose }: AlertProps) => {
+  const alertRef = React.useRef<HTMLDivElement>(null);
+  const r = ref ?? alertRef;
 
   const handleDelete = () => {
-    ref.current?.remove();
+    r.current?.remove();
   };
 
   return (
-    <AlertContainer variant={variant} className={className} ref={ref}>
-      {icon && <Icon name={icon} className="h-4 w-4" />}
-      <div>
-        <div>
-          {title && <AlertTitle>{title}</AlertTitle>}
-          {closable && (
-            <Icon
-              name="X"
-              onClick={handleDelete}
-              className="w-4 h-4 absolute right-0 top-0 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 cursor-pointer"
-            />
-          )}
-        </div>
-        {description && <AlertDescription>{description}</AlertDescription>}
-        {children}
-      </div>
+    <AlertContainer variant={variant} className={cn('space-x-2', className)} ref={r}>
+      <Icon name={icon} className="h-4 w-4 text-pycon-orange" />
+      <AlertTitle className="flex justify-between font-bold text-pycon-custard">
+        {title}
+        {closable && (
+          <Icon
+            name="X"
+            onClick={onClose ?? handleDelete}
+            // absolute right-0 top-0
+            className="size-6 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-hidden focus:ring-1 group-hover:opacity-100 cursor-pointer"
+          />
+        )}
+      </AlertTitle>
+      {description && <AlertDescription className="text-pycon-custard-light">{description}</AlertDescription>}
+      {children}
     </AlertContainer>
   );
 };
 
 export default Alert;
-export { AlertContainer, AlertTitle, AlertDescription };
+export { Alert, AlertTitle, AlertDescription };

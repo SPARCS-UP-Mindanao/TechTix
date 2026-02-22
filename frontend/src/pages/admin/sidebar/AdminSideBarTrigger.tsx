@@ -17,8 +17,8 @@ const AdminSideBarTrigger: FC<Props> = ({ isSidebarOpen, toggleSidebar }) => {
   const toolTipContent = SIDEBAR_TOOLTIP[isSidebarOpen ? 'true' : 'false'];
 
   const BASE_CLASSNAME = 'h-3 w-1 rounded-full bg-neutrals-900 rotate-[0deg] transition-all duration-200';
-  const UPPER_SHAPE_CLASSNAME = ['translate-y-[0.15rem] ', isSidebarOpen && 'group-hover:rotate-[15deg]', !isSidebarOpen && 'rotate-[-15deg]'];
-  const LOWER_SHAPE_CLASSNAME = ['translate-y-[-0.15rem]', isSidebarOpen && ' group-hover:rotate-[-15deg]', !isSidebarOpen && 'rotate-[15deg]'];
+  const UPPER_SHAPE_CLASSNAME = ['translate-y-[0.15rem] ', isSidebarOpen && 'group-hover:rotate-15', !isSidebarOpen && 'rotate-[-15deg]'];
+  const LOWER_SHAPE_CLASSNAME = ['translate-y-[-0.15rem]', isSidebarOpen && ' group-hover:rotate-[-15deg]', !isSidebarOpen && 'rotate-15'];
 
   return (
     <div className="absolute left-0 top-1/3 z-40">

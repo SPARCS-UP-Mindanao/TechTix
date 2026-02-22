@@ -167,6 +167,7 @@ class EventsRepository:
             message = f'Failed to query event: {str(e)}'
             logger.error(f'[{self.core_obj}={event_id}] {message}')
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
+
         except TableDoesNotExist as db_error:
             message = f'Error on Table, Please check config to make sure table is created: {str(db_error)}'
             logger.error(f'[{self.core_obj}={event_id}] {message}')
@@ -234,7 +235,7 @@ class EventsRepository:
                 transaction.save(old_event_entry)
 
             event_entry.refresh()
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
@@ -269,7 +270,7 @@ class EventsRepository:
             event_entry.entryStatus = EntryStatus.DELETED.value
             event_entry.save()
 
-            logger.info(f'[{event_entry.rangeKey}] ' f'Delete event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Delete event data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete event data: {str(e)}'
@@ -305,7 +306,7 @@ class EventsRepository:
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()
-            logger.info(f'[{event_entry.rangeKey}] ' f'Update event data successful')
+            logger.info(f'[{event_entry.rangeKey}] Update event data successful')
             return HTTPStatus.OK, event_entry, ''
 
         except TransactWriteError as e:
@@ -314,7 +315,9 @@ class EventsRepository:
 
             return HTTPStatus.INTERNAL_SERVER_ERROR, None, message
 
-    def append_event_registration_count(self, event_entry: Event, append_count: int = 1):
+    def append_event_registration_count(
+        self, event_entry: Event, registration_sprint_day: bool = False, append_count: int = 1
+    ):
         """Adds the registrationCount attribute of the event_entry by append_count
 
         :param event_entry: The Event object to be updated.
@@ -328,8 +331,12 @@ class EventsRepository:
 
         """
         try:
+            actions = [
+                Event.registrationCount.add(append_count),
+            ]
+            if registration_sprint_day:
+                actions.append(Event.sprintDayRegistrationCount.add(append_count))
             with TransactWrite(connection=self.conn) as transaction:
-                actions = [Event.registrationCount.add(append_count)]
                 transaction.update(event_entry, actions=actions)
 
             event_entry.refresh()

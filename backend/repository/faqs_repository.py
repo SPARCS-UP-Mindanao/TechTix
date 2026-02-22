@@ -163,7 +163,7 @@ class FAQsRepository:
                 transaction.save(old_faqs_entry)
 
             faqs_entry.refresh()
-            logger.info(f'[{faqs_entry.rangeKey}] ' f'Update faqs data successful')
+            logger.info(f'[{faqs_entry.rangeKey}] Update faqs data successful')
             return HTTPStatus.OK, faqs_entry, ''
 
         except TransactWriteError as e:
@@ -198,7 +198,7 @@ class FAQsRepository:
             faqs_entry.entryStatus = EntryStatus.DELETED.value
             faqs_entry.save()
 
-            logger.info(f'[{faqs_entry.rangeKey}] ' f'Delete faqs data successful')
+            logger.info(f'[{faqs_entry.rangeKey}] Delete faqs data successful')
             return HTTPStatus.OK, None
         except PutError as e:
             message = f'Failed to delete faqs data: {str(e)}'

@@ -1,11 +1,10 @@
 import { FC } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import Button from '@/components/Button';
-import { Event } from '@/model/events';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import AdminEventForm from '../AdminEventForm';
 
 const AdminEventInfo: FC = () => {
-  const event = useOutletContext<Event>();
+  const { event } = useAdminEvent();
   const { eventId } = event;
 
   const redirectToPreRegistration = () => {

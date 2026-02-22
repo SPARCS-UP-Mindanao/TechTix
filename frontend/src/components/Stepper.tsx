@@ -25,7 +25,7 @@ const Stepper = <T extends Step>({ steps, currentStep, stepsToExclude }: Stepper
   return (
     <div className="my-8">
       <Slider.Root
-        className="relative flex w-full touch-none select-none items-center cursor-pointer data-[disabled]:pointer-events-none"
+        className="relative flex w-full touch-none select-none items-center cursor-pointer data-disabled:pointer-events-none"
         value={arrayOfValues}
         max={100}
         step={interval}

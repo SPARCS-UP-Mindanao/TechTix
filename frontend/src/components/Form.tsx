@@ -82,10 +82,11 @@ const useFormField = () => {
 interface FormLabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {
   toolTipContent?: string;
   optional?: boolean;
+  optionalClass?: string;
 }
 
 const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, FormLabelProps>(
-  ({ className, children, toolTipContent, optional = false, ...props }, ref) => {
+  ({ className, optionalClass, children, toolTipContent, optional = false, ...props }, ref) => {
     const {
       fieldState: { error },
       formItemId
@@ -94,7 +95,7 @@ const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>,
     return (
       <Label ref={ref} className={cn(error && 'text-negative', 'flex flex-row items-center gap-x-2', className)} htmlFor={formItemId} {...props}>
         {children}
-        {optional && <p className="text-[0.8rem] text-muted-foreground text-gray-400">{`(Optional)`}</p>}
+        {optional && <p className={cn('text-[0.8rem] text-muted-foreground', optionalClass)}>{`(Optional)`}</p>}
         {toolTipContent && toolTipContent.length > 0 && <InfoToolTip toolTipContent={toolTipContent} />}
       </Label>
     );

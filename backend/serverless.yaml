@@ -1,10 +1,11 @@
-service: sparcs-events-api
-frameworkVersion: ^3.25.0
+service: durianpy-events-api
+frameworkVersion: '^3.40.0'
 
 custom:
-  projectName: sparcs-events
+  projectName: durianpy-events
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
+  paymentQueue: ${self:custom.stage}-${self:custom.projectName}-payment-queue.fifo
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   events: ${self:custom.stage}-${self:custom.projectName}
   bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
@@ -12,7 +13,9 @@ custom:
   preregistrations: ${self:custom.stage}-${self:custom.projectName}-preregistrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
   frontendUrl: ${ssm:/techtix/frontend-url-${self:custom.stage}}
-  konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
+  # konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
+  betterCredentials:
+    enabled: true
   emailQueue:
     !ImportValue EmailQueue-${self:custom.stage}
   certificateQueue:
@@ -20,22 +23,23 @@ custom:
   basicAuthorizerARN:
     !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: true
+    usePoetry: false
     noDeploy:
       - requests
       - boto3
       - botocore
     layer:
-      name: sparcs-events-${self:custom.stage}-python-requirements
+      name: durianpy-events-${self:custom.stage}-python-requirements
       compatibleRuntimes:
-        - python3.8
+        - python3.11
     slim: true
 
 package: ${file(resources/package.yml)}
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.11
   stage: dev
   region: ap-southeast-1
   memorySize: 3008
@@ -57,26 +61,62 @@ provider:
     EVALUATIONS_TABLE: ${self:custom.evaluations}
     EVENTS_TABLE: ${self:custom.events}
     EMAIL_QUEUE: ${self:custom.emailQueue}
+    PAYMENT_QUEUE: ${self:custom.paymentQueue}
     CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
-    KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
+    # KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
     USER_POOL_ID:
       !ImportValue UserPoolId-${self:custom.stage}
     USER_POOL_CLIENT_ID:
       !ImportValue AppClientId-${self:custom.stage}
     SPARCS_GMAIL: sparcsup@gmail.com
   logs:
-    restApi: true
+    restApi:
+      role: !GetAtt ApiGatewayCloudWatchRole.Arn
+
 
 resources:
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/api_gateway.yml)}
   - ${file(resources/s3.yml)}
+  - ${file(resources/sqs.yml)}
+  - Resources:
+      ApiGatewayCloudWatchRole:
+        Type: AWS::IAM::Role
+        Properties:
+          RoleName: serverlessApiGatewayCloudWatchRole-${self:custom.serviceName}-${self:custom.stage}
+          AssumeRolePolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Principal:
+                Service: apigateway.amazonaws.com
+              Action: sts:AssumeRole
+          Policies:
+            - PolicyName: AllowCloudWatchLogs
+              PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:DescribeLogGroups
+                    - logs:DescribeLogStreams
+                    - logs:PutLogEvents
+                  Resource: "*"
+    Outputs:
+      ApiGatewayCloudWatchRoleArn:
+        Value: !GetAtt ApiGatewayCloudWatchRole.Arn
+        Export:
+          Name: ApiGatewayCloudWatchRole-${self:custom.serviceName}-${self:custom.stage}
+
 
 functions:
   - ${file(resources/api.yml)}
-  # - ${file(resources/functions.yml)}
+  - ${file(resources/functions.yml)}
 
 plugins:
+  - serverless-better-credentials
   - serverless-python-requirements
   - serverless-iam-roles-per-function

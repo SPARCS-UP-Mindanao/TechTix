@@ -270,7 +270,7 @@ class PreRegistrationsRepository:
                 transaction.update(preregistration_entry, actions=actions)
 
             preregistration_entry.refresh()
-            logger.info(f'[{preregistration_entry.rangeKey}] ' f'Update event data succesful')
+            logger.info(f'[{preregistration_entry.rangeKey}] Update event data succesful')
             return HTTPStatus.OK, preregistration_entry, ''
 
         except TransactWriteError as e:
@@ -290,7 +290,7 @@ class PreRegistrationsRepository:
         """
         try:
             preregistration_entry.delete()
-            logger.info(f'[{preregistration_entry.rangeKey}] ' f'Delete Preregistration data successful')
+            logger.info(f'[{preregistration_entry.rangeKey}] Delete Preregistration data successful')
             return HTTPStatus.OK, None
 
         except DeleteError as e:

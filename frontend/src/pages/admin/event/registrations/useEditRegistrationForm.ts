@@ -1,20 +1,19 @@
-import { useOutletContext } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { deletePreRegistration, updatePreRegistration } from '@/api/preregistrations';
 import { deleteRegistration, updateRegistration } from '@/api/registrations';
 import { CustomAxiosError } from '@/api/utils/createApi';
-import { EventWithRefetchEvent } from '@/model/events';
 import { PreRegistration, mapPreRegistrationToFormValues, mapUpdatePreregistrationValues } from '@/model/preregistrations';
 import { PreRegistrationUpdate } from '@/model/preregistrations';
 import { Registration, mapRegistrationToFormValues, mapUpdateRegistrationValues } from '@/model/registrations';
 import { isValidContactNumber } from '@/utils/functions';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const EditRegistrationFormSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   firstName: z.string().min(1, {
     message: 'Please enter the first name'
   }),
@@ -51,7 +50,7 @@ export type EditRegistrationFormValues = z.infer<typeof EditRegistrationFormSche
 
 export const useEditRegistrationForm = (eventId: string, registrationInfo: Registration | PreRegistration) => {
   const api = useApi();
-  const { refetchEvent } = useOutletContext<EventWithRefetchEvent>();
+  const eventContext = useAdminEvent();
   const { errorToast, successToast } = useNotifyToast();
 
   const registrationId = registrationInfo.type === 'registration' ? registrationInfo.registrationId : registrationInfo.preRegistrationId;
@@ -68,8 +67,6 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
     }
   });
 
-  // TODO: Fix updating registration, specifically in type mappings
-
   const onUpdate = form.handleSubmit(async (values) => {
     try {
       const response =
@@ -83,7 +80,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
           title: 'Updated successfully',
           description: 'Registration updated successfully'
         });
-        refetchEvent();
+        eventContext?.refetchEvent();
       } else {
         const {
           errorData: { message }
@@ -113,7 +110,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
           title: 'Deleted successfully',
           description: 'Registration deleted successfully'
         });
-        refetchEvent();
+        eventContext?.refetchEvent();
       } else {
         const {
           errorData: { message }
@@ -146,7 +143,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
           title: 'Approved successfully',
           description: 'Registration Approved successfully'
         });
-        refetchEvent();
+        eventContext?.refetchEvent();
       } else {
         const {
           errorData: { message }
@@ -179,7 +176,7 @@ export const useEditRegistrationForm = (eventId: string, registrationInfo: Regis
           title: 'Rejected successfully',
           description: 'Registration Rejected successfully'
         });
-        refetchEvent();
+        eventContext?.refetchEvent();
       } else {
         const {
           errorData: { message }

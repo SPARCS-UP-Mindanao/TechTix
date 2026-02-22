@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from model.events.events_constants import EventStatus
 from model.ticket_types.ticket_types import TicketTypeIn, TicketTypeOut
-from pydantic import BaseModel, EmailStr, Extra, Field
+from pydantic import BaseModel, EmailStr, Extra, Field, root_validator
 from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import AllProjection, LocalSecondaryIndex
 from pynamodb.models import Model
@@ -74,6 +74,12 @@ class Event(Model):
 
     eventIdIndex = EventIdIndex()
 
+    # PyCon Sprint Fields
+    sprintDay = BooleanAttribute(null=True)
+    sprintDayPrice = NumberAttribute(null=True)
+    maximumSprintDaySlots = NumberAttribute(null=True)
+    sprintDayRegistrationCount = NumberAttribute(default=0)
+
 
 class EventDBIn(BaseModel):
     class Config:
@@ -101,6 +107,32 @@ class EventDBIn(BaseModel):
     konfhubApiKey: Optional[str] = Field(None, title='Konfhub API Key')
 
     platformFee: Optional[float] = Field(None, title='Percent platform fee')
+
+    # PyCon Sprint Fields
+    sprintDay: Optional[bool] = Field(
+        None, title='Sprint Day', description='Indicates if the event includes a sprint day'
+    )
+    sprintDayPrice: Optional[float] = Field(
+        None, title='Sprint Day Price', description='The price for the sprint day ticket'
+    )
+    maximumSprintDaySlots: Optional[int] = Field(
+        None, title='Sprint Day Maximum Slots', description='The maximum number of slots for the sprint day'
+    )
+    sprintDayRegistrationCount: Optional[int] = Field(
+        None,
+        title='Sprint Day Registration Count',
+        description='The current number of registrations for the sprint day',
+    )
+
+    @root_validator(pre='false')
+    def check_sprint_day(cls, values):
+        sprint_day = values.get('sprintDay')
+        sprint_day_price = values.get('sprintDayPrice')
+
+        if sprint_day and sprint_day_price is None:
+            raise ValueError('sprintDayPrice must be set if sprintDay is true')
+
+        return values
 
 
 class EventIn(EventDBIn):

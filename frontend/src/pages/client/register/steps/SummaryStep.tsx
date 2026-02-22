@@ -60,7 +60,7 @@ const SummaryStep = ({ event }: SummaryProps) => {
     ]
   });
 
-  const ticketType = event.ticketTypes?.find((ticket) => ticket.konfhubId === ticketTypeId);
+  const ticketType = event.ticketTypes?.find((ticket) => ticket.id === ticketTypeId);
   const isAWSCommunityDay = event.email === 'hello@awsugdavao.ph';
   const { hasMultipleTicketTypes } = event;
 

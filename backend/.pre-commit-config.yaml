@@ -28,3 +28,23 @@ repos:
         args: [ --fix ]
       # Run the formatter.
       - id: ruff-format
+
+  # mypy
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: 'v1.17.0'
+  #   hooks:
+  #     - id: mypy
+  # detect-secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', './backend/.secrets.baseline']
+        exclude: package.lock.json
+  # commitizen
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3
+    hooks:
+      - id: commitizen
+      - id: commitizen-branch
+        stages: [manual]

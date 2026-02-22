@@ -1,18 +1,19 @@
 import { FC } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import Button from '@/components/Button';
 import { DataTable } from '@/components/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import Tooltip from '@/components/Tooltip';
 import { getEventPreRegistrations } from '@/api/preregistrations';
 import { getEventRegistrations } from '@/api/registrations';
-import { Event } from '@/model/events';
+import useAdminEvent from '@/hooks/useAdminEvent';
 import { useApiQuery } from '@/hooks/useApi';
 import { useGetCsv } from '@/hooks/useGetCsv';
 import { getRegistrationColumns } from './RegistrationsColumns';
 
 const AdminEventRegistrations: FC = () => {
-  const { isApprovalFlow, status, eventId } = useOutletContext<Event>();
+  const {
+    event: { isApprovalFlow, status, eventId }
+  } = useAdminEvent();
   const { getCsv, isGettingCsv } = useGetCsv(eventId);
 
   const getDefaultValue = () => {
@@ -53,33 +54,37 @@ const AdminEventRegistrations: FC = () => {
 };
 
 const Registrations = () => {
-  const { eventId } = useOutletContext<Event>();
-  const { data: response, isFetching, refetch } = useApiQuery(getEventRegistrations(eventId));
+  const {
+    event: { eventId }
+  } = useAdminEvent();
+  const { data: response, isPending, refetch } = useApiQuery(getEventRegistrations(eventId));
   return (
     <>
       <div className="w-full inline-flex justify-center items-center space-x-4">
         <h2>Registrations</h2>
         <Tooltip toolTipContent="Refresh registrations" side="right">
-          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+          <Button variant="outline" loading={isPending} size="icon" icon="RotateCw" onClick={() => refetch()} />
         </Tooltip>
       </div>
-      <DataTable columns={getRegistrationColumns('register')} data={response?.data} loading={isFetching} noDataText="No Registrations" />
+      <DataTable columns={getRegistrationColumns('register')} data={response?.data} loading={isPending} noDataText="No Registrations" />
     </>
   );
 };
 
 const PreRegistrations = () => {
-  const { eventId } = useOutletContext<Event>();
-  const { data: response, isFetching, refetch } = useApiQuery(getEventPreRegistrations(eventId));
+  const {
+    event: { eventId }
+  } = useAdminEvent();
+  const { data: response, isPending, refetch } = useApiQuery(getEventPreRegistrations(eventId));
   return (
     <>
       <div className="w-full inline-flex justify-center items-center space-x-4">
         <h2>Pre-registrations</h2>
         <Tooltip toolTipContent="Refresh pre-registrations" side="right">
-          <Button variant="outline" loading={isFetching} size="icon" icon="RotateCw" onClick={() => refetch()} />
+          <Button variant="outline" loading={isPending} size="icon" icon="RotateCw" onClick={() => refetch()} />
         </Tooltip>
       </div>
-      <DataTable columns={getRegistrationColumns('preregister')} data={response?.data} loading={isFetching} noDataText="No Pre-registrations" />
+      <DataTable columns={getRegistrationColumns('preregister')} data={response?.data} loading={isPending} noDataText="No Pre-registrations" />
     </>
   );
 };

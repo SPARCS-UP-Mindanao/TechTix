@@ -4,15 +4,15 @@ import { useFileUrl } from '@/hooks/useFileUrl';
 import Skeleton from './Skeleton';
 
 interface FileViewerProps {
+  eventId: string;
   objectKey: string | null;
   className?: string;
   alt?: string;
 }
 
-const ImageViewer: FC<FileViewerProps> = ({ objectKey, className, alt }) => {
-  const { fileUrl, isFetching } = useFileUrl(objectKey);
-
-  if (isFetching) {
+const ImageViewer: FC<FileViewerProps> = ({ eventId, objectKey, className, alt }) => {
+  const { fileUrl, isPending } = useFileUrl(eventId, objectKey);
+  if (isPending) {
     return <Skeleton className={cn('h-full', className)} />;
   }
 
@@ -20,7 +20,7 @@ const ImageViewer: FC<FileViewerProps> = ({ objectKey, className, alt }) => {
     return <div className={cn('min-w-full h-full', className)} />;
   }
 
-  return <img src={fileUrl ?? undefined} className={cn('w-full h-full', className)} alt={alt} />;
+  return <img src={fileUrl} className={cn('w-full h-full', className)} alt={alt} />;
 };
 
 export default ImageViewer;

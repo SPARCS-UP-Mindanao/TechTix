@@ -1,8 +1,12 @@
 import os
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
-from model.evaluations.evaluations_constants import EvaluationQuestionType, QuestionType
+from model.evaluations.evaluations_constants import (
+    EvaluationQuestionType,
+    PyconEvaluationQuestionType,
+    QuestionType,
+)
 from model.registrations.registration import RegistrationPreviewOut
 from pydantic import BaseModel, Extra, Field
 from pynamodb.attributes import (
@@ -71,7 +75,7 @@ class EvaluationIn(EvaluationPatch):
     class Config:
         extra = Extra.forbid
 
-    question: EvaluationQuestionType = Field(None, title='Question')
+    question: Union[EvaluationQuestionType, PyconEvaluationQuestionType] = Field(None, title='Question')
 
 
 class EvaluationListIn(BaseModel):

@@ -16,7 +16,7 @@ const Footer = () => {
   //     <footer className="bg-primary-700 w-full grid md:grid-cols-3 grid-cols-1 gap-10 md:gap-5 lg:gap-10 text-white font-raleway font-light p-12 md:px-10 lg:px-32">
   //       <div className="flex flex-col md:items-center">
   //         <div className="flex flex-col gap-5">
-  //           <div className="flex md:items-center gap-2 w-full max-w-[15rem]">
+  //           <div className="flex md:items-center gap-2 w-full max-w-60">
   //             <img src={logoTitleWhite} alt="SPARCS UP Min Logo" className="inline" />
   //           </div>
   //           <p>Seamlessly find, follow, and buy tickets for tech events hosted by Davao's vibrant tech communities.</p>
@@ -78,7 +78,7 @@ const Footer = () => {
   //             <Input
   //               type="email"
   //               placeholder="Enter your email address"
-  //               className="light text-xs font-semibold pr-[6.5rem] rounded-full w-full focus-visible:ring-0 border-none"
+  //               className="light text-xs font-semibold pr-26 rounded-full w-full focus-visible:ring-0 border-none"
   //             />
   //             <Button variant="primaryGradient" className="rounded-full absolute right-0">
   //               Subscribe

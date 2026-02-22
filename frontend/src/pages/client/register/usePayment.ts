@@ -6,6 +6,7 @@ import { PaymentChannel } from '@/model/payments';
 import { useApi } from '@/hooks/useApi';
 import { useNotifyToast } from '@/hooks/useNotifyToast';
 import { RegisterFormValues } from '@/hooks/useRegisterForm';
+import { roundUpToTwoDecimals } from '../pycon/register/pricing';
 
 export const usePayment = (baseUrlPath: string, eventId: string) => {
   const api = useApi();
@@ -26,7 +27,7 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
         createEwalletPaymentRequest({
           referenceId: referenceId,
           eventId: eventId,
-          amount: total,
+          amount: roundUpToTwoDecimals(total),
           channelCode: paymentChannel,
           failureReturnUrl: `${baseUrlPath}?step=Payment`,
           successReturnUrl: `${baseUrlPath}?step=Success`,
@@ -60,7 +61,7 @@ export const usePayment = (baseUrlPath: string, eventId: string) => {
           email,
           givenNames: firstName,
           surname: lastName,
-          amount: total,
+          amount: roundUpToTwoDecimals(total),
           channelCode: paymentChannel,
           failureReturnUrl: `${baseUrlPath}?step=Payment`,
           successReturnUrl: `${baseUrlPath}?step=Success`,

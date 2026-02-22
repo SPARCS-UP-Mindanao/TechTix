@@ -52,6 +52,7 @@ class Registration(Model):
     emailLSI = EmailLSI()
 
     certificateClaimed = BooleanAttribute(null=True)
+
     firstName = UnicodeAttribute(null=True)
     lastName = UnicodeAttribute(null=True)
     contactNumber = UnicodeAttribute(null=True)
@@ -80,6 +81,27 @@ class Registration(Model):
     awsUsecase = UnicodeAttribute(null=True)
     awsCommunityDayInLineWith = UnicodeAttribute(null=True)
     foodRestrictions = UnicodeAttribute(null=True)
+
+    # PyCon Specific Fields
+    nickname = UnicodeAttribute(null=True)
+    pronouns = UnicodeAttribute(null=True)
+    jobTitle = UnicodeAttribute(null=True)
+    facebookLink = UnicodeAttribute(null=True)
+    linkedInLink = UnicodeAttribute(null=True)
+
+    ticketType = UnicodeAttribute(null=True)
+    sprintDay = BooleanAttribute(null=True)
+    availTShirt = BooleanAttribute(null=True)
+    shirtType = UnicodeAttribute(null=True)
+
+    communityInvolvement = BooleanAttribute(null=True)
+    futureVolunteer = BooleanAttribute(null=True)
+    dietaryRestrictions = UnicodeAttribute(null=True)
+    accessibilityNeeds = UnicodeAttribute(null=True)
+
+    validIdObjectKey = UnicodeAttribute(null=True)
+
+    deletedAt = UnicodeAttribute(null=True)
 
 
 class RegistrationDataIn(BaseModel):
