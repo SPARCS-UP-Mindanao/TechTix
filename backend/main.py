@@ -12,10 +12,10 @@ root_path = f'/{STAGE}' if STAGE else '/'
 
 app = FastAPI(
     root_path=root_path,
-    title='DURIANPY Event Service',
+    title='SPARCS Event Service',
     contact={
         'name': 'Society of Programmers and Refined Computer Scientists',
-        'email': 'contact@durianpy.org',
+        'email': 'sparcsup@gmail.com',
     },
 )
 

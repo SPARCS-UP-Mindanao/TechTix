@@ -40,8 +40,8 @@ class CertificateUsecase:
         try:
             timestamp = datetime.utcnow().isoformat(timespec='seconds')
             payload = {'eventId': event_id}
-            message_group_id = f'durianpy-certificates-{event_id}'
-            message_dedup_id = f'durianpy-certificates-{event_id}-{timestamp}'
+            message_group_id = f'sparcs-certificates-{event_id}'
+            message_dedup_id = f'sparcs-certificates-{event_id}-{timestamp}'
 
             if registration_id:
                 payload['registrationId'] = registration_id

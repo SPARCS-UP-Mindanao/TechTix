@@ -1,8 +1,8 @@
-service: durianpy-events-api
-frameworkVersion: '^3.40.0'
+service: sparcs-events-api
+frameworkVersion: "^3.40.0"
 
 custom:
-  projectName: durianpy-events
+  projectName: sparcs-events
   serviceName: events
   stage: ${opt:stage, self:provider.stage}
   paymentQueue: ${self:custom.stage}-${self:custom.projectName}-payment-queue.fifo
@@ -16,12 +16,9 @@ custom:
   # konfHubApiKey: ${ssm:/konfhub/api-key-${self:custom.stage}}
   betterCredentials:
     enabled: true
-  emailQueue:
-    !ImportValue EmailQueue-${self:custom.stage}
-  certificateQueue:
-    !ImportValue CertificateQueue-${self:custom.stage}
-  basicAuthorizerARN:
-    !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
+  emailQueue: !ImportValue EmailQueue-${self:custom.stage}
+  certificateQueue: !ImportValue CertificateQueue-${self:custom.stage}
+  basicAuthorizerARN: !ImportValue BasicAuthAuthorizerARN-${self:custom.stage}
   pythonRequirements:
     dockerizePip: true
     usePoetry: false
@@ -30,7 +27,7 @@ custom:
       - boto3
       - botocore
     layer:
-      name: durianpy-events-${self:custom.stage}-python-requirements
+      name: sparcs-events-${self:custom.stage}-python-requirements
       compatibleRuntimes:
         - python3.11
     slim: true
@@ -65,15 +62,12 @@ provider:
     CERTIFICATE_QUEUE: ${self:custom.certificateQueue}
     S3_BUCKET: ${self:custom.bucket}
     # KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
-    USER_POOL_ID:
-      !ImportValue UserPoolId-${self:custom.stage}
-    USER_POOL_CLIENT_ID:
-      !ImportValue AppClientId-${self:custom.stage}
+    USER_POOL_ID: !ImportValue UserPoolId-${self:custom.stage}
+    USER_POOL_CLIENT_ID: !ImportValue AppClientId-${self:custom.stage}
     SPARCS_GMAIL: sparcsup@gmail.com
   logs:
     restApi:
       role: !GetAtt ApiGatewayCloudWatchRole.Arn
-
 
 resources:
   - ${file(resources/dynamodb.yml)}
@@ -88,29 +82,28 @@ resources:
           AssumeRolePolicyDocument:
             Version: "2012-10-17"
             Statement:
-            - Effect: Allow
-              Principal:
-                Service: apigateway.amazonaws.com
-              Action: sts:AssumeRole
+              - Effect: Allow
+                Principal:
+                  Service: apigateway.amazonaws.com
+                Action: sts:AssumeRole
           Policies:
             - PolicyName: AllowCloudWatchLogs
               PolicyDocument:
                 Version: "2012-10-17"
                 Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:DescribeLogGroups
-                    - logs:DescribeLogStreams
-                    - logs:PutLogEvents
-                  Resource: "*"
+                  - Effect: Allow
+                    Action:
+                      - logs:CreateLogGroup
+                      - logs:CreateLogStream
+                      - logs:DescribeLogGroups
+                      - logs:DescribeLogStreams
+                      - logs:PutLogEvents
+                    Resource: "*"
     Outputs:
       ApiGatewayCloudWatchRoleArn:
         Value: !GetAtt ApiGatewayCloudWatchRole.Arn
         Export:
           Name: ApiGatewayCloudWatchRole-${self:custom.serviceName}-${self:custom.stage}
-
 
 functions:
   - ${file(resources/api.yml)}

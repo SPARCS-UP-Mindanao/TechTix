@@ -17,7 +17,7 @@ app:
         path: /docs
         method: get
         authorizer:
-          arn: arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:durianpy-auth-service-${self:custom.stage}-basicAuthAuthorizer
+          arn: arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:sparcs-auth-service-${self:custom.stage}-basicAuthAuthorizer
           resultTtlInSeconds: 0
   iamRoleStatements:
     - Effect: Allow
@@ -31,51 +31,51 @@ app:
       Resource:
         - { "Fn::GetAtt": [Evaluations, Arn] }
         - "Fn::Join":
-          - "/"
-          - - "Fn::GetAtt": [ Evaluations, Arn ]
-            - "index"
-            - "*"
+            - "/"
+            - - "Fn::GetAtt": [Evaluations, Arn]
+              - "index"
+              - "*"
     - Effect: Allow
       Action:
         - "dynamodb:*"
       Resource:
         - { "Fn::GetAtt": [Events, Arn] }
         - "Fn::Join":
-          - "/"
-          - - "Fn::GetAtt": [ Events, Arn ]
-            - "index"
-            - "*"
+            - "/"
+            - - "Fn::GetAtt": [Events, Arn]
+              - "index"
+              - "*"
     - Effect: Allow
       Action:
         - "dynamodb:*"
       Resource:
         - { "Fn::GetAtt": [Registrations, Arn] }
         - "Fn::Join":
-          - "/"
-          - - "Fn::GetAtt": [ Registrations, Arn ]
-            - "index"
-            - "*"
+            - "/"
+            - - "Fn::GetAtt": [Registrations, Arn]
+              - "index"
+              - "*"
     - Effect: Allow
       Action:
         - "dynamodb:*"
       Resource:
         - { "Fn::GetAtt": [PreRegistrations, Arn] }
         - "Fn::Join":
-          - "/"
-          - - "Fn::GetAtt": [ PreRegistrations, Arn ]
-            - "index"
-            - "*"
+            - "/"
+            - - "Fn::GetAtt": [PreRegistrations, Arn]
+              - "index"
+              - "*"
     - Effect: Allow
       Action:
         - ssm:GetParameter
       Resource:
-        - arn:aws:ssm:*:*:parameter/durianpy-auth-secret-key-${self:custom.stage}
+        - arn:aws:ssm:*:*:parameter/sparcs-auth-secret-key-${self:custom.stage}
     - Effect: Allow
       Action:
         - "sqs:*"
       Resource:
-        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-durianpy-events-email-queue.fifo
-        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-durianpy-events-certificate-queue.fifo
+        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-sparcs-events-email-queue.fifo
+        - !Sub arn:aws:sqs:ap-southeast-1:${AWS::AccountId}:${self:custom.stage}-sparcs-events-certificate-queue.fifo
     - Effect: Allow
       Action:
         - s3:PutObject
