@@ -74,6 +74,7 @@ resources:
   - ${file(resources/api_gateway.yml)}
   - ${file(resources/s3.yml)}
   - ${file(resources/sqs.yml)}
+  - ${file(resources/frontend_role.yml)}
   - Resources:
       ApiGatewayCloudWatchRole:
         Type: AWS::IAM::Role

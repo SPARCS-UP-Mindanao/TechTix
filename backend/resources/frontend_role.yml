@@ -1,0 +1,43 @@
+Resources:
+  FrontendSSMReadOnlyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: frontend-ssm-role-${sls:stage}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: SSMReadOnlyAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                Resource:
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/auth-api-url-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/events-api-url-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/payment-api-url-${sls:stage}"
+
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/cognito-user-pool-id-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/cognito-user-pool-client-id-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/cognito-domain-url-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/cognito-signin-redirect-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/techtix/cognito-signin-redirect-local"
+
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${sls:stage}-sparcs-events*"
+
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/sparcs-events-email-queue-url-${sls:stage}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/sparcs-events-certificate-queue-url-${sls:stage}"
+
+Outputs:
+  FrontendRoleArn:
+    Value: !GetAtt FrontendSSMReadOnlyRole.Arn
