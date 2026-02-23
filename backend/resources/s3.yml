@@ -11,9 +11,7 @@ Resources:
           - AllowedHeaders: ["*"]
             AllowedMethods: [GET, PUT, HEAD]
             AllowedOrigins: ["*"]
-            AllowedOrigins: ["*"]
             Id: ${self:custom.bucket}-name
-            MaxAge: "3600"
             MaxAge: "3600"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
