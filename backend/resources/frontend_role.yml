@@ -9,7 +9,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service:
-                - lambda.amazonaws.com
+                - amplify.amazonaws.com
             Action:
               - sts:AssumeRole
       Policies:
