@@ -1,42 +1,35 @@
 name: Deploy SPARCS Events Service
 on:
-  push:
-    paths:
-      - backend/**
-    branches:
-      - main
-      - stage
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Backend Formatting Check on Push"]
+    types:
+      - completed
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  deploy-dev:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Set ARN for Role to Assume
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "AWS_OIDC_ROLE_ARN=${{ secrets.AWS_OIDC_ROLE_ARN_PROD }}" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
-            echo "AWS_OIDC_ROLE_ARN=${{ secrets.AWS_OIDC_ROLE_ARN_STAGE }}" >> $GITHUB_ENV
-          fi
-
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials for Dev
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           audience: sts.amazonaws.com
           aws-region: ap-southeast-1
-          role-to-assume: ${{ env.AWS_OIDC_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN_STAGE }}
           role-session-name: GithubActionSession
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version-file: "backend/.python-version"
@@ -60,10 +53,51 @@ jobs:
         working-directory: backend
 
       - name: Deploy with Serverless v3
+        run: sls deploy --stage dev --verbose
+        working-directory: backend
+
+  deploy-prod:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'release/') }}
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Configure AWS Credentials for Prod
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          audience: sts.amazonaws.com
+          aws-region: ap-southeast-1
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN_PROD }}
+          role-session-name: GithubActionSession
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "backend/.python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          sls deploy --stage prod --verbose
-          elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
-          sls deploy --stage dev --verbose
-          fi
+          uv sync --locked --all-extras --dev
+        working-directory: backend
+
+      - name: Install Serverless Framework
+        run: |
+          npm install
+          npm install -g serverless@3.40.0
+        working-directory: backend
+
+      - name: Create requirements.txt
+        run: uv export --format requirements-txt --no-hashes --output-file requirements.txt --no-dev
+        working-directory: backend
+
+      - name: Deploy with Serverless v3
+        run: sls deploy --stage prod --verbose
         working-directory: backend
