@@ -33,10 +33,10 @@ const ssm = new SSMClient({ region: REGION });
 const parameterNames = {
   // REGION is optional (falls back to env/REGION)
   COGNITO_DOMAIN_URL: `/techtix/cognito-domain-url-${STAGE}`,
-  COGNITO_REDIRECT_SIGNIN_URI: `/techtix/cognito-signin-redirect-${STAGE}`,
+  COGNITO_REDIRECT_SIGNIN_URI: `/techtix/cognito-signin-redirect-${STAGE}`, // Added manually in AWS console for non-prod stages, can be missing in prod since we can use the same redirect URI for all prod-like stages
   COGNITO_USER_POOL_ID: `/techtix/cognito-user-pool-id-${STAGE}`,
   COGNITO_CLIENT_ID: `/techtix/cognito-user-pool-client-id-${STAGE}`,
-  ...(STAGE !== 'prod' && { COGNITO_REDIRECT_SIGNIN_URI_LOCAL: '/techtix/cognito-signin-redirect-local' })
+  ...(STAGE !== 'prod' && { COGNITO_REDIRECT_SIGNIN_URI_LOCAL: '/techtix/cognito-signin-redirect-local' }) // Only used for local development, not needed in prod since we can use the same redirect URI for all prod-like stages
 };
 
 async function getByNames(map) {
