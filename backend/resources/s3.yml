@@ -8,7 +8,6 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ["*"]
-          - AllowedHeaders: ["*"]
             AllowedMethods: [GET, PUT, HEAD]
             AllowedOrigins: ["*"]
             Id: ${self:custom.bucket}-name
