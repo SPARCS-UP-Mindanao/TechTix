@@ -28,6 +28,7 @@ const ssm = new SSMClient({ region: REGION });
 
 /**
  * Map of logical keys -> array of candidate SSM parameter names (first found wins).
+ * Note: These SSM parameters are added manually in the AWS console, and must match the names here.
  */
 const parameterNames = {
   VITE_API_AUTH_BASE_URL: `/techtix/auth-api-url-${STAGE}`,
