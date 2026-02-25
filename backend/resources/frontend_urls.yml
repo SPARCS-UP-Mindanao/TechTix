@@ -1,0 +1,13 @@
+Resources:
+  FrontEndURLDevSSMParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /techtix/frontend-url-dev
+      Type: String
+      Value: https://dev.nonprod.techtix.com
+  FrontEndURLProdSSMParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /techtix/frontend-url-prod
+      Type: String
+      Value: https://www.techtix.com
