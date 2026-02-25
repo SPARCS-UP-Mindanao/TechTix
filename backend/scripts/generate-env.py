@@ -1,5 +1,4 @@
 import argparse
-import json
 import os
 from enum import Enum
 
@@ -92,22 +91,23 @@ class ConfigAssembler:
         
         region = 'ap-southeast-1'
         stage = self.__stage
+        events_table = f"{stage}-sparcs-events"
+
         entities_table = self.__get_parameter(f"/{stage}-sparcs-events-entities")
         registrations_table = self.__get_parameter(f"/{stage}-sparcs-events-registrations")
         preregistrations_table = self.__get_parameter(f"/{stage}-sparcs-events-preregistrations")
         evaluations_table = self.__get_parameter(f"/{stage}-sparcs-events-evaluations")
-        events_table = self.__get_parameter(f"/{stage}-sparcs-events")
         email_queue = self.__get_parameter(f"/sparcs-events-email-queue-url-{stage}")
         certificate_queue = self.__get_parameter(f"/sparcs-events-certificate-queue-url-{stage}")
         s3_bucket = self.__get_parameter(f"/{stage}-sparcs-events-file-bucket")
         
-        userpool_id = f"techtix/cognito-user-pool-id-{stage}"
-        userpool_client_id = f"techtix/cognito-user-pool-client-id-{stage}"
+        userpool_id = self.__get_parameter(f"/techtix/cognito-user-pool-id-{stage}")
+        userpool_client_id = self.__get_parameter(f"/techtix/cognito-user-pool-client-id-{stage}")
 
         if self.__input_environment == Environments.LOCAL.value or stage == Environments.LOCAL.value:
-            frontend_url = 'http://localhost:3000'
+            frontend_url = 'http://localhost:5173'
         else:
-            frontend_url = self.__get_parameter(f"techtix/frontend-url-{stage}")
+            frontend_url = self.__get_parameter(f"/techtix/frontend-url-{stage}")
 
         # Determine if this is a local environment
         is_local = (
