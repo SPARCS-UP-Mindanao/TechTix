@@ -1,11 +1,11 @@
-name: Deploy stage to main
+name: Deploy dev to main
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy-stage-to-main:
-    name: Deploy stage to main
+  deploy-dev-to-main:
+    name: Deploy dev to main
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: stage
+          ref: dev
       - uses: actions/setup-node@v4
         with:
           node-version: "22.15"
@@ -37,12 +37,12 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: ArJSarmiento,ASPactores,seangaaab
+          approvers: kindadailybren, prcsmae, seangaaab
           minimum-approvals: 1
-          issue-title: "Deploying stage to main"
+          issue-title: "Deploying dev to main"
           issue-body: "Please approve or deny the deployment."
 
-      - name: Sync stage to main
+      - name: Sync dev to main
         uses: connor-baer/action-sync-branch@main
         with:
           branch: main
