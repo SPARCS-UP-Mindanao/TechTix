@@ -14,6 +14,71 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
 
 > Source code dependencies can only point inward. Nothing in an inner circle can know anything about something in an outer circle. In particular, the name of something declared in an outer circle must not be mentioned by the code in an inner circle. That includes functions and classes, variables, or any other named software entity.
 
+## Project File Structure
+
+This project follows Clean Architecture principles with the following directory structure:
+
+```
+backend/
+├── aws/                        # AWS-specific configuration and settings
+│   ├── cognito_settings.py    # AWS Cognito authentication configuration
+│   └── security_settings.py   # Security and IAM-related settings
+│
+├── constants/                  # Application-wide constants
+│   ├── common_constants.py    # Shared constants across the application
+│   └── konhub_constants.py    # KonHub-specific constants
+│
+├── controller/                 # Presentation Layer - API route handlers
+│   ├── app_controller.py      # Main application controller
+│   ├── certificate_router.py  # Certificate management endpoints
+│   ├── discount_router.py     # Discount management endpoints
+│   └── evaluation_router.py   # Evaluation/feedback endpoints
+│
+├── external_gateway/           # External Layer - Third-party integrations
+│   └── ...                     # External API clients and service integrations
+│
+├── functions/                  # AWS Lambda function handlers
+│   └── ...                     # Serverless function definitions
+│
+├── model/                      # Domain Layer - Business entities and value objects
+│   └── ...                     # Domain models representing core business concepts
+│
+├── repository/                 # Infrastructure Layer - Data access
+│   └── ...                     # Database and storage implementations
+│
+├── resources/                  # Static resources and configuration files
+│   └── ...                     # Templates, schemas, and static assets
+│
+├── scripts/                    # Utility scripts
+│   └── generate-env.py        # Environment configuration generator
+│
+├── usecase/                    # Application Layer - Business logic
+│   └── ...                     # Use case implementations and orchestration
+│
+├── utils/                      # Shared utilities and helpers
+│   └── ...                     # Common helper functions and utilities
+│
+├── main.py                     # FastAPI application entry point
+├── serverless.yaml            # Serverless Framework configuration
+├── pyproject.toml             # Python project configuration and dependencies
+├── requirements.txt           # Python dependencies
+├── package.json               # Node.js dependencies for Serverless Framework
+├── .pre-commit-config.yaml    # Pre-commit hooks configuration
+└── README.md                  # Project documentation
+```
+
+### Architecture Layers
+
+Following Clean Architecture, the dependencies flow inward:
+
+1. **Domain Layer** (`model/`) - Core business entities, independent of frameworks
+2. **Application Layer** (`usecase/`) - Business logic and use case orchestration
+3. **Infrastructure Layer** (`repository/`, `aws/`) - Database, external services, and framework implementations
+4. **Presentation Layer** (`controller/`) - API routes and request/response handling
+5. **External Layer** (`external_gateway/`, `functions/`) - Lambda functions and third-party integrations
+
+**Key Principle:** Dependencies point inward - outer layers depend on inner layers, never the reverse.
+
 ## Setup Local Environment
 
 1. **Pre-requisites:**
@@ -44,8 +109,28 @@ _Image credit to [Thang Chung under MIT terms](https://github.com/thangchung/blo
    source .venv/bin/activate
    ```
 
-6. **Add environment variables**
-   - Place the provided `.env` file in the `backend` directory
+6. **Generate environment variables**
+   
+   **Note:** You must first setup AWS CLI in your machine and login with your provided AWS account. You might also need to export your AWS profile:
+   ```shell
+   # Windows
+   $env:AWS_PROFILE="<your-profile>"
+   
+   # Linux/Mac
+   export AWS_PROFILE=<your-profile>
+   ```
+   
+   Generate the `.env` file using the following command:
+   ```shell
+   python scripts/generate-env.py --stage <stage>
+   ```
+   
+   Where `<stage>` can be: `dev` (default) | `local` | `prod` | `test`
+   
+   Example:
+   ```shell
+   python scripts/generate-env.py --stage local
+   ```
 
 ## Run Locally
 
