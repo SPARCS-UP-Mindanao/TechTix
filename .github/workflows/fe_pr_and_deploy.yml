@@ -1,15 +1,15 @@
-name: Build and Deploy PR to stage
+name: Build and Deploy PR to dev
 
 on:
   push:
-    branches: [stage]
+    branches: [dev]
   pull_request:
-    branches: [stage]
+    branches: [dev]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy PR to stage
+    name: Build and Deploy PR to dev
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,6 +32,6 @@ jobs:
         run: npm run build:dummy
 
       - name: Deploy to Amplify
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch'
         run: |
           curl -X POST -d '{}' "${{ secrets.AMPLIFY_WEBHOOK_URL }}" -H "Content-Type:application/json"
