@@ -1,6 +1,6 @@
 {
   "name": "TechTix Monorepo",
-  "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
@@ -9,7 +9,7 @@
       "version": "3.8"
     }
   },
-  "postCreateCommand": "npm install --prefix frontend && pipenv install --skip-lock --python 3.8 --manifest backend/Pipfile",
+  "postCreateCommand": "npm install --prefix frontend && cd backend && uv sync",
   "customizations": {
     "vscode": {
       "extensions": [
