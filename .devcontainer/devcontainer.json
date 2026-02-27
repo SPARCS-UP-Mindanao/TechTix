@@ -9,7 +9,7 @@
       "version": "3.8"
     }
   },
-  "postCreateCommand": "npm install --prefix frontend && cd backend && uv sync",
+  "postCreateCommand": "npm install --prefix frontend && cd backend && pip install uv && uv sync",
   "customizations": {
     "vscode": {
       "extensions": [
