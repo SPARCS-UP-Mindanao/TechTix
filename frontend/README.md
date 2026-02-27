@@ -2,11 +2,20 @@
 
 This folder contains the TechTix web frontend.
 
-## Development Setup
+## Development Setup (DevContainer)
 
-### Recommended: DevContainer (Sprint Default)
+For this sprint, development uses **VS Code Dev Containers** (containerized VS Code). This means you do **not** need to manually install project runtimes/dependencies (like Node) on your host machine—everything runs inside the container.
 
-For this sprint, development uses **VS Code Dev Containers**. Refer to the root [`README.md`](../README.md) for the complete DevContainer setup, requirements, and how AWS credentials are mounted into the container.
+### DevContainer dependencies (host machine)
+
+To use DevContainers, install:
+
+- VS Code
+- VS Code Extension: **Dev Containers**
+- Docker (Docker Desktop on Windows/macOS, Docker Engine on Linux)
+
+
+### Run the frontend (inside the DevContainer)
 
 Once the DevContainer is running, use the DevContainer terminal:
 
@@ -44,11 +53,12 @@ npm run dev
 
 ![image](https://github.com/SPARCS-UP-Mindanao/SPARCS-Event-Platform/assets/85269524/c44ea864-f1da-4d78-bb0c-980345125b3f)
 
-## AWS SSO (Frontend)
+## AWS CLI / AWS SSO (Frontend)
 
 Some frontend workflows require AWS access (e.g., generating local configuration files).
 
-Before running scripts that call AWS, authenticate using AWS SSO (details and the recommended workflow are documented in the root [`README.md`](../README.md)).
+- Ensure you have authenticated via **AWS SSO**.
+- Ensure the **AWS CLI** is available in your environment (the DevContainer should provide it; see root [`README.md`](../README.md) for the canonical setup).
 
 If you use a named AWS profile, ensure it is selected in your terminal session:
 
