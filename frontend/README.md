@@ -1,16 +1,75 @@
-# Front-End Guide
+# TechTix Frontend (React)
 
-## Setting up your local environment
+This folder contains the TechTix web frontend.
 
-- Ensure that you have `node 22.15+` installed.
-- Clone the repository in your machine.
-- Open the repository in your IDE
-- Open up your IDE's terminal. Make sure you're at the root folder of the project. Enter `cd frontend` in the terminal
-  ![image](https://github.com/SPARCS-UP-Mindanao/SPARCS-Event-Platform/assets/85269524/adcdd520-d032-4380-8a85-81bbf39805c2)
-- After that, you can install the dependencies by running the `npm install` command.
-- After installing, you can now run the project by entering `npm run dev` and click on the url provided.
+## Development Setup
+
+### Recommended: DevContainer (Sprint Default)
+
+For this sprint, development uses **VS Code Dev Containers**. Refer to the root [`README.md`](../README.md) for the complete DevContainer setup, requirements, and how AWS credentials are mounted into the container.
+
+Once the DevContainer is running, use the DevContainer terminal:
+
+```bash
+npm install
+npm run dev
+```
+
+Then open the URL printed in the terminal.
+
+### Alternative: Local (without DevContainer)
+
+If you are not using DevContainers, ensure you have:
+
+- `node 22.15+`
+
+Then:
+
+1. Clone the repository to your machine.
+2. Open the repository in your IDE.
+3. Open a terminal at the repository root and switch to the frontend folder:
+
+```bash
+cd frontend
+```
+
+![image](https://github.com/SPARCS-UP-Mindanao/SPARCS-Event-Platform/assets/85269524/adcdd520-d032-4380-8a85-81bbf39805c2)
+
+4. Install dependencies and start the dev server:
+
+```bash
+npm install
+npm run dev
+```
 
 ![image](https://github.com/SPARCS-UP-Mindanao/SPARCS-Event-Platform/assets/85269524/c44ea864-f1da-4d78-bb0c-980345125b3f)
+
+## AWS SSO (Frontend)
+
+Some frontend workflows require AWS access (e.g., generating local configuration files).
+
+Before running scripts that call AWS, authenticate using AWS SSO (details and the recommended workflow are documented in the root [`README.md`](../README.md)).
+
+If you use a named AWS profile, ensure it is selected in your terminal session:
+
+```bash
+export AWS_PROFILE=<your-profile>
+```
+
+### Generating `amplify_outputs.json` and `.env`
+
+Use these scripts to generate files required to run the frontend locally:
+
+- `amplify_outputs.json`
+- `.env`
+
+Run:
+
+```bash
+# $stage = dev | staging
+npm run generate:env $stage
+npm run generate:outputs $stage
+```
 
 ## Directory guide
 
@@ -20,110 +79,134 @@ We will mostly work in the `frontend/src` folder.
 
 We have these folders, and here's what they're for:
 
-- `api` - contains all of the API calls that we will throughout the project
-- `assets` - contains all other files like pictures, fonts, gifs, etc.
-- `components` - contains all of the **reusable** components throughout the project.
-- `context` - contains all of the contexts that the project uses.
-- `hooks` - contains all the custom hooks.
-- `model` - contains the interface/types of the APIs that we use.
-- `pages` - contains all of the pages and their respective components.
-- `routes` - has the route of the project.
-- `styles` - has the css files that the project uses.
-- `utils` - has the helper functions that is used throughout project.
+- `api` — API calls and API utilities (e.g., `createApi`)
+- `assets` — images, fonts, gifs, and other static assets
+- `components` — reusable UI components
+- `context` — React contexts used by the app
+- `hooks` — custom hooks
+- `model` — TypeScript interfaces/types used by the app and API layer
+- `pages` — page-level components
+- `routes` — app routing and route layouts
+- `styles` — CSS and styling files used by the project
+- `utils` — helper functions used throughout the project
 
-With the help of `tsconfig.json`, we are able to use aliases for our directories.
-We can simply use `@/{folderInSRC}` for accessing folders or files under the `frontend/src` directory.
-This makes it easy for us as we don't need to do `../../../../folder` just to navigate through the directory.
+### Path aliases
 
-If you're new to tailwind, you can also read about tailwind here and the cheat sheet.
+With the help of `tsconfig.json`, we can use aliases for our directories:
 
-- [Tailwind Docs](https://tailwindcss.com/)
-- [Tailwind Cheat Sheet](https://nerdcave.com/tailwind-cheat-sheet)
+- `@/{folderInSRC}`
 
-Also, please install the [tailwind extension](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) to have autocomplete feature.
-
-# Generating amplify_outputs.json and .env file
-
-Utilize these scripts to generate the files required to run the project locally.
-
-Note: You must first setup AWS CLI in your machine and login with your provided AWS account. You might also need to do `export AWS_PROFILE=<your-profile>`.
-
-$stage = dev | staging
-
-- `npm run generate:env $stage`
-- `npm run generate:outputs $stage`
+This avoids long relative imports like `../../../../someFolder`.
 
 ## Components
 
-In this project, we are using shadcn/ui for our components.
+This project uses **shadcn/ui** for components.
 
-You can read the docs [here](https://ui.shadcn.com/).
+You can read the docs here: https://ui.shadcn.com/
 
-Some of the components have been modified to match the needs of this document.
-Please view the component file or just message [Sean](https://www.facebook.com/seangaaab) for questions.
+### Naming conventions
 
-For naming components, we will be using Pascal case. Example: `PascalCase.tsx`
+- Components: **PascalCase** (example: `PascalCase.tsx`)
+- Hooks: camel case starting with `use` (example: `useCamelCase`)
 
-Reminder: We are using a different directory than what is written in the shadcn/ui docs. Please use `@/components/{componentName.tsx}` when importing components.
+Reminder: We use a different directory than what is written in the shadcn/ui docs. Use:
+
+- `@/components/{componentName.tsx}`
 
 ### Using the Form component
 
-The form component is customized so that FE devs can easily setup a form.
+The form component is customized so that FE devs can easily set up a form.
 
-The form can be used this way:
+Example usage:
 
-```
+```tsx
 const form = useForm();
+
 return (
   <FormProvider {...form}>
-          <FormItem name="email">
-            {({ field, fieldState, formState }) => (
-              <div>
-                <FormLabel>{Label}</FormLabel>
-                <Input type={inputType} {...field} />
-                <FormDescription>{description}<FormDescription/>
-                <FormError />
-              </div>
-            )}
-          </FormItem>
-  <FormProvider />
-)
+    <FormItem name="email">
+      {({ field, fieldState, formState }) => (
+        <div>
+          <FormLabel>{Label}</FormLabel>
+          <Input type={inputType} {...field} />
+          <FormDescription>{description}</FormDescription>
+          <FormError />
+        </div>
+      )}
+    </FormItem>
+  </FormProvider>
+);
 ```
 
 Where:
 
 - `FormProvider` provides the form context to its children
-- `FormLabel` - Label if any
-- `FormDescription` - Description if any
-- `FormError` - Errors if any
+- `FormLabel` — label (if any)
+- `FormDescription` — description (if any)
+- `FormError` — errors (if any)
 
-With this implementation, we can easily add custom components. We just need to pass the `value`, and the `onChange` from `field`.
-
-for anything about `field`, `fieldState`, and `formState`, please read up on [`react-hook-form`](https://react-hook-form.com/) and about [Controllers](https://react-hook-form.com/docs/usecontroller/controller).
+For anything about `field`, `fieldState`, and `formState`, read up on:
+- [`react-hook-form`](https://react-hook-form.com/)
+- [Controllers](https://react-hook-form.com/docs/usecontroller/controller)
 
 ## Hooks
 
-These contain the logic for most pages like handling forms. We can use this to separate the design from its logic.
-Usually, these hooks return functions or variables needed to apply the logic to our design.
-You can read more about it [here](https://react.dev/learn/reusing-logic-with-custom-hooks).
+Hooks contain the logic for pages (e.g., handling forms). This helps separate UI/design from logic.
 
-For naming hooks, we will use Camel case with the starting word `use`. Example: `useCamelCase`
+- Location: `src/hooks/`
+- Naming: `useSomething`
+- Prefer returning a clear API (data + loading/error state, and action functions)
+
+## Contexts
+
+Contexts live in `src/context/` and are used for app-wide state and providers.
+
+- Prefer exposing a `useSomething()` hook as the public API for consuming context values.
+
+## Git Hooks (Pre-commit)
+
+This project uses git hooks to prevent committing secrets and to enforce commit message conventions.
+
+### Hooks used
+
+- **gitleaks** (pre-commit): scans staged changes for secrets (API keys, tokens, passwords).
+- **commitizen** (commit-msg): validates commit message format.
+
+### Install hooks locally
+
+Run inside the DevContainer terminal:
+
+```bash
+npm i --save-dev prek
+npx prek install --hook-type commit-msg --hook-type pre-commit
+```
+
+If a commit is rejected:
+- **gitleaks**: remove the secret from the change (and rotate the credential if it was exposed).
+- **commitizen**: rewrite the commit message to match the required format.
 
 ## Code formatting
 
-Please use `prettier` for formatting code to make it look cleaner.
-You can find it as an extension in `VSCode`.
+Use **Prettier** for formatting code.
 
-You may also utilized the command `npm run pretty` to format the code.
+Format the code with:
 
-##
+```bash
+npm run pretty
+```
 
-You can always refer to the existing code to follow our best practices.
+## Useful Commands
 
-When in doubt, please feel free to ask.
+Run inside the DevContainer terminal:
 
-##
+```bash
+npm run lint
+npm run test:unit
+npm run build
+npm run start
+npm run pretty
+npm run generate
+```
 
-**Your brother in Christ,**
-
-**Sean**
+- `npm run start` runs the Vite preview server (built app).
+- `npm run generate` runs both env + outputs generation (see `package.json`).
