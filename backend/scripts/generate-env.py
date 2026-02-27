@@ -128,8 +128,8 @@ class ConfigAssembler:
             self.write_config(file_handle, 'EMAIL_QUEUE', email_queue)
             self.write_config(file_handle, 'CERTIFICATE_QUEUE', certificate_queue)
             self.write_config(file_handle, 'S3_BUCKET', s3_bucket)
-            self.write_config(file_handle, 'USERPOOL_ID', userpool_id)
-            self.write_config(file_handle, 'USERPOOL_CLIENT_ID', userpool_client_id)
+            self.write_config(file_handle, 'USER_POOL_ID', userpool_id)
+            self.write_config(file_handle, 'USER_POOL_CLIENT_ID', userpool_client_id)
             self.write_config(file_handle, 'STAGE', stage)
 
         print(f'Configuration file created successfully at: {config_file}')
