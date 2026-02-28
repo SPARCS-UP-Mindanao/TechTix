@@ -1,6 +1,7 @@
 {
   "name": "TechTix Monorepo",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "runArgs": ["--network=host"],
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
