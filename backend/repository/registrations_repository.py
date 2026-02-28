@@ -96,6 +96,9 @@ class RegistrationsRepository:
         :param event_id: The event ID to query (default is None to query all records).
         :type event_id: str
 
+        :param is_deleted: Flag to include deleted records in the query (default is False).
+        :type is_deleted: bool
+
         :return: A tuple containing HTTP status, a list of registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[Registration], str]
 
