@@ -51,6 +51,9 @@ class PreRegistrationsRepository:
         :param preregistration_in: The pre-registration data to be stored.
         :type preregistration_in: PreRegistrationIn
 
+        :param preregistration_id: The ID of the pre-registration record (optional, auto-generated if not provided).
+        :type preregistration_id: str
+
         :return: A tuple containing HTTP status, the stored pre-registration record, and an optional error message.
         :rtype: Tuple[HTTPStatus, PreRegistration, str]
 
@@ -194,8 +197,8 @@ class PreRegistrationsRepository:
         :param email: The email to query (default is None to query all records).
         :type email: str
 
-        :param exclude_preregistration: The registration ID to exclude (default is None to query all records).
-        :type exclude_preregistration: str
+        :param exclude_preregistration_id: The registration ID to exclude (default is None to query all records).
+        :type exclude_preregistration_id: str
 
         :return: A tuple containing HTTP status, a list of pre-registration records, and an optional error message.
         :rtype: Tuple[HTTPStatus, List[PreRegistration], str]
@@ -281,8 +284,8 @@ class PreRegistrationsRepository:
     def delete_preregistration(self, preregistration_entry: PreRegistration) -> HTTPStatus:
         """Delete a preregistration record from the database.
 
-        :param registration_entry: The registration record to be deleted.
-        :type registration_entry: Registration
+        :param preregistration_entry: The preregistration record to be deleted.
+        :type preregistration_entry: PreRegistration
 
         :return: The HTTP status of the operation.
         :rtype: HTTPStatus
