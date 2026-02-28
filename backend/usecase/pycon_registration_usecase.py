@@ -21,6 +21,7 @@ from usecase.discount_usecase import DiscountUsecase
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from utils.logger import logger
+from backend.utils.pii.pii_masking import mask_email
 
 
 class PyconRegistrationUsecase:
@@ -55,7 +56,7 @@ class PyconRegistrationUsecase:
         :rtype: Union[JSONResponse, PyconRegistrationOut]
 
         """
-        logger.info(f'Saving PyCon registration: {registration_in}')
+        logger.info(f'Saving PyCon registration for event: {registration_in.eventId}')
         status, event, message = self.__events_repository.query_events(event_id=registration_in.eventId)
         if status != HTTPStatus.OK:
             return JSONResponse(status_code=status, content={'message': message})
@@ -119,7 +120,7 @@ class PyconRegistrationUsecase:
             message,
         ) = self.__registrations_repository.query_registrations_with_email(event_id=event_id, email=email)
         if status == HTTPStatus.OK and registrations:
-            logger.info(f'Registration with email {email} already exists, returning existing registration')
+            logger.info(f'Registration with email {mask_email(email)} already exists, returning existing registration')
             registration = registrations[0]
             registration_data = self.__convert_data_entry_to_dict(registration)
             registration_out = PyconRegistrationOut(**registration_data)
@@ -450,9 +451,9 @@ class PyconRegistrationUsecase:
 
         if status == HTTPStatus.OK and registrations and registrations[0].transactionId:
             registration = registrations[0]
-            logger.info(f'Resending confirmation email to {email} for event {event_id}')
+            logger.info(f'Resending confirmation email to {mask_email(email)} for event {event_id}')
             self.__email_usecase.send_registration_creation_email(registration=registration, event=event)
-            return JSONResponse(status_code=HTTPStatus.OK, content={'message': f'Confirmation email sent to {email}'})
+            return JSONResponse(status_code=HTTPStatus.OK, content={'message': f'Confirmation email sent to {mask_email(email)}'})
 
         return JSONResponse(status_code=status, content={'message': message})
 
