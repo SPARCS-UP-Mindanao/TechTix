@@ -18,6 +18,7 @@ from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.file_s3_usecase import FileS3Usecase
 from utils.logger import logger
+from backend.utils.pii.pii_masking import mask_email
 
 
 class PreRegistrationUsecase:
@@ -69,7 +70,7 @@ class PreRegistrationUsecase:
         if status == HTTPStatus.OK and preregistrations:
             return JSONResponse(
                 status_code=HTTPStatus.CONFLICT,
-                content={'message': f'Pre-registration with email {email} already exists'},
+                content={'message': f'Pre-registration with email {mask_email(email)} already exists'},
             )
 
         preregistration_id = ulid.ulid()
