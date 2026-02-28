@@ -249,13 +249,14 @@ class DiscountsRepository:
             return HTTPStatus.INTERNAL_SERVER_ERROR, message
 
     def append_claim_discount(self, discount_entry: Discount, append_count: int = 1):
-        """
-        Adds to the discountUses attribute and decreases remainingUses
+        """Adds to the discountUses attribute and decreases remainingUses
 
         :param discount_entry: Discount object to be updated.
         :type discount_entry: Discount
+
         :param append_count: The count to be appended.
         :type append_count: int
+
         :return: Tuple containing the HTTP status, the updated Discount object, and a message.
         :rtype: Tuple[HTTPStatus, Discount, str]
         """
