@@ -2,12 +2,35 @@ import path from 'path';
 import { defineConfig } from 'vite';
 // import { VitePWA } from 'vite-plugin-pwa';
 import react from '@vitejs/plugin-react';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
     plugins: [
-      react()
+      react(),
+      ViteImageOptimizer({
+        svg: {
+          plugins: [
+          {
+            name: 'removeMetadata',
+          },
+          {
+            name: 'removeViewBox',
+          },
+          
+        ]},
+        png: {
+            quality: 80
+        },
+        jpeg: {
+            quality: 80
+        },
+        jpg: {
+            quality: 80
+        },
+
+      })
       // VitePWA({
       //   registerType: 'autoUpdate', // Automatically update the service worker
       //   devOptions: {
