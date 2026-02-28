@@ -14,6 +14,7 @@ from model.preregistrations.preregistrations_constants import AcceptanceStatus
 from model.registrations.registration import Registration
 from repository.preregistrations_repository import PreRegistrationsRepository
 from utils.logger import logger
+from backend.utils.pii.pii_masking import mask_email
 
 
 class EmailUsecase:
@@ -32,7 +33,7 @@ class EmailUsecase:
         """Send an email to the queue
 
         :param email_in_list: The email list to be sent
-        :type Event: EmailIn
+        :type email_in_list: EmailIn
 
         :param event: The event to be sent
         :type event: Event
@@ -41,10 +42,8 @@ class EmailUsecase:
         :rtype: Tuple[HTTPStatus, str]
 
         """
-
-        # Check if event has konfhub and exclude it from the Email Service
         if self.__event_email and event.konfhubId and event.konfhubApiKey:
-            logger.info(f'Skipping sending email to {self.__event_email} because it is a special email')
+            logger.info(f'Skipping sending email to {mask_email(self.__event_email)} because it is a special email')
             return
 
         timestamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
@@ -66,7 +65,7 @@ class EmailUsecase:
         """Send an email to the queue
 
         :param email_in_list: The email list to be sent
-        :type email_in: EmailIn
+        :type email_in_list: EmailIn
 
         :param event: The event to be sent
         :type event: Event
@@ -113,13 +112,14 @@ class EmailUsecase:
 
         """
         subject = f'Event {event.name} has been created'
-        body = [f'Event {event.name} has been created. Please check the event page for more details.']
+        body = [
+            f'Event {event.name} has been created. Please check the event page for more details.',
+        ]
         salutation = 'Dear DurianPy ,'
         regards = ['Best,']
 
         self.__event_email = event.email
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
@@ -156,14 +156,13 @@ class EmailUsecase:
 
         subject = f'{event.name} Registration Confirmation'
         body = [
-            f'Thank you for registering for the upcoming {event.name}!',
+            f"Thank you for registering for the upcoming {event.name}!",
             f"We're thrilled to have you join us. If you have any questions or need assistance, please don't hesitate to reach out to us at {event.email}. We're here to help!",
-            'See you soon!',
+            "See you soon!",
         ]
         salutation = f'Good day {registration.firstName},'
         regards = ['Best,']
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
@@ -177,7 +176,7 @@ class EmailUsecase:
             eventId=event.eventId,
             isDurianPy=is_durianpy,
         )
-        logger.info(f'Sending registration confirmation email to {registration.email}')
+        logger.info(f'Sending registration confirmation email to {mask_email(registration.email)}')
         return self.send_email(email_in=email_in, event=event)
 
     def send_accept_reject_status_email(
@@ -203,10 +202,10 @@ class EmailUsecase:
             )
             if should_send_acceptance:
                 email = self.send_preregistration_acceptance_email(preregistration=preregistration, event=event)
-                logger.info(f'Acceptance email sent to {preregistration.email} for event {event.eventId}')
+                logger.info(f'Acceptance email sent to {mask_email(preregistration.email)} for event {event.eventId}')
             else:
                 email = self.send_preregistration_rejection_email(preregistration=preregistration, event=event)
-                logger.info(f'Rejection email sent to {preregistration.email} for event {event.eventId}')
+                logger.info(f'Rejection email sent to {mask_email(preregistration.email)} for event {event.eventId}')
 
             emails.append(email)
 
@@ -236,14 +235,13 @@ class EmailUsecase:
         is_durianpy = not is_special_email
         subject = f'Welcome to {event.name} Pre-Registration!'
         body = [
-            'We’ve received your pre-registration and are thrilled to have you on board. Your application is under review, and we’re just as excited as you are to get things moving!',
-            f'Stay tuned for updates, and in the meantime, feel free to check out more details on our social media channels or reach out at {event.email} with any questions. We’re here to help!',
+            "We've received your pre-registration and are thrilled to have you on board. Your application is under review, and we're just as excited as you are to get things moving!",
+            f"Stay tuned for updates, and in the meantime, feel free to check out more details on our social media channels or reach out at {event.email} with any questions. We're here to help!",
         ]
 
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
@@ -257,7 +255,7 @@ class EmailUsecase:
             eventId=event.eventId,
             isDurianPy=is_durianpy,
         )
-        logger.info(f'Sending pre-registration email to {preregistration.email}')
+        logger.info(f'Sending pre-registration email to {mask_email(preregistration.email)}')
         return self.send_email(email_in=email_in, event=event)
 
     def send_preregistration_acceptance_email(self, preregistration: PreRegistration, event: Event) -> EmailIn:
@@ -274,16 +272,15 @@ class EmailUsecase:
         self.__event_email = event.email
         is_special_email = event.email in [email.value for email in SpecialEmails]
         is_durianpy = not is_special_email
-        subject = f'You’re In! {event.name} Pre-Registration Accepted 🌟'
+        subject = f"You're In! {event.name} Pre-Registration Accepted"
         salutation = f'Good day {preregistration.firstName},'
         body = [
-            f'Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can’t wait to share it with you.',
-            f'To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/register',
-            f'If you have any questions or need assistance, reach out to us at {event.email}. Let’s make this event unforgettable!',
+            f"Congratulations! We are over the moon to let you know that your pre-registration for {event.name} has been accepted! This is going to be an extraordinary experience, and we can't wait to share it with you.",
+            f"To complete your registration and secure your spot, please follow this link: https://techtix.app/{event.eventId}/register",
+            f"If you have any questions or need assistance, reach out to us at {event.email}. Let's make this event unforgettable!",
         ]
         regards = ['Best,']
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
@@ -297,7 +294,7 @@ class EmailUsecase:
             eventId=event.eventId,
             isDurianPy=is_durianpy,
         )
-        logger.info(f'Sending pre-registration acceptance email to {preregistration.email}')
+        logger.info(f'Sending pre-registration acceptance email to {mask_email(preregistration.email)}')
         return email_in
 
     def send_preregistration_rejection_email(self, preregistration: PreRegistration, event: Event) -> EmailIn:
@@ -317,16 +314,15 @@ class EmailUsecase:
         is_durianpy = not is_special_email
         subject = f'Regretful News Regarding Your Pre-Registration for {event.name}'
         body = [
-            f'We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.',
-            'We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.',
-            'Despite this setback, we want to extend a heartfelt invitation to you for our next event. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.',
-            f'We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us at {event.email}.',
-            'Thank you for your understanding.',
+            f"We hope this message finds you well. It is with genuine regret that we inform you that your pre-registration for the upcoming {event.name} has been declined.",
+            "We understand the disappointment and frustration this may cause, and for that, we sincerely apologize. Please know that our decision was made after careful consideration and was not taken lightly.",
+            "Despite this setback, we want to extend a heartfelt invitation to you for our next event. We believe that your enthusiasm and passion would greatly contribute to the vibrant atmosphere of our community, and we would be honored to have you join us.",
+            f"We value your support and understanding, and we genuinely hope to welcome you to our future events. Should you have any questions or require further assistance, please do not hesitate to reach out to us at {event.email}.",
+            "Thank you for your understanding.",
         ]
         salutation = f'Good day {preregistration.firstName},'
         regards = ['Best,']
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
@@ -340,7 +336,7 @@ class EmailUsecase:
             eventId=event.eventId,
             isDurianPy=is_durianpy,
         )
-        logger.info(f'Sending pre-registration rejection email to {preregistration.email}')
+        logger.info(f'Sending pre-registration rejection email to {mask_email(preregistration.email)}')
         return email_in
 
     def send_event_completion_email(
@@ -369,15 +365,14 @@ class EmailUsecase:
         subject = f'Thank you for joining {event_name}. Claim your certificate now!'
         salutation = 'Good day,'
         body = [
-            f'Thanks so much for coming to {event_name}! It was great to have you there.',
+            f"Thanks so much for coming to {event_name}! It was great to have you there.",
             "We know you're looking forward to getting your certificate. To claim it, please take a quick moment to fill out this form. Your feedback helps us make these events even better.",
-            f'Link to form: {claim_certificate_url}',
-            f'If you have any questions or need assistance, reach out to us at {event.email}.',
-            'We look forward to seeing you at our next event.',
+            f"Link to form: {claim_certificate_url}",
+            f"If you have any questions or need assistance, reach out to us at {event.email}.",
+            "We look forward to seeing you at our next event.",
         ]
         regards = ['Best,']
 
-        # Check if email is a special sender to add to the regards message
         if special_sender := self.__sender_name_map.get(event.email):
             regards.append(special_sender)
 
