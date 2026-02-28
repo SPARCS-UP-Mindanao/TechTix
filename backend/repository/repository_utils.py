@@ -103,13 +103,13 @@ class RepositoryUtils:
         """Parse data into a dictionary.
 
         :param pydantic_schema_in: The data stored in a Pydantic Object to be parsed into a dictionary.
-        :type pydantic_schema_in:
+        :type pydantic_schema_in: BaseModel
 
         :param exclude_unset: Excludes data that was not set during the creation
             of model. Defaults to False.
         :type exclude_unset: bool
 
-        :return:
+        :return: A dictionary representation of the parsed pydantic schema data.
         :rtype: dict
 
         """
