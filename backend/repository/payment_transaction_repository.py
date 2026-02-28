@@ -238,11 +238,16 @@ class PaymentTransactionRepository:
     ) -> Tuple[HTTPStatus, PaymentTransaction, str]:
         """Update the transactionStatus of a payment_transaction.
 
-        :param event_id: The event ID.
-        :param payment_transaction_id: The payment transaction ID to update.
-        :param status: The new transaction status.
-        :return: The HTTP status, the updated payment_transaction, and a message.
+        :param event_id: The event ID of the payment transaction to update.
+        :type event_id: str
 
+        :param payment_transaction_id: The ID of the payment transaction to update.
+        :type payment_transaction_id: str
+
+        :param status: The new transaction status to set.
+        :type status: TransactionStatus
+
+        :return: The HTTP status, the updated payment_transaction, and a message.
         :rtype: Tuple[HTTPStatus, PaymentTransaction, str]
         """
         try:
