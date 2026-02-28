@@ -21,6 +21,7 @@ from starlette.responses import JSONResponse
 from usecase.email_usecase import EmailUsecase
 from usecase.pycon_registration_usecase import PyconRegistrationUsecase
 from utils.logger import logger
+from backend.utils.pii.pii_masking import mask_email
 
 
 class PaymentUsecase:
@@ -41,7 +42,6 @@ class PaymentUsecase:
             PaymentTransactionOut -- The created payment transaction
         """
         logger.info(f'Creating payment transaction for {payment_transaction.eventId}')
-        logger.info(f'Payment transaction data: {payment_transaction}')
         status, payment_transaction, message = self.payment_repo.store_payment_transaction(payment_transaction)
         if status != HTTPStatus.OK:
             logger.error(f'[{payment_transaction.eventId}] {message}')
@@ -273,7 +273,7 @@ class PaymentUsecase:
             # Get event details
             _, event_detail, _ = self.events_repo.query_events(event_id)
             if not event_detail:
-                logger.error(f'[{payment_transaction_id}] Event details not found for eventId: {event_id}')
+                logger.info(f'[{payment_transaction_id}] Payment failed email sent to {mask_email(email)}')
                 return
 
             # Extract email details from payment transaction
