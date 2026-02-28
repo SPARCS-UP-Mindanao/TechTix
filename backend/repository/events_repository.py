@@ -323,6 +323,9 @@ class EventsRepository:
         :param event_entry: The Event object to be updated.
         :type event_entry: Event
 
+        :param registration_sprint_day: Flag to indicate if the registration is for a sprint day (default is False).
+        :type registration_sprint_day: bool
+
         :param append_count: The count to be appended.
         :type append_count: int
 
