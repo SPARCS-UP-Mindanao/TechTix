@@ -8,7 +8,7 @@ custom:
   paymentQueue: ${self:custom.stage}-${self:custom.projectName}-payment-queue.fifo
   entities: ${self:custom.stage}-${self:custom.projectName}-entities
   events: ${self:custom.stage}-${self:custom.projectName}
-  bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket
+  bucket: ${self:custom.stage}-${self:custom.projectName}-file-bucket-2
   registrations: ${self:custom.stage}-${self:custom.projectName}-registrations
   preregistrations: ${self:custom.stage}-${self:custom.projectName}-preregistrations
   evaluations: ${self:custom.stage}-${self:custom.projectName}-evaluations
@@ -64,7 +64,7 @@ provider:
     # KONFHUB_API_KEY: ${self:custom.konfHubApiKey}
     USER_POOL_ID: !ImportValue UserPoolId-${self:custom.stage}
     USER_POOL_CLIENT_ID: !ImportValue AppClientId-${self:custom.stage}
-    SPARCS_GMAIL: sparcsup@gmail.com
+    SPARCS_GMAIL: breindelm6@gmail.com
   logs:
     restApi:
       role: !GetAtt ApiGatewayCloudWatchRole.Arn
@@ -75,7 +75,7 @@ resources:
   - ${file(resources/s3.yml)}
   - ${file(resources/sqs.yml)}
   - ${file(resources/frontend_role.yml)}
-  - ${file(resources/frontend_urls.yml)}
+  # - ${file(resources/frontend_urls.yml)}
   - Resources:
       ApiGatewayCloudWatchRole:
         Type: AWS::IAM::Role

@@ -48,7 +48,7 @@ const ClientRouteLayout = () => {
 
       <header
         style={{ height: CLIENT_HEADER_HEIGHT, boxShadow: '0px 8px 12px 0px hsla(0, 0%, 12%, 0.04)', top: showAdminWarning ? 50 : 0 }}
-        className="sticky z-10 w-full py-2 px-8 md:px16 border-b bg-pycon-custard"
+        className="sticky z-10 w-full py-2 px-8 md:px16 border-b bg-sparcs-blue-light"
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

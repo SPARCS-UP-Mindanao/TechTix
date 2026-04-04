@@ -5,6 +5,7 @@
 ***__pycache__**
 venv
 node_modules
+.venv
 .env
 .env.*
 .ruff_cache

@@ -8,6 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-sparcs-blue-light: var(--sparcs-blue-light);
   --color-pycon-orange: var(--pycon-orange); /* #f3a04d; */
   --color-pycon-custard: var(--pycon-custard); /* #fddeb2; */
   --color-pycon-custard-light: var(--pycon-custard-light); /* #feefdb; */

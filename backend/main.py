@@ -3,6 +3,7 @@ import os
 import lambdawarmer
 from controller.app_controller import api_controller
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from lambda_decorators import cors_headers
 from mangum import Mangum
@@ -17,6 +18,14 @@ app = FastAPI(
         'name': 'Society of Programmers and Refined Computer Scientists',
         'email': 'sparcsup@gmail.com',
     },
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

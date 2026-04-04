@@ -476,7 +476,7 @@ class RegistrationUsecase:
         :rtype: RegistrationOut
 
         """
-        if registration.gcashPaymentId:
+        if registration.gcashPayment:
             image_id_url = self.__file_s3_usecase.create_download_url(registration.gcashPaymentId)
             registration.gcashPaymentUrl = image_id_url.downloadLink
 
