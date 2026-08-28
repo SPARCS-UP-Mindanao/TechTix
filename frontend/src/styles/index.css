@@ -19,9 +19,15 @@
   --color-pycon-lavender: var(--pycon-lavender); /* #7681b6; */
   --color-pycon-dirty-white: var(--pycon-dirty-white); /* # fff9f2 */
 
+  --color-pycon-beige: var(--pycon-beige);
+  --color-pycon-teal: var(--pycon-teal);
+  --color-pycon-green: var(--pycon-green);
+  --color-pycon-dark-blue: var(--pycon-dark-blue);
+
   --font-pipanganan: 'Pipanganan', 'sans-serif';
   --font-nunito: 'Nunito Sans', sans-serif;
   --font-inter: 'Inter', sans-serif;
+  --font-sora: 'Sora', sans-serif;
 
   --breakpoint-3xl: 1600px;
 

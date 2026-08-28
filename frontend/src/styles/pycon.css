@@ -1,5 +1,22 @@
+:root {
+  --pycon-beige: #fbefcf;
+  --pycon-teal: #04b1a4;
+  --pycon-green: #5da144;
+  --pycon-dark-blue: #072e47;
+  --pycon-orange: #f99508;
+}
+
 body[data-page='pycon'] {
-  @apply bg-pycon-violet;
+  --background: var(--pycon-beige);
+  --foreground: var(--pycon-dark-blue);
+  --primary: var(--pycon-teal);
+  --primary-foreground: #ffffff;
+  --secondary: var(--pycon-orange);
+  --secondary-foreground: #ffffff;
+  --accent: var(--pycon-green);
+  --accent-foreground: #ffffff;
+
+  @apply bg-pycon-beige text-pycon-dark-blue;
 
   div#root {
     @apply flex flex-col;
@@ -11,7 +28,7 @@ body[data-page='pycon'] {
   }
 
   * {
-    @apply font-nunito;
+    @apply font-inter;
   }
 
   input:autofill,
@@ -22,13 +39,23 @@ body[data-page='pycon'] {
   input:-webkit-autofill:focus,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px var(---pycon-dirty-white) inset !important;
-    -webkit-text-fill-color: var(---pycon-dirty-white) !important;
-    @apply font-nunito! bg-pycon-dirty-white! text-pycon-violet-dark!;
+    -webkit-box-shadow: 0 0 0 1000px var(--pycon-beige) inset !important;
+    -webkit-text-fill-color: var(--pycon-dark-blue) !important;
+    @apply font-inter! bg-pycon-beige! text-pycon-dark-blue!;
     transition: background-color 9999s ease-in-out 0s;
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sora text-pycon-teal;
+  }
+
   h1 {
-    @apply font-nunito font-extrabold text-pycon-orange  scroll-m-20 text-4xl tracking-tight lg:text-5xl;
+    @apply font-sora font-extrabold text-pycon-teal scroll-m-20 text-4xl tracking-tight lg:text-5xl;
   }
 }
+
