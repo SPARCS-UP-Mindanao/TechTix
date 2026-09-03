@@ -17,12 +17,12 @@ interface Props {
 
 const MiscellaneousStep: FC<Props> = () => {
   return (
-    <section className="text-black bg-white/50 rounded-[57.2px] p-10">
+    <section className="text-pycon-dark-blue bg-white/50 rounded-[40px] p-10">
       <div className="flex flex-col w-full gap-4">
-        <p className="text-inter font-bold uppercase text-[#072E474D] text-sm">Community</p>
+        <p className="font-inter font-bold uppercase text-pycon-dark-blue/40 text-sm">Community</p>
         <FormItem name="communityInvolvement">
           {({ field }) => (
-            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-[#FFF9F2] p-6 rounded-[38.13px]">
+            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-pycon-dirty-white p-6 rounded-[38.13px]">
               <Label htmlFor="communityInvolvement-yes" aria-required>
                 Are you a member of any local tech community?
                 <span className="text-pycon-orange">&nbsp;*</span>
@@ -42,7 +42,7 @@ const MiscellaneousStep: FC<Props> = () => {
 
         <FormItem name="futureVolunteer">
           {({ field }) => (
-            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-[#FFF9F2] p-6 rounded-[38.13px]">
+            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-pycon-dirty-white p-6 rounded-[38.13px]">
               <Label htmlFor="futureVolunteer-yes">
                 Would you like to volunteer in the future?<span className="text-pycon-orange">&nbsp;*</span>
               </Label>
@@ -60,8 +60,8 @@ const MiscellaneousStep: FC<Props> = () => {
         </FormItem>
       </div>
       
-      <div className="flex flex-col w-full mt-10 gap-4 text-black">
-        <p className="text-inter font-bold uppercase text-[#072E474D] text-sm">Preferences <span className="lowercase font-light">(optional)</span></p>
+      <div className="flex flex-col w-full mt-10 gap-4">
+        <p className="font-inter font-bold uppercase text-pycon-dark-blue/40 text-sm">Preferences <span className="lowercase font-light">(optional)</span></p>
         <FormItem name="dietaryRestrictions">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
