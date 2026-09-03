@@ -17,19 +17,22 @@ interface Props {
 
 const MiscellaneousStep: FC<Props> = () => {
   return (
-    <>
-      <div className="flex flex-col md:flex-row w-full gap-4">
+    <section className="text-black bg-white/50 rounded-[57.2px] p-10">
+      <div className="flex flex-col w-full gap-4">
+        <p className="text-inter font-bold uppercase text-[#072E474D] text-sm">Community</p>
         <FormItem name="communityInvolvement">
           {({ field }) => (
-            <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel>Are you a member of any local tech community?</FormLabel>
+            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-[#FFF9F2] p-6 rounded-[38.13px]">
+              <Label htmlFor="communityInvolvement-yes" aria-required>
+                Are you a member of any local tech community?
+                <span className="text-pycon-orange">&nbsp;*</span>
+              </Label>
               <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem pyconStyles id="communityInvolvement-yes" checked={!!field.value} value={'true'} />
-                  <Label htmlFor={`communityInvolvement-yes`}>Yes</Label>
-
+                  <Label htmlFor="communityInvolvement-yes">Yes</Label>
                   <RadioGroupItem pyconStyles id="communityInvolvement-no" checked={!field.value} value="" />
-                  <Label htmlFor={`communityInvolvement-no`}>No</Label>
+                  <Label htmlFor="communityInvolvement-no">No</Label>
                 </div>
               </RadioGroup>
               <FormError />
@@ -39,13 +42,14 @@ const MiscellaneousStep: FC<Props> = () => {
 
         <FormItem name="futureVolunteer">
           {({ field }) => (
-            <div className="flex flex-col gap-1 grow md:basis-1/2">
-              <FormLabel>Would you like to volunteer in the future?</FormLabel>
+            <div className="flex flex-col gap-1 grow md:basis-1/2 bg-[#FFF9F2] p-6 rounded-[38.13px]">
+              <Label htmlFor="futureVolunteer-yes">
+                Would you like to volunteer in the future?<span className="text-pycon-orange">&nbsp;*</span>
+              </Label>
               <RadioGroup onValueChange={(value) => field.onChange(Boolean(value))} value={field.value} className="flex flex-wrap gap-4 py-3 mt-auto">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem pyconStyles id="futureVolunteer-yes" checked={!!field.value} value={'true'} />
                   <Label htmlFor={`futureVolunteer-yes`}>Yes</Label>
-
                   <RadioGroupItem pyconStyles id="futureVolunteer-no" checked={!field.value} value="" />
                   <Label htmlFor={`futureVolunteer-no`}>No</Label>
                 </div>
@@ -55,15 +59,16 @@ const MiscellaneousStep: FC<Props> = () => {
           )}
         </FormItem>
       </div>
-
-      <div className="flex flex-col md:flex-row w-full gap-4">
+      
+      <div className="flex flex-col md:flex-row w-full mt-10 gap-4 text-black">
+        <p className="text-inter font-bold uppercase text-[#072E474D] text-sm">Preferences <span className="lowercase font-light">(optional)</span></p>
         <FormItem name="dietaryRestrictions">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              <FormLabel optional optionalClass="text-pycon-custard-light">
+              <FormLabel optional optionalClass="sr-only" className="text-pycon-orange uppercase" >
                 Dietary Restrictions
               </FormLabel>
-              <Input pyconStyles type="text" {...field} />
+              <Input pyconStyles placeholder="e.g. vegetarian, nut allergy..." type="text" {...field} />
               <FormError />
             </div>
           )}
@@ -72,16 +77,16 @@ const MiscellaneousStep: FC<Props> = () => {
         <FormItem name="accessibilityNeeds">
           {({ field }) => (
             <div className="flex flex-col gap-1 grow basis-1/2">
-              <FormLabel optional optionalClass="text-pycon-custard-light">
+              <FormLabel optional optionalClass="sr-only" className="text-pycon-orange uppercase">
                 Accessibility Needs
               </FormLabel>
-              <Input pyconStyles type="text" {...field} />
+              <Input pyconStyles placeholder="e.g. wheelchair access, sign language..." type="text" {...field} />
               <FormError />
             </div>
           )}
         </FormItem>
       </div>
-    </>
+    </section>
   );
 };
 

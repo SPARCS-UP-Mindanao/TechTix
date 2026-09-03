@@ -21,7 +21,6 @@ import SummaryStep from './steps/SummaryStep';
 import TicketSelectionStep from './steps/TicketSelectionStep';
 import { useRegisterPage } from './useRegisterPage';
 import { useSuccess } from './useSuccess';
-import PyconBackground from '@/routes/layouts/PyconBackground';
 
 const Register: FC = () => {
   const { eventId } = useParams();
@@ -91,13 +90,21 @@ const Register: FC = () => {
   return (
     <section
       className={cn(
-        'flex flex-col grow items-center px-4 h-full w-full text-pycon-custard font-nunito max-w-6xl mx-auto',
+        'flex flex-col grow  px-4 h-full w-full text-pycon-custard font-nunito max-w-6xl mx-auto',
         currentStep.id === 'Success' && 'grow-0'
       )}
     >
+      {currentStep.id === 'Miscellaneous' && <h5 className="!font-inter uppercase opacity-60 font-bold tracking-widest"> Registration </h5>}
       <div className="w-full h-full flex flex-col space-y-4 grow">
         <FormProvider {...form}>
-          {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && <h1 className="text-xl">{currentStep.title}</h1>}
+              {currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && (
+                <>
+                  <h1 className="text-xl">{currentStep.title}</h1>
+                  {currentStep.id === 'Miscellaneous' && (
+                    <p className="text-[#072E4766] !font-inter font-normal text-sm"> A few more things to help us make the event better for you. </p>
+                  )}
+                </>
+              )}
 
           <div className="flex flex-col md:flex-row w-full h-full grow">
             {showStepper && (
@@ -105,7 +112,6 @@ const Register: FC = () => {
                 <Stepper orientation={shouldBeVertical ? 'vertical' : 'horizontal'} steps={STEPS} currentStep={currentStep} stepsToExclude={[STEP_SUCCESS]} />
               </div>
             )}
-
             <div className={cn('space-y-4 grow', currentStep.id !== 'EventDetails' && currentStep.id !== 'Success' && shouldBeVertical && 'ms-[20vw] p-8')}>
               {currentStep.id === 'EventDetails' && <EventDetails event={eventInfo} />}
               {currentStep.id === 'BasicInfo' && <BasicInfoStep />}
@@ -135,8 +141,6 @@ const Register: FC = () => {
           {showFAQs && <FAQs />}
         </FormProvider>
       </div>
-
-      <PyconBackground />
     </section>
   );
 };

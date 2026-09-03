@@ -117,22 +117,18 @@ const FormError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   } = useFormField();
   const body = error && error?.message ? String(error?.message) : children;
 
-  const getError = () => {
-    if (!body) {
-      return ' ';
-    }
-
-    return body;
-  };
+  if (!body) {
+    return null;
+  }
 
   return (
     <p
       id={formMessageId}
       ref={ref}
-      className={cn('text-[0.8rem]', body && 'text-left font-medium text-negative', !body && 'whitespace-pre', className)}
+      className={cn('text-[0.8rem]', 'text-left font-medium text-negative', className)}
       {...props}
     >
-      {getError()}
+      {body}
     </p>
   );
 });
