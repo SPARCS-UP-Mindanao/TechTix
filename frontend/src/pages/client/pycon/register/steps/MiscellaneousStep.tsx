@@ -60,7 +60,7 @@ const MiscellaneousStep: FC<Props> = () => {
         </FormItem>
       </div>
       
-      <div className="flex flex-col md:flex-row w-full mt-10 gap-4 text-black">
+      <div className="flex flex-col w-full mt-10 gap-4 text-black">
         <p className="text-inter font-bold uppercase text-[#072E474D] text-sm">Preferences <span className="lowercase font-light">(optional)</span></p>
         <FormItem name="dietaryRestrictions">
           {({ field }) => (
